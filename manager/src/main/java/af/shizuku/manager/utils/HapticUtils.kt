@@ -81,6 +81,43 @@ object HapticUtils {
     }
 
     /**
+     * Feedback for toggling a switch or feature ON
+     */
+    fun toggleOn(view: View) {
+        if (Build.VERSION.SDK_INT >= 34) {
+            safeHaptic(view, 21) // HapticFeedbackConstants.TOGGLE_ON
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            safeHaptic(view, HapticFeedbackConstants.CONFIRM)
+        } else {
+            safeHaptic(view, HapticFeedbackConstants.KEYBOARD_TAP)
+        }
+    }
+
+    /**
+     * Feedback for toggling a switch or feature OFF
+     */
+    fun toggleOff(view: View) {
+        if (Build.VERSION.SDK_INT >= 34) {
+            safeHaptic(view, 22) // HapticFeedbackConstants.TOGGLE_OFF
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            safeHaptic(view, HapticFeedbackConstants.CLOCK_TICK)
+        } else {
+            safeHaptic(view, HapticFeedbackConstants.VIRTUAL_KEY)
+        }
+    }
+
+    /**
+     * Subtle tactile tick for sliding segmented filters, chips, or detents
+     */
+    fun segmentTick(view: View) {
+        if (Build.VERSION.SDK_INT >= 34) {
+            safeHaptic(view, 26) // HapticFeedbackConstants.SEGMENT_TICK
+        } else {
+            tick(view)
+        }
+    }
+
+    /**
      * Feedback for reaching a threshold during a gesture
      */
     fun gestureThreshold(view: View) {
@@ -90,5 +127,4 @@ object HapticUtils {
             tick(view)
         }
     }
-
 }

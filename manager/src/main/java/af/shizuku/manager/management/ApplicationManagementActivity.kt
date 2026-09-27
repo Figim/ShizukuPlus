@@ -16,11 +16,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.textfield.TextInputLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -115,13 +118,51 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             onBackPressedDispatcher.addCallback(this, it)
         }
 
-        // Search bar
-        rootView.findViewById<android.widget.EditText>(R.id.search_edit_text).doOnTextChanged { text, _, _, _ ->
-            viewModel.setSearch(text?.toString() ?: "")
+        // Search bar: M3 Expressive shape morphing (28dp capsule pill -> 16dp active squircle)
+        val searchLayout = rootView.findViewById<TextInputLayout>(R.id.search_layout)
+        val searchEditText = rootView.findViewById<EditText>(R.id.search_edit_text)
+        val pillRadius = 28f * resources.displayMetrics.density
+        val squircleRadius = 16f * resources.displayMetrics.density
+        var cornerAnimator: android.animation.ValueAnimator? = null
+
+        fun animateSearchCorners(toRadius: Float) {
+            cornerAnimator?.cancel()
+            val currentRadius = searchLayout.boxCornerRadiusTopStart
+            if (kotlin.math.abs(currentRadius - toRadius) < 0.5f) return
+            cornerAnimator = android.animation.ValueAnimator.ofFloat(currentRadius, toRadius).apply {
+                duration = 240L
+                interpolator = androidx.interpolator.view.animation.FastOutSlowInInterpolator()
+                addUpdateListener { animator ->
+                    val r = animator.animatedValue as Float
+                    searchLayout.setBoxCornerRadii(r, r, r, r)
+                }
+                start()
+            }
         }
 
-        rootView.findViewById<com.google.android.material.chip.ChipGroup>(R.id.filter_chip_group).setOnCheckedStateChangeListener { _, checkedIds ->
+        searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                af.shizuku.manager.utils.HapticUtils.tick(searchEditText)
+                animateSearchCorners(squircleRadius)
+            } else if (searchEditText.text.isNullOrEmpty()) {
+                animateSearchCorners(pillRadius)
+            }
+        }
+
+        searchEditText.doOnTextChanged { text, _, _, _ ->
+            val query = text?.toString() ?: ""
+            viewModel.setSearch(query)
+            if (query.isNotEmpty() && !searchEditText.hasFocus()) {
+                animateSearchCorners(squircleRadius)
+            } else if (query.isEmpty() && !searchEditText.hasFocus()) {
+                animateSearchCorners(pillRadius)
+            }
+        }
+
+        val chipGroup = rootView.findViewById<ChipGroup>(R.id.filter_chip_group)
+        chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            af.shizuku.manager.utils.HapticUtils.segmentTick(group)
             when (checkedIds.first()) {
                 R.id.chip_all -> viewModel.setFilter(FilterState.ALL)
                 R.id.chip_granted -> viewModel.setFilter(FilterState.GRANTED)
@@ -420,11 +461,31 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
 
     private fun drawSwipeBackground(c: Canvas, v: android.view.View, dX: Float, action: String) {
         val (bgAttr, onAttr, iconRes) = when (action) {
-            "open_app" -> Triple(android.R.attr.colorPrimary, com.google.android.material.R.attr.colorOnPrimary, R.drawable.ic_outline_play_arrow_24)
-            "app_info" -> Triple(com.google.android.material.R.attr.colorSecondary, com.google.android.material.R.attr.colorOnSecondary, R.drawable.ic_outline_info_24)
-            "toggle_permission" -> Triple(com.google.android.material.R.attr.colorTertiary, com.google.android.material.R.attr.colorOnTertiary, R.drawable.ic_shield_24)
-            "hide_from_list" -> Triple(android.R.attr.colorError, com.google.android.material.R.attr.colorOnError, R.drawable.ic_visibility_off_24)
-            else -> Triple(com.google.android.material.R.attr.colorSecondary, com.google.android.material.R.attr.colorOnSecondary, R.drawable.ic_outline_info_24)
+            "open_app" -> Triple(
+                android.R.attr.colorPrimary,
+                com.google.android.material.R.attr.colorOnPrimary,
+                R.drawable.ic_outline_play_arrow_24,
+            )
+            "app_info" -> Triple(
+                com.google.android.material.R.attr.colorSecondary,
+                com.google.android.material.R.attr.colorOnSecondary,
+                R.drawable.ic_outline_info_24,
+            )
+            "toggle_permission" -> Triple(
+                com.google.android.material.R.attr.colorTertiary,
+                com.google.android.material.R.attr.colorOnTertiary,
+                R.drawable.ic_shield_24,
+            )
+            "hide_from_list" -> Triple(
+                android.R.attr.colorError,
+                com.google.android.material.R.attr.colorOnError,
+                R.drawable.ic_visibility_off_24,
+            )
+            else -> Triple(
+                com.google.android.material.R.attr.colorSecondary,
+                com.google.android.material.R.attr.colorOnSecondary,
+                R.drawable.ic_outline_info_24,
+            )
         }
         val tv = TypedValue()
         theme.resolveAttribute(bgAttr, tv, true)

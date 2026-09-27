@@ -16,13 +16,13 @@ object MotionUtils {
         val springX = SpringAnimation(this, SpringAnimation.SCALE_X).apply {
             spring = SpringForce(1.0f).also {
                 it.stiffness = SpringForce.STIFFNESS_MEDIUM
-                it.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                it.dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
             }
         }
         val springY = SpringAnimation(this, SpringAnimation.SCALE_Y).apply {
             spring = SpringForce(1.0f).also {
                 it.stiffness = SpringForce.STIFFNESS_MEDIUM
-                it.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                it.dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
             }
         }
 

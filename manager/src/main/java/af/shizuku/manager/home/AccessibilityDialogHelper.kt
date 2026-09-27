@@ -38,7 +38,8 @@ fun Context.showAccessibilityDialog() {
                 arrayOf(
                     "su",
                     "-c",
-                    "cmd appops set $packageName ACCESS_RESTRICTED_SETTINGS allow && pm grant $packageName android.permission.WRITE_SECURE_SETTINGS",
+                    "cmd appops set $packageName ACCESS_RESTRICTED_SETTINGS allow " +
+                        "&& pm grant $packageName android.permission.WRITE_SECURE_SETTINGS",
                 ),
             )
             process.waitFor()

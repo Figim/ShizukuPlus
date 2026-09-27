@@ -268,6 +268,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         val appsAdapter = adapter as AppsAdapter
         if (appsAdapter.isSelectionMode()) {
             appsAdapter.toggleSelection(packageName)
+            af.shizuku.manager.utils.HapticUtils.segmentTick(v)
             return
         }
         val context = v.context
@@ -278,7 +279,8 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         val grantLabel = context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_grant))
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                if (AuthorizationManager.granted(capturedPackage, appInfo.uid)) {
+                val wasGranted = AuthorizationManager.granted(capturedPackage, appInfo.uid)
+                if (wasGranted) {
                     AuthorizationManager.revoke(capturedPackage, appInfo.uid)
                     ActivityLogManager.log(appLabel, capturedPackage, revokeLabel)
                 } else {
@@ -286,6 +288,11 @@ class AppViewHolder(private val binding: AppListItemBinding) :
                     ActivityLogManager.log(appLabel, capturedPackage, grantLabel)
                 }
                 withContext(Dispatchers.Main) {
+                    if (wasGranted) {
+                        af.shizuku.manager.utils.HapticUtils.toggleOff(v)
+                    } else {
+                        af.shizuku.manager.utils.HapticUtils.toggleOn(v)
+                    }
                     val pos = adapterPosition
                     if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
                         adapter.notifyItemChanged(pos, Any())
@@ -293,6 +300,9 @@ class AppViewHolder(private val binding: AppListItemBinding) :
                     }
                 }
             } catch (_: SecurityException) {
+                withContext(Dispatchers.Main) {
+                    af.shizuku.manager.utils.HapticUtils.error(v)
+                }
                 val uidCheck = runCatching { Shizuku.getUid() }.getOrDefault(-1)
                 withContext(Dispatchers.Main) {
                     if (uidCheck != 0) showAdbLimitedDialog(context)

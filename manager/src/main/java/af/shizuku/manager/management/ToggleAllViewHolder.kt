@@ -48,6 +48,11 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
             withContext(Dispatchers.Main) {
                 switchWidget.isEnabled = true
                 switchWidget.isChecked = makeEnabled
+                if (makeEnabled) {
+                    af.shizuku.manager.utils.HapticUtils.toggleOn(v)
+                } else {
+                    af.shizuku.manager.utils.HapticUtils.toggleOff(v)
+                }
                 adapter.notifyItemRangeChanged(0, adapter.itemCount)
             }
         }

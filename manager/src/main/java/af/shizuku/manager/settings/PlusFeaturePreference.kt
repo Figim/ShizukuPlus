@@ -299,7 +299,12 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
                 // Standalone switch with no adjacent Preference row for TalkBack to borrow a
                 // label from - without this it announces only "Switch, on/off" with no context.
                 contentDescription = enableFeatureLabel
-                setOnCheckedChangeListener { _, isCheckedVal ->
+                setOnCheckedChangeListener { view, isCheckedVal ->
+                    if (isCheckedVal) {
+                        af.shizuku.manager.utils.HapticUtils.toggleOn(view)
+                    } else {
+                        af.shizuku.manager.utils.HapticUtils.toggleOff(view)
+                    }
                     this@PlusFeaturePreference.isChecked = isCheckedVal
                     this@PlusFeaturePreference.callChangeListener(isCheckedVal)
                 }

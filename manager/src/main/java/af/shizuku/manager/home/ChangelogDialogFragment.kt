@@ -106,11 +106,17 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
             } else tag
 
             val formatted = body.takeIf { it.isNotBlank() }?.let { formatNotes(it) }
+            notesView.alpha = 0f
             if (formatted != null && formatted.isNotBlank()) {
                 markwon.setMarkdown(notesView, formatted)
             } else {
                 notesView.setText(R.string.changelog_fallback_message)
             }
+            notesView.animate()
+                .alpha(1f)
+                .setDuration(200L)
+                .setInterpolator(androidx.interpolator.view.animation.FastOutSlowInInterpolator())
+                .start()
             notesScroll?.scrollTo(0, 0)
         }
 
@@ -138,6 +144,7 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
                     isChecked = (index == 0)
                     setEnsureMinTouchTargetSize(true)
                     setOnClickListener {
+                        af.shizuku.manager.utils.HapticUtils.segmentTick(this)
                         displayRelease(release)
                     }
                 }
