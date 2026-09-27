@@ -255,7 +255,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         timber.log.Timber.tag("BaseSettings").d(
             "onCreateRecyclerView: isOled=%s, pageBgColor=0x%08X", isOled, pageBgColor
         )
-        recyclerView.setPadding(cardMarginPx + contentPaddingPx, oneHandedTopPx, cardMarginPx + contentPaddingPx, 0)
+        recyclerView.setPadding(cardMarginPx, oneHandedTopPx, cardMarginPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
 
@@ -266,9 +266,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
             } else 0
             recyclerView.setPadding(
-                cardMarginPx + contentPaddingPx + systemBarsInsets.left,
+                cardMarginPx + systemBarsInsets.left,
                 currentOneHandedTop,
-                cardMarginPx + contentPaddingPx + systemBarsInsets.right,
+                cardMarginPx + systemBarsInsets.right,
                 systemBarsInsets.bottom + navBarClearancePx
             )
             insets
@@ -424,7 +424,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             if (iconView == null || iconView.visibility == View.GONE) {
                 return 16f * density
             }
-            return 56f * density
+            // 16dp (listPreferredItemPaddingStart) + 52dp (AndroidX preference icon frame) = 68dp;
+            // use 72dp to align visually with the text start with a touch of breathing room.
+            return 72f * density
         }
 
         override fun getDividerEndInset(view: View): Float = 16f * density

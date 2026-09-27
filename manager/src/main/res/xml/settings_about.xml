@@ -6,12 +6,19 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_about"
         android:key="category_about_info"
+        android:icon="@drawable/ic_info_24"
         android:defaultValue="true">
 
         <Preference
             android:key="version"
             android:title="@string/settings_version"
             android:icon="@drawable/ic_info_24" />
+
+        <Preference
+            android:key="changelog"
+            android:title="@string/changelog_title"
+            android:summary="@string/changelog_earlier_releases"
+            android:icon="@drawable/ic_history_24" />
 
         <Preference
             android:key="source_code"

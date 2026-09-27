@@ -2,11 +2,16 @@ package af.shizuku.manager.settings
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.home.ChangelogDialogFragment
+import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.utils.CustomTabsHelper
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class AboutSettingsFragment : BaseSettingsFragment() {
 
@@ -41,6 +46,24 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 }
                 true
             }
+        }
+
+        findPreference<Preference>("changelog")?.setOnPreferenceClickListener {
+            val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setOnPreferenceClickListener true
+            activity.lifecycleScope.launch {
+                val currentTag = BuildConfig.VERSION_NAME.removePrefix("Shizuku+ ").trim()
+                val releases = try {
+                    UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 15)
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to fetch releases for in-app changelog")
+                    emptyList()
+                }
+                if (isAdded && !isDetached) {
+                    ChangelogDialogFragment.newInstance(releases, currentTag)
+                        .show(activity.supportFragmentManager, ChangelogDialogFragment.TAG)
+                }
+            }
+            true
         }
 
         findPreference<Preference>("source_code")?.setOnPreferenceClickListener {

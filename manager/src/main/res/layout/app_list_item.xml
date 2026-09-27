@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_horizontal"
+    android:layout_marginEnd="@dimen/margin_horizontal"
     android:paddingStart="@dimen/margin_horizontal"
     android:paddingEnd="@dimen/margin_horizontal"
     android:paddingVertical="@dimen/m3e_spacing_medium"
@@ -35,8 +37,8 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/m3e_spacing_large"
-        android:layout_marginEnd="@dimen/m3e_spacing_large"
+        android:layout_marginStart="@dimen/m3e_spacing_medium"
+        android:layout_marginEnd="@dimen/m3e_spacing_medium"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical">

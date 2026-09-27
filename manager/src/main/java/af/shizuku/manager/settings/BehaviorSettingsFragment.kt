@@ -17,6 +17,7 @@ import af.shizuku.manager.service.ShizukuLiveService
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.utils.DeviceOptimizer
+import af.shizuku.manager.home.ChangelogDialogFragment
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -428,7 +429,19 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
             .setTitle(getString(R.string.update_available_title) + devBadge)
             .setNegativeButton(R.string.update_later, null)
             .setNeutralButton(R.string.update_release_notes) { _, _ ->
-                openReleasesPage()
+                val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setNeutralButton
+                activity.lifecycleScope.launch {
+                    val releases = try {
+                        UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 15)
+                    } catch (e: Exception) {
+                        Timber.w(e, "Failed to fetch releases for in-app changelog")
+                        emptyList()
+                    }
+                    if (isAdded && !isDetached) {
+                        ChangelogDialogFragment.newInstance(releases, info.versionName)
+                            .show(activity.supportFragmentManager, ChangelogDialogFragment.TAG)
+                    }
+                }
             }
 
         if (info.requiresManualDownload) {

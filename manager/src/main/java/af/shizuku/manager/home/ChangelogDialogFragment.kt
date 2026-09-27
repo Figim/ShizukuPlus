@@ -91,43 +91,54 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
         val releases = parseReleases(arguments?.getString(ARG_RELEASES_JSON))
         val markwon = Markwon.create(requireContext())
 
-        val current = releases.firstOrNull()
-        val previous = releases.drop(1)
-
-        // Version/date subtitle under the title
-        view.findViewById<TextView>(R.id.version_text).text = current?.let { (tag, date, _) ->
-            val formatted = UpdateChecker.formatPublishedDate(date)
-            if (formatted.isNotBlank() && formatted != date) "$tag · $formatted" else tag
-        } ?: tagName
-
-        // Notes body for the current (newest) release
+        var currentSelectedTag = tagName
+        val versionText = view.findViewById<TextView>(R.id.version_text)
         val notesView = view.findViewById<TextView>(R.id.notes_text)
-        val rawNotes = current?.third
-        val formatted = rawNotes?.let { formatNotes(it) }?.takeIf { it.isNotBlank() }
-        if (formatted != null) {
-            markwon.setMarkdown(notesView, formatted)
+        val notesScroll = view.findViewById<androidx.core.widget.NestedScrollView>(R.id.notes_scroll)
+        val btnGithub = view.findViewById<MaterialButton>(R.id.btn_github)
+
+        fun displayRelease(release: Triple<String, String, String>) {
+            val (tag, date, body) = release
+            currentSelectedTag = tag
+            val formattedDate = UpdateChecker.formatPublishedDate(date)
+            versionText.text = if (formattedDate.isNotBlank() && formattedDate != date) {
+                "$tag · $formattedDate"
+            } else tag
+
+            val formatted = body.takeIf { it.isNotBlank() }?.let { formatNotes(it) }
+            if (formatted != null && formatted.isNotBlank()) {
+                markwon.setMarkdown(notesView, formatted)
+            } else {
+                notesView.setText(R.string.changelog_fallback_message)
+            }
+            notesScroll?.scrollTo(0, 0)
+        }
+
+        val current = releases.firstOrNull()
+        if (current != null) {
+            displayRelease(current)
         } else {
+            versionText.text = tagName
             notesView.setText(R.string.changelog_fallback_message)
         }
         notesView.movementMethod = LinkMovementMethod.getInstance()
 
-        // Earlier releases as tappable chips — each opens that release's GitHub page
+        // Earlier releases as selectable chips — tapping switches the displayed release in-app
         val earlierSection = view.findViewById<LinearLayout>(R.id.earlier_section)
         val chipGroup = view.findViewById<ChipGroup>(R.id.earlier_chip_group)
-        if (previous.isNotEmpty()) {
+        if (releases.size > 1) {
             earlierSection.isVisible = true
-            previous.forEach { (prevTag, _, _) ->
+            chipGroup.isSingleSelection = true
+            chipGroup.isSelectionRequired = true
+            releases.forEachIndexed { index, release ->
+                val (tag, _, _) = release
                 val chip = Chip(requireContext()).apply {
-                    text = prevTag
-                    isCheckable = false
+                    text = tag
+                    isCheckable = true
+                    isChecked = (index == 0)
                     setEnsureMinTouchTargetSize(true)
                     setOnClickListener {
-                        try {
-                            startActivity(Intent(Intent.ACTION_VIEW,
-                                Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases/tag/$prevTag")))
-                        } catch (e: Exception) {
-                            Timber.w(e, "Failed to open release $prevTag")
-                        }
+                        displayRelease(release)
                     }
                 }
                 chipGroup.addView(chip)
@@ -136,13 +147,13 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
             earlierSection.isVisible = false
         }
 
-        // "View on GitHub" links to the current release's page
-        view.findViewById<MaterialButton>(R.id.btn_github).setOnClickListener {
+        // "View on GitHub" links to the currently selected release's page
+        btnGithub.setOnClickListener {
             try {
                 startActivity(Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases/tag/$tagName")))
+                    Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases/tag/$currentSelectedTag")))
             } catch (e: Exception) {
-                Timber.w(e, "Failed to open release page for $tagName")
+                Timber.w(e, "Failed to open release page for $currentSelectedTag")
             }
         }
 

@@ -743,11 +743,26 @@ open class HomeActivity : AppActivity(), MavericksView {
             )
         }
 
+        val showInAppChangelog = {
+            lifecycleScope.launch {
+                val releases = try {
+                    UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 15)
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to fetch releases for in-app changelog")
+                    emptyList()
+                }
+                if (!isFinishing && !isDestroyed) {
+                    ChangelogDialogFragment.newInstance(releases, updateInfo.versionName)
+                        .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+                }
+            }
+        }
+
         val builder = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.update_available_title)
             .setView(dialogView)
             .setNegativeButton(R.string.update_later, null)
-            .setNeutralButton(R.string.update_release_notes) { _, _ -> openReleases() }
+            .setNeutralButton(R.string.update_release_notes) { _, _ -> showInAppChangelog() }
 
         if (updateInfo.requiresManualDownload) {
             builder.setPositiveButton(R.string.update_view_on_github) { _, _ -> openReleases() }
