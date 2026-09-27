@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.core.content.asActivity
@@ -52,7 +53,7 @@ class StartStockShizukuViewHolder(
             val cmd = "am force-stop moe.shizuku.privileged.api && am force-stop af.shizuku.plus.api && nohup sh -c 'sleep 1 && $starterCmd' >/dev/null 2>&1 &"
             val activity = v.context.asActivity<android.app.Activity>() ?: return
             start.isEnabled = false
-            scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            scope.launch(Dispatchers.IO) {
                 try {
                     if (hasRoot) {
                         com.topjohnwu.superuser.Shell
@@ -65,7 +66,7 @@ class StartStockShizukuViewHolder(
                 } catch (_: Exception) {
                     // Ignore
                 }
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
                     start.isEnabled = true
                     android.widget.Toast
                         .makeText(activity, R.string.stock_shizuku_restarting_via_root, android.widget.Toast.LENGTH_SHORT)

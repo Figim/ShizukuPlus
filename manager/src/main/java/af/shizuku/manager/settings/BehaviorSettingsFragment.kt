@@ -14,9 +14,11 @@ import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
+import kotlinx.coroutines.launch
 
 class BehaviorSettingsFragment :
     BaseSettingsFragment(),
