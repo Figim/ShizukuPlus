@@ -35,6 +35,23 @@ class ShizukuManagerProvider : ShizukuProvider() {
                 val binder = extras.getParcelable<BinderContainer>(EXTRA_BINDER)?.binder ?: return null
 
                 if (!ShizukuStateMachine.isRunning()) {
+                    if (ShizukuStateMachine.update() != ShizukuStateMachine.State.RUNNING) {
+                        // Cold-start grace period: wait up to 1500ms for binder delivery from server daemon
+                        val deadline = System.currentTimeMillis() + 1500L
+                        while (System.currentTimeMillis() < deadline) {
+                            try {
+                                Thread.sleep(100)
+                            } catch (_: InterruptedException) {
+                                break
+                            }
+                            if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
+                                break
+                            }
+                        }
+                    }
+                }
+
+                if (!ShizukuStateMachine.isRunning()) {
                     LOGGER.w("sendUserService called when not running")
                     return null
                 }
