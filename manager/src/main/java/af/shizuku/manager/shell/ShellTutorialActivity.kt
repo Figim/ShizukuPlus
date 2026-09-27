@@ -31,6 +31,8 @@ class ShellTutorialActivity : AppBarActivity() {
         private val SU_NAME = "su"
     }
 
+    private lateinit var binding: TerminalTutorialActivityBinding
+
     private val openDocumentsTree =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { tree: Uri? ->
             if (tree == null) return@registerForActivityResult
@@ -102,6 +104,7 @@ class ShellTutorialActivity : AppBarActivity() {
             val totalCount = results.size
 
             ShizukuSettings.setExportDirUri(tree.toString())
+            updateCommandTexts()
 
             val toastMsg = if (successCount == totalCount) {
                 getString(R.string.shell_export_success)
@@ -120,7 +123,7 @@ class ShellTutorialActivity : AppBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = TerminalTutorialActivityBinding.bind(rootView)
+        binding = TerminalTutorialActivityBinding.bind(rootView)
 
         binding.header.apply {
             headerIcon.setImageResource(R.drawable.ic_terminal_24)
@@ -163,18 +166,12 @@ class ShellTutorialActivity : AppBarActivity() {
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text2.text = getString(R.string.terminal_tutorial_2, shName).toHtml()
-            command2.text = getString(R.string.terminal_tutorial_copy_command)
             summary2.text = getString(R.string.terminal_tutorial_copy_summary, shName, plusName, suName)
                 .toHtml()
 
             text3.text = getString(R.string.terminal_tutorial_3)
 
-            val rishPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath(SH_NAME) ?: "/sdcard/$SH_NAME"
-            val plusPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath(PLUS_NAME) ?: "/sdcard/$PLUS_NAME"
-
-            val rishCmd = getString(R.string.terminal_tutorial_run_command, rishPath)
-            val plusCmd = getString(R.string.terminal_tutorial_run_plus_command) + " (sh $plusPath)"
-            command3.text = "$rishCmd\n\n$plusCmd"
+            updateCommandTexts()
 
             button1.setOnClickListener {
                 try {
@@ -186,5 +183,25 @@ class ShellTutorialActivity : AppBarActivity() {
             }
             button2.setOnClickListener { v: View -> CustomTabsHelper.launchUrlOrCopy(v.context, Helps.RISH.get()) }
         }
+    }
+
+    private fun updateCommandTexts() {
+        val folderPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath("") ?: "/sdcard/chosen-folder"
+        val rishPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath(SH_NAME) ?: "$folderPath/$SH_NAME"
+        val plusPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath(PLUS_NAME) ?: "$folderPath/$PLUS_NAME"
+
+        val isTermuxInstalled = try {
+            packageManager.getPackageInfo("com.termux", 0) != null
+        } catch (_: Exception) { false }
+
+        binding.command2.text = if (isTermuxInstalled) {
+            "cp $folderPath/* /data/data/com.termux/files/usr/bin/ 2>/dev/null || cp $folderPath/* /data/data/com.termux/files/home/"
+        } else {
+            "cp $folderPath/* /data/data/terminal.package.name/files"
+        }
+
+        val rishCmd = getString(R.string.terminal_tutorial_run_command, rishPath)
+        val plusCmd = getString(R.string.terminal_tutorial_run_plus_command) + " (sh $plusPath)"
+        binding.command3.text = "$rishCmd\n\n$plusCmd"
     }
 }

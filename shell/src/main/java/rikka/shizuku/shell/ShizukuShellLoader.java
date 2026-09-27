@@ -169,13 +169,16 @@ public class ShizukuShellLoader {
     public static void main(String[] args) {
         ShizukuShellLoader.args = args;
 
-        String packageName;
+        String packageName = System.getenv("RISH_APPLICATION_ID");
         var pkg = PackageManagerApis.getPackagesForUidNoThrow(Os.getuid());
-        if (pkg.size() == 1) {
-            packageName = pkg.get(0);
-        } else {
-            packageName = System.getenv("RISH_APPLICATION_ID");
-            if (TextUtils.isEmpty(packageName) || "PKG".equals(packageName)) {
+        if (TextUtils.isEmpty(packageName) || "PKG".equals(packageName)) {
+            if (pkg != null && !pkg.isEmpty()) {
+                if (pkg.contains("com.termux")) {
+                    packageName = "com.termux";
+                } else {
+                    packageName = pkg.get(0);
+                }
+            } else {
                 abort("RISH_APPLICATION_ID is not set, set this environment variable to the id of current application (package name)");
                 System.exit(1);
             }

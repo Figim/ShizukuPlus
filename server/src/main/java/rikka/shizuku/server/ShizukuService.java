@@ -186,6 +186,27 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         LOGGER.i("migratePermissionGrants: granted/refreshed %d permission(s)", migrated);
     }
 
+    private void grantManagerEssentialPermissions() {
+        try {
+            int userId = UserHandleCompat.getUserId(android.os.Process.myUid());
+            String[] managerIds = new String[]{
+                MANAGER_APPLICATION_ID,
+                ServerConstants.DROPIN_APPLICATION_ID,
+                ServerConstants.PLUS_APPLICATION_ID
+            };
+            for (String pkg : managerIds) {
+                if (pkg == null) continue;
+                try {
+                    Android17Compat.grantRuntimePermission(pkg, WRITE_SECURE_SETTINGS, userId);
+                    Android17Compat.grantRuntimePermission(pkg, "android.permission.DUMP", userId);
+                } catch (Throwable ignored) {
+                }
+            }
+        } catch (Throwable e) {
+            LOGGER.w("grantManagerEssentialPermissions failed", e);
+        }
+    }
+
     private void disablePhantomProcessKiller() {
         if (Build.VERSION.SDK_INT < 31) return; // Only needed on Android 12+
         try {
@@ -329,6 +350,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         });
 
         mainHandler.post(() -> {
+            grantManagerEssentialPermissions();
             migratePermissionGrants();
             sendBinderToClient();
             sendBinderToManager();
@@ -564,6 +586,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         isManager = MANAGER_APPLICATION_ID.equals(requestPackageName)
                 || ServerConstants.DROPIN_APPLICATION_ID.equals(requestPackageName)
                 || ServerConstants.PLUS_APPLICATION_ID.equals(requestPackageName);
+
+        if (isManager) {
+            grantManagerEssentialPermissions();
+        }
 
         synchronized (this) {
             ClientRecord existing = clientManager.findClient(callingUid, callingPid);

@@ -27,6 +27,12 @@ fi
 # This is what makes the su/rish bridge work for third-party apps like Swift Backup and Termux
 # instead of only for Shizuku+.
 if [ -z "$RISH_APPLICATION_ID" ]; then
+  if [ -n "$TERMUX_VERSION" ] || [ -d "/data/data/com.termux/files" ]; then
+    export RISH_APPLICATION_ID="com.termux"
+  fi
+fi
+
+if [ -z "$RISH_APPLICATION_ID" ]; then
   _pid=$PPID
   _i=0
   while [ -n "$_pid" ] && [ "$_pid" != "0" ] && [ "$_i" -lt 8 ]; do
