@@ -112,13 +112,14 @@ object ShizukuStateMachine {
                 if (newState == State.RUNNING) {
                     try {
                         val context = ShizukuApplication.appContext
-                        if (ShizukuSettings.isDeviceHardeningEnabled()) {
-                            CoroutineScope(Dispatchers.IO).launch {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            if (ShizukuSettings.isDeviceHardeningEnabled()) {
                                 DeviceOptimizer.applyFixes(context)
                             }
+                            SettingsHelper.autoGrantPrivileges(context)
                         }
                     } catch (e: Exception) {
-                        Timber.tag("ShizukuStateMachine").w(e, "Failed to apply device hardening on RUNNING")
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to apply optimizations and privileges on RUNNING")
                     }
                 }
 

@@ -25,6 +25,42 @@ object SettingsHelper {
 
     fun hasWriteSecureSettings(context: Context): Boolean = context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
+    fun autoGrantPrivileges(context: Context) {
+        if (rikka.shizuku.Shizuku.pingBinder()) {
+            try {
+                val p1 =
+                    rikka.shizuku.Shizuku.newProcess(
+                        arrayOf("cmd", "appops", "set", context.packageName, "ACCESS_RESTRICTED_SETTINGS", "allow"),
+                        null,
+                        null,
+                    )
+                p1?.waitFor()
+                p1?.destroy()
+
+                val p2 =
+                    rikka.shizuku.Shizuku.newProcess(
+                        arrayOf("pm", "grant", context.packageName, "android.permission.WRITE_SECURE_SETTINGS"),
+                        null,
+                        null,
+                    )
+                p2?.waitFor()
+                p2?.destroy()
+            } catch (e: Exception) {
+                timber.log.Timber.w(e, "Auto-grant privileges via Shizuku failed")
+            }
+        } else if (EnvironmentUtils.isRooted()) {
+            try {
+                com.topjohnwu.superuser.Shell
+                    .cmd(
+                        "cmd appops set ${context.packageName} ACCESS_RESTRICTED_SETTINGS allow",
+                        "pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS",
+                    ).exec()
+            } catch (e: Exception) {
+                timber.log.Timber.w(e, "Auto-grant privileges via Root failed")
+            }
+        }
+    }
+
     fun promptWriteSecureSettings(context: Context) {
         if (hasWriteSecureSettings(context)) {
             android.widget.Toast
@@ -33,54 +69,16 @@ object SettingsHelper {
             return
         }
 
-        // 1. Automatic grant via Shizuku if service is alive
-        if (rikka.shizuku.Shizuku.pingBinder()) {
-            try {
-                val p =
-                    rikka.shizuku.Shizuku.newProcess(
-                        arrayOf("pm", "grant", context.packageName, "android.permission.WRITE_SECURE_SETTINGS"),
-                        null,
-                        null,
-                    )
-                if (p != null) {
-                    try {
-                        if (p.waitFor() == 0 && hasWriteSecureSettings(context)) {
-                            android.widget.Toast
-                                .makeText(context, R.string.accessibility_permission_granted, android.widget.Toast.LENGTH_SHORT)
-                                .show()
-                            return
-                        }
-                    } finally {
-                        try {
-                            p.destroy()
-                        } catch (_: Exception) {
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                timber.log.Timber.w(e, "Auto-grant WRITE_SECURE_SETTINGS via Shizuku failed")
-            }
+        // 1. Automatic grant via Shizuku or Root if available
+        autoGrantPrivileges(context)
+        if (hasWriteSecureSettings(context)) {
+            android.widget.Toast
+                .makeText(context, R.string.accessibility_permission_granted, android.widget.Toast.LENGTH_SHORT)
+                .show()
+            return
         }
 
-        // 2. Automatic grant via Root if available
-        if (EnvironmentUtils.isRooted()) {
-            try {
-                val res =
-                    com.topjohnwu.superuser.Shell
-                        .cmd("pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS")
-                        .exec()
-                if (res.isSuccess && hasWriteSecureSettings(context)) {
-                    android.widget.Toast
-                        .makeText(context, R.string.accessibility_permission_granted, android.widget.Toast.LENGTH_SHORT)
-                        .show()
-                    return
-                }
-            } catch (e: Exception) {
-                timber.log.Timber.w(e, "Auto-grant WRITE_SECURE_SETTINGS via Root failed")
-            }
-        }
-
-        // 3. Fallback: manual copy command dialog
+        // 2. Fallback: manual copy command dialog
         val command = "adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS"
         com.google.android.material.dialog
             .MaterialAlertDialogBuilder(context)

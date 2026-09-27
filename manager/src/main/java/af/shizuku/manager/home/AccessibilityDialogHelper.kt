@@ -53,14 +53,33 @@ fun Context.showAccessibilityDialog() {
             p2?.waitFor()
             p2?.destroy()
 
+            val currentServices = getEnabledAccessibilityServices()
+            val newServices =
+                if (currentServices.isNullOrEmpty()) {
+                    serviceName
+                } else if (!currentServices.contains(serviceName)) {
+                    currentServices.joinToString(":") + ":$serviceName"
+                } else {
+                    currentServices.joinToString(":")
+                }
+
             val p3 =
                 rikka.shizuku.Shizuku.newProcess(
-                    arrayOf("cmd", "accessibility", "enable-accessibility-service", serviceName),
+                    arrayOf("settings", "put", "secure", "enabled_accessibility_services", newServices),
                     null,
                     null,
                 )
             p3?.waitFor()
             p3?.destroy()
+
+            val p4 =
+                rikka.shizuku.Shizuku.newProcess(
+                    arrayOf("settings", "put", "secure", "accessibility_enabled", "1"),
+                    null,
+                    null,
+                )
+            p4?.waitFor()
+            p4?.destroy()
 
             if (enableAccessibilityService() || isAccessibilityEnabled()) {
                 showNavigateDialog()
@@ -74,17 +93,29 @@ fun Context.showAccessibilityDialog() {
     // 2. Attempt automatic elevation via root if available on device
     if (EnvironmentUtils.isRooted()) {
         try {
+            val serviceName = "$packageName/${AdbPairingAccessibilityService::class.java.canonicalName}"
+            val currentServices = getEnabledAccessibilityServices()
+            val newServices =
+                if (currentServices.isNullOrEmpty()) {
+                    serviceName
+                } else if (!currentServices.contains(serviceName)) {
+                    currentServices.joinToString(":") + ":$serviceName"
+                } else {
+                    currentServices.joinToString(":")
+                }
             val process =
                 Runtime.getRuntime().exec(
                     arrayOf(
                         "su",
                         "-c",
                         "cmd appops set $packageName ACCESS_RESTRICTED_SETTINGS allow " +
-                            "&& pm grant $packageName android.permission.WRITE_SECURE_SETTINGS",
+                            "&& pm grant $packageName android.permission.WRITE_SECURE_SETTINGS " +
+                            "&& settings put secure enabled_accessibility_services $newServices " +
+                            "&& settings put secure accessibility_enabled 1",
                     ),
                 )
             process.waitFor()
-            if (enableAccessibilityService()) {
+            if (enableAccessibilityService() || isAccessibilityEnabled()) {
                 showNavigateDialog()
                 return
             }
@@ -121,6 +152,11 @@ private fun Context.showPermissionDialog() {
             ),
         ).setPositiveButton(R.string.accessibility_action_app_info) { _, _ ->
             try {
+                val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                cm.setPrimaryClip(android.content.ClipData.newPlainText("adb command", permissionCommand))
+                android.widget.Toast
+                    .makeText(this, R.string.toast_copied_to_clipboard, android.widget.Toast.LENGTH_SHORT)
+                    .show()
                 val intent =
                     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                         data = Uri.fromParts("package", packageName, null)

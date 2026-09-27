@@ -111,6 +111,10 @@ object AdbStarter {
                     Timber.tag(TAG).i("Connected to ADB at 127.0.0.1:%d; deploying starter command", activePort)
                     log?.invoke("Successfully connected on port $activePort...\n")
                     client.runCommand("shell:${Starter.internalCommand}")
+                    runCatching {
+                        client.runCommand("shell:cmd appops set ${context.packageName} ACCESS_RESTRICTED_SETTINGS allow")
+                        client.runCommand("shell:pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS")
+                    }.onFailure { Timber.tag(TAG).w(it, "Failed to auto-elevate privileges on ADB start") }
                     ShizukuSettings.setLastPort(activePort)
                     ActivityLogManager.log("Shizuku", context.packageName, "Service started via ADB on port $activePort")
                     ShizukuStateMachine.update()

@@ -3,6 +3,7 @@ import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.AppConstants
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.AdbPairingTutorialActivityBinding
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
@@ -77,6 +78,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         }
 
         binding.apply {
+            notification.applySpringTouch()
+            notificationDisabled.applySpringTouch()
+            network.applySpringTouch()
+            miui.applySpringTouch()
             syncNotificationEnabled()
 
             if (DeviceCompatibility.isMiui()) {
