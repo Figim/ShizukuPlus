@@ -2,7 +2,9 @@ package af.shizuku.manager.home
 
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.text.Spannable
@@ -12,21 +14,47 @@ import android.text.style.TypefaceSpan
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import af.shizuku.manager.R
 import af.shizuku.manager.adb.AdbPairingAccessibilityService
+import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsPage
 
 fun Context.showAccessibilityDialog() {
+    if (isAccessibilityEnabled()) {
+        showNavigateDialog()
+        return
+    }
+
     val hasWriteSecureSettings = (checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED)
+    if (hasWriteSecureSettings) {
+        if (enableAccessibilityService()) {
+            showNavigateDialog()
+            return
+        }
+    }
+
+    // Attempt automatic elevation via root if available on device
+    if (EnvironmentUtils.isRooted()) {
+        try {
+            val process = Runtime.getRuntime().exec(
+                arrayOf(
+                    "su",
+                    "-c",
+                    "cmd appops set $packageName ACCESS_RESTRICTED_SETTINGS allow && pm grant $packageName android.permission.WRITE_SECURE_SETTINGS",
+                ),
+            )
+            process.waitFor()
+            if (enableAccessibilityService()) {
+                showNavigateDialog()
+                return
+            }
+        } catch (_: Throwable) {
+        }
+    }
 
     val installer = packageManager.getInstallerPackageName(packageName)
     val isInstalledByPlayOrAdb = (installer == "com.android.vending") || (installer == null)
-    val hasAccessRestrictedSettings = isInstalledByPlayOrAdb || Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    val isRestricted = !isInstalledByPlayOrAdb && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
 
-    if (isAccessibilityEnabled()) {
-        showNavigateDialog()
-    } else if (hasWriteSecureSettings) {
-        if (enableAccessibilityService()) return
-        showPermissionDialog()
-    } else if (!hasAccessRestrictedSettings) {
+    if (isRestricted) {
         showPermissionDialog()
     } else {
         showEnableDialog()
@@ -49,7 +77,18 @@ private fun Context.showPermissionDialog() {
                 permissionName,
                 styledPermissionCommand,
             ),
-        ).setPositiveButton(R.string.action_continue) { _, _ -> showEnableDialog() }
+        )
+        .setPositiveButton(R.string.accessibility_action_app_info) { _, _ ->
+            try {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                startActivity(intent)
+            } catch (_: Throwable) {
+            }
+        }
+        .setNeutralButton(R.string.action_continue) { _, _ -> showEnableDialog() }
         .setNegativeButton(android.R.string.cancel, null)
         .show()
 }
@@ -100,11 +139,19 @@ private fun Context.enableAccessibilityService(): Boolean {
             enabledServices.joinToString(":") + ":$accessibilityServiceName"
         }
 
-    Settings.Secure.putString(
-        contentResolver,
-        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-        newServices,
-    )
-
-    return isAccessibilityEnabled()
+    return try {
+        Settings.Secure.putString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+            newServices,
+        )
+        Settings.Secure.putInt(
+            contentResolver,
+            Settings.Secure.ACCESSIBILITY_ENABLED,
+            1,
+        )
+        isAccessibilityEnabled()
+    } catch (_: Throwable) {
+        false
+    }
 }

@@ -199,6 +199,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 try {
                     Android17Compat.grantRuntimePermission(pkg, WRITE_SECURE_SETTINGS, userId);
                     Android17Compat.grantRuntimePermission(pkg, "android.permission.DUMP", userId);
+                    ApplicationInfo ai = Android17Compat.getApplicationInfo(pkg, 0, userId);
+                    if (ai != null) {
+                        performAppOpsElevation(pkg, ai.uid);
+                    }
                 } catch (Throwable ignored) {
                 }
             }

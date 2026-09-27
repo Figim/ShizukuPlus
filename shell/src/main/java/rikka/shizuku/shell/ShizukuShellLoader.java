@@ -209,7 +209,7 @@ public class ShizukuShellLoader {
                 String.format(
                         "Request timeout. The connection between the current app (%1$s) and Shizuku app may be blocked by your system. " +
                                 "Please disable all battery optimization features for both current app (%1$s) and Shizuku app.",
-                        packageName)
+                        callingPackage)
         );
         // 15s was sized for the consent dialog launching directly (see the commit that introduced
         // this value). Since then, the dialog is routed through a notification the user has to
