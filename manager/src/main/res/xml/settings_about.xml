@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Version & Info -->
+    <!-- Version & Updates -->
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_about"
         android:key="category_about_info"
@@ -15,10 +15,49 @@
             android:icon="@drawable/ic_info_24" />
 
         <Preference
+            android:key="check_for_update"
+            android:title="@string/settings_check_for_update_title"
+            android:summary="@string/settings_check_for_update_summary"
+            android:icon="@drawable/ic_refresh_24" />
+
+        <Preference
             android:key="changelog"
             android:title="@string/changelog_title"
             android:summary="@string/changelog_earlier_releases"
             android:icon="@drawable/ic_history_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="auto_update_enabled"
+            android:title="@string/settings_auto_update_title"
+            android:summary="@string/settings_auto_update_summary"
+            android:icon="@drawable/ic_update_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="auto_install_enabled"
+            android:title="@string/settings_auto_install_title"
+            android:summary="@string/settings_auto_install_summary"
+            android:icon="@drawable/ic_install_24"
+            android:defaultValue="false"
+            android:dependency="auto_update_enabled" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="update_channel"
+            android:title="@string/settings_update_channel_title"
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_science_24"
+            android:entries="@array/update_channel_entries"
+            android:entryValues="@array/update_channel_values"
+            android:defaultValue="stable" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <!-- Project & Legal -->
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:title="@string/settings_open_source_licenses"
+        android:key="category_about_links"
+        android:icon="@drawable/ic_article_24"
+        android:defaultValue="true">
 
         <Preference
             android:key="source_code"

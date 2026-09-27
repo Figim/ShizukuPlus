@@ -1,7 +1,9 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
 import android.os.Bundle
+import androidx.preference.Preference
 
 class SettingsFragment : BaseSettingsFragment() {
     override fun getTitle(): CharSequence? = getString(R.string.settings_title)
@@ -11,5 +13,6 @@ class SettingsFragment : BaseSettingsFragment() {
         rootKey: String?,
     ) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
+        findPreference<Preference>("nav_about")?.summary = BuildConfig.VERSION_NAME
     }
 }
