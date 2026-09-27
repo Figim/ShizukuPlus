@@ -1,16 +1,18 @@
 package af.shizuku.manager.backup
 
+import af.shizuku.manager.utils.SettingsBackupManager
 import android.content.Context
 import android.util.Base64
 import org.json.JSONObject
 import javax.crypto.Cipher
-import af.shizuku.manager.utils.SettingsBackupManager
 
 object BackupRestoreManager {
-
-    fun isEncrypted(payload: String): Boolean = try {
-        JSONObject(payload).has("iv")
-    } catch (_: Exception) { false }
+    fun isEncrypted(payload: String): Boolean =
+        try {
+            JSONObject(payload).has("iv")
+        } catch (_: Exception) {
+            false
+        }
 
     fun createPlainBackupPayload(context: Context): String {
         val jsonString = SettingsBackupManager.export(context)
@@ -21,7 +23,10 @@ object BackupRestoreManager {
         return backupJson.toString()
     }
 
-    fun restoreFromPlainPayload(context: Context, payload: String) {
+    fun restoreFromPlainPayload(
+        context: Context,
+        payload: String,
+    ) {
         val backupJson = JSONObject(payload)
         val version = backupJson.optInt("version", 1)
         if (version == 2) {
@@ -34,7 +39,10 @@ object BackupRestoreManager {
         }
     }
 
-    fun createBackupPayload(context: Context, cipher: Cipher): String {
+    fun createBackupPayload(
+        context: Context,
+        cipher: Cipher,
+    ): String {
         val jsonString = SettingsBackupManager.export(context)
         val encryptedBytes = cipher.doFinal(jsonString.toByteArray(Charsets.UTF_8))
         val iv = cipher.iv
@@ -52,7 +60,11 @@ object BackupRestoreManager {
         return Base64.decode(backupJson.getString("iv"), Base64.NO_WRAP)
     }
 
-    fun restoreFromPayload(context: Context, payload: String, cipher: Cipher) {
+    fun restoreFromPayload(
+        context: Context,
+        payload: String,
+        cipher: Cipher,
+    ) {
         val backupJson = JSONObject(payload)
         val data = Base64.decode(backupJson.getString("data"), Base64.NO_WRAP)
 

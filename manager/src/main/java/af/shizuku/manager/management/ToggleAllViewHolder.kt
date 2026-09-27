@@ -1,7 +1,9 @@
 package af.shizuku.manager.management
 
+import af.shizuku.manager.authorization.AuthorizationManager
+import af.shizuku.manager.databinding.AppListToggleAllBinding
+import af.shizuku.manager.management.AppsAdapter.HeaderMarker
 import android.content.pm.PackageInfo
-import timber.log.Timber
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +12,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.authorization.AuthorizationManager
-import af.shizuku.manager.databinding.AppListToggleAllBinding
-import af.shizuku.manager.management.AppsAdapter.HeaderMarker
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
+import timber.log.Timber
 
-class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseViewHolder<HeaderMarker>(binding.root), View.OnClickListener {
-
+class ToggleAllViewHolder(
+    private val binding: AppListToggleAllBinding,
+) : BaseViewHolder<HeaderMarker>(binding.root),
+    View.OnClickListener {
     companion object {
         @JvmField
         val CREATOR = Creator<HeaderMarker> { inflater: LayoutInflater, parent: ViewGroup? -> ToggleAllViewHolder(AppListToggleAllBinding.inflate(inflater, parent, false)) }
@@ -42,20 +44,23 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
         val items = snapshotPackages()
         switchWidget.isEnabled = false
         job?.cancel()
-        job = CoroutineScope(Dispatchers.IO).launch {
-            val makeEnabled = !areAllEnabled(items)
-            setAllEnabled(items, makeEnabled)
-            withContext(Dispatchers.Main) {
-                switchWidget.isEnabled = true
-                switchWidget.isChecked = makeEnabled
-                if (makeEnabled) {
-                    af.shizuku.manager.utils.HapticUtils.toggleOn(v)
-                } else {
-                    af.shizuku.manager.utils.HapticUtils.toggleOff(v)
+        job =
+            CoroutineScope(Dispatchers.IO).launch {
+                val makeEnabled = !areAllEnabled(items)
+                setAllEnabled(items, makeEnabled)
+                withContext(Dispatchers.Main) {
+                    switchWidget.isEnabled = true
+                    switchWidget.isChecked = makeEnabled
+                    if (makeEnabled) {
+                        af.shizuku.manager.utils.HapticUtils
+                            .toggleOn(v)
+                    } else {
+                        af.shizuku.manager.utils.HapticUtils
+                            .toggleOff(v)
+                    }
+                    adapter.notifyItemRangeChanged(0, adapter.itemCount)
                 }
-                adapter.notifyItemRangeChanged(0, adapter.itemCount)
             }
-        }
     }
 
     override fun onBind() {
@@ -73,19 +78,23 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
     private fun refreshChecked() {
         job?.cancel()
         val items = snapshotPackages()
-        job = CoroutineScope(Dispatchers.IO).launch {
-            val enabled = areAllEnabled(items)
-            withContext(Dispatchers.Main) {
-                switchWidget.isChecked = enabled
+        job =
+            CoroutineScope(Dispatchers.IO).launch {
+                val enabled = areAllEnabled(items)
+                withContext(Dispatchers.Main) {
+                    switchWidget.isChecked = enabled
+                }
             }
-        }
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun snapshotPackages(): List<PackageInfo> =
         (adapter.getItems() as ArrayList<*>).filterIsInstance<PackageInfo>()
 
-    private fun setAllEnabled(items: List<PackageInfo>, enabled: Boolean) {
+    private fun setAllEnabled(
+        items: List<PackageInfo>,
+        enabled: Boolean,
+    ) {
         for (pi in items) {
             val appInfo = pi.applicationInfo ?: continue
             try {

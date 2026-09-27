@@ -1,11 +1,5 @@
 package af.shizuku.manager.home
 
-import android.content.Intent
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import rikka.core.content.asActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.backup.AppBackupActivity
@@ -16,32 +10,45 @@ import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.IconStyleHelper
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import rikka.core.content.asActivity
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
 class AppBackupViewHolder(
     private val binding: HomeAppBackupItemBinding,
     private val containerBinding: HomeItemContainerBinding,
-) : BaseViewHolder<ServiceStatus>(containerBinding.root), View.OnClickListener {
-
+) : BaseViewHolder<ServiceStatus>(containerBinding.root),
+    View.OnClickListener {
     companion object {
-        val CREATOR = Creator<ServiceStatus> { inflater: LayoutInflater, parent: ViewGroup? ->
-            val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeAppBackupItemBinding.inflate(inflater, outer.cardContent, true)
-            AppBackupViewHolder(inner, outer)
-        }
+        val CREATOR =
+            Creator<ServiceStatus> { inflater: LayoutInflater, parent: ViewGroup? ->
+                val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
+                val inner = HomeAppBackupItemBinding.inflate(inflater, outer.cardContent, true)
+                AppBackupViewHolder(inner, outer)
+            }
     }
 
     init {
         containerBinding.root.setOnClickListener(this)
         containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener { HomeEditMode.enter(); true }
+        containerBinding.root.setOnLongClickListener {
+            HomeEditMode.enter()
+            true
+        }
         containerBinding.dragHandle.apply {
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@AppBackupViewHolder)
                 false
             }
-            setOnLongClickListener { HomeEditMode.enter(); true }
+            setOnLongClickListener {
+                HomeEditMode.enter()
+                true
+            }
         }
     }
 
@@ -58,22 +65,26 @@ class AppBackupViewHolder(
         if (!data.isRunning) {
             itemView.isEnabled = false
             title.setText(R.string.home_backup_title)
-            summary.text = context.getString(
-                R.string.home_status_service_not_running,
-                context.getString(R.string.app_name)
-            )
+            summary.text =
+                context.getString(
+                    R.string.home_status_service_not_running,
+                    context.getString(R.string.app_name),
+                )
         } else {
             itemView.isEnabled = true
             title.setText(R.string.home_backup_title)
             // Show where backups go: the configured export dir if set, or the default summary.
-            val exportPath = ShizukuSettings.getExportDirUri()
-                ?.let { EnvironmentUtils.resolveExportedPath("") }
-                ?.trimEnd('/')
-            summary.text = if (exportPath != null) {
-                context.getString(R.string.home_backup_summary_with_dir, exportPath)
-            } else {
-                context.getString(R.string.home_backup_summary)
-            }
+            val exportPath =
+                ShizukuSettings
+                    .getExportDirUri()
+                    ?.let { EnvironmentUtils.resolveExportedPath("") }
+                    ?.trimEnd('/')
+            summary.text =
+                if (exportPath != null) {
+                    context.getString(R.string.home_backup_summary_with_dir, exportPath)
+                } else {
+                    context.getString(R.string.home_backup_summary)
+                }
         }
     }
 
@@ -82,7 +93,7 @@ class AppBackupViewHolder(
         activity.startWithSceneTransition(
             Intent(activity, AppBackupActivity::class.java),
             iconView,
-            "icon_backup"
+            "icon_backup",
         )
     }
 }

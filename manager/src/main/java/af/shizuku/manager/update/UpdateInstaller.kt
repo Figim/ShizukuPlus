@@ -1,9 +1,9 @@
 package af.shizuku.manager.update
 
+import af.shizuku.manager.utils.SettingsBackupManager
 import android.content.Context
 import android.os.Environment
 import com.topjohnwu.superuser.Shell
-import af.shizuku.manager.utils.SettingsBackupManager
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import java.io.File
@@ -17,7 +17,10 @@ object UpdateInstaller {
         return File(extDir, AUTO_BACKUP_FILENAME)
     }
 
-    fun forceUpdateWithShizuku(context: Context, apkFile: File): Boolean {
+    fun forceUpdateWithShizuku(
+        context: Context,
+        apkFile: File,
+    ): Boolean {
         if (!Shizuku.pingBinder() && !Shell.getShell().isRoot) {
             Timber.tag(TAG).w("No root or Shizuku available for force update.")
             return false
@@ -48,7 +51,8 @@ object UpdateInstaller {
 
             // The script sleeps for 2 seconds to allow the app to finish its current execution,
             // then uninstalls the current package, installs the new APK, and restarts the app.
-            val script = """
+            val script =
+                """
                 #!/system/bin/sh
                 sleep 2
                 cp "$apkPath" /data/local/tmp/update.apk
@@ -71,10 +75,10 @@ object UpdateInstaller {
 
                 am start -n $packageName/af.shizuku.manager.MainActivity
                 rm /data/local/tmp/force_update.sh
-            """.trimIndent()
- 
+                """.trimIndent()
+
             scriptFile.writeText(script)
- 
+
             // 3. Execute the script in a detached background process via root/shizuku
             // Copy script to /data/local/tmp and run it from there so it survives app uninstallation
             Shell.cmd("cp '${scriptFile.absolutePath}' /data/local/tmp/force_update.sh && chmod 755 /data/local/tmp/force_update.sh && nohup sh /data/local/tmp/force_update.sh >/dev/null 2>&1 &").exec()

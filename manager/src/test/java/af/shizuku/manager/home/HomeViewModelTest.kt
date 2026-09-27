@@ -9,14 +9,13 @@ import org.junit.Rule
 import org.junit.Test
 
 class HomeViewModelTest {
-
     @get:Rule
     val mavericksTestRule = MavericksTestRule()
 
     @Test
     fun `initial state is Loading and then Success or Fail`() {
         val viewModel = HomeViewModel(HomeState()) // Fixed arguments
-        
+
         withState(viewModel) { state ->
             // In a real test we'd mock Shizuku.pingBinder() etc.
             // For now just verify it's not Uninitialized
@@ -27,9 +26,9 @@ class HomeViewModelTest {
     @Test
     fun `setEditMode updates state`() {
         val viewModel = HomeViewModel(HomeState())
-        
+
         viewModel.setEditMode(true)
-        
+
         withState(viewModel) { state ->
             state.isEditMode shouldBe true
         }

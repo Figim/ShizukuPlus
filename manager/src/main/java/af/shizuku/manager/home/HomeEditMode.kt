@@ -1,5 +1,8 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.databinding.HomeItemContainerBinding
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -8,9 +11,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.RecyclerView
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.databinding.HomeItemContainerBinding
 
 object HomeEditMode {
     var isActive: Boolean = false
@@ -54,7 +54,8 @@ object HomeEditMode {
             listOf(binding.dragHandle, binding.removeBtn).forEachIndexed { i, view ->
                 view.scaleX = 0.5f
                 view.scaleY = 0.5f
-                view.animate()
+                view
+                    .animate()
                     .scaleX(1f)
                     .scaleY(1f)
                     .setDuration(dur)
@@ -119,8 +120,12 @@ object HomeEditMode {
         // drag_handle and remove_btn now sit side-by-side in a single top-end row (48dp each +
         // 4dp gap + 12dp end margin) instead of stacked/overlapping on the same corner; reserve
         // clearance for the whole row so content never sits under either control.
-        val overlayClearance = if (isActive)
-            (112 * res.displayMetrics.density).toInt() else 0
+        val overlayClearance =
+            if (isActive) {
+                (112 * res.displayMetrics.density).toInt()
+            } else {
+                0
+            }
         binding.cardContent.updatePaddingRelative(end = base + overlayClearance)
     }
 }

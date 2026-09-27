@@ -1,15 +1,15 @@
 package af.shizuku.manager.receiver
 
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.service.WatchdogService
+import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.worker.WatchdogWorker
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.service.WatchdogService
-import af.shizuku.manager.utils.ShizukuStateMachine
-import af.shizuku.manager.worker.WatchdogWorker
 import timber.log.Timber
 
 /**
@@ -27,8 +27,10 @@ import timber.log.Timber
  * used for periodic background work elsewhere on Android.
  */
 class WatchdogAlarmReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent?) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent?,
+    ) {
         if (!ShizukuSettings.getWatchdog()) {
             Timber.tag(TAG).d("Watchdog disabled in settings, not rescheduling alarm")
             return
@@ -61,8 +63,10 @@ class WatchdogAlarmReceiver : BroadcastReceiver() {
         private fun pendingIntent(context: Context): PendingIntent {
             val intent = Intent(context, WatchdogAlarmReceiver::class.java)
             return PendingIntent.getBroadcast(
-                context, REQUEST_CODE, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                context,
+                REQUEST_CODE,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
         }
 
@@ -70,8 +74,9 @@ class WatchdogAlarmReceiver : BroadcastReceiver() {
         fun schedule(context: Context) {
             if (!ShizukuSettings.getWatchdog()) return
             try {
-                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-                    ?: return
+                val alarmManager =
+                    context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                        ?: return
                 val triggerAt = System.currentTimeMillis() + INTERVAL_MS
                 val pi = pendingIntent(context)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
@@ -89,8 +94,9 @@ class WatchdogAlarmReceiver : BroadcastReceiver() {
         @JvmStatic
         fun cancel(context: Context) {
             try {
-                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-                    ?: return
+                val alarmManager =
+                    context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                        ?: return
                 alarmManager.cancel(pendingIntent(context))
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "Failed to cancel watchdog re-arm alarm")

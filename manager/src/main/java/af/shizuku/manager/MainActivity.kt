@@ -1,8 +1,12 @@
 package af.shizuku.manager
 
+import af.shizuku.manager.R
+import af.shizuku.manager.home.ChangelogDialogFragment
+import af.shizuku.manager.home.HomeActivity
+import af.shizuku.manager.update.UpdateChecker
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.os.Bundle
 import android.widget.Toast
-import timber.log.Timber
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.sentry.Breadcrumb
@@ -10,11 +14,7 @@ import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.R
-import af.shizuku.manager.home.ChangelogDialogFragment
-import af.shizuku.manager.home.HomeActivity
-import af.shizuku.manager.update.UpdateChecker
-import af.shizuku.manager.utils.ShizukuStateMachine
+import timber.log.Timber
 
 class MainActivity : HomeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +25,9 @@ class MainActivity : HomeActivity() {
 
             // Check for previous crashes and offer to report — only for developers if Sentry is disabled.
             // Take manual reporting out of the general purpose UI for end users.
-            if (af.shizuku.manager.utils.CrashHandler.getLastCrashReport(this) != null) {
+            if (af.shizuku.manager.utils.CrashHandler
+                    .getLastCrashReport(this) != null
+            ) {
                 if (ShizukuSettings.isVectorEnabled() && BuildConfig.SENTRY_DSN.isEmpty()) {
                     showCrashReportDialog()
                 }
@@ -59,7 +61,8 @@ class MainActivity : HomeActivity() {
             ShizukuStateMachine.update()
             // Self-heal the AICore+ accessibility service if an OEM power manager disabled it
             // while the app was backgrounded but the user still has the feature on (#320).
-            af.shizuku.manager.automation.AICoreAccessibilityHealer.reenableIfNeeded(this)
+            af.shizuku.manager.automation.AICoreAccessibilityHealer
+                .reenableIfNeeded(this)
         } catch (e: Exception) {
             Timber.e(e, "Error in onStart")
             Sentry.captureException(e)
@@ -69,11 +72,15 @@ class MainActivity : HomeActivity() {
 
     private fun checkAndRestoreBackup() {
         lifecycleScope.launch(Dispatchers.IO) {
-            val backupFile = af.shizuku.manager.update.UpdateInstaller.getBackupFile(this@MainActivity)
+            val backupFile =
+                af.shizuku.manager.update.UpdateInstaller
+                    .getBackupFile(this@MainActivity)
             if (backupFile != null && backupFile.exists()) {
                 try {
                     val json = backupFile.readText()
-                    if (af.shizuku.manager.utils.SettingsBackupManager.import(this@MainActivity, json)) {
+                    if (af.shizuku.manager.utils.SettingsBackupManager
+                            .import(this@MainActivity, json)
+                    ) {
                         Timber.i("Successfully auto-restored settings from force-update backup")
                         backupFile.delete()
                         // Notify user or refresh UI if needed
@@ -95,39 +102,47 @@ class MainActivity : HomeActivity() {
      * Supports both the new "r{N}" tag format and the legacy "v{semver}.r{N}" format.
      */
     private fun checkAndShowChangelog() {
-        val currentCode = try { packageManager.getPackageInfo(packageName, 0).versionCode } catch (_: Exception) { 0 }
+        val currentCode =
+            try {
+                packageManager.getPackageInfo(packageName, 0).versionCode
+            } catch (_: Exception) {
+                0
+            }
         val lastSeenCode = ShizukuSettings.getLastSeenChangelogVersion()
         if (currentCode <= lastSeenCode) return
 
         val versionSuffix = BuildConfig.VERSION_NAME.removePrefix("Shizuku+ ").trim()
-        val tagName = when {
-            // Current format: "Shizuku+ 13.7.0.r2700" → tag is "13.7.0.r2700"
-            Regex("""^\d+\.\d+\.\d+\.r\d+$""").matches(versionSuffix) -> versionSuffix
-            // Transitional format: "Shizuku+ r2673" → tag is "r2673"
-            versionSuffix.matches(Regex("""r\d+""")) -> versionSuffix
-            // Legacy: "Shizuku+ 14.0.0.r2162" → GitHub tag was "v14.0.0.r2162"
-            Regex("""14\.\d+\.\d+\.r\d+""").containsMatchIn(versionSuffix) ->
-                "v${Regex("""\d+\.\d+\.\d+\.r\d+""").find(versionSuffix)!!.value}"
-            else -> {
-                ShizukuSettings.setLastSeenChangelogVersion(currentCode)
-                return
+        val tagName =
+            when {
+                // Current format: "Shizuku+ 13.7.0.r2700" → tag is "13.7.0.r2700"
+                Regex("""^\d+\.\d+\.\d+\.r\d+$""").matches(versionSuffix) -> versionSuffix
+                // Transitional format: "Shizuku+ r2673" → tag is "r2673"
+                versionSuffix.matches(Regex("""r\d+""")) -> versionSuffix
+                // Legacy: "Shizuku+ 14.0.0.r2162" → GitHub tag was "v14.0.0.r2162"
+                Regex("""14\.\d+\.\d+\.r\d+""").containsMatchIn(versionSuffix) ->
+                    "v${Regex("""\d+\.\d+\.\d+\.r\d+""").find(versionSuffix)!!.value}"
+                else -> {
+                    ShizukuSettings.setLastSeenChangelogVersion(currentCode)
+                    return
+                }
             }
-        }
 
         lifecycleScope.launch {
-            val releases = try {
-                UpdateChecker.fetchReleasesSince(sinceVersionCode = lastSeenCode)
-            } catch (e: Exception) {
-                Timber.tag("MainActivity").w(e, "Failed to fetch releases")
-                emptyList()
-            }
+            val releases =
+                try {
+                    UpdateChecker.fetchReleasesSince(sinceVersionCode = lastSeenCode, maxReleases = 25)
+                } catch (e: Exception) {
+                    Timber.tag("MainActivity").w(e, "Failed to fetch releases")
+                    emptyList()
+                }
 
             // Mark seen regardless of fetch outcome so offline users aren't re-prompted every launch.
             ShizukuSettings.setLastSeenChangelogVersion(currentCode)
 
             if (isFinishing || isDestroyed) return@launch
             try {
-                ChangelogDialogFragment.newInstance(releases, tagName)
+                ChangelogDialogFragment
+                    .newInstance(releases, tagName)
                     .show(supportFragmentManager, ChangelogDialogFragment.TAG)
             } catch (e: Exception) {
                 Timber.e(e, "Failed to show changelog dialog")
@@ -144,18 +159,19 @@ class MainActivity : HomeActivity() {
                 .setTitle(R.string.manual_report_title)
                 .setMessage(R.string.crash_detected_dialog_message)
                 .setPositiveButton(R.string.manual_report_button_github) { _, _ ->
-                    af.shizuku.manager.utils.CrashReporter.shareAsFile(this)
-                    af.shizuku.manager.utils.CrashHandler.clearLastCrash(this)
-                }
-                .setNegativeButton(R.string.crash_detected_dialog_ignore) { _, _ ->
-                    af.shizuku.manager.utils.CrashHandler.clearLastCrash(this)
-                }
-                .show()
+                    af.shizuku.manager.utils.CrashReporter
+                        .shareAsFile(this)
+                    af.shizuku.manager.utils.CrashHandler
+                        .clearLastCrash(this)
+                }.setNegativeButton(R.string.crash_detected_dialog_ignore) { _, _ ->
+                    af.shizuku.manager.utils.CrashHandler
+                        .clearLastCrash(this)
+                }.show()
         } catch (e: Exception) {
             Timber.e(e, "showCrashReportDialog failed — clearing crash file silently")
             Sentry.captureException(e)
-            af.shizuku.manager.utils.CrashHandler.clearLastCrash(this)
+            af.shizuku.manager.utils.CrashHandler
+                .clearLastCrash(this)
         }
     }
-
 }

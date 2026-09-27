@@ -1,28 +1,26 @@
 package af.shizuku.manager.shell
 
-import android.net.Uri
-import android.os.Bundle
-import android.provider.DocumentsContract
-import timber.log.Timber
-import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.isVisible
-import kotlin.math.roundToInt
+import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.Helps
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
-import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.databinding.TerminalTutorialActivityBinding
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.utils.CustomTabsHelper
+import android.net.Uri
+import android.os.Bundle
+import android.provider.DocumentsContract
+import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import rikka.compatibility.DeviceCompatibility
 import rikka.html.text.HtmlCompat
 import rikka.insets.*
+import timber.log.Timber
+import kotlin.math.roundToInt
 
 class ShellTutorialActivity : AppBarActivity() {
-
     companion object {
-
         private val TAG = ShellTutorialActivity::class.java.simpleName
 
         private val SH_NAME = "rish"
@@ -43,7 +41,7 @@ class ShellTutorialActivity : AppBarActivity() {
             contentResolver.takePersistableUriPermission(
                 tree,
                 android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
             )
 
             val cr = contentResolver
@@ -51,31 +49,33 @@ class ShellTutorialActivity : AppBarActivity() {
             val child =
                 DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
 
-            cr.query(
-                child,
-                arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME),
-                null,
-                null,
-                null
-            )?.use {
-                while (it.moveToNext()) {
-                    val id = it.getString(0)
-                    val name = it.getString(1)
-                    if (name == SH_NAME || name == DEX_NAME || name == PLUS_NAME || name == SU_NAME) {
-                        DocumentsContract.deleteDocument(cr, DocumentsContract.buildDocumentUriUsingTree(tree, id))
+            cr
+                .query(
+                    child,
+                    arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                    null,
+                    null,
+                    null,
+                )?.use {
+                    while (it.moveToNext()) {
+                        val id = it.getString(0)
+                        val name = it.getString(1)
+                        if (name == SH_NAME || name == DEX_NAME || name == PLUS_NAME || name == SU_NAME) {
+                            DocumentsContract.deleteDocument(cr, DocumentsContract.buildDocumentUriUsingTree(tree, id))
+                        }
                     }
                 }
-            }
 
             fun writeToDocument(name: String): Boolean {
-                val documentUri = try {
-                    DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
-                } catch (e: Exception) {
-                    // The parent tree URI can be stale/revoked (removed SD card, cleared permission);
-                    // createDocument then throws FileNotFoundException (SHIZUKUPLUS-84). Don't crash.
-                    Timber.tag(TAG).e(e, "Failed to create document for $name (tree unavailable?)")
-                    return false
-                }
+                val documentUri =
+                    try {
+                        DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
+                    } catch (e: Exception) {
+                        // The parent tree URI can be stale/revoked (removed SD card, cleared permission);
+                        // createDocument then throws FileNotFoundException (SHIZUKUPLUS-84). Don't crash.
+                        Timber.tag(TAG).e(e, "Failed to create document for $name (tree unavailable?)")
+                        return false
+                    }
                 if (documentUri == null) {
                     Timber.tag(TAG).e("Failed to create document for $name")
                     return false
@@ -106,16 +106,20 @@ class ShellTutorialActivity : AppBarActivity() {
             ShizukuSettings.setExportDirUri(tree.toString())
             updateCommandTexts()
 
-            val toastMsg = if (successCount == totalCount) {
-                getString(R.string.shell_export_success)
-            } else if (successCount == 0) {
-                getString(R.string.shell_export_failed)
-            } else {
-                getString(R.string.shell_export_partial, successCount, totalCount)
-            }
-            android.widget.Toast.makeText(this@ShellTutorialActivity, toastMsg,
-                if (successCount == totalCount) android.widget.Toast.LENGTH_SHORT else android.widget.Toast.LENGTH_LONG
-            ).show()
+            val toastMsg =
+                if (successCount == totalCount) {
+                    getString(R.string.shell_export_success)
+                } else if (successCount == 0) {
+                    getString(R.string.shell_export_failed)
+                } else {
+                    getString(R.string.shell_export_partial, successCount, totalCount)
+                }
+            android.widget.Toast
+                .makeText(
+                    this@ShellTutorialActivity,
+                    toastMsg,
+                    if (successCount == totalCount) android.widget.Toast.LENGTH_SHORT else android.widget.Toast.LENGTH_LONG,
+                ).show()
         }
 
     override fun getLayoutId() = R.layout.terminal_tutorial_activity
@@ -131,7 +135,9 @@ class ShellTutorialActivity : AppBarActivity() {
             // shared-element transition into this screen doesn't snap the icon's shape/color
             // back to the static droplet default mid-animation.
             af.shizuku.manager.utils.IconStyleHelper.applyToCardIcon(
-                headerIcon, headerIcon.drawable, "home_terminal"
+                headerIcon,
+                headerIcon.drawable,
+                "home_terminal",
             )
             headerIcon.transitionName = "icon_terminal"
             headerTitle.setText(R.string.home_terminal_title)
@@ -142,7 +148,7 @@ class ShellTutorialActivity : AppBarActivity() {
                 initialPaddingLeft,
                 initialPaddingTop + (resources.displayMetrics.density * 8).roundToInt(),
                 initialPaddingRight,
-                initialPaddingBottom
+                initialPaddingBottom,
             )
         }
 
@@ -158,16 +164,19 @@ class ShellTutorialActivity : AppBarActivity() {
             val plusName = "<font face=\"monospace\">$PLUS_NAME</font>"
             val suName = "<font face=\"monospace\">$SU_NAME</font>"
 
-            summary.text = getString(R.string.rish_description, shName)
-                .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            summary.text =
+                getString(R.string.rish_description, shName)
+                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text1.text = getString(R.string.terminal_tutorial_1)
-            summary1.text = getString(R.string.terminal_tutorial_export_summary, shName, dexName, plusName, suName)
-                .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            summary1.text =
+                getString(R.string.terminal_tutorial_export_summary, shName, dexName, plusName, suName)
+                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text2.text = getString(R.string.terminal_tutorial_2, shName).toHtml()
-            summary2.text = getString(R.string.terminal_tutorial_copy_summary, shName, plusName, suName)
-                .toHtml()
+            summary2.text =
+                getString(R.string.terminal_tutorial_copy_summary, shName, plusName, suName)
+                    .toHtml()
 
             text3.text = getString(R.string.terminal_tutorial_3)
 
@@ -178,7 +187,9 @@ class ShellTutorialActivity : AppBarActivity() {
                     openDocumentsTree.launch(null)
                 } catch (e: android.content.ActivityNotFoundException) {
                     Timber.tag(TAG).w("No file picker available on this device: ${e.message}")
-                    android.widget.Toast.makeText(this@ShellTutorialActivity, R.string.no_file_picker, android.widget.Toast.LENGTH_LONG).show()
+                    android.widget.Toast
+                        .makeText(this@ShellTutorialActivity, R.string.no_file_picker, android.widget.Toast.LENGTH_LONG)
+                        .show()
                 }
             }
             button2.setOnClickListener { v: View -> CustomTabsHelper.launchUrlOrCopy(v.context, Helps.RISH.get()) }
@@ -186,19 +197,29 @@ class ShellTutorialActivity : AppBarActivity() {
     }
 
     private fun updateCommandTexts() {
-        val folderPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath("") ?: "/sdcard/chosen-folder"
-        val rishPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath(SH_NAME) ?: "$folderPath/$SH_NAME"
-        val plusPath = af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath(PLUS_NAME) ?: "$folderPath/$PLUS_NAME"
+        val folderPath =
+            af.shizuku.manager.utils.EnvironmentUtils
+                .resolveExportedPath("") ?: "/sdcard/chosen-folder"
+        val rishPath =
+            af.shizuku.manager.utils.EnvironmentUtils
+                .resolveExportedPath(SH_NAME) ?: "$folderPath/$SH_NAME"
+        val plusPath =
+            af.shizuku.manager.utils.EnvironmentUtils
+                .resolveExportedPath(PLUS_NAME) ?: "$folderPath/$PLUS_NAME"
 
-        val isTermuxInstalled = try {
-            packageManager.getPackageInfo("com.termux", 0) != null
-        } catch (_: Exception) { false }
+        val isTermuxInstalled =
+            try {
+                packageManager.getPackageInfo("com.termux", 0) != null
+            } catch (_: Exception) {
+                false
+            }
 
-        binding.command2.text = if (isTermuxInstalled) {
-            "cp $folderPath/* /data/data/com.termux/files/usr/bin/ 2>/dev/null || cp $folderPath/* /data/data/com.termux/files/home/"
-        } else {
-            "cp $folderPath/* /data/data/terminal.package.name/files"
-        }
+        binding.command2.text =
+            if (isTermuxInstalled) {
+                "cp $folderPath/* /data/data/com.termux/files/usr/bin/ 2>/dev/null || cp $folderPath/* /data/data/com.termux/files/home/"
+            } else {
+                "cp $folderPath/* /data/data/terminal.package.name/files"
+            }
 
         val rishCmd = getString(R.string.terminal_tutorial_run_command, rishPath)
         val plusCmd = getString(R.string.terminal_tutorial_run_plus_command) + " (sh $plusPath)"

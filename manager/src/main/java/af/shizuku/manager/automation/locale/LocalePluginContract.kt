@@ -7,7 +7,6 @@ package af.shizuku.manager.automation.locale
  * just the string contract), so the literal values below must match exactly.
  */
 object LocalePluginContract {
-
     const val EXTRA_BUNDLE = "com.twofortyfouram.locale.intent.extra.BUNDLE"
     const val EXTRA_STRING_BLURB = "com.twofortyfouram.locale.intent.extra.BLURB"
 

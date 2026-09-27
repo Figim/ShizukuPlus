@@ -1,5 +1,12 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuLocales
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ShizukuSettings.Keys.*
+import af.shizuku.manager.app.ThemeHelper
+import af.shizuku.manager.ktx.toHtml
+import af.shizuku.manager.utils.CustomTabsHelper
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -8,19 +15,11 @@ import androidx.core.os.LocaleListCompat
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.ShizukuSettings.Keys.*
-import af.shizuku.manager.app.ThemeHelper
-import af.shizuku.manager.ktx.toHtml
-import af.shizuku.manager.utils.CustomTabsHelper
 import rikka.core.util.ResourceUtils
 import rikka.material.app.LocaleDelegate
-import af.shizuku.manager.ShizukuLocales
 import java.util.Locale
 
 class PersonalizationSettingsFragment : BaseSettingsFragment() {
-
     private fun applyTheme(requiresRecreate: Boolean = false) {
         if (requiresRecreate) {
             (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition()
@@ -48,7 +47,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private lateinit var blurUiPreference: TwoStatePreference
     private lateinit var oneUiThemePreference: TwoStatePreference
 
-    override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         setPreferencesFromResource(R.xml.settings_personalization, rootKey)
         val context = requireContext()
 
@@ -79,8 +81,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             if (blackNightAvailable) {
                 isChecked = ThemeHelper.isBlackNightTheme(context)
                 setOnPreferenceChangeListener { _, _ ->
-                    if (ResourceUtils.isNightMode(context.resources.configuration))
+                    if (ResourceUtils.isNightMode(context.resources.configuration)) {
                         applyTheme(requiresRecreate = false)
+                    }
                     true
                 }
             }
@@ -89,8 +92,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         amoledPlusPreference.apply {
             isChecked = ShizukuSettings.isAmoledPlusEnabled()
             setOnPreferenceChangeListener { _, _ ->
-                if (ResourceUtils.isNightMode(context.resources.configuration))
+                if (ResourceUtils.isNightMode(context.resources.configuration)) {
                     applyTheme(requiresRecreate = false)
+                }
                 true
             }
         }
@@ -195,8 +199,14 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         for (prefKey in switchKeys) {
             findPreference<TwoStatePreference>(prefKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
-                    preferenceManager.sharedPreferences?.edit()?.putBoolean(prefKey, newValue)?.apply()
-                    simulatorPref?.let { it.isVisible = false; it.isVisible = true }
+                    preferenceManager.sharedPreferences
+                        ?.edit()
+                        ?.putBoolean(prefKey, newValue)
+                        ?.apply()
+                    simulatorPref?.let {
+                        it.isVisible = false
+                        it.isVisible = true
+                    }
                 }
                 true
             }
@@ -260,11 +270,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         languagePreference.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is String) {
-                val locale: Locale = if ("SYSTEM" == newValue) {
-                    LocaleDelegate.systemLocale
-                } else {
-                    Locale.forLanguageTag(newValue)
-                }
+                val locale: Locale =
+                    if ("SYSTEM" == newValue) {
+                        LocaleDelegate.systemLocale
+                    } else {
+                        Locale.forLanguageTag(newValue)
+                    }
                 // Immediate fallback in case setApplicationLocales() below doesn't trigger a
                 // recreate for some reason; AppActivity.attachBaseContext() re-syncs this from
                 // AppCompatDelegate on every activity creation regardless (#429), so this is
@@ -275,11 +286,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 // config-change/recreate on 33+), so we must NOT also call
                 // applyTheme(requiresRecreate = true) here — that would double-recreate the
                 // activity or risk a recreate loop.
-                val requested = if ("SYSTEM" == newValue) {
-                    LocaleListCompat.getEmptyLocaleList()
-                } else {
-                    LocaleListCompat.forLanguageTags(newValue)
-                }
+                val requested =
+                    if ("SYSTEM" == newValue) {
+                        LocaleListCompat.getEmptyLocaleList()
+                    } else {
+                        LocaleListCompat.forLanguageTags(newValue)
+                    }
                 if (AppCompatDelegate.getApplicationLocales() != requested) {
                     AppCompatDelegate.setApplicationLocales(requested)
                 } else {
@@ -306,7 +318,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private fun syncDependentVisibility() {
         setChildAvailable(
             blackNightThemePreference,
-            ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
+            ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO,
         )
     }
 
@@ -315,7 +327,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
      * category's expand/collapse toggle doesn't override the condition. Falls back to a plain
      * visibility change if the child isn't inside a [CollapsiblePreferenceCategory].
      */
-    private fun setChildAvailable(pref: Preference, available: Boolean) {
+    private fun setChildAvailable(
+        pref: Preference,
+        available: Boolean,
+    ) {
         val key = pref.key
         val category = pref.parent as? CollapsiblePreferenceCategory
         if (key != null && category != null) {
@@ -343,57 +358,62 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
 
             val locale = Locale.forLanguageTag(displayLocale.toString())
-            val localeName = if (!TextUtils.isEmpty(locale.script))
-                locale.getDisplayScript(locale)
-            else
-                locale.getDisplayName(locale)
+            val localeName =
+                if (!TextUtils.isEmpty(locale.script)) {
+                    locale.getDisplayScript(locale)
+                } else {
+                    locale.getDisplayName(locale)
+                }
 
-            val localizedLocaleName = if (!TextUtils.isEmpty(locale.script))
-                locale.getDisplayScript(currentLocale)
-            else
-                locale.getDisplayName(currentLocale)
+            val localizedLocaleName =
+                if (!TextUtils.isEmpty(locale.script)) {
+                    locale.getDisplayScript(currentLocale)
+                } else {
+                    locale.getDisplayName(currentLocale)
+                }
 
             localizedLocales.add(
                 if (index != currentLocaleIndex) {
                     "$localeName<br><small>$localizedLocaleName<small>".toHtml()
                 } else {
                     localizedLocaleName
-                }
+                },
             )
         }
 
         languagePreference.entries = localizedLocales.toTypedArray()
 
-        languagePreference.summary = when {
-            TextUtils.isEmpty(currentLocaleTag) || "SYSTEM" == currentLocaleTag -> {
-                getString(R.string.follow_system)
-            }
-            currentLocaleIndex != -1 -> {
-                val localizedLocale = localizedLocales[currentLocaleIndex]
-                val newLineIndex = localizedLocale.indexOf('\n')
-                if (newLineIndex == -1) {
-                    localizedLocale.toString()
-                } else {
-                    localizedLocale.subSequence(0, newLineIndex).toString()
+        languagePreference.summary =
+            when {
+                TextUtils.isEmpty(currentLocaleTag) || "SYSTEM" == currentLocaleTag -> {
+                    getString(R.string.follow_system)
+                }
+                currentLocaleIndex != -1 -> {
+                    val localizedLocale = localizedLocales[currentLocaleIndex]
+                    val newLineIndex = localizedLocale.indexOf('\n')
+                    if (newLineIndex == -1) {
+                        localizedLocale.toString()
+                    } else {
+                        localizedLocale.subSequence(0, newLineIndex).toString()
+                    }
+                }
+                else -> {
+                    ""
                 }
             }
-            else -> {
-                ""
-            }
-        }
     }
 
     private fun getCustomAccentSummary(value: String? = null): String {
         val currentValue = value ?: ShizukuSettings.getPreferences().getString("custom_accent", "DEFAULT")
         return when (currentValue) {
-            "VIOLET"  -> getString(R.string.settings_accent_violet_applied)
-            "GREEN"   -> getString(R.string.settings_accent_green_applied)
+            "VIOLET" -> getString(R.string.settings_accent_violet_applied)
+            "GREEN" -> getString(R.string.settings_accent_green_applied)
             "CRIMSON" -> getString(R.string.settings_accent_crimson_applied)
-            "OCEAN"   -> getString(R.string.settings_accent_ocean_applied)
-            "AMBER"   -> getString(R.string.settings_accent_amber_applied)
-            "ROSE"    -> getString(R.string.settings_accent_rose_applied)
-            "SLATE"   -> getString(R.string.settings_accent_slate_applied)
-            else      -> getString(R.string.settings_accent_default_applied)
+            "OCEAN" -> getString(R.string.settings_accent_ocean_applied)
+            "AMBER" -> getString(R.string.settings_accent_amber_applied)
+            "ROSE" -> getString(R.string.settings_accent_rose_applied)
+            "SLATE" -> getString(R.string.settings_accent_slate_applied)
+            else -> getString(R.string.settings_accent_default_applied)
         }
     }
 }

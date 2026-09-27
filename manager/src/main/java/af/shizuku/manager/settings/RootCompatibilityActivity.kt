@@ -1,5 +1,15 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.core.ui.AppBarActivity
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.database.AppContextManager
+import af.shizuku.manager.database.RootCompatHelper
+import af.shizuku.manager.database.RootSupportLevel
+import af.shizuku.manager.databinding.ActivityRootCompatibilityBinding
+import af.shizuku.manager.databinding.AppListItemBinding
+import af.shizuku.manager.databinding.ListSectionHeaderBinding
+import af.shizuku.manager.shell.ShellTutorialActivity
 import android.content.BroadcastReceiver
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -33,36 +43,31 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.core.ui.AppBarActivity
-import af.shizuku.manager.databinding.ActivityRootCompatibilityBinding
-import af.shizuku.manager.databinding.AppListItemBinding
-import af.shizuku.manager.databinding.ListSectionHeaderBinding
-import timber.log.Timber
-import af.shizuku.manager.database.AppContextManager
-import af.shizuku.manager.database.RootCompatHelper
-import af.shizuku.manager.shell.ShellTutorialActivity
 import rikka.shizuku.Shizuku
-import af.shizuku.manager.database.RootSupportLevel
-class RootCompatibilityActivity : AppBarActivity() {
+import timber.log.Timber
 
+class RootCompatibilityActivity : AppBarActivity() {
     companion object {
         private const val TAG = "RootCompatibilityAct"
     }
 
     private var resolvedSuPath: String? = null
+
     // Cached once per activity instance — avoids repeated Shizuku IPC in onBindViewHolder.
     private var isRoot: Boolean = false
     private var isAdbMode: Boolean = false
     private lateinit var binding: ActivityRootCompatibilityBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CategorizedSuggestedAppsAdapter
-    private val packageReceiver = object : android.content.BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            refreshList()
+    private val packageReceiver =
+        object : android.content.BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                refreshList()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,8 +76,18 @@ class RootCompatibilityActivity : AppBarActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Cache privilege mode once — avoids repeated Shizuku IPC in onBindViewHolder.
-        isRoot = try { Shizuku.pingBinder() && Shizuku.getUid() == 0 } catch (_: Exception) { false }
-        isAdbMode = try { Shizuku.pingBinder() && Shizuku.getUid() == 2000 } catch (_: Exception) { false }
+        isRoot =
+            try {
+                Shizuku.pingBinder() && Shizuku.getUid() == 0
+            } catch (_: Exception) {
+                false
+            }
+        isAdbMode =
+            try {
+                Shizuku.pingBinder() && Shizuku.getUid() == 2000
+            } catch (_: Exception) {
+                false
+            }
 
         resolvedSuPath = resolveSuPath()
 
@@ -84,7 +99,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                 af.shizuku.core.ui.compose.Button(
                     onClick = {
                         startActivity(Intent(this@RootCompatibilityActivity, ShellTutorialActivity::class.java))
-                    }
+                    },
                 ) {
                     androidx.compose.material3.Text(getString(R.string.su_bridge_export_files))
                 }
@@ -103,7 +118,7 @@ class RootCompatibilityActivity : AppBarActivity() {
         binding.btnCopyGlobal.setContent {
             af.shizuku.core.ui.compose.Button(
                 // Read the field at click time so a later /data/local/tmp deploy is reflected.
-                onClick = { copyToClipboard(resolvedSuPath ?: return@Button) }
+                onClick = { copyToClipboard(resolvedSuPath ?: return@Button) },
             ) {
                 androidx.compose.material3.Text(getString(R.string.su_bridge_copy_path))
             }
@@ -133,10 +148,11 @@ class RootCompatibilityActivity : AppBarActivity() {
         binding.btnSetupAll.setContent {
             af.shizuku.core.ui.compose.Button(
                 onClick = {
-                    val path = resolvedSuPath ?: run {
-                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_no_export, Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
+                    val path =
+                        resolvedSuPath ?: run {
+                            Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_no_export, Toast.LENGTH_SHORT).show()
+                            return@Button
+                        }
                     lifecycleScope.launch {
                         val count = RootCompatHelper.autoSetupAll(this@RootCompatibilityActivity, path)
                         if (!isFinishing && !isDestroyed) {
@@ -147,7 +163,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                             }
                         }
                     }
-                }
+                },
             ) {
                 androidx.compose.material3.Text(getString(R.string.su_bridge_setup_all))
             }
@@ -167,16 +183,17 @@ class RootCompatibilityActivity : AppBarActivity() {
                 target = "$manuf $model"
             }
 
-            val targetFriendly = when (target) {
-                "pixel_9_pro_xl" -> "Pixel 9 Pro XL"
-                "pixel_8_pro" -> "Pixel 8 Pro"
-                "s24_ultra" -> "Galaxy S24 Ultra"
-                "s23_ultra" -> "Galaxy S23 Ultra"
-                "s22_ultra" -> "Galaxy S22 Ultra"
-                "oneplus_12" -> "OnePlus 12"
-                "nothing_phone_2" -> "Nothing Phone (2)"
-                else -> target
-            }
+            val targetFriendly =
+                when (target) {
+                    "pixel_9_pro_xl" -> "Pixel 9 Pro XL"
+                    "pixel_8_pro" -> "Pixel 8 Pro"
+                    "s24_ultra" -> "Galaxy S24 Ultra"
+                    "s23_ultra" -> "Galaxy S23 Ultra"
+                    "s22_ultra" -> "Galaxy S22 Ultra"
+                    "oneplus_12" -> "OnePlus 12"
+                    "nothing_phone_2" -> "Nothing Phone (2)"
+                    else -> target
+                }
             binding.deviceIdentitySpoofed.text = getString(R.string.su_bridge_device_identity_spoofed, targetFriendly)
             binding.deviceIdentitySpoofed.setTextColor(MaterialColors.getColor(this, R.attr.colorPrimary, Color.BLUE))
         } else {
@@ -187,12 +204,16 @@ class RootCompatibilityActivity : AppBarActivity() {
         recyclerView = binding.suggestedAppsList
         recyclerView.clipToPadding = false
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { view, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-            )
-            val oneHandedTopPadding = if (ShizukuSettings.isOneHandedModeEnabled()) {
-                (resources.displayMetrics.heightPixels * 0.16f).toInt()
-            } else 0
+            val bars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            val oneHandedTopPadding =
+                if (ShizukuSettings.isOneHandedModeEnabled()) {
+                    (resources.displayMetrics.heightPixels * 0.16f).toInt()
+                } else {
+                    0
+                }
             view.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom)
             insets
         }
@@ -201,15 +222,15 @@ class RootCompatibilityActivity : AppBarActivity() {
         recyclerView.adapter = adapter
         refreshList()
 
-        val filter = IntentFilter().apply {
-            addAction(Intent.ACTION_PACKAGE_ADDED)
-            addAction(Intent.ACTION_PACKAGE_REMOVED)
-            addAction(Intent.ACTION_PACKAGE_CHANGED)
-            addDataScheme("package")
-        }
+        val filter =
+            IntentFilter().apply {
+                addAction(Intent.ACTION_PACKAGE_ADDED)
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_CHANGED)
+                addDataScheme("package")
+            }
         ContextCompat.registerReceiver(this, packageReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
-
 
     override fun onDestroy() {
         unregisterReceiver(packageReceiver)
@@ -217,8 +238,13 @@ class RootCompatibilityActivity : AppBarActivity() {
     }
 
     sealed class ListItem {
-        data class Header(val title: String) : ListItem()
-        data class App(val packageName: String) : ListItem()
+        data class Header(
+            val title: String,
+        ) : ListItem()
+
+        data class App(
+            val packageName: String,
+        ) : ListItem()
     }
 
     private fun buildItems(): List<ListItem> {
@@ -231,17 +257,22 @@ class RootCompatibilityActivity : AppBarActivity() {
 
         val pm = packageManager
         val installed = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
-        val knownPkgs = AppContextManager.getRootLegacyPackages().values.flatten().toSet()
+        val knownPkgs =
+            AppContextManager
+                .getRootLegacyPackages()
+                .values
+                .flatten()
+                .toSet()
 
-        val detected = installed
-            .filter { pkg ->
-                pkg.packageName != packageName &&
-                !knownPkgs.contains(pkg.packageName) &&
-                pkg.requestedPermissions?.any {
-                    it.contains("ROOT", true) || it.contains("SUPERUSER", true)
-                } == true
-            }
-            .map { it.packageName }
+        val detected =
+            installed
+                .filter { pkg ->
+                    pkg.packageName != packageName &&
+                        !knownPkgs.contains(pkg.packageName) &&
+                        pkg.requestedPermissions?.any {
+                            it.contains("ROOT", true) || it.contains("SUPERUSER", true)
+                        } == true
+                }.map { it.packageName }
 
         if (detected.isNotEmpty()) {
             items.add(ListItem.Header(getString(R.string.su_bridge_other_detected_apps)))
@@ -261,10 +292,9 @@ class RootCompatibilityActivity : AppBarActivity() {
         }
     }
 
-
-    private fun resolveSuPath(): String? {
-        return af.shizuku.manager.utils.EnvironmentUtils.resolveExportedPath("su")
-    }
+    private fun resolveSuPath(): String? =
+        af.shizuku.manager.utils.EnvironmentUtils
+            .resolveExportedPath("su")
 
     private fun isPackageInstalled(pkg: String): Boolean =
         try {
@@ -341,8 +371,12 @@ class RootCompatibilityActivity : AppBarActivity() {
         lifecycleScope.launch {
             val result = RootCompatHelper.selfTest(this@RootCompatibilityActivity)
             if (isFinishing) return@launch
-            val heading = if (result.ok) getString(R.string.su_bridge_self_test_ok)
-                          else getString(R.string.su_bridge_self_test_fail)
+            val heading =
+                if (result.ok) {
+                    getString(R.string.su_bridge_self_test_ok)
+                } else {
+                    getString(R.string.su_bridge_self_test_fail)
+                }
             MaterialAlertDialogBuilder(this@RootCompatibilityActivity)
                 .setTitle(getString(R.string.su_bridge_self_test_title))
                 .setMessage("$heading\n\n${result.report}")
@@ -351,30 +385,43 @@ class RootCompatibilityActivity : AppBarActivity() {
                     val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     cm.setPrimaryClip(ClipData.newPlainText("SU Bridge self-test", result.report))
                     Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_self_test_copied, Toast.LENGTH_SHORT).show()
-                }
-                .show()
+                }.show()
         }
     }
 
-    private inner class CategorizedSuggestedAppsAdapter(items: List<ListItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
+    private inner class CategorizedSuggestedAppsAdapter(
+        items: List<ListItem>,
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val items = items.toMutableList()
         private var lastAnimatedPosition = -1
 
         fun updateItems(newItems: List<ListItem>) {
-            val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun getOldListSize() = items.size
-                override fun getNewListSize() = newItems.size
-                override fun areItemsTheSame(o: Int, n: Int): Boolean {
-                    val old = items[o]; val new = newItems[n]
-                    if (old::class != new::class) return false
-                    return when (old) {
-                        is ListItem.Header -> old.title == (new as ListItem.Header).title
-                        is ListItem.App -> old.packageName == (new as ListItem.App).packageName
-                    }
-                }
-                override fun areContentsTheSame(o: Int, n: Int) = items[o] == newItems[n]
-            })
+            val diff =
+                DiffUtil.calculateDiff(
+                    object : DiffUtil.Callback() {
+                        override fun getOldListSize() = items.size
+
+                        override fun getNewListSize() = newItems.size
+
+                        override fun areItemsTheSame(
+                            o: Int,
+                            n: Int,
+                        ): Boolean {
+                            val old = items[o]
+                            val new = newItems[n]
+                            if (old::class != new::class) return false
+                            return when (old) {
+                                is ListItem.Header -> old.title == (new as ListItem.Header).title
+                                is ListItem.App -> old.packageName == (new as ListItem.App).packageName
+                            }
+                        }
+
+                        override fun areContentsTheSame(
+                            o: Int,
+                            n: Int,
+                        ) = items[o] == newItems[n]
+                    },
+                )
             items.clear()
             items.addAll(newItems)
             lastAnimatedPosition = -1
@@ -387,7 +434,10 @@ class RootCompatibilityActivity : AppBarActivity() {
         override fun getItemViewType(position: Int): Int =
             if (items[position] is ListItem.Header) TYPE_HEADER else TYPE_APP
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int,
+        ): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return if (viewType == TYPE_HEADER) {
                 HeaderViewHolder(ListSectionHeaderBinding.inflate(inflater, parent, false))
@@ -398,13 +448,16 @@ class RootCompatibilityActivity : AppBarActivity() {
                     (16 * density).toInt(),
                     binding.root.paddingTop,
                     (16 * density).toInt(),
-                    binding.root.paddingBottom
+                    binding.root.paddingBottom,
                 )
                 AppViewHolder(binding)
             }
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            holder: RecyclerView.ViewHolder,
+            position: Int,
+        ) {
             val item = items[position]
 
             // Resting alpha: suggested apps that aren't installed are dimmed as a "not installed"
@@ -420,7 +473,8 @@ class RootCompatibilityActivity : AppBarActivity() {
                 holder.itemView.alpha = 0f
                 holder.itemView.scaleX = 0.96f
                 holder.itemView.scaleY = 0.96f
-                holder.itemView.animate()
+                holder.itemView
+                    .animate()
                     .alpha(restAlpha)
                     .scaleX(1f)
                     .scaleY(1f)
@@ -442,7 +496,14 @@ class RootCompatibilityActivity : AppBarActivity() {
 
                 holder.binding.summary.text = pkg
                 holder.binding.appContext.text = metadata?.description ?: ""
-                holder.binding.appContext.visibility = if (holder.binding.appContext.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+                holder.binding.appContext.visibility =
+                    if (holder.binding.appContext.text
+                            .isNullOrEmpty()
+                    ) {
+                        View.GONE
+                    } else {
+                        View.VISIBLE
+                    }
 
                 // Root support badge: color and text vary by support level
                 when (metadata?.rootSupportLevel) {
@@ -450,13 +511,15 @@ class RootCompatibilityActivity : AppBarActivity() {
                         holder.binding.requiresRoot.visibility = View.VISIBLE
                         holder.binding.requiresRoot.setText(R.string.app_management_item_summary_requires_root)
                         holder.binding.requiresRoot.setTextColor(
-                            MaterialColors.getColor(holder.itemView, R.attr.colorError))
+                            MaterialColors.getColor(holder.itemView, R.attr.colorError),
+                        )
                     }
                     RootSupportLevel.PARTIAL -> {
                         holder.binding.requiresRoot.visibility = View.VISIBLE
                         holder.binding.requiresRoot.setText(R.string.app_management_item_summary_partial_root)
                         holder.binding.requiresRoot.setTextColor(
-                            MaterialColors.getColor(holder.itemView, R.attr.colorTertiary))
+                            MaterialColors.getColor(holder.itemView, R.attr.colorTertiary),
+                        )
                     }
                     else -> holder.binding.requiresRoot.visibility = View.GONE
                 }
@@ -488,7 +551,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                             } else {
                                 Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_no_export, Toast.LENGTH_SHORT).show()
                             }
-                        }
+                        },
                     ) {
                         androidx.compose.material3.Text(this@RootCompatibilityActivity.getString(R.string.su_bridge_copy_open))
                     }
@@ -524,7 +587,9 @@ class RootCompatibilityActivity : AppBarActivity() {
                                 }
                                 // Capture app name before the coroutine — holder may be recycled
                                 // by the time the IPC completes, making title.text stale.
-                                val appName = holder.binding.title.text?.toString() ?: pkg
+                                val appName =
+                                    holder.binding.title.text
+                                        ?.toString() ?: pkg
                                 lifecycleScope.launch {
                                     val success = RootCompatHelper.autoSetup(this@RootCompatibilityActivity, pkg, path)
                                     if (success) {
@@ -534,7 +599,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                                         Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_magic_setup_fail, Toast.LENGTH_SHORT).show()
                                     }
                                 }
-                            }
+                            },
                         ) {
                             androidx.compose.material3.Text(this@RootCompatibilityActivity.getString(R.string.su_bridge_magic_setup))
                         }
@@ -578,19 +643,22 @@ class RootCompatibilityActivity : AppBarActivity() {
                     }
 
                     holder.itemView.setOnClickListener {
-                        val url = when (pkg) {
-                            "dev.ukanth.ufirewall" -> "https://f-droid.org/packages/dev.ukanth.ufirewall/"
-                            "com.machiav3lli.neo_backup" -> "https://f-droid.org/packages/com.machiav3lli.neo_backup/"
-                            "samolego.canta" -> "https://f-droid.org/packages/samolego.canta/"
-                            "com.aistra.hail" -> "https://f-droid.org/packages/com.aistra.hail/"
-                            "thejaustin.afdroid" -> "https://github.com/thejaustin/afdroid/releases"
-                            "thejaustin.hexodus" -> "https://github.com/thejaustin/Hexodus/releases"
-                            else -> "https://play.google.com/store/apps/details?id=$pkg"
-                        }
+                        val url =
+                            when (pkg) {
+                                "dev.ukanth.ufirewall" -> "https://f-droid.org/packages/dev.ukanth.ufirewall/"
+                                "com.machiav3lli.neo_backup" -> "https://f-droid.org/packages/com.machiav3lli.neo_backup/"
+                                "samolego.canta" -> "https://f-droid.org/packages/samolego.canta/"
+                                "com.aistra.hail" -> "https://f-droid.org/packages/com.aistra.hail/"
+                                "thejaustin.afdroid" -> "https://github.com/thejaustin/afdroid/releases"
+                                "thejaustin.hexodus" -> "https://github.com/thejaustin/Hexodus/releases"
+                                else -> "https://play.google.com/store/apps/details?id=$pkg"
+                            }
                         try {
-                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            })
+                            startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                },
+                            )
                         } catch (ex: Exception) {
                             Timber.tag(TAG).d(ex, "Primary URL intent failed for $pkg, falling back to Play Store")
                             try {
@@ -607,7 +675,11 @@ class RootCompatibilityActivity : AppBarActivity() {
         override fun getItemCount() = items.size
     }
 
-    private class HeaderViewHolder(val binding: ListSectionHeaderBinding) : RecyclerView.ViewHolder(binding.root)
+    private class HeaderViewHolder(
+        val binding: ListSectionHeaderBinding,
+    ) : RecyclerView.ViewHolder(binding.root)
 
-    private class AppViewHolder(val binding: AppListItemBinding) : RecyclerView.ViewHolder(binding.root)
+    private class AppViewHolder(
+        val binding: AppListItemBinding,
+    ) : RecyclerView.ViewHolder(binding.root)
 }

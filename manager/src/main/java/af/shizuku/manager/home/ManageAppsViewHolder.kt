@@ -1,10 +1,5 @@
 package af.shizuku.manager.home
 
-import android.content.Intent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import rikka.core.content.asActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeManageAppsItemBinding
@@ -12,20 +7,27 @@ import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.management.ApplicationManagementActivity
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.IconStyleHelper
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import rikka.core.content.asActivity
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
-
-class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root: View) :
-    BaseViewHolder<Pair<ServiceStatus, Int?>>(root), View.OnClickListener {
-
+class ManageAppsViewHolder(
+    private val binding: HomeManageAppsItemBinding,
+    root: View,
+) : BaseViewHolder<Pair<ServiceStatus, Int?>>(root),
+    View.OnClickListener {
     companion object {
-        val CREATOR = Creator<Pair<ServiceStatus, Int?>> { inflater: LayoutInflater, parent: ViewGroup? ->
-            val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeManageAppsItemBinding.inflate(inflater, outer.cardContent, true)
-            ManageAppsViewHolder(inner, outer.root)
-        }
+        val CREATOR =
+            Creator<Pair<ServiceStatus, Int?>> { inflater: LayoutInflater, parent: ViewGroup? ->
+                val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
+                val inner = HomeManageAppsItemBinding.inflate(inflater, outer.cardContent, true)
+                ManageAppsViewHolder(inner, outer.root)
+            }
     }
 
     init {
@@ -45,22 +47,24 @@ class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root:
         if (!data.first.isRunning) {
             itemView.isEnabled = false
             title.setText(R.string.home_app_management_title)
-            summary.text = context.getString(
-                R.string.home_status_service_not_running,
-                context.getString(R.string.app_name)
-            )
+            summary.text =
+                context.getString(
+                    R.string.home_status_service_not_running,
+                    context.getString(R.string.app_name),
+                )
         } else {
             itemView.isEnabled = true
             val count = data.second
-            title.text = if (count == null) {
-                context.getString(R.string.home_app_management_title)
-            } else {
-                context.resources.getQuantityString(
-                    R.plurals.home_app_management_authorized_apps_count,
-                    count,
-                    count
-                )
-            }
+            title.text =
+                if (count == null) {
+                    context.getString(R.string.home_app_management_title)
+                } else {
+                    context.resources.getQuantityString(
+                        R.plurals.home_app_management_authorized_apps_count,
+                        count,
+                        count,
+                    )
+                }
             summary.text = context.getString(R.string.home_app_management_view_authorized_apps)
         }
     }
@@ -69,7 +73,8 @@ class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root:
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, ApplicationManagementActivity::class.java),
-            iconView, "icon_manage_apps"
+            iconView,
+            "icon_manage_apps",
         )
     }
 }

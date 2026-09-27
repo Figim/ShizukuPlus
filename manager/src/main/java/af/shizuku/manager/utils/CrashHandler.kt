@@ -7,18 +7,24 @@ import java.io.StringWriter
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CrashHandler(private val context: Context, private val defaultHandler: Thread.UncaughtExceptionHandler?) : Thread.UncaughtExceptionHandler {
-
+class CrashHandler(
+    private val context: Context,
+    private val defaultHandler: Thread.UncaughtExceptionHandler?,
+) : Thread.UncaughtExceptionHandler {
     companion object {
         private const val CRASH_FILE_NAME = "last_crash.txt"
 
-        fun getCrashFile(context: Context, checkExistingOnly: Boolean = false): File? {
-            val candidates = buildList {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    add(context.createDeviceProtectedStorageContext())
+        fun getCrashFile(
+            context: Context,
+            checkExistingOnly: Boolean = false,
+        ): File? {
+            val candidates =
+                buildList {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        add(context.createDeviceProtectedStorageContext())
+                    }
+                    add(context.applicationContext)
                 }
-                add(context.applicationContext)
-            }
             for (ctx in candidates) {
                 val dir = ctx.cacheDir ?: ctx.filesDir ?: continue
                 if (!dir.exists()) {
@@ -45,12 +51,13 @@ class CrashHandler(private val context: Context, private val defaultHandler: Thr
         }
 
         fun clearLastCrash(context: Context) {
-            val candidates = buildList {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    add(context.createDeviceProtectedStorageContext())
+            val candidates =
+                buildList {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        add(context.createDeviceProtectedStorageContext())
+                    }
+                    add(context.applicationContext)
                 }
-                add(context.applicationContext)
-            }
             for (ctx in candidates) {
                 val dir = ctx.cacheDir ?: ctx.filesDir ?: continue
                 val file = File(dir, CRASH_FILE_NAME)
@@ -59,7 +66,10 @@ class CrashHandler(private val context: Context, private val defaultHandler: Thr
         }
     }
 
-    override fun uncaughtException(thread: Thread, throwable: Throwable) {
+    override fun uncaughtException(
+        thread: Thread,
+        throwable: Throwable,
+    ) {
         try {
             saveCrashReport(thread, throwable)
         } catch (e: Exception) {
@@ -72,7 +82,10 @@ class CrashHandler(private val context: Context, private val defaultHandler: Thr
         defaultHandler?.uncaughtException(thread, throwable)
     }
 
-    private fun saveCrashReport(thread: Thread, throwable: Throwable) {
+    private fun saveCrashReport(
+        thread: Thread,
+        throwable: Throwable,
+    ) {
         val sw = StringWriter()
         val pw = PrintWriter(sw)
         throwable.printStackTrace(pw)

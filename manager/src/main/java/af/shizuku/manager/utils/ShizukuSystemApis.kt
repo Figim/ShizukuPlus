@@ -1,19 +1,18 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.common.compat.InstalledPackagesCompat
+import af.shizuku.common.util.UserHandleCompat
+import af.shizuku.common.util.UserInfoCompat
+import af.shizuku.manager.utils.Logger.LOGGER
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.RemoteException
-import af.shizuku.common.compat.InstalledPackagesCompat
 import rikka.hidden.compat.PermissionManagerApis
 import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.util.SystemServiceBinder
 import rikka.shizuku.ShizukuBinderWrapper
-import af.shizuku.common.util.UserHandleCompat
-import af.shizuku.common.util.UserInfoCompat
-import af.shizuku.manager.utils.Logger.LOGGER
 
 object ShizukuSystemApis {
-
     init {
         SystemServiceBinder.setOnGetBinderListener {
             return@setOnGetBinderListener ShizukuBinderWrapper(it)
@@ -25,15 +24,17 @@ object ShizukuSystemApis {
     private fun getUsers(): List<UserInfoCompat> {
         return if (!ShizukuStateMachine.isRunning()) {
             arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner", 0))
-        } else try {
-            val list = UserManagerApis.getUsers(true, true, true)
-            val users: MutableList<UserInfoCompat> = ArrayList<UserInfoCompat>()
-            for (ui in list) {
-                users.add(UserInfoCompat(ui.id, ui.name, 0))
+        } else {
+            try {
+                val list = UserManagerApis.getUsers(true, true, true)
+                val users: MutableList<UserInfoCompat> = ArrayList<UserInfoCompat>()
+                for (ui in list) {
+                    users.add(UserInfoCompat(ui.id, ui.name, 0))
+                }
+                return users
+            } catch (_: Throwable) {
+                arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner", 0))
             }
-            return users
-        } catch (_: Throwable) {
-            arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner", 0))
         }
     }
 
@@ -49,41 +50,53 @@ object ShizukuSystemApis {
         }
     }
 
-    fun getUserInfo(userId: Int): UserInfoCompat {
-        return getUsers(useCache = true).firstOrNull { it.id == userId } ?: UserInfoCompat(
+    fun getUserInfo(userId: Int): UserInfoCompat =
+        getUsers(useCache = true).firstOrNull { it.id == userId } ?: UserInfoCompat(
             UserHandleCompat.myUserId(),
             "Unknown",
-            0
+            0,
         )
-    }
 
-    fun getInstalledPackages(flags: Long, userId: Int): List<PackageInfo> {
-        return if (!ShizukuStateMachine.isRunning()) {
+    fun getInstalledPackages(
+        flags: Long,
+        userId: Int,
+    ): List<PackageInfo> =
+        if (!ShizukuStateMachine.isRunning()) {
             ArrayList()
-        } else try {
-            // Android 17 changed IPackageManager#getInstalledPackages' return type; the shim
-            // resolves the list via the Shizuku-wrapped binder (privileged) or the context
-            // PackageManager, so the authorized-apps list still populates on A17. See
-            // af.shizuku.common.compat.InstalledPackagesCompat.
-            InstalledPackagesCompat.getInstalledPackages(flags, userId)
-        } catch (tr: Throwable) {
-            throw RuntimeException(tr.message, tr)
+        } else {
+            try {
+                // Android 17 changed IPackageManager#getInstalledPackages' return type; the shim
+                // resolves the list via the Shizuku-wrapped binder (privileged) or the context
+                // PackageManager, so the authorized-apps list still populates on A17. See
+                // af.shizuku.common.compat.InstalledPackagesCompat.
+                InstalledPackagesCompat.getInstalledPackages(flags, userId)
+            } catch (tr: Throwable) {
+                throw RuntimeException(tr.message, tr)
+            }
         }
-    }
 
-    fun checkPermission(permName: String, pkgName: String, userId: Int): Int {
-        return if (!ShizukuStateMachine.isRunning()) {
+    fun checkPermission(
+        permName: String,
+        pkgName: String,
+        userId: Int,
+    ): Int =
+        if (!ShizukuStateMachine.isRunning()) {
             PackageManager.PERMISSION_DENIED
-        } else try {
-            PermissionManagerApis.checkPermission(permName, pkgName, userId)
-        } catch (tr: RemoteException) {
-            throw RuntimeException(tr.message, tr)
-        } catch (_: Throwable) {
-            PackageManager.PERMISSION_DENIED
+        } else {
+            try {
+                PermissionManagerApis.checkPermission(permName, pkgName, userId)
+            } catch (tr: RemoteException) {
+                throw RuntimeException(tr.message, tr)
+            } catch (_: Throwable) {
+                PackageManager.PERMISSION_DENIED
+            }
         }
-    }
 
-    fun grantRuntimePermission(packageName: String, permissionName: String, userId: Int) {
+    fun grantRuntimePermission(
+        packageName: String,
+        permissionName: String,
+        userId: Int,
+    ) {
         if (!ShizukuStateMachine.isRunning()) {
             return
         }
@@ -94,7 +107,11 @@ object ShizukuSystemApis {
         }
     }
 
-    fun revokeRuntimePermission(packageName: String, permissionName: String, userId: Int) {
+    fun revokeRuntimePermission(
+        packageName: String,
+        permissionName: String,
+        userId: Int,
+    ) {
         if (!ShizukuStateMachine.isRunning()) {
             return
         }

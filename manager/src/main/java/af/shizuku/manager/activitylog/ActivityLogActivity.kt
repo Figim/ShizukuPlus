@@ -1,6 +1,10 @@
 package af.shizuku.manager.activitylog
+import af.shizuku.core.ui.EmptyStateView
 import af.shizuku.manager.R
-
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.database.ActivityLogRecord
+import af.shizuku.manager.databinding.ItemActivityLogBinding
+import af.shizuku.manager.utils.AppIconCache
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,21 +25,21 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.core.ui.EmptyStateView
-import af.shizuku.manager.databinding.ItemActivityLogBinding
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.database.ActivityLogRecord
-import af.shizuku.manager.utils.AppIconCache
 import java.util.Date
 import java.util.Locale
 
 class ActivityLogFragment : Fragment() {
-
     private val adapter = LogAdapter()
     private lateinit var emptyStateView: EmptyStateView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = af.shizuku.core.ui.databinding.AppsActivityBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        val binding =
+            af.shizuku.core.ui.databinding.AppsActivityBinding
+                .inflate(inflater, container, false)
 
         emptyStateView = binding.emptyStateView
         // ic_empty_log_24 is a generic document glyph unrelated to "activity log" as a concept;
@@ -47,9 +51,10 @@ class ActivityLogFragment : Fragment() {
         emptyStateView.hideActionButton()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.list) { view, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-            )
+            val bars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
             val navBarClearancePx = (72 * resources.displayMetrics.density).toInt()
             view.setPadding(bars.left, view.paddingTop, bars.right, bars.bottom + navBarClearancePx)
             insets
@@ -71,24 +76,46 @@ class ActivityLogFragment : Fragment() {
     }
 
     internal class LogAdapter : ListAdapter<ActivityLogRecord, LogViewHolder>(DIFF) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = LogViewHolder.create(parent)
-        override fun onBindViewHolder(holder: LogViewHolder, position: Int) = holder.bind(getItem(position))
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int,
+        ) = LogViewHolder.create(parent)
+
+        override fun onBindViewHolder(
+            holder: LogViewHolder,
+            position: Int,
+        ) = holder.bind(getItem(position))
 
         companion object {
-            private val DIFF = object : DiffUtil.ItemCallback<ActivityLogRecord>() {
-                override fun areItemsTheSame(a: ActivityLogRecord, b: ActivityLogRecord) =
-                    a.timestamp == b.timestamp && a.packageName == b.packageName
-                override fun areContentsTheSame(a: ActivityLogRecord, b: ActivityLogRecord) = a == b
-            }
+            private val DIFF =
+                object : DiffUtil.ItemCallback<ActivityLogRecord>() {
+                    override fun areItemsTheSame(
+                        a: ActivityLogRecord,
+                        b: ActivityLogRecord,
+                    ) =
+                        a.timestamp == b.timestamp && a.packageName == b.packageName
+
+                    override fun areContentsTheSame(
+                        a: ActivityLogRecord,
+                        b: ActivityLogRecord,
+                    ) = a == b
+                }
         }
     }
 
-    internal class LogViewHolder(private val binding: ItemActivityLogBinding) : RecyclerView.ViewHolder(binding.root) {
+    internal class LogViewHolder(
+        private val binding: ItemActivityLogBinding,
+    ) : RecyclerView.ViewHolder(binding.root) {
         companion object {
             // Include the date, not just the time: logs persist across days and a bare "HH:mm:ss"
             // makes yesterday's entry indistinguishable from today's. MEDIUM/MEDIUM is locale-aware.
-            private val dateFormat = java.text.DateFormat.getDateTimeInstance(
-                java.text.DateFormat.MEDIUM, java.text.DateFormat.MEDIUM, Locale.getDefault())
+            private val dateFormat =
+                java.text.DateFormat.getDateTimeInstance(
+                    java.text.DateFormat.MEDIUM,
+                    java.text.DateFormat.MEDIUM,
+                    Locale.getDefault(),
+                )
+
             fun create(parent: ViewGroup) = LogViewHolder(ItemActivityLogBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }
 
@@ -113,16 +140,22 @@ class ActivityLogFragment : Fragment() {
             binding.icon.load(R.drawable.ic_system_icon)
 
             lookupJob?.cancel()
-            lookupJob = CoroutineScope(Dispatchers.IO).launch {
-                val ai = try { pm.getApplicationInfo(capturedPackage, 0) } catch (_: Exception) { null } ?: return@launch
-                val label = AppIconCache.getLabel(context, ai)
-                withContext(Dispatchers.Main) {
-                    if (binding.packageName.text == capturedPackage) {
-                        binding.appName.text = label
-                        AppIconCache.loadIconBitmapAsync(context, ai, ai.uid / 100000, binding.icon)
+            lookupJob =
+                CoroutineScope(Dispatchers.IO).launch {
+                    val ai =
+                        try {
+                            pm.getApplicationInfo(capturedPackage, 0)
+                        } catch (_: Exception) {
+                            null
+                        } ?: return@launch
+                    val label = AppIconCache.getLabel(context, ai)
+                    withContext(Dispatchers.Main) {
+                        if (binding.packageName.text == capturedPackage) {
+                            binding.appName.text = label
+                            AppIconCache.loadIconBitmapAsync(context, ai, ai.uid / 100000, binding.icon)
+                        }
                     }
                 }
-            }
         }
     }
 }

@@ -1,17 +1,17 @@
 package af.shizuku.manager.home
 
+import af.shizuku.common.util.UserHandleCompat
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.management.AppsViewModel
+import af.shizuku.manager.model.ServiceStatus
+import af.shizuku.manager.utils.EnvironmentUtils
 import android.os.Build
 import com.airbnb.mvrx.withState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.management.AppsViewModel
-import af.shizuku.manager.model.ServiceStatus
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.common.util.UserHandleCompat
-import af.shizuku.manager.R
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.IdBasedRecyclerViewAdapter
 import rikka.recyclerview.IndexCreatorPool
@@ -19,9 +19,8 @@ import rikka.recyclerview.IndexCreatorPool
 class HomeAdapter(
     private val homeModel: HomeViewModel,
     private val appsModel: AppsViewModel,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) : IdBasedRecyclerViewAdapter(ArrayList()) {
-
     companion object {
         const val ID_STATUS = 0L
         const val ID_APPS = 1L
@@ -38,22 +37,33 @@ class HomeAdapter(
         const val ID_DEVICE_CONTROL = 12L
         const val ID_PERMISSION_MANAGER = 13L
 
-        private val DEFAULT_ORDER = listOf(
-            ID_TERMINAL, ID_START_ROOT, ID_START_WADB, ID_START_ADB, ID_AUTOMATION, ID_BACKUP, ID_DEVICE_CONTROL, ID_PERMISSION_MANAGER, ID_LEARN_MORE, ID_COMPANION
-        )
+        private val DEFAULT_ORDER =
+            listOf(
+                ID_TERMINAL,
+                ID_START_ROOT,
+                ID_START_WADB,
+                ID_START_ADB,
+                ID_AUTOMATION,
+                ID_BACKUP,
+                ID_DEVICE_CONTROL,
+                ID_PERMISSION_MANAGER,
+                ID_LEARN_MORE,
+                ID_COMPANION,
+            )
     }
 
-    private val cardOrder: MutableList<Long> = run {
-        val saved = ShizukuSettings.getCardOrder()
-        if (saved.isNullOrEmpty()) {
-            DEFAULT_ORDER.toMutableList()
-        } else {
-            val parsed = saved.split(",").mapNotNull { it.trim().toLongOrNull() }
-            val merged = parsed.toMutableList()
-            DEFAULT_ORDER.forEach { if (it !in merged) merged.add(it) }
-            merged
+    private val cardOrder: MutableList<Long> =
+        run {
+            val saved = ShizukuSettings.getCardOrder()
+            if (saved.isNullOrEmpty()) {
+                DEFAULT_ORDER.toMutableList()
+            } else {
+                val parsed = saved.split(",").mapNotNull { it.trim().toLongOrNull() }
+                val merged = parsed.toMutableList()
+                DEFAULT_ORDER.forEach { if (it !in merged) merged.add(it) }
+                merged
+            }
         }
-    }
 
     private val startWadbCreator = StartWirelessAdbViewHolder.creator(scope, homeModel)
     private val companionCreator = ShizukuCompanionViewHolder.creator(scope, homeModel)
@@ -136,9 +146,10 @@ class HomeAdapter(
             // toggle — this lag caused all cards to pop into view after a drag gesture that
             // started within that 150ms window (fixes #475).
             val isEditMode = HomeEditMode.isActive
-            val (status, grantedCount) = withState(homeModel) {
-                Pair(it.serviceStatus.invoke(), it.grantedAppCount)
-            }
+            val (status, grantedCount) =
+                withState(homeModel) {
+                    Pair(it.serviceStatus.invoke(), it.grantedAppCount)
+                }
             val companionInstalled = withState(homeModel) { it.companionInstalled }
             val compatHubInstalled = withState(homeModel) { it.compatHubInstalled }
             val isOriginalShizukuRunning = withState(homeModel) { it.isOriginalShizukuRunning }
@@ -156,10 +167,16 @@ class HomeAdapter(
                     return@withContext
                 }
 
-                val fixedCardCount = rebuildItems(
-                    status, grantedCount, isEditMode, companionInstalled, compatHubInstalled,
-                    isOriginalShizukuRunning, hidden
-                )
+                val fixedCardCount =
+                    rebuildItems(
+                        status,
+                        grantedCount,
+                        isEditMode,
+                        companionInstalled,
+                        compatHubInstalled,
+                        isOriginalShizukuRunning,
+                        hidden,
+                    )
 
                 notifyDataSetChanged()
 
@@ -183,7 +200,7 @@ class HomeAdapter(
         companionInstalled: Boolean,
         compatHubInstalled: Boolean,
         isOriginalShizukuRunning: Boolean,
-        hidden: Set<String>
+        hidden: Set<String>,
     ): Int {
         val adbPermission = status.permission
         val running = status.isRunning
@@ -194,15 +211,19 @@ class HomeAdapter(
 
         // Fixed cards
         var fixedCardCount = 0
-        addItem(ServerStatusViewHolder.CREATOR, status, ID_STATUS); fixedCardCount++
+        addItem(ServerStatusViewHolder.CREATOR, status, ID_STATUS)
+        fixedCardCount++
         if (isOriginalShizukuRunning) {
-            addItem(startStockCreator, null, ID_START_VIA_STOCK); fixedCardCount++
+            addItem(startStockCreator, null, ID_START_VIA_STOCK)
+            fixedCardCount++
         }
         if (adbPermission) {
-            addItem(ManageAppsViewHolder.CREATOR, status to grantedCount, ID_APPS); fixedCardCount++
+            addItem(ManageAppsViewHolder.CREATOR, status to grantedCount, ID_APPS)
+            fixedCardCount++
         }
         if (running && !adbPermission) {
-            addItem(AdbPermissionLimitedViewHolder.CREATOR, status, ID_ADB_PERMISSION_LIMITED); fixedCardCount++
+            addItem(AdbPermissionLimitedViewHolder.CREATOR, status, ID_ADB_PERMISSION_LIMITED)
+            fixedCardCount++
         }
 
         // Draggable cards
@@ -211,17 +232,27 @@ class HomeAdapter(
             if (isHidden && !isEditMode) return@forEach
             when (id) {
                 ID_TERMINAL -> addItem(TerminalViewHolder.CREATOR, status, id)
-                ID_START_ROOT -> if (isEditMode || (isPrimaryUser && (EnvironmentUtils.isRooted() || ShizukuSettings.isSamsungSystemUidEscalationEnabled())))
-                    addItem(StartRootViewHolder.CREATOR, rootRestart, id)
-                ID_START_WADB -> if (isEditMode || (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0)))
-                    addItem(startWadbCreator, null, id)
-                ID_START_ADB -> if (isEditMode || isPrimaryUser)
-                    addItem(StartAdbViewHolder.CREATOR, null, id)
+                ID_START_ROOT ->
+                    if (isEditMode || (isPrimaryUser && (EnvironmentUtils.isRooted() || ShizukuSettings.isSamsungSystemUidEscalationEnabled()))) {
+                        addItem(StartRootViewHolder.CREATOR, rootRestart, id)
+                    }
+                ID_START_WADB ->
+                    if (isEditMode || (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0))) {
+                        addItem(startWadbCreator, null, id)
+                    }
+                ID_START_ADB ->
+                    if (isEditMode || isPrimaryUser) {
+                        addItem(StartAdbViewHolder.CREATOR, null, id)
+                    }
                 ID_AUTOMATION -> addItem(AutomationViewHolder.CREATOR, null, id)
-                ID_BACKUP -> if (isEditMode || ShizukuSettings.isBackupCardVisible())
-                    addItem(AppBackupViewHolder.CREATOR, status, id)
-                ID_DEVICE_CONTROL -> if (ShizukuSettings.isDeviceControlHomeEnabled())
-                    addItem(DeviceControlViewHolder.CREATOR, status, id)
+                ID_BACKUP ->
+                    if (isEditMode || ShizukuSettings.isBackupCardVisible()) {
+                        addItem(AppBackupViewHolder.CREATOR, status, id)
+                    }
+                ID_DEVICE_CONTROL ->
+                    if (ShizukuSettings.isDeviceControlHomeEnabled()) {
+                        addItem(DeviceControlViewHolder.CREATOR, status, id)
+                    }
                 ID_PERMISSION_MANAGER -> addItem(PermissionManagerViewHolder.CREATOR, status, id)
                 ID_LEARN_MORE -> addItem(LearnMoreViewHolder.CREATOR, null, id)
                 ID_COMPANION -> {
@@ -230,8 +261,9 @@ class HomeAdapter(
                     // stock Shizuku is present and conflicts — not only when companion mode is on.
                     // Otherwise (hub installed, no conflict) it stays opt-in via companion mode.
                     val needsAction = !compatHubInstalled || companionInstalled
-                    if (isEditMode || ShizukuSettings.isCompanionModeEnabled() || needsAction)
+                    if (isEditMode || ShizukuSettings.isCompanionModeEnabled() || needsAction) {
                         addItem(companionCreator, Pair(companionInstalled, compatHubInstalled), id)
+                    }
                 }
             }
         }
@@ -239,20 +271,25 @@ class HomeAdapter(
         return fixedCardCount
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(
+        holder: BaseViewHolder<*>,
+        position: Int,
+    ) {
         val id = getItemId(position)
         val hidden = ShizukuSettings.getHiddenHomeCards()
-        holder.itemView.tag = when (id) {
-            ID_BACKUP -> !ShizukuSettings.isBackupCardVisible()
-            else -> id.toString() in hidden
-        }
-
-        val removeBtn = holder.itemView.findViewById<android.widget.ImageButton>(R.id.remove_btn)
-        if (removeBtn != null) {
-            val isHidden = when (id) {
+        holder.itemView.tag =
+            when (id) {
                 ID_BACKUP -> !ShizukuSettings.isBackupCardVisible()
                 else -> id.toString() in hidden
             }
+
+        val removeBtn = holder.itemView.findViewById<android.widget.ImageButton>(R.id.remove_btn)
+        if (removeBtn != null) {
+            val isHidden =
+                when (id) {
+                    ID_BACKUP -> !ShizukuSettings.isBackupCardVisible()
+                    else -> id.toString() in hidden
+                }
             val iconRes = if (isHidden) R.drawable.ic_visibility_off_24 else R.drawable.ic_visibility_24
             removeBtn.setImageResource(iconRes)
             removeBtn.setOnClickListener { HomeEditMode.removeCardCallback?.invoke(id) }
@@ -266,14 +303,15 @@ class HomeAdapter(
             val card = holder.itemView as? com.google.android.material.card.MaterialCardView
             if (card != null) {
                 val density = card.context.resources.displayMetrics.density
-                card.radius = when (homeCornerStyle) {
-                    "sharp" -> 0f
-                    "rounded" -> 12f * density
-                    "large" -> 24f * density
-                    "squircle" -> 28f * density
-                    "xlarge" -> 36f * density
-                    else -> card.radius
-                }
+                card.radius =
+                    when (homeCornerStyle) {
+                        "sharp" -> 0f
+                        "rounded" -> 12f * density
+                        "large" -> 24f * density
+                        "squircle" -> 28f * density
+                        "xlarge" -> 36f * density
+                        else -> card.radius
+                    }
             }
         }
 
@@ -293,16 +331,23 @@ class HomeAdapter(
         view.scaleY = 0.92f
         val animator = view.animate()
         if (animator != null) {
-            val interp = android.view.animation.AnimationUtils.loadInterpolator(
-                view.context, android.R.interpolator.fast_out_slow_in
-            )
-            animator.alpha(1f)
+            val interp =
+                android.view.animation.AnimationUtils.loadInterpolator(
+                    view.context,
+                    android.R.interpolator.fast_out_slow_in,
+                )
+            animator
+                .alpha(1f)
                 .translationY(0f)
                 .scaleX(1f)
                 .scaleY(1f)
-                .setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(400))
-                .setStartDelay(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(position * 50L))
-                .setInterpolator(interp)
+                .setDuration(
+                    af.shizuku.manager.ShizukuSettings
+                        .scaledAnimationDuration(400),
+                ).setStartDelay(
+                    af.shizuku.manager.ShizukuSettings
+                        .scaledAnimationDuration(position * 50L),
+                ).setInterpolator(interp)
                 .start()
         } else {
             view.alpha = 1f
@@ -312,7 +357,10 @@ class HomeAdapter(
         }
     }
 
-    fun moveItem(fromPos: Int, toPos: Int) {
+    fun moveItem(
+        fromPos: Int,
+        toPos: Int,
+    ) {
         val fromId = getItemId(fromPos)
         val toId = getItemId(toPos)
         val fromIdx = cardOrder.indexOf(fromId)

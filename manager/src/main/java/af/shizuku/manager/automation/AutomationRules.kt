@@ -1,8 +1,8 @@
 package af.shizuku.manager.automation
 
+import af.shizuku.manager.ShizukuSettings
 import android.content.Context
 import timber.log.Timber
-import af.shizuku.manager.ShizukuSettings
 
 /**
  * Disables the Binder Firewall on a user-designated trusted Wi-Fi network, enables it otherwise
@@ -14,7 +14,10 @@ class NetworkFirewallRule : AutomationRule {
     override val name: String = "Network Firewall Rule"
     private var isSafeNetwork: Boolean = false
 
-    override fun evaluate(event: AutomationEvent, context: Context): Boolean {
+    override fun evaluate(
+        event: AutomationEvent,
+        context: Context,
+    ): Boolean {
         if (event is NetworkEvent) {
             val trustedNetworks = ShizukuSettings.getTrustedNetworksSet()
             // ssid may be null when SSID detection is unavailable (e.g. no ACCESS_FINE_LOCATION).
@@ -30,8 +33,11 @@ class NetworkFirewallRule : AutomationRule {
 
     override fun execute(context: Context) {
         Timber.i(
-            if (isSafeNetwork) "Trusted network detected, disabling Binder Firewall"
-            else "Untrusted (or no) network detected, enabling Binder Firewall"
+            if (isSafeNetwork) {
+                "Trusted network detected, disabling Binder Firewall"
+            } else {
+                "Untrusted (or no) network detected, enabling Binder Firewall"
+            },
         )
         ShizukuSettings.setBinderFirewallEnabled(!isSafeNetwork)
         ShizukuSettings.syncAllPlusFeaturesToServer()
@@ -47,7 +53,10 @@ class AppAutoHideRule : AutomationRule {
     override val name: String = "App Auto-Hide Rule"
     private var currentApp: String? = null
 
-    override fun evaluate(event: AutomationEvent, context: Context): Boolean {
+    override fun evaluate(
+        event: AutomationEvent,
+        context: Context,
+    ): Boolean {
         if (event is ForegroundAppEvent && currentApp != event.packageName) {
             currentApp = event.packageName
             return true
@@ -81,7 +90,10 @@ class AppSpecificProfileRule : AutomationRule {
     private var currentApp: String? = null
     private var savedGlobalFirewall: Boolean? = null
 
-    override fun evaluate(event: AutomationEvent, context: Context): Boolean {
+    override fun evaluate(
+        event: AutomationEvent,
+        context: Context,
+    ): Boolean {
         if (event is ForegroundAppEvent && currentApp != event.packageName) {
             currentApp = event.packageName
             return true
@@ -112,7 +124,8 @@ class AppSpecificProfileRule : AutomationRule {
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 savedGlobalFirewall = null
             }
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 }
 

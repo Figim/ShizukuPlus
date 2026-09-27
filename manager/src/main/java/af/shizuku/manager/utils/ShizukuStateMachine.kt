@@ -1,26 +1,25 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.BuildConfig
+import af.shizuku.manager.ShizukuApplication
+import af.shizuku.manager.ShizukuSettings
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.pm.PackageManager
 import android.provider.Settings
-import timber.log.Timber
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.atomic.AtomicReference
+import io.sentry.Breadcrumb
+import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import af.shizuku.manager.ShizukuApplication
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.BuildConfig
 import rikka.shizuku.Shizuku
-import io.sentry.Sentry
-import io.sentry.Breadcrumb
+import timber.log.Timber
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.atomic.AtomicReference
 
 object ShizukuStateMachine {
-
     enum class State { STARTING, RUNNING, STOPPING, STOPPED, CRASHED }
 
     // Seeded from the last persisted settled state (see the persistence hook in transition()),
@@ -32,36 +31,43 @@ object ShizukuStateMachine {
     // exists to handle.
     private var state = AtomicReference<State>(loadPersistedSettledState())
     private val listeners = CopyOnWriteArrayList<(State) -> Unit>()
-    private val startingTimestamp = java.util.concurrent.atomic.AtomicLong(0L)
+    private val startingTimestamp =
+        java.util.concurrent.atomic
+            .AtomicLong(0L)
     private const val STARTING_TIMEOUT_MS = 90_000L
 
-    private fun loadPersistedSettledState(): State = try {
-        when (ShizukuSettings.getLastSettledState()) {
-            State.RUNNING.name -> State.RUNNING
-            State.CRASHED.name -> State.CRASHED
-            else -> State.STOPPED
+    private fun loadPersistedSettledState(): State =
+        try {
+            when (ShizukuSettings.getLastSettledState()) {
+                State.RUNNING.name -> State.RUNNING
+                State.CRASHED.name -> State.CRASHED
+                else -> State.STOPPED
+            }
+        } catch (_: Exception) {
+            State.STOPPED
         }
-    } catch (_: Exception) {
-        State.STOPPED
-    }
 
     init {
         Shizuku.addBinderReceivedListenerSticky(
             Shizuku.OnBinderReceivedListener {
-                Sentry.addBreadcrumb(Breadcrumb("Binder received - service is now RUNNING").apply {
-                    category = "shizuku.service"
-                })
+                Sentry.addBreadcrumb(
+                    Breadcrumb("Binder received - service is now RUNNING").apply {
+                        category = "shizuku.service"
+                    },
+                )
                 set(State.RUNNING)
-            }
+            },
         )
         Shizuku.addBinderDeadListener(
             Shizuku.OnBinderDeadListener {
-                Sentry.addBreadcrumb(Breadcrumb("Binder dead - service connection lost").apply {
-                    category = "shizuku.service"
-                    level = io.sentry.SentryLevel.WARNING
-                })
+                Sentry.addBreadcrumb(
+                    Breadcrumb("Binder dead - service connection lost").apply {
+                        category = "shizuku.service"
+                        level = io.sentry.SentryLevel.WARNING
+                    },
+                )
                 setDead()
-            }
+            },
         )
     }
 
@@ -74,7 +80,7 @@ object ShizukuStateMachine {
         var computed: State? = null
         val oldState = state.getAndUpdate { current -> transform(current).also { computed = it } }
         val newState = computed ?: error("getAndUpdate lambda must always execute synchronously")
-        if(oldState != newState) {
+        if (oldState != newState) {
             listeners.forEach { it(newState) }
             Timber.tag("ShizukuStateMachine").d(newState.toString())
 
@@ -95,8 +101,9 @@ object ShizukuStateMachine {
                 try {
                     val context = ShizukuApplication.appContext
                     af.shizuku.manager.automation.AutomationEngine.dispatchEvent(
-                        af.shizuku.manager.automation.ShizukuStateEvent(newState == State.RUNNING),
-                        context
+                        af.shizuku.manager.automation
+                            .ShizukuStateEvent(newState == State.RUNNING),
+                        context,
                     )
                 } catch (e: Exception) {
                     Timber.tag("ShizukuStateMachine").w(e, "Failed to dispatch automation event")
@@ -127,9 +134,10 @@ object ShizukuStateMachine {
             // Broadcast state change for widgets and other receivers
             try {
                 val context = ShizukuApplication.appContext
-                val intent = android.content.Intent("af.shizuku.manager.action.STATE_CHANGED").apply {
-                    setPackage(context.packageName)
-                }
+                val intent =
+                    android.content.Intent("af.shizuku.manager.action.STATE_CHANGED").apply {
+                        setPackage(context.packageName)
+                    }
                 context.sendBroadcast(intent)
             } catch (_: UninitializedPropertyAccessException) {
                 Timber.tag("ShizukuStateMachine").w("Skipping broadcast: appContext not initialized yet")
@@ -139,65 +147,66 @@ object ShizukuStateMachine {
 
     fun set(newState: State) = transition { newState }
 
-    fun setDead() = transition {
-        when (it) {
-            State.RUNNING -> State.CRASHED
-            State.STOPPING -> {
-                try {
-                    val context = ShizukuApplication.appContext
-                    val permissionGranted = context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
-                    val shouldDisableUsbDebugging = permissionGranted && ShizukuSettings.getAutoDisableUsbDebugging()
-                    if (shouldDisableUsbDebugging) {
-                        Settings.Global.putInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0)
+    fun setDead() =
+        transition {
+            when (it) {
+                State.RUNNING -> State.CRASHED
+                State.STOPPING -> {
+                    try {
+                        val context = ShizukuApplication.appContext
+                        val permissionGranted = context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
+                        val shouldDisableUsbDebugging = permissionGranted && ShizukuSettings.getAutoDisableUsbDebugging()
+                        if (shouldDisableUsbDebugging) {
+                            Settings.Global.putInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0)
+                        }
+                    } catch (_: UninitializedPropertyAccessException) {
+                        Timber.tag("ShizukuStateMachine").w("Skipping USB debugging disable: appContext not initialized yet")
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to disable USB debugging")
                     }
-                } catch (_: UninitializedPropertyAccessException) {
-                    Timber.tag("ShizukuStateMachine").w("Skipping USB debugging disable: appContext not initialized yet")
-                } catch (e: Exception) {
-                    Timber.tag("ShizukuStateMachine").w(e, "Failed to disable USB debugging")
+                    State.STOPPED
                 }
-                State.STOPPED
+                else -> it
             }
-            else -> it
         }
-    }
 
     fun update(): State {
         val span = Sentry.getSpan()?.startChild("ipc.shizuku", "pingBinder")
-        val isAlive = try {
-            Shizuku.pingBinder()
-        } catch (_: Exception) {
-            false
-        } finally {
-            span?.finish()
-        }
+        val isAlive =
+            try {
+                Shizuku.pingBinder()
+            } catch (_: Exception) {
+                false
+            } finally {
+                span?.finish()
+            }
 
         val currentState = get()
-        val state = when {
-            isAlive -> State.RUNNING
-            currentState == State.STARTING -> {
-                // Break out of STARTING after 90 s so a failed start (server process died,
-                // ADB connection refused, etc.) never leaves the UI permanently locked.
-                val elapsed = System.currentTimeMillis() - startingTimestamp.get()
-                if (elapsed > STARTING_TIMEOUT_MS) State.STOPPED else State.STARTING
+        val state =
+            when {
+                isAlive -> State.RUNNING
+                currentState == State.STARTING -> {
+                    // Break out of STARTING after 90 s so a failed start (server process died,
+                    // ADB connection refused, etc.) never leaves the UI permanently locked.
+                    val elapsed = System.currentTimeMillis() - startingTimestamp.get()
+                    if (elapsed > STARTING_TIMEOUT_MS) State.STOPPED else State.STARTING
+                }
+                currentState == State.STOPPING -> State.STOPPING
+                currentState == State.CRASHED -> State.CRASHED
+                // Was RUNNING (or, thanks to loadPersistedSettledState(), a freshly cold-started
+                // process that persisted RUNNING before it died) and the binder isn't answering: that's
+                // a crash, not a stop. Previously fell into the `else -> STOPPED` branch below, which
+                // WatchdogService's flow collector (only listens for CRASHED) silently ignores - the
+                // watchdog's external re-arm (#417) never restarted anything because every unexpected
+                // death got misreported as an intentional stop.
+                currentState == State.RUNNING -> State.CRASHED
+                else -> State.STOPPED
             }
-            currentState == State.STOPPING -> State.STOPPING
-            currentState == State.CRASHED -> State.CRASHED
-            // Was RUNNING (or, thanks to loadPersistedSettledState(), a freshly cold-started
-            // process that persisted RUNNING before it died) and the binder isn't answering: that's
-            // a crash, not a stop. Previously fell into the `else -> STOPPED` branch below, which
-            // WatchdogService's flow collector (only listens for CRASHED) silently ignores - the
-            // watchdog's external re-arm (#417) never restarted anything because every unexpected
-            // death got misreported as an intentional stop.
-            currentState == State.RUNNING -> State.CRASHED
-            else -> State.STOPPED
-        }
         set(state)
         return state
     }
 
-    fun isRunning(): Boolean {
-        return get() == State.RUNNING
-    }
+    fun isRunning(): Boolean = get() == State.RUNNING
 
     /**
      * True when the running privileged server was started by an app build older than the one now
@@ -212,9 +221,7 @@ object ShizukuStateMachine {
         return startedBuild in 1 until BuildConfig.VERSION_CODE
     }
 
-    fun isDead(): Boolean {
-        return (get() == State.STOPPED || get() == State.CRASHED)
-    }
+    fun isDead(): Boolean = (get() == State.STOPPED || get() == State.CRASHED)
 
     fun addListener(listener: (State) -> Unit) {
         listeners.add(listener)
@@ -225,10 +232,10 @@ object ShizukuStateMachine {
         listeners.remove(listener)
     }
 
-    fun asFlow(): Flow<State> = callbackFlow {
-        val listener: (State) -> Unit = { trySend(it).isSuccess }
-        addListener(listener)
-        awaitClose { removeListener(listener) }
-    }
-
+    fun asFlow(): Flow<State> =
+        callbackFlow {
+            val listener: (State) -> Unit = { trySend(it).isSuccess }
+            addListener(listener)
+            awaitClose { removeListener(listener) }
+        }
 }

@@ -1,7 +1,7 @@
 package af.shizuku.manager.settings
 
-import android.os.Bundle
 import af.shizuku.core.ui.AppActivity
+import android.os.Bundle
 
 // Extends AppActivity (not plain AppCompatActivity) so onApplyUserThemeResource/
 // computeUserThemeKey actually run - see AdbPairingDialogActivity for the full explanation.

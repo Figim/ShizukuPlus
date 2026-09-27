@@ -1,33 +1,34 @@
 package af.shizuku.manager.settings
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.activitylog.ActivityLogActivity
-
+import af.shizuku.manager.database.AppContextManager
+import af.shizuku.manager.ktx.setComponentEnabled
+import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.EnvironmentUtils
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import androidx.preference.Preference
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings.Keys.*
-import af.shizuku.manager.utils.CustomTabsHelper
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.ktx.setComponentEnabled
 import android.widget.Toast
-import timber.log.Timber
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.Preference
+import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.database.AppContextManager
-import androidx.preference.TwoStatePreference
-import android.content.ClipData
-import android.content.ClipboardManager
+import timber.log.Timber
 
 class AdvancedSettingsFragment : BaseSettingsFragment() {
-
     override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_advanced_diagnostics_title)
 
-    override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         setPreferencesFromResource(R.xml.settings_advanced, rootKey)
         val context = requireContext()
 
@@ -36,21 +37,22 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 try {
                     val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/database/apps.json")
                     val connection = url.openConnection() as java.net.HttpURLConnection
-                    val content = try {
-                        connection.instanceFollowRedirects = true
-                        connection.requestMethod = "GET"
-                        connection.connectTimeout = 10_000
-                        connection.readTimeout = 10_000
+                    val content =
+                        try {
+                            connection.instanceFollowRedirects = true
+                            connection.requestMethod = "GET"
+                            connection.connectTimeout = 10_000
+                            connection.readTimeout = 10_000
 
-                        val responseCode = connection.responseCode
-                        if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
-                            throw java.io.IOException("HTTP $responseCode from GitHub")
+                            val responseCode = connection.responseCode
+                            if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
+                                throw java.io.IOException("HTTP $responseCode from GitHub")
+                            }
+
+                            connection.inputStream.use { it.bufferedReader().readText() }
+                        } finally {
+                            connection.disconnect()
                         }
-
-                        connection.inputStream.use { it.bufferedReader().readText() }
-                    } finally {
-                        connection.disconnect()
-                    }
                     withContext(Dispatchers.Main) {
                         AppContextManager.updateDatabase(content)
                         Toast.makeText(context, R.string.settings_update_app_database_success, Toast.LENGTH_SHORT).show()
@@ -104,7 +106,11 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 .setMessage(R.string.settings_reset_adb_keys_summary)
                 .setPositiveButton(R.string.settings_reset_adb_keys) { _, _ ->
                     try {
-                        ShizukuSettings.getPreferences().edit().remove("adbkey").apply()
+                        ShizukuSettings
+                            .getPreferences()
+                            .edit()
+                            .remove("adbkey")
+                            .apply()
                         val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore")
                         keyStore.load(null)
                         keyStore.deleteEntry("_adbkey_encryption_key_")
@@ -114,8 +120,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         Timber.tag("AdvancedSettings").e(e, "Failed to reset ADB keys")
                         Toast.makeText(context, R.string.settings_reset_adb_keys_error, Toast.LENGTH_LONG).show()
                     }
-                }
-                .setNegativeButton(android.R.string.cancel, null)
+                }.setNegativeButton(android.R.string.cancel, null)
                 .show()
             true
         }
@@ -148,8 +153,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboard.setPrimaryClip(ClipData.newPlainText("package", context.packageName))
                         Toast.makeText(context, R.string.app_management_package_copied, Toast.LENGTH_SHORT).show()
-                    }
-                    .show()
+                    }.show()
                 true
             }
         }
@@ -171,11 +175,9 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                             context.packageManager.setComponentEnabled(launcherAlias, false)
                             ShizukuSettings.setStealthModeEnabled(true)
                             (pref as? TwoStatePreference)?.isChecked = true
-                        }
-                        .setNegativeButton(android.R.string.cancel) { _, _ ->
+                        }.setNegativeButton(android.R.string.cancel) { _, _ ->
                             (pref as? TwoStatePreference)?.isChecked = false
-                        }
-                        .show()
+                        }.show()
                     false
                 } else {
                     context.packageManager.setComponentEnabled(launcherAlias, true)

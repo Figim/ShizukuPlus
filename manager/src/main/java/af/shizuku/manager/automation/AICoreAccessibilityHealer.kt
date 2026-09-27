@@ -1,11 +1,11 @@
 package af.shizuku.manager.automation
 
+import af.shizuku.manager.ShizukuSettings
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.Settings
-import af.shizuku.manager.ShizukuSettings
 import timber.log.Timber
 
 /**
@@ -23,7 +23,6 @@ import timber.log.Timber
  * treated as the user's standing intent to have it enabled), and it adds no background wakeups.
  */
 object AICoreAccessibilityHealer {
-
     fun reenableIfNeeded(context: Context) {
         try {
             // Only act on the user's standing intent: AICore+ feature toggled on in-app.
@@ -37,10 +36,11 @@ object AICoreAccessibilityHealer {
             val target = ComponentName(context, AICorePlusService::class.java)
             if (isServiceEnabled(context, target)) return
 
-            val current = Settings.Secure.getString(
-                context.contentResolver,
-                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-            )
+            val current =
+                Settings.Secure.getString(
+                    context.contentResolver,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+                )
             val flattened = target.flattenToString()
             val updated = if (current.isNullOrEmpty()) flattened else "$current:$flattened"
 
@@ -59,11 +59,15 @@ object AICoreAccessibilityHealer {
         }
     }
 
-    private fun isServiceEnabled(context: Context, target: ComponentName): Boolean {
-        val enabled = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-        ) ?: return false
+    private fun isServiceEnabled(
+        context: Context,
+        target: ComponentName,
+    ): Boolean {
+        val enabled =
+            Settings.Secure.getString(
+                context.contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+            ) ?: return false
         // Compare via ComponentName so a short-form entry (pkg/.automation.AICorePlusService)
         // still matches the fully-qualified target the OEM may have stored either way.
         return enabled.split(':').any { ComponentName.unflattenFromString(it) == target }

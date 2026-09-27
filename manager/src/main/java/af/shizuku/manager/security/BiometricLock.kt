@@ -1,33 +1,42 @@
 package af.shizuku.manager.security
 
+import af.shizuku.manager.R
 import android.content.Context
 import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import af.shizuku.manager.R
 
-class BiometricLock(private val activity: FragmentActivity) {
-
+class BiometricLock(
+    private val activity: FragmentActivity,
+) {
     private val allowedAuthenticators =
         BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
 
     fun authenticate(
         onSuccess: (BiometricPrompt.CryptoObject?) -> Unit,
         onError: (Int) -> Unit,
-        crypto: BiometricPrompt.CryptoObject? = null
+        crypto: BiometricPrompt.CryptoObject? = null,
     ) {
         val executor = ContextCompat.getMainExecutor(activity)
-        val biometricPrompt = BiometricPrompt(activity, executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    onSuccess(result.cryptoObject)
-                }
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    onError(errorCode)
-                }
-            })
+        val biometricPrompt =
+            BiometricPrompt(
+                activity,
+                executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        onSuccess(result.cryptoObject)
+                    }
+
+                    override fun onAuthenticationError(
+                        errorCode: Int,
+                        errString: CharSequence,
+                    ) {
+                        onError(errorCode)
+                    }
+                },
+            )
 
         // setNegativeButtonText can't be combined with DEVICE_CREDENTIAL in
         // setAllowedAuthenticators (the platform provides its own cancel affordance). Allowing
@@ -36,9 +45,11 @@ class BiometricLock(private val activity: FragmentActivity) {
         // (the "Use PIN/Pattern" button just canceled with an error, and its label was wrong for
         // password-locked devices anyway). The system now prompts for whatever credential type
         // is actually configured (password, PIN, or pattern) with the correct label.
-        val promptInfoBuilder = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(activity.getString(R.string.biometric_prompt_title))
-            .setSubtitle(activity.getString(R.string.biometric_prompt_subtitle))
+        val promptInfoBuilder =
+            BiometricPrompt.PromptInfo
+                .Builder()
+                .setTitle(activity.getString(R.string.biometric_prompt_title))
+                .setSubtitle(activity.getString(R.string.biometric_prompt_subtitle))
 
         if (crypto != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             // CryptoObject is not supported with DEVICE_CREDENTIAL on older API levels

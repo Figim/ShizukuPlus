@@ -1,44 +1,53 @@
 package af.shizuku.manager.receiver
 
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.shell.ShellBinderRequestHandler
+import af.shizuku.manager.utils.IntentCrypto
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.shell.ShellBinderRequestHandler
-import af.shizuku.manager.utils.IntentCrypto
 import java.security.MessageDigest
 
 class BinderRequestReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER" &&
-            intent.action != "${context.packageName}.intent.action.REQUEST_BINDER") {
+            intent.action != "${context.packageName}.intent.action.REQUEST_BINDER"
+        ) {
             return
         }
 
-        val rawToken = intent.getStringExtra("auth")
-            ?: intent.getStringExtra("token")
-            ?: intent.getStringExtra("auth_token")
+        val rawToken =
+            intent.getStringExtra("auth")
+                ?: intent.getStringExtra("token")
+                ?: intent.getStringExtra("auth_token")
 
-        val tokenCandidate = rawToken?.trim()?.removeSurrounding("\"")?.let {
-            if (it.startsWith("auth:")) it.substring(5).trim() else it
-        }
+        val tokenCandidate =
+            rawToken?.trim()?.removeSurrounding("\"")?.let {
+                if (it.startsWith("auth:")) it.substring(5).trim() else it
+            }
 
         val expectedToken = ShizukuSettings.getAuthToken()
-        val decryptedToken = if (!tokenCandidate.isNullOrEmpty()) {
-            IntentCrypto.decrypt(tokenCandidate)
-        } else null
+        val decryptedToken =
+            if (!tokenCandidate.isNullOrEmpty()) {
+                IntentCrypto.decrypt(tokenCandidate)
+            } else {
+                null
+            }
 
         // Constant-time compare: this gates handing out the live Shizuku binder.
-        val authValid = when {
-            tokenCandidate.isNullOrEmpty() -> false
-            decryptedToken != null && MessageDigest.isEqual(decryptedToken.toByteArray(), expectedToken.toByteArray()) -> true
-            MessageDigest.isEqual(tokenCandidate.toByteArray(), expectedToken.toByteArray()) -> true
-            else -> false
-        }
+        val authValid =
+            when {
+                tokenCandidate.isNullOrEmpty() -> false
+                decryptedToken != null && MessageDigest.isEqual(decryptedToken.toByteArray(), expectedToken.toByteArray()) -> true
+                MessageDigest.isEqual(tokenCandidate.toByteArray(), expectedToken.toByteArray()) -> true
+                else -> false
+            }
 
         if (authValid) {
             // deliverBinder() may Thread.sleep() up to 2.3 s on freeze-retry — move off main thread.

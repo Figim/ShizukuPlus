@@ -10,7 +10,6 @@ import android.view.View
  * common in modern Material 3 Enhanced (M3E) applications.
  */
 object HapticUtils {
-
     // Some OEM skins (confirmed on HyperOS/MIUI - #SHIZUKUPLUS-8E) route
     // View.performHapticFeedback through their own vibrator stack instead of the
     // normally VIBRATE-exempt system haptic path, and throw a SecurityException
@@ -20,7 +19,10 @@ object HapticUtils {
     // The dedicated haptic-feedback setting is checked once here so every call
     // site is governed by a single flag, instead of ad-hoc per-call-site checks
     // of unrelated toggles (e.g. expressive animations).
-    private inline fun safeHaptic(view: View, constant: Int) {
+    private inline fun safeHaptic(
+        view: View,
+        constant: Int,
+    ) {
         if (!ShizukuSettings.isHapticFeedbackEnabled()) return
         try {
             view.performHapticFeedback(constant)

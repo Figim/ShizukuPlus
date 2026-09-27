@@ -1,5 +1,6 @@
 package af.shizuku.manager.devicecontrol
 
+import af.shizuku.manager.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -12,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.R
 import rikka.shizuku.ShizukuPlusAPI
 import timber.log.Timber
 
@@ -122,8 +122,11 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                 TextButton(onClick = {
                     showRebootDialog = false
                     scope.launch(Dispatchers.IO) {
-                        try { ShizukuPlusAPI.DeviceControl.reboot(null) }
-                        catch (e: Exception) { Timber.e(e, "reboot failed") }
+                        try {
+                            ShizukuPlusAPI.DeviceControl.reboot(null)
+                        } catch (e: Exception) {
+                            Timber.e(e, "reboot failed")
+                        }
                     }
                 }) { Text(stringResource(R.string.device_control_reboot)) }
             },
@@ -131,7 +134,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                 TextButton(onClick = { showRebootDialog = false }) {
                     Text(stringResource(android.R.string.cancel))
                 }
-            }
+            },
         )
     }
 
@@ -144,8 +147,11 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                 TextButton(onClick = {
                     showShutdownDialog = false
                     scope.launch(Dispatchers.IO) {
-                        try { ShizukuPlusAPI.DeviceControl.shutdown() }
-                        catch (e: Exception) { Timber.e(e, "shutdown failed") }
+                        try {
+                            ShizukuPlusAPI.DeviceControl.shutdown()
+                        } catch (e: Exception) {
+                            Timber.e(e, "shutdown failed")
+                        }
                     }
                 }) { Text(stringResource(R.string.device_control_shutdown)) }
             },
@@ -153,7 +159,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                 TextButton(onClick = { showShutdownDialog = false }) {
                     Text(stringResource(android.R.string.cancel))
                 }
-            }
+            },
         )
     }
 
@@ -165,30 +171,32 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             painterResource(R.drawable.ic_back_24),
-                            contentDescription = stringResource(R.string.nav_back)
+                            contentDescription = stringResource(R.string.nav_back),
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { innerPadding ->
         if (isLoading) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
             return@Scaffold
         }
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             // ── Connectivity ──────────────────────────────────────────────────
             item { SectionHeader(stringResource(R.string.device_control_section_connectivity)) }
@@ -202,7 +210,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setAirplaneModeEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -214,7 +222,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setWifiEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -226,7 +234,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setBluetoothEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -238,7 +246,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setMobileDataEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -250,7 +258,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setNfcEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -263,7 +271,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.NetworkGovernor.setPrivateDns(mode, host) }
                         }
-                    }
+                    },
                 )
             }
 
@@ -280,7 +288,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setAutoBrightnessEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
 
@@ -295,7 +303,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                             scope.launch(Dispatchers.IO) {
                                 runCatching { ShizukuPlusAPI.DeviceControl.setScreenBrightness(v.toInt()) }
                             }
-                        }
+                        },
                     )
                 }
             }
@@ -309,7 +317,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setAutoRotateEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -320,7 +328,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setScreenTimeout(ms) }
                         }
-                    }
+                    },
                 )
             }
 
@@ -339,7 +347,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setStreamVolume(STREAM_MUSIC, v.toInt()) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -353,7 +361,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setStreamVolume(STREAM_RING, v.toInt()) }
                         }
-                    }
+                    },
                 )
             }
             item {
@@ -367,7 +375,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setStreamVolume(STREAM_ALARM, v.toInt()) }
                         }
-                    }
+                    },
                 )
             }
 
@@ -384,7 +392,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setAnimationsEnabled(v) }
                         }
-                    }
+                    },
                 )
             }
 
@@ -398,7 +406,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         scope.launch(Dispatchers.IO) {
                             runCatching { ShizukuPlusAPI.DeviceControl.setFontScale(v) }
                         }
-                    }
+                    },
                 )
             }
 
@@ -408,23 +416,25 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
 
             item {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { showRebootDialog = true }
+                        onClick = { showRebootDialog = true },
                     ) {
                         Text(stringResource(R.string.device_control_reboot))
                     }
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
                         onClick = { showShutdownDialog = true },
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.error
-                        )
+                        colors =
+                            ButtonDefaults.outlinedButtonColors(
+                                contentColor = MaterialTheme.colorScheme.error,
+                            ),
                     ) {
                         Text(stringResource(R.string.device_control_shutdown))
                     }
@@ -442,7 +452,7 @@ private fun SectionHeader(text: String) {
         text = text,
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
     )
 }
 
@@ -450,18 +460,19 @@ private fun SectionHeader(text: String) {
 private fun ControlToggleRow(
     label: String,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
@@ -473,53 +484,62 @@ private fun ControlSliderRow(
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     steps: Int = 0,
-    onValueChangeFinished: (Float) -> Unit
+    onValueChangeFinished: (Float) -> Unit,
 ) {
     var sliderValue by remember(value) { mutableFloatStateOf(value) }
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(top = 4.dp),
         )
         Slider(
             value = sliderValue,
             onValueChange = { sliderValue = it },
             onValueChangeFinished = { onValueChangeFinished(sliderValue) },
             valueRange = valueRange,
-            steps = steps
+            steps = steps,
         )
     }
 }
 
-private data class TimeoutOption(val ms: Int, val label: String)
-
-private val TIMEOUT_OPTIONS = listOf(
-    TimeoutOption(15_000,   "15 seconds"),
-    TimeoutOption(30_000,   "30 seconds"),
-    TimeoutOption(60_000,   "1 minute"),
-    TimeoutOption(120_000,  "2 minutes"),
-    TimeoutOption(300_000,  "5 minutes"),
-    TimeoutOption(600_000,  "10 minutes"),
-    TimeoutOption(1_800_000,"30 minutes"),
+private data class TimeoutOption(
+    val ms: Int,
+    val label: String,
 )
 
+private val TIMEOUT_OPTIONS =
+    listOf(
+        TimeoutOption(15_000, "15 seconds"),
+        TimeoutOption(30_000, "30 seconds"),
+        TimeoutOption(60_000, "1 minute"),
+        TimeoutOption(120_000, "2 minutes"),
+        TimeoutOption(300_000, "5 minutes"),
+        TimeoutOption(600_000, "10 minutes"),
+        TimeoutOption(1_800_000, "30 minutes"),
+    )
+
 @Composable
-private fun ScreenTimeoutRow(currentMs: Int, onSelect: (Int) -> Unit) {
+private fun ScreenTimeoutRow(
+    currentMs: Int,
+    onSelect: (Int) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
-    val label = TIMEOUT_OPTIONS.firstOrNull { it.ms == currentMs }?.label
-        ?: "${currentMs / 1000}s"
+    val label =
+        TIMEOUT_OPTIONS.firstOrNull { it.ms == currentMs }?.label
+            ?: "${currentMs / 1000}s"
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(R.string.device_control_screen_timeout),
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         Box {
             OutlinedButton(onClick = { expanded = true }) { Text(label) }
@@ -530,7 +550,7 @@ private fun ScreenTimeoutRow(currentMs: Int, onSelect: (Int) -> Unit) {
                         onClick = {
                             expanded = false
                             onSelect(option.ms)
-                        }
+                        },
                     )
                 }
             }
@@ -542,43 +562,54 @@ private fun ScreenTimeoutRow(currentMs: Int, onSelect: (Int) -> Unit) {
 private fun PrivateDnsRow(
     mode: String,
     hostname: String,
-    onApply: (mode: String, hostname: String) -> Unit
+    onApply: (mode: String, hostname: String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var editHostname by remember(hostname) { mutableStateOf(hostname) }
 
-    val modeLabel = when (mode) {
-        "off" -> stringResource(R.string.device_control_dns_off)
-        "hostname" -> stringResource(R.string.device_control_dns_custom)
-        else -> stringResource(R.string.device_control_dns_auto)
-    }
+    val modeLabel =
+        when (mode) {
+            "off" -> stringResource(R.string.device_control_dns_off)
+            "hostname" -> stringResource(R.string.device_control_dns_custom)
+            else -> stringResource(R.string.device_control_dns_auto)
+        }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(R.string.device_control_private_dns),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             Box {
                 OutlinedButton(onClick = { expanded = true }) { Text(modeLabel) }
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.device_control_dns_off)) },
-                        onClick = { expanded = false; onApply("off", "") }
+                        onClick = {
+                            expanded = false
+                            onApply("off", "")
+                        },
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.device_control_dns_auto)) },
-                        onClick = { expanded = false; onApply("opportunistic", "") }
+                        onClick = {
+                            expanded = false
+                            onApply("opportunistic", "")
+                        },
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.device_control_dns_custom)) },
-                        onClick = { expanded = false; onApply("hostname", editHostname) }
+                        onClick = {
+                            expanded = false
+                            onApply("hostname", editHostname)
+                        },
                     )
                 }
             }
@@ -595,7 +626,7 @@ private fun PrivateDnsRow(
                     TextButton(onClick = { onApply("hostname", editHostname) }) {
                         Text(stringResource(R.string.device_control_dns_apply))
                     }
-                }
+                },
             )
         }
     }

@@ -1,13 +1,11 @@
 package af.shizuku.manager.app
 
+import af.shizuku.manager.R
 import android.content.Context
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
-import af.shizuku.manager.app.ThemeHelper
-import af.shizuku.manager.R
 
 object SnackbarHelper {
-
     private var snackbar: Snackbar? = null
 
     fun show(
@@ -17,7 +15,7 @@ object SnackbarHelper {
         duration: Int = Snackbar.LENGTH_SHORT,
         actionText: String? = null,
         action: (() -> Unit)? = null,
-        onDismiss: ((event: Int) -> Unit)? = null
+        onDismiss: ((event: Int) -> Unit)? = null,
     ) {
         dismiss() // Dismiss any existing snackbar
         val newSnackbar = Snackbar.make(view, msg, duration).setDuration(duration)
@@ -25,11 +23,16 @@ object SnackbarHelper {
             newSnackbar.setAction(actionText ?: context.getString(android.R.string.ok)) { action() }
         }
         if (onDismiss != null) {
-            newSnackbar.addCallback(object : Snackbar.Callback() {
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    onDismiss(event)
-                }
-            })
+            newSnackbar.addCallback(
+                object : Snackbar.Callback() {
+                    override fun onDismissed(
+                        transientBottomBar: Snackbar?,
+                        event: Int,
+                    ) {
+                        onDismiss(event)
+                    }
+                },
+            )
         }
         ThemeHelper.applySnackbarTheme(context, newSnackbar)
         newSnackbar.show()
@@ -40,5 +43,4 @@ object SnackbarHelper {
         snackbar?.dismiss()
         snackbar = null
     }
-
 }

@@ -1,5 +1,10 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.adb.*
+import af.shizuku.manager.databinding.AdbPairDialogBinding
+import af.shizuku.manager.utils.SettingsHelper
 import android.annotation.SuppressLint
 import android.app.Application
 import android.app.Dialog
@@ -18,21 +23,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.adb.*
-import af.shizuku.manager.databinding.AdbPairDialogBinding
 import timber.log.Timber
-import af.shizuku.manager.utils.SettingsHelper
 import java.net.ConnectException
 
 @RequiresApi(VERSION_CODES.R)
 class AdbPairDialogFragment : DialogFragment() {
-
     private lateinit var binding: AdbPairDialogBinding
 
     private val viewModel: ViewModel by activityViewModels()
@@ -41,13 +40,14 @@ class AdbPairDialogFragment : DialogFragment() {
         val context = requireContext()
         binding = AdbPairDialogBinding.inflate(LayoutInflater.from(context))
 
-        val builder = MaterialAlertDialogBuilder(context).apply {
-            setTitle(R.string.dialog_adb_pairing_title)
-            setView(binding.root)
-            setNegativeButton(android.R.string.cancel, null)
-            setPositiveButton(android.R.string.ok, null)
-            setNeutralButton(R.string.development_settings, null)
-        }
+        val builder =
+            MaterialAlertDialogBuilder(context).apply {
+                setTitle(R.string.dialog_adb_pairing_title)
+                setView(binding.root)
+                setNegativeButton(android.R.string.cancel, null)
+                setPositiveButton(android.R.string.ok, null)
+                setNeutralButton(R.string.development_settings, null)
+            }
         // Fresh dialog session (not a config-change recreation): clear any terminal result left in
         // the activity-scoped ViewModel from a previous open, so the observer below doesn't get the
         // stale value redelivered and instantly dismiss (past success) or flash a stale failure.
@@ -76,11 +76,12 @@ class AdbPairDialogFragment : DialogFragment() {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val context = it.context
             val portEditText = binding.port.editText
-            val port = try {
-                portEditText?.text.toString().toInt()
-            } catch (_: Exception) {
-                -1
-            }
+            val port =
+                try {
+                    portEditText?.text.toString().toInt()
+                } catch (_: Exception) {
+                    -1
+                }
             if (port > 65535 || port < 1) {
                 binding.port.isVisible = true
                 binding.port.error = context.getString(R.string.dialog_adb_invalid_port)
@@ -100,12 +101,17 @@ class AdbPairDialogFragment : DialogFragment() {
                 binding.pairingCode.isVisible = false
                 binding.progress.isVisible = true
                 binding.status.isVisible = true
-                if (!af.shizuku.manager.utils.NetworkStateHelper.isWirelessAdbSupportedNetwork(requireContext())) {
-                    val tip = if (af.shizuku.manager.utils.EnvironmentUtils.isSamsung()) {
-                        getString(R.string.dialog_adb_samsung_hotspot_warning)
-                    } else {
-                        getString(R.string.dialog_adb_hotspot_tip)
-                    }
+                if (!af.shizuku.manager.utils.NetworkStateHelper
+                        .isWirelessAdbSupportedNetwork(requireContext())
+                ) {
+                    val tip =
+                        if (af.shizuku.manager.utils.EnvironmentUtils
+                                .isSamsung()
+                        ) {
+                            getString(R.string.dialog_adb_samsung_hotspot_warning)
+                        } else {
+                            getString(R.string.dialog_adb_hotspot_tip)
+                        }
                     binding.status.text = getString(R.string.dialog_adb_wifi_disconnected_warning) + "\n\n" + tip
                 } else {
                     binding.status.text = getString(R.string.adb_pairing_searching)
@@ -130,8 +136,16 @@ class AdbPairDialogFragment : DialogFragment() {
         super.onActivityCreated(savedInstanceState)
 
         val context = requireContext()
-        val inMultiScreenOrDisplay = (requireActivity().isInMultiWindowMode
-                || (requireActivity().window?.decorView?.display?.displayId ?: -1) > 0)
+        val inMultiScreenOrDisplay = (
+            requireActivity().isInMultiWindowMode ||
+                (
+                    requireActivity()
+                        .window
+                        ?.decorView
+                        ?.display
+                        ?.displayId ?: -1
+                ) > 0
+        )
 
         binding.text1.isVisible = inMultiScreenOrDisplay
         binding.text2.isVisible = !inMultiScreenOrDisplay
@@ -173,8 +187,10 @@ class AdbPairDialogFragment : DialogFragment() {
                             binding.pairingCode.error = context.getString(R.string.paring_code_is_wrong)
                         }
                         is AdbKeyException -> {
-                            Toast.makeText(context, context.getString(R.string.adb_error_key_store), Toast.LENGTH_LONG)
-                                .apply { setGravity(Gravity.CENTER, 0, 0) }.show()
+                            Toast
+                                .makeText(context, context.getString(R.string.adb_error_key_store), Toast.LENGTH_LONG)
+                                .apply { setGravity(Gravity.CENTER, 0, 0) }
+                                .show()
                         }
                         else -> Unit
                     }
@@ -188,20 +204,23 @@ class AdbPairDialogFragment : DialogFragment() {
         show(fragmentManager, javaClass.simpleName)
     }
 
-    override fun getDialog(): AlertDialog? {
-        return super.getDialog() as AlertDialog?
-    }
+    override fun getDialog(): AlertDialog? = super.getDialog() as AlertDialog?
 }
 
 sealed class PairingState {
     object Idle : PairingState()
+
     object Success : PairingState()
-    data class Failure(val error: Throwable) : PairingState()
+
+    data class Failure(
+        val error: Throwable,
+    ) : PairingState()
 }
 
 @SuppressLint("NewApi")
-class ViewModel(application: Application) : AndroidViewModel(application) {
-
+class ViewModel(
+    application: Application,
+) : AndroidViewModel(application) {
     private val appContext = getApplication<Application>().applicationContext
 
     private val _result = MutableLiveData<PairingState>(PairingState.Idle)
@@ -213,40 +232,46 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     private val _isPairing = MutableLiveData<Boolean>(false)
     val isPairing = _isPairing as LiveData<Boolean>
 
-    private val adbMdns: AdbMdns = AdbMdns(appContext, AdbMdns.TLS_PAIRING) {
-        _port.postValue(it)
-    }
+    private val adbMdns: AdbMdns =
+        AdbMdns(appContext, AdbMdns.TLS_PAIRING) {
+            _port.postValue(it)
+        }
 
     init {
         adbMdns.start()
     }
 
-    fun run(port: Int, password: String) {
+    fun run(
+        port: Int,
+        password: String,
+    ) {
         _isPairing.value = true
         viewModelScope.launch(Dispatchers.IO) {
             val host = adbMdns.resolvedHost
 
-            val key = try {
-                AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")
-            } catch (e: Throwable) {
-                Timber.e("failed to load or create AdbKey", e)
-                _isPairing.postValue(false)
-                _result.postValue(PairingState.Failure(AdbKeyException(e)))
-                return@launch
-            }
-
-            AdbPairingClient(host, port, password, key).runCatching {
-                start()
-            }.onFailure {
-                _isPairing.postValue(false)
-                _result.postValue(PairingState.Failure(it))
-                Timber.e("adb pairing failed", it)
-            }.onSuccess {
-                _isPairing.postValue(false)
-                if (it) {
-                    _result.postValue(PairingState.Success)
+            val key =
+                try {
+                    AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")
+                } catch (e: Throwable) {
+                    Timber.e("failed to load or create AdbKey", e)
+                    _isPairing.postValue(false)
+                    _result.postValue(PairingState.Failure(AdbKeyException(e)))
+                    return@launch
                 }
-            }
+
+            AdbPairingClient(host, port, password, key)
+                .runCatching {
+                    start()
+                }.onFailure {
+                    _isPairing.postValue(false)
+                    _result.postValue(PairingState.Failure(it))
+                    Timber.e("adb pairing failed", it)
+                }.onSuccess {
+                    _isPairing.postValue(false)
+                    if (it) {
+                        _result.postValue(PairingState.Success)
+                    }
+                }
         }
     }
 

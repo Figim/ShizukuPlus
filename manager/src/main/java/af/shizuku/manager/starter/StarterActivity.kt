@@ -1,10 +1,18 @@
 package af.shizuku.manager.starter
 
+import af.shizuku.core.ui.AppBarActivity
+import af.shizuku.manager.AppConstants.EXTRA
+import af.shizuku.manager.R
+import af.shizuku.manager.adb.AdbKeyException
+import af.shizuku.manager.adb.AdbStarter
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.databinding.StarterActivityBinding
+import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import af.shizuku.manager.utils.HapticUtils
 import androidx.activity.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -13,35 +21,25 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.CallbackList
 import com.topjohnwu.superuser.Shell
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.util.concurrent.TimeoutException
-import javax.net.ssl.SSLProtocolException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.AppConstants.EXTRA
-import af.shizuku.manager.R
-import af.shizuku.manager.adb.AdbKeyException
-import af.shizuku.manager.adb.AdbStarter
-import af.shizuku.core.ui.AppBarActivity
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.utils.ShizukuStateMachine
-import af.shizuku.manager.databinding.StarterActivityBinding
 import rikka.lifecycle.Resource
 import rikka.lifecycle.Status
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.util.concurrent.TimeoutException
+import javax.net.ssl.SSLProtocolException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-private class NotRootedException: Exception()
+private class NotRootedException : Exception()
 
 class StarterActivity : AppBarActivity() {
-
     private val viewModel: ViewModel by viewModels()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,14 +52,19 @@ class StarterActivity : AppBarActivity() {
         val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
         // ADB start connects to the wireless-debugging service over the local network / loopback,
         // which Android 16+ gates behind local-network access - request it before connecting (#317).
-        if (!isRoot) af.shizuku.manager.adb.LocalNetworkPermission.request(this)
+        if (!isRoot) {
+            af.shizuku.manager.adb.LocalNetworkPermission
+                .request(this)
+        }
         binding.header.apply {
             headerIcon.setImageResource(if (isRoot) R.drawable.ic_root_24 else R.drawable.ic_adb_24)
             // Same seedKey as the originating Home card (StartRootViewHolder/StartAdbViewHolder)
             // so the shared-element transition into this screen doesn't snap the icon's
             // shape/color back to the static droplet default mid-animation.
             af.shizuku.manager.utils.IconStyleHelper.applyToCardIcon(
-                headerIcon, headerIcon.drawable, if (isRoot) "home_start_root" else "home_start_adb"
+                headerIcon,
+                headerIcon.drawable,
+                if (isRoot) "home_start_root" else "home_start_adb",
             )
             headerIcon.transitionName = if (isRoot) "icon_root" else "icon_adb"
             headerTitle.setText(if (isRoot) R.string.home_root_title else R.string.home_adb_title)
@@ -95,14 +98,12 @@ class StarterActivity : AppBarActivity() {
                         binding.progressIndicator.visibility = View.VISIBLE
                         binding.cancelButton.visibility = View.VISIBLE
                         viewModel.retry()
-                    }
-                    .show()
+                    }.show()
             }
             binding.text1.text = output
             binding.scrollView.post { binding.scrollView.scrollTo(0, Int.MAX_VALUE) }
         }
     }
-
 
     private var hasStarted = false
 
@@ -115,21 +116,21 @@ class StarterActivity : AppBarActivity() {
             viewModel.start(
                 intent.getBooleanExtra(EXTRA_IS_ROOT, false),
                 intent.getBooleanExtra(EXTRA_IS_SYSTEM, false),
-                port
+                port,
             )
         }
     }
 
     companion object {
-
         const val EXTRA_IS_SYSTEM = "$EXTRA.IS_SYSTEM"
         const val EXTRA_IS_ROOT = "$EXTRA.IS_ROOT"
         const val EXTRA_PORT = "$EXTRA.PORT"
     }
 }
 
-class ViewModel(application: Application) : AndroidViewModel(application) {
-
+class ViewModel(
+    application: Application,
+) : AndroidViewModel(application) {
     private val appContext = getApplication<Application>().applicationContext
 
     private val sb = StringBuilder()
@@ -137,25 +138,30 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
 
     val output = _output as LiveData<Resource<StringBuilder>>
 
-    private val handler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable !is CancellationException) {
-            io.sentry.Sentry.captureException(throwable)
+    private val handler =
+        CoroutineExceptionHandler { _, throwable ->
+            if (throwable !is CancellationException) {
+                io.sentry.Sentry.captureException(throwable)
+            }
+            // Reset STARTING → STOPPED before update() so a failed start doesn't
+            // leave the state machine stuck (update() preserves STARTING when binder is dead).
+            if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+            }
+            ShizukuStateMachine.update()
+            log(error = throwable)
         }
-        // Reset STARTING → STOPPED before update() so a failed start doesn't
-        // leave the state machine stuck (update() preserves STARTING when binder is dead).
-        if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
-            ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
-        }
-        ShizukuStateMachine.update()
-        log(error = throwable)
-    }
 
     private var started = false
     private var lastRoot = false
     private var lastSystem = false
     private var lastPort = 0
 
-    fun start(root: Boolean, isSystem: Boolean, port: Int) {
+    fun start(
+        root: Boolean,
+        isSystem: Boolean,
+        port: Int,
+    ) {
         lastRoot = root
         lastSystem = isSystem
         lastPort = port
@@ -167,9 +173,13 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
         started = true
 
         viewModelScope.launch(handler) {
-            if (root) startRoot()
-            else if (isSystem) startSys()
-            else AdbStarter.startAdb(appContext, port, { log(it) })
+            if (root) {
+                startRoot()
+            } else if (isSystem) {
+                startSys()
+            } else {
+                AdbStarter.startAdb(appContext, port, { log(it) })
+            }
             Starter.waitForBinder({ log(it) })
         }
     }
@@ -182,7 +192,9 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun startSys() {
-        if (!af.shizuku.manager.ShizukuSettings.isSamsungSystemUidEscalationEnabled()) {
+        if (!af.shizuku.manager.ShizukuSettings
+                .isSamsungSystemUidEscalationEnabled()
+        ) {
             log("Samsung System UID Escalation is disabled for security reasons.\n")
             log("Enable it in Developer Settings to use this experimental feature.\n\n")
             log("info: shizuku_starter exit with 1")
@@ -193,16 +205,20 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
 
         withContext(Dispatchers.IO) {
             try {
-                val intent = android.content.Intent().apply {
-                    setClassName("com.sdet.fotaagent", "com.sdet.fotaagent.Main")
-                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
+                val intent =
+                    android.content.Intent().apply {
+                        setClassName("com.sdet.fotaagent", "com.sdet.fotaagent.Main")
+                        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                 appContext.startActivity(intent)
 
                 val mIntent = android.content.Intent("com.sdet.fotaagent.intent.CP_FILE")
                 mIntent.putExtra("CP_FILE", "/data")
-                mIntent.putExtra("CP_LOC", "; " + appContext.applicationInfo.nativeLibraryDir
-                        + "/libshizuku.so" + "; am force-stop com.sdet.fotaagent")
+                mIntent.putExtra(
+                    "CP_LOC",
+                    "; " + appContext.applicationInfo.nativeLibraryDir +
+                        "/libshizuku.so" + "; am force-stop com.sdet.fotaagent",
+                )
                 kotlinx.coroutines.delay(1000)
                 appContext.sendBroadcast(mIntent)
                 log("FOTA command broadcast sent!\n\n")
@@ -217,11 +233,17 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun log(line: String? = null, error: Throwable? = null) {
+    private fun log(
+        line: String? = null,
+        error: Throwable? = null,
+    ) {
         line?.let { sb.appendLine(it) }
         error?.let { sb.appendLine().appendLine(Log.getStackTraceString(it)) }
-        if (error == null) _output.postValue(Resource.success(sb))
-        else _output.postValue(Resource.error(error, sb))
+        if (error == null) {
+            _output.postValue(Resource.success(sb))
+        } else {
+            _output.postValue(Resource.error(error, sb))
+        }
     }
 
     private suspend fun startRoot() {
@@ -240,11 +262,15 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
 
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
             suspendCancellableCoroutine { cont ->
-                Shell.cmd(Starter.internalCommand)
-                    .to(object : CallbackList<String?>() {
-                        override fun onAddElement(s: String?) { s?.let { log(it) } }
-                    })
-                    .submit {
+                Shell
+                    .cmd(Starter.internalCommand)
+                    .to(
+                        object : CallbackList<String?>() {
+                            override fun onAddElement(s: String?) {
+                                s?.let { log(it) }
+                            }
+                        },
+                    ).submit {
                         if (cont.isActive) {
                             if (it.isSuccess) {
                                 ShizukuStateMachine.update()
@@ -258,5 +284,4 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
-
 }

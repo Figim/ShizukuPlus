@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit
  * slow, the crash event still goes out unmodified rather than being blocked or lost.
  */
 class SelectiveScreenshotEventProcessor : EventProcessor {
-
     companion object {
         private const val MAIN_THREAD_CAPTURE_TIMEOUT_MS = 200L
         private const val MAX_SCREENSHOT_WIDTH_PX = 480
@@ -35,20 +34,22 @@ class SelectiveScreenshotEventProcessor : EventProcessor {
 
         // Stack frames touching any of these packages/classes point at UI-rendering, theming,
         // or Home-card rendering code - the areas that produced the black-screen class of bug.
-        private val UI_RELATED_PACKAGE_PREFIXES = listOf(
-            "af.shizuku.core.ui.",
-            "af.shizuku.manager.home.",
-            "af.shizuku.manager.utils.ThemeDelegateImpl",
-            "af.shizuku.manager.utils.IconStyleHelper",
-            "af.shizuku.manager.settings.",
-        )
+        private val UI_RELATED_PACKAGE_PREFIXES =
+            listOf(
+                "af.shizuku.core.ui.",
+                "af.shizuku.manager.home.",
+                "af.shizuku.manager.utils.ThemeDelegateImpl",
+                "af.shizuku.manager.utils.IconStyleHelper",
+                "af.shizuku.manager.settings.",
+            )
 
-        private val UI_EXCEPTION_TYPES = listOf(
-            "android.view.InflateException",
-            "android.view.WindowManager\$BadTokenException",
-            "android.content.res.Resources\$NotFoundException",
-            "android.util.AndroidRuntimeException",
-        )
+        private val UI_EXCEPTION_TYPES =
+            listOf(
+                "android.view.InflateException",
+                "android.view.WindowManager\$BadTokenException",
+                "android.content.res.Resources\$NotFoundException",
+                "android.util.AndroidRuntimeException",
+            )
 
         private fun isUiRenderingRelated(throwable: Throwable?): Boolean {
             var current = throwable
@@ -58,7 +59,8 @@ class SelectiveScreenshotEventProcessor : EventProcessor {
                 if (UI_EXCEPTION_TYPES.any { className == it }) return true
                 if (current.stackTrace.any { frame ->
                         UI_RELATED_PACKAGE_PREFIXES.any { prefix -> frame.className.startsWith(prefix) }
-                    }) {
+                    }
+                ) {
                     return true
                 }
                 current = current.cause
@@ -68,7 +70,10 @@ class SelectiveScreenshotEventProcessor : EventProcessor {
         }
     }
 
-    override fun process(event: SentryEvent, hint: Hint): SentryEvent {
+    override fun process(
+        event: SentryEvent,
+        hint: Hint,
+    ): SentryEvent {
         try {
             if (!isUiRenderingRelated(event.throwable)) return event
             val screenshot = captureForegroundActivityScreenshot() ?: return event

@@ -1,6 +1,6 @@
 package af.shizuku.manager.update
 import af.shizuku.manager.R
-
+import af.shizuku.manager.ShizukuSettings
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.app.PendingIntent
@@ -9,20 +9,20 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import timber.log.Timber
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
-import af.shizuku.manager.ShizukuSettings
-import java.io.File
 import kotlinx.coroutines.*
+import timber.log.Timber
+import java.io.File
 
 /**
  * Manages downloading and installing updates
  */
-class UpdateManager(private val context: Context) {
-
+class UpdateManager(
+    private val context: Context,
+) {
     companion object {
         private const val TAG = "UpdateManager"
         private const val NOTIFICATION_CHANNEL_ID = "update_channel"
@@ -41,28 +41,33 @@ class UpdateManager(private val context: Context) {
      * Create notification channel for updates
      */
     private fun createNotificationChannel() {
-        val channel = NotificationChannelCompat.Builder(
-            NOTIFICATION_CHANNEL_ID,
-            NotificationManagerCompat.IMPORTANCE_HIGH
-        )
-            .setName(context.getString(R.string.update_notification_channel))
-            .setDescription(context.getString(R.string.update_notification_channel_description))
-            .build()
+        val channel =
+            NotificationChannelCompat
+                .Builder(
+                    NOTIFICATION_CHANNEL_ID,
+                    NotificationManagerCompat.IMPORTANCE_HIGH,
+                ).setName(context.getString(R.string.update_notification_channel))
+                .setDescription(context.getString(R.string.update_notification_channel_description))
+                .build()
         notificationManager.createNotificationChannel(channel)
     }
+
+    // True when the download was started by the user explicitly (manual check in Settings),
+    // as opposed to the automatic daily-check dialog in HomeActivity. Affects whether
+    // onDownloadComplete aborts silently when isAutoUpdateEnabled() has since been turned off.
+    private var isManualDownload = false
 
     /**
      * Download update APK
      * @param downloadUrl URL to download the APK from
      * @param versionName Version name for display
      */
-    // True when the download was started by the user explicitly (manual check in Settings),
-    // as opposed to the automatic daily-check dialog in HomeActivity. Affects whether
-    // onDownloadComplete aborts silently when isAutoUpdateEnabled() has since been turned off.
-    private var isManualDownload = false
-
     @SuppressLint("Range")
-    fun downloadUpdate(downloadUrl: String, versionName: String, manual: Boolean = false) {
+    fun downloadUpdate(
+        downloadUrl: String,
+        versionName: String,
+        manual: Boolean = false,
+    ) {
         isManualDownload = manual
         createNotificationChannel()
 
@@ -82,26 +87,29 @@ class UpdateManager(private val context: Context) {
             // Old update APKs are never referenced again once a newer one starts downloading.
             cleanup()
 
-            val request = DownloadManager.Request(Uri.parse(downloadUrl))
-                .setTitle(context.getString(R.string.update_downloading_title))
-                .setDescription(context.getString(R.string.update_downloading_description, versionName))
-                // HIDDEN, not VISIBLE_NOTIFY_COMPLETED — monitorDownload() already drives our own
-                // progress/install notifications; VISIBLE_NOTIFY_COMPLETED would show a second,
-                // redundant system download notification alongside them.
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
-                .setDestinationUri(Uri.fromFile(file))
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
-                .setMimeType("application/vnd.android.package-archive")
+            val request =
+                DownloadManager
+                    .Request(Uri.parse(downloadUrl))
+                    .setTitle(context.getString(R.string.update_downloading_title))
+                    .setDescription(context.getString(R.string.update_downloading_description, versionName))
+                    // HIDDEN, not VISIBLE_NOTIFY_COMPLETED — monitorDownload() already drives our own
+                    // progress/install notifications; VISIBLE_NOTIFY_COMPLETED would show a second,
+                    // redundant system download notification alongside them.
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                    .setDestinationUri(Uri.fromFile(file))
+                    .setAllowedOverMetered(true)
+                    .setAllowedOverRoaming(true)
+                    .setMimeType("application/vnd.android.package-archive")
 
             // Add after-download broadcast
-            request.addRequestHeader("User-Agent", "Shizuku+/${versionName}")
+            request.addRequestHeader("User-Agent", "Shizuku+/$versionName")
 
             try {
                 downloadId = downloadManager.enqueue(request)
 
                 // Save download ID
-                context.getSharedPreferences("update_prefs", Context.MODE_PRIVATE)
+                context
+                    .getSharedPreferences("update_prefs", Context.MODE_PRIVATE)
                     .edit()
                     .putLong(DOWNLOAD_ID_PREF, downloadId)
                     .apply()
@@ -122,87 +130,98 @@ class UpdateManager(private val context: Context) {
     /**
      * Monitor download progress
      */
-    private fun monitorDownload(downloadId: Long, file: File, versionName: String) {
+    private fun monitorDownload(
+        downloadId: Long,
+        file: File,
+        versionName: String,
+    ) {
         monitorJob?.cancel()
-        monitorJob = scope.launch {
-            while (isActive) {
-                try {
-                    val query = DownloadManager.Query().setFilterById(downloadId)
-                    // Explicit projection avoids IllegalArgumentException("column local_filename is not allowed")
-                    // thrown by DownloadManager on some Android 10+ OEM builds when the default
-                    // projection internally includes the removed local_filename column.
-                    val cursor = try {
-                        withContext(Dispatchers.IO) { downloadManager.query(query) }
-                    } catch (e: IllegalArgumentException) {
-                        Timber.tag(TAG).w(e, "DownloadManager.query rejected by system; retrying bare filter")
-                        null
-                    }
+        monitorJob =
+            scope.launch {
+                while (isActive) {
+                    try {
+                        val query = DownloadManager.Query().setFilterById(downloadId)
+                        // Explicit projection avoids IllegalArgumentException("column local_filename is not allowed")
+                        // thrown by DownloadManager on some Android 10+ OEM builds when the default
+                        // projection internally includes the removed local_filename column.
+                        val cursor =
+                            try {
+                                withContext(Dispatchers.IO) { downloadManager.query(query) }
+                            } catch (e: IllegalArgumentException) {
+                                Timber.tag(TAG).w(e, "DownloadManager.query rejected by system; retrying bare filter")
+                                null
+                            }
 
-                    if (cursor != null && !cursor.moveToFirst()) {
-                        // Empty cursor — download entry is gone (cancelled, removed externally).
-                        // Nothing to act on; close to avoid leaking the cursor object.
-                        cursor.close()
-                    } else if (cursor != null) {
-                        val statusIdx = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                        val progressIdx = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
-                        val totalIdx = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
-                        val status = if (statusIdx >= 0) cursor.getInt(statusIdx) else DownloadManager.STATUS_RUNNING
-                        val progress = if (progressIdx >= 0) cursor.getLong(progressIdx) else 0L
-                        val total = if (totalIdx >= 0) cursor.getLong(totalIdx) else 0L
+                        if (cursor != null && !cursor.moveToFirst()) {
+                            // Empty cursor — download entry is gone (cancelled, removed externally).
+                            // Nothing to act on; close to avoid leaking the cursor object.
+                            cursor.close()
+                        } else if (cursor != null) {
+                            val statusIdx = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                            val progressIdx = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                            val totalIdx = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
+                            val status = if (statusIdx >= 0) cursor.getInt(statusIdx) else DownloadManager.STATUS_RUNNING
+                            val progress = if (progressIdx >= 0) cursor.getLong(progressIdx) else 0L
+                            val total = if (totalIdx >= 0) cursor.getLong(totalIdx) else 0L
 
-                        when (status) {
-                            DownloadManager.STATUS_SUCCESSFUL -> {
-                                cursor.close()
-                                Timber.tag(TAG).d("Download completed: ${file.absolutePath}")
-                                onDownloadComplete(file, versionName)
-                                break
+                            when (status) {
+                                DownloadManager.STATUS_SUCCESSFUL -> {
+                                    cursor.close()
+                                    Timber.tag(TAG).d("Download completed: ${file.absolutePath}")
+                                    onDownloadComplete(file, versionName)
+                                    break
+                                }
+                                DownloadManager.STATUS_FAILED -> {
+                                    // COLUMN_REASON holds a DownloadManager.ERROR_* code when
+                                    // STATUS_FAILED - without it "Download failed" (SHIZUKUPLUS-8H)
+                                    // gives no way to tell insufficient-storage, HTTP errors, and
+                                    // unresumable transfers apart. WARN not ERROR: download failures
+                                    // are expected user-facing events (bad network, no storage, etc.).
+                                    val reasonIdx = cursor.getColumnIndex(DownloadManager.COLUMN_REASON)
+                                    val reason = if (reasonIdx >= 0) cursor.getInt(reasonIdx) else -1
+                                    cursor.close()
+                                    Timber.tag(TAG).w("Download failed (reason=$reason)")
+                                    showDownloadErrorNotification(reason)
+                                    break
+                                }
+                                DownloadManager.STATUS_PAUSED -> {
+                                    // Waiting for network
+                                }
+                                DownloadManager.STATUS_RUNNING -> {
+                                    // Update progress notification. progress/total are Long — an
+                                    // Int (progress * 100) would overflow for any file over ~21.4MB.
+                                    val percent = if (total > 0) (progress * 100 / total).toInt() else 0
+                                    updateProgressNotification(percent, versionName)
+                                }
                             }
-                            DownloadManager.STATUS_FAILED -> {
-                                // COLUMN_REASON holds a DownloadManager.ERROR_* code when
-                                // STATUS_FAILED - without it "Download failed" (SHIZUKUPLUS-8H)
-                                // gives no way to tell insufficient-storage, HTTP errors, and
-                                // unresumable transfers apart. WARN not ERROR: download failures
-                                // are expected user-facing events (bad network, no storage, etc.).
-                                val reasonIdx = cursor.getColumnIndex(DownloadManager.COLUMN_REASON)
-                                val reason = if (reasonIdx >= 0) cursor.getInt(reasonIdx) else -1
-                                cursor.close()
-                                Timber.tag(TAG).w("Download failed (reason=$reason)")
-                                showDownloadErrorNotification(reason)
-                                break
-                            }
-                            DownloadManager.STATUS_PAUSED -> {
-                                // Waiting for network
-                            }
-                            DownloadManager.STATUS_RUNNING -> {
-                                // Update progress notification. progress/total are Long — an
-                                // Int (progress * 100) would overflow for any file over ~21.4MB.
-                                val percent = if (total > 0) (progress * 100 / total).toInt() else 0
-                                updateProgressNotification(percent, versionName)
-                            }
+                            cursor.close()
                         }
-                        cursor.close()
+                    } catch (e: Exception) {
+                        Timber.tag(TAG).e(e, "Error monitoring download")
                     }
-                } catch (e: Exception) {
-                    Timber.tag(TAG).e(e, "Error monitoring download")
+                    delay(500)
                 }
-                delay(500)
             }
-        }
     }
 
     /**
      * Update progress notification
      */
-    private fun updateProgressNotification(progress: Int, versionName: String) {
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentTitle(context.getString(R.string.update_downloading_title))
-            .setContentText(context.getString(R.string.update_downloading_progress, versionName, progress))
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
-            .setProgress(100, progress, false)
-            .build()
+    private fun updateProgressNotification(
+        progress: Int,
+        versionName: String,
+    ) {
+        val notification =
+            NotificationCompat
+                .Builder(context, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle(context.getString(R.string.update_downloading_title))
+                .setContentText(context.getString(R.string.update_downloading_progress, versionName, progress))
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .setProgress(100, progress, false)
+                .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
@@ -210,7 +229,10 @@ class UpdateManager(private val context: Context) {
     /**
      * Called when download is complete
      */
-    private fun onDownloadComplete(file: File, versionName: String) {
+    private fun onDownloadComplete(
+        file: File,
+        versionName: String,
+    ) {
         // Remove progress notification
         notificationManager.cancel(NOTIFICATION_ID)
 
@@ -237,40 +259,47 @@ class UpdateManager(private val context: Context) {
     /**
      * Show notification to install the update
      */
-    private fun showInstallNotification(file: File, versionName: String) {
+    private fun showInstallNotification(
+        file: File,
+        versionName: String,
+    ) {
         try {
-            val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                shareableApkUri(file)
-            } else {
-                Uri.fromFile(file)
-            }
+            val apkUri =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    shareableApkUri(file)
+                } else {
+                    Uri.fromFile(file)
+                }
 
-            val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(apkUri, "application/vnd.android.package-archive")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            val installIntent =
+                Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(apkUri, "application/vnd.android.package-archive")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
 
-            val pendingIntent = PendingIntent.getActivity(
-                context,
-                0,
-                installIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-
-            val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle(context.getString(R.string.update_ready_title))
-                .setContentText(context.getString(R.string.update_ready_description, versionName))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .addAction(
-                    R.drawable.ic_notification_icon,
-                    context.getString(R.string.update_install_now),
-                    pendingIntent
+            val pendingIntent =
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    installIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
-                .build()
+
+            val notification =
+                NotificationCompat
+                    .Builder(context, NOTIFICATION_CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_notification_icon)
+                    .setContentTitle(context.getString(R.string.update_ready_title))
+                    .setContentText(context.getString(R.string.update_ready_description, versionName))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .addAction(
+                        R.drawable.ic_notification_icon,
+                        context.getString(R.string.update_install_now),
+                        pendingIntent,
+                    ).build()
 
             notificationManager.notify(NOTIFICATION_ID + 1, notification)
         } catch (e: Exception) {
@@ -309,20 +338,24 @@ class UpdateManager(private val context: Context) {
      * (#414) instead of the generic message.
      */
     private fun showDownloadErrorNotification(reason: Int? = null) {
-        val messageRes = when (reason) {
-            DownloadManager.ERROR_INSUFFICIENT_SPACE -> R.string.update_download_failed_storage
-            DownloadManager.ERROR_CANNOT_RESUME -> R.string.update_download_failed_cannot_resume
-            DownloadManager.ERROR_HTTP_DATA_ERROR,
-            DownloadManager.ERROR_UNHANDLED_HTTP_CODE -> R.string.update_download_failed_http
-            else -> R.string.update_download_failed_message
-        }
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentTitle(context.getString(R.string.update_download_failed_title))
-            .setContentText(context.getString(messageRes))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true)
-            .build()
+        val messageRes =
+            when (reason) {
+                DownloadManager.ERROR_INSUFFICIENT_SPACE -> R.string.update_download_failed_storage
+                DownloadManager.ERROR_CANNOT_RESUME -> R.string.update_download_failed_cannot_resume
+                DownloadManager.ERROR_HTTP_DATA_ERROR,
+                DownloadManager.ERROR_UNHANDLED_HTTP_CODE,
+                -> R.string.update_download_failed_http
+                else -> R.string.update_download_failed_message
+            }
+        val notification =
+            NotificationCompat
+                .Builder(context, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle(context.getString(R.string.update_download_failed_title))
+                .setContentText(context.getString(messageRes))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .build()
 
         notificationManager.notify(NOTIFICATION_ID + 2, notification)
     }
@@ -333,21 +366,29 @@ class UpdateManager(private val context: Context) {
      * @return true only if the APK was installed silently without user interaction.
      *   Returns false for any failure or timeout — the caller then shows the install notification.
      */
-    suspend fun installApk(file: File): Boolean {
-        return try {
+    suspend fun installApk(file: File): Boolean =
+        try {
             // 60 s covers piping a multi-MB APK over Shizuku stdin + pm install processing.
             withTimeoutOrNull(60_000) {
-                val isRoot = withContext(Dispatchers.IO) {
-                    runCatching { com.topjohnwu.superuser.Shell.getShell().isRoot }.getOrDefault(false)
-                }
+                val isRoot =
+                    withContext(Dispatchers.IO) {
+                        runCatching {
+                            com.topjohnwu.superuser.Shell
+                                .getShell()
+                                .isRoot
+                        }.getOrDefault(false)
+                    }
                 val hasShizuku = rikka.shizuku.Shizuku.pingBinder()
 
                 when {
                     isRoot -> {
                         // Root shell can read files in getExternalFilesDir on all API levels.
-                        val result = withContext(Dispatchers.IO) {
-                            com.topjohnwu.superuser.Shell.cmd("pm install -r -d \"${file.absolutePath}\"").exec()
-                        }
+                        val result =
+                            withContext(Dispatchers.IO) {
+                                com.topjohnwu.superuser.Shell
+                                    .cmd("pm install -r -d \"${file.absolutePath}\"")
+                                    .exec()
+                            }
                         if (result.isSuccess) {
                             Timber.tag(TAG).i("Silent install via root succeeded")
                             true
@@ -374,7 +415,6 @@ class UpdateManager(private val context: Context) {
             Timber.tag(TAG).e(e, "installApk failed unexpectedly")
             false
         }
-    }
 
     /**
      * Reads the APK in the app process and streams it to `pm install` via Shizuku stdin,
@@ -383,17 +423,24 @@ class UpdateManager(private val context: Context) {
     private fun installViaShizukuStdin(file: File): Boolean {
         return try {
             val apkBytes = file.readBytes()
-            val script = "cat > /data/local/tmp/update.apk && chmod 644 /data/local/tmp/update.apk" +
-                " && pm install -r -d /data/local/tmp/update.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/update.apk"
-            val process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", script), null, null)
-                ?: run {
-                    Timber.tag(TAG).w("Shizuku.newProcess returned null")
-                    return false
-                }
+            val script =
+                "cat > /data/local/tmp/update.apk && chmod 644 /data/local/tmp/update.apk" +
+                    " && pm install -r -d /data/local/tmp/update.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/update.apk"
+            val process =
+                rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", script), null, null)
+                    ?: run {
+                        Timber.tag(TAG).w("Shizuku.newProcess returned null")
+                        return false
+                    }
             process.outputStream.use { it.write(apkBytes) }
             val output = process.inputStream.bufferedReader().readText()
             process.waitFor()
-            val exitCode = Regex("EXIT:(\\d+)").find(output)?.groupValues?.get(1)?.toIntOrNull()
+            val exitCode =
+                Regex("EXIT:(\\d+)")
+                    .find(output)
+                    ?.groupValues
+                    ?.get(1)
+                    ?.toIntOrNull()
             val success = exitCode == 0
             if (success) {
                 Timber.tag(TAG).i("Shizuku stdin install succeeded")
@@ -410,14 +457,13 @@ class UpdateManager(private val context: Context) {
     /**
      * Check if user has granted install permission
      */
-    fun canRequestPackageInstalls(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    fun canRequestPackageInstalls(): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val packageManager = context.packageManager
             packageManager.canRequestPackageInstalls()
         } else {
             true
         }
-    }
 
     /**
      * Cancel ongoing downloads and coroutines. Call when the owner is done with this manager.

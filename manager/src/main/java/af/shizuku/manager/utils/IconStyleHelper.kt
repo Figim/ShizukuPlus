@@ -1,5 +1,8 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ktx.themeColor
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
@@ -10,28 +13,30 @@ import android.widget.ImageView
 import androidx.preference.PreferenceGroup
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.color.utilities.Hct
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.ktx.themeColor
 import kotlin.math.abs
 import kotlin.math.min
 
 object IconStyleHelper {
-
-    enum class Style(val key: String) {
+    enum class Style(
+        val key: String,
+    ) {
         STANDARD("standard"),
         OUTLINED("outlined"),
-        TWO_TONE("twotone");
+        TWO_TONE("twotone"),
+        ;
 
         companion object {
             fun fromKey(key: String?): Style = values().firstOrNull { it.key == key } ?: TWO_TONE
         }
     }
 
-    enum class ColorMode(val key: String) {
+    enum class ColorMode(
+        val key: String,
+    ) {
         NONE("none"),
         UNIFORM("uniform"),
-        PER_ICON("per_icon");
+        PER_ICON("per_icon"),
+        ;
 
         companion object {
             fun fromKey(key: String?): ColorMode = values().firstOrNull { it.key == key } ?: UNIFORM
@@ -43,13 +48,14 @@ object IconStyleHelper {
     private const val HUE_SLOTS = 12
 
     fun current(): Style = Style.fromKey(ShizukuSettings.getIconStyle())
+
     fun currentColorMode(): ColorMode = ColorMode.fromKey(ShizukuSettings.getIconColorMode())
 
     fun applyToTree(
         context: Context,
         group: PreferenceGroup,
         style: Style = current(),
-        colorMode: ColorMode = currentColorMode()
+        colorMode: ColorMode = currentColorMode(),
     ) {
         var styledCount = 0
         for (i in 0 until group.preferenceCount) {
@@ -67,7 +73,10 @@ object IconStyleHelper {
         }
         timber.log.Timber.tag("IconStyleHelper").d(
             "applyToTree: styled %d icons in group '%s' (style=%s, mode=%s)",
-            styledCount, group.key ?: group.title ?: "root", style, colorMode
+            styledCount,
+            group.key ?: group.title ?: "root",
+            style,
+            colorMode,
         )
     }
 
@@ -77,7 +86,7 @@ object IconStyleHelper {
         style: Style = current(),
         colorMode: ColorMode = currentColorMode(),
         seedKey: String? = null,
-        insetDp: Int = 4
+        insetDp: Int = 4,
     ): Drawable {
         val mutable = original.mutate()
         return when (style) {
@@ -115,7 +124,7 @@ object IconStyleHelper {
         original: Drawable,
         seedKey: String,
         style: Style = current(),
-        colorMode: ColorMode = currentColorMode()
+        colorMode: ColorMode = currentColorMode(),
     ) {
         val context = imageView.context
         imageView.background = null
@@ -139,8 +148,12 @@ object IconStyleHelper {
     private var cachedPrimary: Int = 0
     private val perIconColorCache = arrayOfNulls<Pair<Int, Int>>(HUE_SLOTS)
 
-    private fun twoToneColors(context: Context, colorMode: ColorMode, seedKey: String?): Pair<Int, Int> {
-        return when (colorMode) {
+    private fun twoToneColors(
+        context: Context,
+        colorMode: ColorMode,
+        seedKey: String?,
+    ): Pair<Int, Int> =
+        when (colorMode) {
             ColorMode.NONE ->
                 resolveColor(context, R.attr.colorSurfaceVariant) to resolveColor(context, R.attr.colorOnSurfaceVariant)
             ColorMode.UNIFORM ->
@@ -164,7 +177,6 @@ object IconStyleHelper {
                 }
             }
         }
-    }
 
     /**
      * The Two-Tone pill's background shape, following the same "app personality" dial as
@@ -177,7 +189,10 @@ object IconStyleHelper {
      * setting can still share the same shape, rather than reaching for the static
      * shape_droplet_background drawable directly and drifting out of sync with shape_style.
      */
-    fun pillBackground(context: Context, color: Int): Drawable {
+    fun pillBackground(
+        context: Context,
+        color: Int,
+    ): Drawable {
         if (!ShizukuSettings.isRoundedEdgesEnabled()) {
             return GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
@@ -193,22 +208,26 @@ object IconStyleHelper {
         }
         return when (ShizukuSettings.getShapeStyle()) {
             "zen" -> leafDrawable(context, color)
-            "classic" -> GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = 2 * context.resources.displayMetrics.density
-                setColor(color)
-            }
-            "squircle" -> GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = 14 * context.resources.displayMetrics.density
-                setColor(color)
-            }
+            "classic" ->
+                GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = 2 * context.resources.displayMetrics.density
+                    setColor(color)
+                }
+            "squircle" ->
+                GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = 14 * context.resources.displayMetrics.density
+                    setColor(color)
+                }
             "cut" -> cutDrawable(context, color)
-            else -> GradientDrawable().apply { // "modern" (default)
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = 8 * context.resources.displayMetrics.density
-                setColor(color)
-            }
+            else ->
+                GradientDrawable().apply {
+                    // "modern" (default)
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = 8 * context.resources.displayMetrics.density
+                    setColor(color)
+                }
         }
     }
 
@@ -220,12 +239,16 @@ object IconStyleHelper {
      * GradientDrawable has no native cut-corner support (only rounded), so this draws the
      * octagon path directly via a small custom Drawable instead.
      */
-    private fun cutDrawable(context: Context, color: Int): Drawable {
+    private fun cutDrawable(
+        context: Context,
+        color: Int,
+    ): Drawable {
         val cutFraction = 0.28f // corner cut as a fraction of the shorter side
-        val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
-            style = android.graphics.Paint.Style.FILL
-            this.color = color
-        }
+        val paint =
+            android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                style = android.graphics.Paint.Style.FILL
+                this.color = color
+            }
         return object : Drawable() {
             private val path = android.graphics.Path()
 
@@ -268,18 +291,26 @@ object IconStyleHelper {
      * cornerRadii values are in pixels (unlike cornerRadius's dp-friendly single value used
      * elsewhere in this file's other branches), hence the explicit density multiplication here.
      */
-    private fun leafDrawable(context: Context, color: Int): Drawable {
+    private fun leafDrawable(
+        context: Context,
+        color: Int,
+    ): Drawable {
         val density = context.resources.displayMetrics.density
         val tight = 4f * density
         val wide = 20f * density
         return GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            cornerRadii = floatArrayOf(
-                tight, tight, // top-left
-                wide, wide,   // top-right
-                tight, tight, // bottom-right
-                tight, tight  // bottom-left
-            )
+            cornerRadii =
+                floatArrayOf(
+                    tight,
+                    tight, // top-left
+                    wide,
+                    wide, // top-right
+                    tight,
+                    tight, // bottom-right
+                    tight,
+                    tight, // bottom-left
+                )
             setColor(color)
         }
     }
@@ -292,7 +323,11 @@ object IconStyleHelper {
      * and insets the foreground icon by [CARD_ICON_PADDING_DP] so it renders at a clean, balanced
      * 24dp centered inside the 48dp pill matching every other card.
      */
-    fun applyToStatusCardIcon(imageView: ImageView, pillColor: Int, tintColor: Int) {
+    fun applyToStatusCardIcon(
+        imageView: ImageView,
+        pillColor: Int,
+        tintColor: Int,
+    ) {
         val context = imageView.context
         imageView.background = pillBackground(context, pillColor)
         imageView.imageTintList = ColorStateList.valueOf(tintColor)
@@ -300,10 +335,16 @@ object IconStyleHelper {
         imageView.setPadding(padding, padding, padding, padding)
     }
 
-    private fun tinted(drawable: Drawable, color: Int): Drawable {
+    private fun tinted(
+        drawable: Drawable,
+        color: Int,
+    ): Drawable {
         drawable.setTintList(ColorStateList.valueOf(color))
         return drawable
     }
 
-    private fun resolveColor(context: Context, attr: Int): Int = context.themeColor(attr)
+    private fun resolveColor(
+        context: Context,
+        attr: Int,
+    ): Int = context.themeColor(attr)
 }

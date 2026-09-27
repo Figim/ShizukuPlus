@@ -1,19 +1,18 @@
 package af.shizuku.manager.service
 
+import af.shizuku.manager.utils.LiveActivityNotificationManager
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
-import timber.log.Timber
-import af.shizuku.manager.utils.LiveActivityNotificationManager
-import af.shizuku.manager.utils.ShizukuStateMachine
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 
 class ShizukuLiveService : Service() {
-
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     companion object {
@@ -27,13 +26,18 @@ class ShizukuLiveService : Service() {
             ShizukuStateMachine.asFlow().collect { state ->
                 val isRunning = state == ShizukuStateMachine.State.RUNNING
                 if (isRunning) {
-                    val notif = LiveActivityNotificationManager.buildNotification(
-                        this@ShizukuLiveService, "System Bridge Active"
-                    )
+                    val notif =
+                        LiveActivityNotificationManager.buildNotification(
+                            this@ShizukuLiveService,
+                            "System Bridge Active",
+                        )
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            startForeground(LiveActivityNotificationManager.NOTIFICATION_ID, notif,
-                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+                            startForeground(
+                                LiveActivityNotificationManager.NOTIFICATION_ID,
+                                notif,
+                                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+                            )
                         } else {
                             startForeground(LiveActivityNotificationManager.NOTIFICATION_ID, notif)
                         }
@@ -52,13 +56,19 @@ class ShizukuLiveService : Service() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         // startForeground() must be called within 5s of startForegroundService().
         // Use current state for the initial notification; the flow in onCreate() will keep it updated.
         val isRunning = ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
-        val notif = LiveActivityNotificationManager.buildNotification(
-            this, if (isRunning) "System Bridge Active" else "Monitoring..."
-        )
+        val notif =
+            LiveActivityNotificationManager.buildNotification(
+                this,
+                if (isRunning) "System Bridge Active" else "Monitoring...",
+            )
         if (!startForegroundSafely(notif)) {
             stopSelf()
             return START_NOT_STICKY
@@ -78,11 +88,14 @@ class ShizukuLiveService : Service() {
     // Returns false when the platform refuses the FGS notification (CannotPostForegroundService-
     // NotificationException, ForegroundServiceStartNotAllowedException, etc.) so callers can
     // stopSelf() gracefully rather than crashing — SHIZUKUPLUS-5P.
-    private fun startForegroundSafely(notif: Notification): Boolean {
-        return try {
+    private fun startForegroundSafely(notif: Notification): Boolean =
+        try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                startForeground(LiveActivityNotificationManager.NOTIFICATION_ID, notif,
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+                startForeground(
+                    LiveActivityNotificationManager.NOTIFICATION_ID,
+                    notif,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
+                )
             } else {
                 startForeground(LiveActivityNotificationManager.NOTIFICATION_ID, notif)
             }
@@ -91,7 +104,6 @@ class ShizukuLiveService : Service() {
             Timber.tag(TAG).w(e, "startForeground refused; stopping service")
             false
         }
-    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 

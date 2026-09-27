@@ -1,5 +1,6 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.service.WatchdogService
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -7,20 +8,19 @@ import android.os.Build
 import android.provider.Settings
 import android.service.quicksettings.TileService
 import timber.log.Timber
-import af.shizuku.manager.service.WatchdogService
 
 sealed class SettingsPage(
     private val action: String,
-    private val fragmentArg: String? = null
+    private val fragmentArg: String? = null,
 ) {
-
     sealed class Developer(
         action: String = Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS,
-        fragmentArg: String? = null
+        fragmentArg: String? = null,
     ) : SettingsPage(action, fragmentArg) {
-
         object Options : Developer()
+
         object HighlightUsbDebugging : Developer(fragmentArg = "enable_adb")
+
         object HighlightWirelessDebugging : Developer(fragmentArg = "toggle_adb_wireless")
 
         object WirelessDebugging : Developer() {
@@ -44,8 +44,8 @@ sealed class SettingsPage(
                         Intent.EXTRA_COMPONENT_NAME,
                         ComponentName(
                             packageName,
-                            "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging"
-                        )
+                            "com.android.settings.development.qstile.DevelopmentTiles\$WirelessDebugging",
+                        ),
                     )
                     addFlags(defaultFlags)
                 }
@@ -65,30 +65,29 @@ sealed class SettingsPage(
                 }
             }
         }
-
     }
 
     sealed class Notifications(
         action: String = Settings.ACTION_APP_NOTIFICATION_SETTINGS,
-        fragmentArg: String? = null
+        fragmentArg: String? = null,
     ) : SettingsPage(action, fragmentArg) {
-        override fun buildIntent(context: Context): Intent {
-            return super.buildIntent(context).apply {
+        override fun buildIntent(context: Context): Intent =
+            super.buildIntent(context).apply {
                 putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
             }
-        }
 
         object NotificationSettings : Notifications()
+
         object NotificationChannel : Notifications() {
-            override fun buildIntent(context: Context): Intent {
-                return super.buildIntent(context).apply {
+            override fun buildIntent(context: Context): Intent =
+                super.buildIntent(context).apply {
                     putExtra(Settings.EXTRA_CHANNEL_ID, WatchdogService.CRASH_CHANNEL_ID)
                 }
-            }
         }
     }
 
     object InternetPanel : SettingsPage(Settings.Panel.ACTION_INTERNET_CONNECTIVITY)
+
     object Accessibility : SettingsPage(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
     // Themed (Material You) icons has no dedicated Settings.ACTION_* — it's a per-launcher
@@ -116,37 +115,43 @@ sealed class SettingsPage(
                     // Blocker toggle screen, no permission issues, no fallback needed. The two
                     // attempts below it (old in-settings action/component) are dead on current
                     // software but kept for older devices that might still route through them.
-                    val intent = Intent().apply {
-                        setComponent(ComponentName("com.samsung.android.rampart", "com.samsung.android.rampart.ui.MainSettingActivity"))
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setComponent(ComponentName("com.samsung.android.rampart", "com.samsung.android.rampart.ui.MainSettingActivity"))
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
-                    val intent = Intent("com.samsung.android.settings.AUTO_BLOCKER").apply {
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("com.samsung.android.settings.AUTO_BLOCKER").apply {
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
-                    val intent = Intent().apply {
-                        setComponent(ComponentName("com.android.settings", "com.samsung.android.settings.autoblocker.AutoBlockerSettingsActivity"))
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setComponent(ComponentName("com.android.settings", "com.samsung.android.settings.autoblocker.AutoBlockerSettingsActivity"))
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
-                    val intent = Intent("android.settings.SECURITY_ADVANCED_SETTINGS").apply {
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("android.settings.SECURITY_ADVANCED_SETTINGS").apply {
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
-                    val intent = Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.onFailure { e ->
                     Timber.tag("SettingsUtils").w("Failed to start AutoBlocker Settings activity: ${e.message}")
                 }
             }
         }
+
         object DeviceCareBattery : SettingsPage("com.samsung.android.sm.ACTION_BATTERY") {
             override fun launch(context: Context) {
                 runCatching {
@@ -154,23 +159,26 @@ sealed class SettingsPage(
                     // .sm.battery.ui.* at some point after One UI 6 - confirmed broken
                     // (ActivityNotFoundException) on a One UI 8/Android 16 S26 Ultra;
                     // the action string itself is unchanged. Try the current path first.
-                    val intent = Intent("com.samsung.android.sm.ACTION_BATTERY").apply {
-                        setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.BatteryActivity"))
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("com.samsung.android.sm.ACTION_BATTERY").apply {
+                            setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.BatteryActivity"))
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Old One UI path, in case an older device still uses it.
-                    val intent = Intent("com.samsung.android.sm.ACTION_BATTERY").apply {
-                        setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity"))
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("com.samsung.android.sm.ACTION_BATTERY").apply {
+                            setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BatteryActivity"))
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.onFailure {
                     super.launch(context)
                 }
             }
         }
+
         object BackgroundUsageLimits : SettingsPage("com.samsung.android.sm.ACTION_OPEN_CHECKABLE_LISTACTIVITY") {
             override fun launch(context: Context) {
                 runCatching {
@@ -189,18 +197,20 @@ sealed class SettingsPage(
                     // this fix-button's guidance describes, not the default (0) restriction
                     // list. No per-app-package extra is documented, so this lands on the list,
                     // not scrolled/highlighted to Shizuku+ specifically.
-                    val intent = Intent("com.samsung.android.sm.ACTION_OPEN_CHECKABLE_LISTACTIVITY").apply {
-                        setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.usage.CheckableAppListActivity"))
-                        putExtra("activity_type", 2)
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("com.samsung.android.sm.ACTION_OPEN_CHECKABLE_LISTACTIVITY").apply {
+                            setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.battery.ui.usage.CheckableAppListActivity"))
+                            putExtra("activity_type", 2)
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Old One UI action + component, in case an older device still uses it.
-                    val intent = Intent("com.samsung.android.sm.ACTION_BACKGROUND_USAGE_LIMITS").apply {
-                        setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BackgroundUsageLimitsActivity"))
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("com.samsung.android.sm.ACTION_BACKGROUND_USAGE_LIMITS").apply {
+                            setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BackgroundUsageLimitsActivity"))
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.onFailure {
                     // Fallback to general battery page
@@ -213,33 +223,36 @@ sealed class SettingsPage(
     object Oppo {
         /** Opens ColorOS/OxygenOS per-app battery settings (Auto-Launch + No restrictions toggle). */
         object BatterySettings : SettingsPage(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
-            override fun buildIntent(context: Context): Intent {
-                return super.buildIntent(context).apply {
+            override fun buildIntent(context: Context): Intent =
+                super.buildIntent(context).apply {
                     data = android.net.Uri.parse("package:${context.packageName}")
                 }
-            }
+
             override fun launch(context: Context) {
                 runCatching {
                     // ColorOS 14+ / OplusOS — per-app battery optimization page
-                    val intent = Intent().apply {
-                        setClassName("com.oplus.battery", "com.oplus.battery.ui.app_manage.AppPowerManagerActivity")
-                        putExtra("package_name", context.packageName)
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setClassName("com.oplus.battery", "com.oplus.battery.ui.app_manage.AppPowerManagerActivity")
+                            putExtra("package_name", context.packageName)
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // ColorOS 13 / older — PhoneManager per-app battery page
-                    val intent = Intent().apply {
-                        setClassName("com.coloros.phonemanager", "com.coloros.phonemanager.feature.battery.PerAppBatteryPowerActivity")
-                        putExtra("package_name", context.packageName)
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setClassName("com.coloros.phonemanager", "com.coloros.phonemanager.feature.battery.PerAppBatteryPowerActivity")
+                            putExtra("package_name", context.packageName)
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Older ColorOS action string
-                    val intent = Intent("com.coloros.powermanager.action.APP_POWER_MANAGER").apply {
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("com.coloros.powermanager.action.APP_POWER_MANAGER").apply {
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Last resort: standard app-details page
@@ -254,25 +267,27 @@ sealed class SettingsPage(
     object TCL {
         /** Opens TCL System Manager's Auto-Start / battery whitelist screen. */
         object AutoStart : SettingsPage(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
-            override fun buildIntent(context: Context): Intent {
-                return super.buildIntent(context).apply {
+            override fun buildIntent(context: Context): Intent =
+                super.buildIntent(context).apply {
                     data = android.net.Uri.parse("package:${context.packageName}")
                 }
-            }
+
             override fun launch(context: Context) {
                 runCatching {
                     // TCL System Manager — Auto-start list (T1 / NxtPaper / Revvl)
-                    val intent = Intent().apply {
-                        setClassName("com.tcl.systemmanager", "com.tcl.systemmanager.ui.autorun.AutoRunActivity")
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setClassName("com.tcl.systemmanager", "com.tcl.systemmanager.ui.autorun.AutoRunActivity")
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Older TCL path
-                    val intent = Intent().apply {
-                        setClassName("com.tcl.systemmanager", "com.tcl.systemmanager.MainActivity")
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setClassName("com.tcl.systemmanager", "com.tcl.systemmanager.MainActivity")
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Last resort: standard app-details page
@@ -287,28 +302,30 @@ sealed class SettingsPage(
     object Xiaomi {
         /** Opens MIUI/HyperOS per-app battery settings (No restrictions toggle + Autostart). */
         object BatterySettings : SettingsPage(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
-            override fun buildIntent(context: Context): Intent {
-                return super.buildIntent(context).apply {
+            override fun buildIntent(context: Context): Intent =
+                super.buildIntent(context).apply {
                     data = android.net.Uri.parse("package:${context.packageName}")
                 }
-            }
+
             override fun launch(context: Context) {
                 runCatching {
                     // HyperOS PowerKeeper — direct per-app battery page (most specific)
-                    val intent = Intent().apply {
-                        setClassName("com.miui.powerkeeper", "com.miui.powerkeeper.ui.HoldApplicationsDetailActivity")
-                        putExtra("package_name", context.packageName)
-                        putExtra("package_label", context.getString(af.shizuku.manager.R.string.app_name))
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent().apply {
+                            setClassName("com.miui.powerkeeper", "com.miui.powerkeeper.ui.HoldApplicationsDetailActivity")
+                            putExtra("package_name", context.packageName)
+                            putExtra("package_label", context.getString(af.shizuku.manager.R.string.app_name))
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // MIUI Security Center — Autostart + battery page fallback
-                    val intent = Intent("miui.intent.action.APP_PERM_EDITOR").apply {
-                        setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity")
-                        putExtra("extra_pkgname", context.packageName)
-                        flags = defaultFlags
-                    }
+                    val intent =
+                        Intent("miui.intent.action.APP_PERM_EDITOR").apply {
+                            setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity")
+                            putExtra("extra_pkgname", context.packageName)
+                            flags = defaultFlags
+                        }
                     context.startActivity(intent)
                 }.recoverCatching {
                     // Standard app-details page — user can navigate to Battery manually
@@ -322,17 +339,18 @@ sealed class SettingsPage(
 
     protected val defaultFlags =
         Intent.FLAG_ACTIVITY_NEW_TASK or
-        Intent.FLAG_ACTIVITY_NO_HISTORY or
-        Intent.FLAG_ACTIVITY_CLEAR_TASK or
-        Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            Intent.FLAG_ACTIVITY_NO_HISTORY or
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or
+            Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
 
-    open fun buildIntent(context: Context): Intent = Intent(action).apply {
-        fragmentArg?.let {
-            val fragmentArgKey = ":settings:fragment_args_key"
-            putExtra(fragmentArgKey, it)
+    open fun buildIntent(context: Context): Intent =
+        Intent(action).apply {
+            fragmentArg?.let {
+                val fragmentArgKey = ":settings:fragment_args_key"
+                putExtra(fragmentArgKey, it)
+            }
+            flags = defaultFlags
         }
-        flags = defaultFlags
-    }
 
     open fun launch(context: Context) {
         runCatching {
@@ -344,5 +362,4 @@ sealed class SettingsPage(
             Timber.tag("SettingsUtils").w("Failed to start Settings activity (${e.javaClass.simpleName}): ${e.message}")
         }
     }
-
 }

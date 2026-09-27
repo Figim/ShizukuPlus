@@ -1,5 +1,9 @@
 package af.shizuku.manager.widget
 
+import af.shizuku.manager.MainActivity
+import af.shizuku.manager.R
+import af.shizuku.manager.starter.StarterActivity
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -8,20 +12,22 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
-import af.shizuku.manager.MainActivity
-import af.shizuku.manager.R
-import af.shizuku.manager.starter.StarterActivity
-import af.shizuku.manager.utils.ShizukuStateMachine
 
 class ShizukuWidgetProvider : AppWidgetProvider() {
-
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         try {
             super.onReceive(context, intent)
         } catch (_: Exception) {
@@ -42,7 +48,11 @@ class ShizukuWidgetProvider : AppWidgetProvider() {
     }
 
     companion object {
-        fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+        fun updateAppWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int,
+        ) {
             val state = ShizukuStateMachine.get()
             val isRunning = state == ShizukuStateMachine.State.RUNNING
 

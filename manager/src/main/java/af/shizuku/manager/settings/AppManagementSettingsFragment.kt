@@ -1,5 +1,7 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
@@ -8,11 +10,8 @@ import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
 
 class AppManagementSettingsFragment : BaseSettingsFragment() {
-
     companion object {
         private const val VIRUSTOTAL_KEY_URL = "https://www.virustotal.com/gui/my-apikey"
         private const val PITHUS_KEY_URL = "https://beta.pithus.org"
@@ -20,19 +19,31 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_app_interactions_title)
 
-    override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         setPreferencesFromResource(R.xml.settings_app_management, rootKey)
 
         // Swipe gestures — auto-persist via SharedPrefs; notify server of change
         findPreference<rikka.preference.SimpleMenuPreference>("swipe_right_action")
-            ?.setOnPreferenceChangeListener { _, _ -> ShizukuSettings.syncAllPlusFeaturesToServer(); true }
+            ?.setOnPreferenceChangeListener { _, _ ->
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+                true
+            }
         findPreference<rikka.preference.SimpleMenuPreference>("swipe_left_action")
-            ?.setOnPreferenceChangeListener { _, _ -> ShizukuSettings.syncAllPlusFeaturesToServer(); true }
+            ?.setOnPreferenceChangeListener { _, _ ->
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+                true
+            }
 
         // Long-press action toggles — auto-persist via SharedPrefs; notify server
         listOf("lp_open_app", "lp_app_info", "lp_toggle_permission", "lp_hide_from_list").forEach { key ->
             findPreference<TwoStatePreference>(key)
-                ?.setOnPreferenceChangeListener { _, _ -> ShizukuSettings.syncAllPlusFeaturesToServer(); true }
+                ?.setOnPreferenceChangeListener { _, _ ->
+                    ShizukuSettings.syncAllPlusFeaturesToServer()
+                    true
+                }
         }
 
         // Local signature matching and F-Droid verification — pure local, auto-persist is sufficient
@@ -55,7 +66,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                             (pref as TwoStatePreference).isChecked = true
                         }
                     },
-                    onCancel = { (pref as TwoStatePreference).isChecked = false }
+                    onCancel = { (pref as TwoStatePreference).isChecked = false },
                 )
                 false
             } else {
@@ -75,7 +86,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                     ShizukuSettings.setVirusTotalApiKey(key)
                     updateApiKeyManageSummary("virustotal_api_key_manage", key)
                 },
-                onCancel = {}
+                onCancel = {},
             )
             true
         }
@@ -96,15 +107,22 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                     ShizukuSettings.setPithusApiKey(key)
                     updateApiKeyManageSummary("pithus_api_key_manage", key)
                 },
-                onCancel = {}
+                onCancel = {},
             )
             true
         }
     }
 
-    private fun updateApiKeyManageSummary(key: String, apiKey: String) {
-        val summary = if (apiKey.isNotBlank()) getString(R.string.verify_api_key_configured)
-                      else getString(R.string.verify_api_key_hint)
+    private fun updateApiKeyManageSummary(
+        key: String,
+        apiKey: String,
+    ) {
+        val summary =
+            if (apiKey.isNotBlank()) {
+                getString(R.string.verify_api_key_configured)
+            } else {
+                getString(R.string.verify_api_key_hint)
+            }
         findPreference<Preference>(key)?.summary = summary
     }
 
@@ -114,25 +132,28 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
         currentKey: String,
         getKeyUrl: String? = null,
         onSave: (String) -> Unit,
-        onCancel: () -> Unit
+        onCancel: () -> Unit,
     ) {
         val ctx = context ?: return
         val dp16 = (16 * resources.displayMetrics.density).toInt()
-        val input = EditText(ctx).apply {
-            inputType = InputType.TYPE_CLASS_TEXT
-            this.hint = hint
-            if (currentKey.isNotBlank()) setText(currentKey)
-        }
-        val container = FrameLayout(ctx).apply {
-            setPadding(dp16, dp16 / 2, dp16, 0)
-            addView(input)
-        }
-        val builder = MaterialAlertDialogBuilder(ctx)
-            .setTitle(title)
-            .setView(container)
-            .setPositiveButton(android.R.string.ok) { _, _ -> onSave(input.text.toString().trim()) }
-            .setNegativeButton(android.R.string.cancel) { _, _ -> onCancel() }
-            .setOnCancelListener { onCancel() }
+        val input =
+            EditText(ctx).apply {
+                inputType = InputType.TYPE_CLASS_TEXT
+                this.hint = hint
+                if (currentKey.isNotBlank()) setText(currentKey)
+            }
+        val container =
+            FrameLayout(ctx).apply {
+                setPadding(dp16, dp16 / 2, dp16, 0)
+                addView(input)
+            }
+        val builder =
+            MaterialAlertDialogBuilder(ctx)
+                .setTitle(title)
+                .setView(container)
+                .setPositiveButton(android.R.string.ok) { _, _ -> onSave(input.text.toString().trim()) }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> onCancel() }
+                .setOnCancelListener { onCancel() }
         if (getKeyUrl != null) {
             builder.setNeutralButton(R.string.verify_get_api_key) { _, _ ->
                 startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(getKeyUrl)))

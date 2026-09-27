@@ -19,13 +19,13 @@ object IntentCrypto {
         if (!keyStore.containsAlias(ALIAS)) {
             val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
             keyGenerator.init(
-                KeyGenParameterSpec.Builder(
-                    ALIAS,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-                )
-                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                KeyGenParameterSpec
+                    .Builder(
+                        ALIAS,
+                        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+                    ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .build()
+                    .build(),
             )
             keyGenerator.generateKey()
         }
@@ -34,8 +34,8 @@ object IntentCrypto {
 
     // Fail closed, not open: returning the raw input on failure previously meant a KeyStore/cipher
     // error could silently place a plaintext auth token where an encrypted one was expected.
-    fun encrypt(data: String): String? {
-        return try {
+    fun encrypt(data: String): String? =
+        try {
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
             cipher.init(Cipher.ENCRYPT_MODE, key)
             val iv = cipher.iv
@@ -47,7 +47,6 @@ object IntentCrypto {
         } catch (_: Exception) {
             null
         }
-    }
 
     fun decrypt(data: String): String? {
         return try {

@@ -1,5 +1,9 @@
 package af.shizuku.manager.worker
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.service.WatchdogService
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -7,10 +11,6 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.*
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.service.WatchdogService
-import af.shizuku.manager.utils.ShizukuStateMachine
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -27,21 +27,25 @@ import java.util.concurrent.TimeUnit
  * puts the app into foreground state before calling doWork(), so WatchdogService.start()
  * succeeds even from a locked-screen alarm delivery.
  */
-class WatchdogWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-
+class WatchdogWorker(
+    context: Context,
+    params: WorkerParameters,
+) : CoroutineWorker(context, params) {
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val channelId = "shizuku_watchdog_heal"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
             nm?.createNotificationChannel(
-                NotificationChannel(channelId, "Watchdog Heal", NotificationManager.IMPORTANCE_LOW)
+                NotificationChannel(channelId, "Watchdog Heal", NotificationManager.IMPORTANCE_LOW),
             )
         }
-        val notification = NotificationCompat.Builder(applicationContext, channelId)
-            .setContentTitle(applicationContext.getString(R.string.watchdog_running))
-            .setSmallIcon(R.drawable.ic_notification_icon)
-            .setOngoing(true)
-            .build()
+        val notification =
+            NotificationCompat
+                .Builder(applicationContext, channelId)
+                .setContentTitle(applicationContext.getString(R.string.watchdog_running))
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setOngoing(true)
+                .build()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             ForegroundInfo(HEAL_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE)
         } else {
@@ -55,19 +59,22 @@ class WatchdogWorker(context: Context, params: WorkerParameters) : CoroutineWork
         private const val HEAL_NOTIFICATION_ID = 1003
 
         fun schedule(context: Context) {
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
-                .build()
+            val constraints =
+                Constraints
+                    .Builder()
+                    .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
+                    .build()
 
-            val request = PeriodicWorkRequestBuilder<WatchdogWorker>(2, TimeUnit.HOURS)
-                .setConstraints(constraints)
-                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
-                .build()
+            val request =
+                PeriodicWorkRequestBuilder<WatchdogWorker>(2, TimeUnit.HOURS)
+                    .setConstraints(constraints)
+                    .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
+                    .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
                 ExistingPeriodicWorkPolicy.KEEP,
-                request
+                request,
             )
         }
 
@@ -77,13 +84,14 @@ class WatchdogWorker(context: Context, params: WorkerParameters) : CoroutineWork
          * running doWork(), so WatchdogService.start() is allowed even while the device is locked.
          */
         fun scheduleOneTimeHeal(context: Context) {
-            val request = OneTimeWorkRequestBuilder<WatchdogWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .build()
+            val request =
+                OneTimeWorkRequestBuilder<WatchdogWorker>()
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build()
             WorkManager.getInstance(context).enqueueUniqueWork(
                 HEAL_WORK_NAME,
                 ExistingWorkPolicy.REPLACE,
-                request
+                request,
             )
         }
     }

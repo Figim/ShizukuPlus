@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 
 object StockShizukuCompat {
-
     const val PACKAGE = "moe.shizuku.privileged.api"
 
     /**
@@ -27,7 +26,10 @@ object StockShizukuCompat {
         }
     }
 
-    private fun getSigningCertificates(context: Context, packageName: String): Set<String>? {
+    private fun getSigningCertificates(
+        context: Context,
+        packageName: String,
+    ): Set<String>? {
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 val info = context.packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
@@ -77,9 +79,7 @@ object StockShizukuCompat {
         return !isPackageOccupiedByDifferentSigner(context)
     }
 
-    fun isStockShizukuInstalled(context: Context): Boolean {
-        return isInstalled(context) && !isCompatAppInstalled(context)
-    }
+    fun isStockShizukuInstalled(context: Context): Boolean = isInstalled(context) && !isCompatAppInstalled(context)
 
     fun launch(context: Context): Boolean {
         return try {
@@ -128,7 +128,10 @@ object StockShizukuCompat {
         } finally {
             // readLine() can throw if the binder dies mid-read; destroy in finally so the
             // process handle doesn't leak on that path.
-            try { process?.destroy() } catch (_: Exception) {}
+            try {
+                process?.destroy()
+            } catch (_: Exception) {
+            }
         }
     }
 }

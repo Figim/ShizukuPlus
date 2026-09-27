@@ -1,12 +1,12 @@
 package af.shizuku.manager
 
+import af.shizuku.manager.utils.SettingsBackupManager
 import android.app.backup.BackupAgent
 import android.app.backup.BackupDataInput
 import android.app.backup.BackupDataOutput
 import android.app.backup.FullBackupDataOutput
 import android.os.ParcelFileDescriptor
 import timber.log.Timber
-import af.shizuku.manager.utils.SettingsBackupManager
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.File
@@ -29,7 +29,6 @@ import java.io.FileOutputStream
  * so getPreferences() is guaranteed non-null here.
  */
 class ShizukuBackupAgent : BackupAgent() {
-
     companion object {
         private const val TAG = "ShizukuBackupAgent"
         private const val SETTINGS_KEY = "shizukuplus_settings.json"
@@ -40,7 +39,7 @@ class ShizukuBackupAgent : BackupAgent() {
     override fun onBackup(
         oldState: ParcelFileDescriptor?,
         data: BackupDataOutput,
-        newState: ParcelFileDescriptor
+        newState: ParcelFileDescriptor,
     ) {
         try {
             val bytes = SettingsBackupManager.export(this).toByteArray(Charsets.UTF_8)
@@ -54,7 +53,11 @@ class ShizukuBackupAgent : BackupAgent() {
         }
     }
 
-    override fun onRestore(data: BackupDataInput, appVersionCode: Int, newState: ParcelFileDescriptor?) {
+    override fun onRestore(
+        data: BackupDataInput,
+        appVersionCode: Int,
+        newState: ParcelFileDescriptor?,
+    ) {
         try {
             while (data.readNextHeader()) {
                 if (data.key == SETTINGS_KEY) {
@@ -95,19 +98,20 @@ class ShizukuBackupAgent : BackupAgent() {
         destination: File,
         type: Int,
         mode: Long,
-        mtime: Long
+        mtime: Long,
     ) {
         if (destination.name == SETTINGS_KEY) {
             // Read backup bytes and import to DE storage. Do NOT call super — that would write to
             // the CE-storage destination path, which ShizukuSettings never reads.
             try {
-                val json = FileInputStream(data.fileDescriptor).use { fis ->
-                    DataInputStream(fis).use { dis ->
-                        val bytes = ByteArray(size.toInt())
-                        dis.readFully(bytes)
-                        String(bytes, Charsets.UTF_8)
+                val json =
+                    FileInputStream(data.fileDescriptor).use { fis ->
+                        DataInputStream(fis).use { dis ->
+                            val bytes = ByteArray(size.toInt())
+                            dis.readFully(bytes)
+                            String(bytes, Charsets.UTF_8)
+                        }
                     }
-                }
                 val imported = SettingsBackupManager.importAndCommit(this, json)
                 Timber.tag(TAG).d("onRestoreFile: imported=%s (%d bytes)", imported, size)
             } catch (e: Exception) {
@@ -120,7 +124,10 @@ class ShizukuBackupAgent : BackupAgent() {
 
     // ── Helpers ───────────────────────────────────────────────────────────────────────────────────
 
-    private fun readFully(data: BackupDataInput, buf: ByteArray) {
+    private fun readFully(
+        data: BackupDataInput,
+        buf: ByteArray,
+    ) {
         var offset = 0
         while (offset < buf.size) {
             val n = data.readEntityData(buf, offset, buf.size - offset)

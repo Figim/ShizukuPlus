@@ -1,45 +1,56 @@
 package af.shizuku.manager.shell
 
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.Logger.LOGGER
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.Parcel
-import af.shizuku.manager.utils.Logger.LOGGER
 import rikka.shizuku.Shizuku
-import af.shizuku.manager.ShizukuSettings
 
 object ShellBinderRequestHandler {
-
     /**
      * Handles a REQUEST_BINDER broadcast directly (auth-token fast path).
      * Extracts the callback binder from the intent extras and delivers the Shizuku binder to it.
      * [BinderRequestReceiver] calls [deliverBinder] directly for the no-token (rish/shell) case.
      */
-    fun handleRequest(context: Context, intent: Intent, requireAuth: Boolean = false): Boolean {
+    fun handleRequest(
+        context: Context,
+        intent: Intent,
+        requireAuth: Boolean = false,
+    ): Boolean {
         if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER" &&
-            intent.action != "${context.packageName}.intent.action.REQUEST_BINDER") {
+            intent.action != "${context.packageName}.intent.action.REQUEST_BINDER"
+        ) {
             return false
         }
 
         if (requireAuth) {
-            val rawToken = intent.getStringExtra("auth")
-                ?: intent.getStringExtra("token")
-                ?: intent.getStringExtra("auth_token")
+            val rawToken =
+                intent.getStringExtra("auth")
+                    ?: intent.getStringExtra("token")
+                    ?: intent.getStringExtra("auth_token")
 
-            val tokenCandidate = rawToken?.trim()?.removeSurrounding("\"")?.let {
-                if (it.startsWith("auth:")) it.substring(5).trim() else it
-            }
+            val tokenCandidate =
+                rawToken?.trim()?.removeSurrounding("\"")?.let {
+                    if (it.startsWith("auth:")) it.substring(5).trim() else it
+                }
             val expectedToken = ShizukuSettings.getAuthToken()
-            val decryptedToken = if (!tokenCandidate.isNullOrEmpty()) {
-                af.shizuku.manager.utils.IntentCrypto.decrypt(tokenCandidate)
-            } else null
+            val decryptedToken =
+                if (!tokenCandidate.isNullOrEmpty()) {
+                    af.shizuku.manager.utils.IntentCrypto
+                        .decrypt(tokenCandidate)
+                } else {
+                    null
+                }
 
-            val isValid = when {
-                tokenCandidate.isNullOrEmpty() -> false
-                decryptedToken != null && java.security.MessageDigest.isEqual(decryptedToken.toByteArray(), expectedToken.toByteArray()) -> true
-                java.security.MessageDigest.isEqual(tokenCandidate.toByteArray(), expectedToken.toByteArray()) -> true
-                else -> false
-            }
+            val isValid =
+                when {
+                    tokenCandidate.isNullOrEmpty() -> false
+                    decryptedToken != null && java.security.MessageDigest.isEqual(decryptedToken.toByteArray(), expectedToken.toByteArray()) -> true
+                    java.security.MessageDigest.isEqual(tokenCandidate.toByteArray(), expectedToken.toByteArray()) -> true
+                    else -> false
+                }
 
             if (!isValid) {
                 return false
@@ -56,13 +67,17 @@ object ShellBinderRequestHandler {
      * AIDL method is separately gated by [enforceCallingPermission], keyed off the real,
      * kernel-verified uid of whatever transaction the caller makes once attached.
      */
-    fun deliverBinder(context: Context, callbackBinder: IBinder): Boolean {
-        val shizukuBinder = try {
-            Shizuku.getBinder()
-        } catch (e: Exception) {
-            LOGGER.w(e, "getBinder failed")
-            return false
-        }
+    fun deliverBinder(
+        context: Context,
+        callbackBinder: IBinder,
+    ): Boolean {
+        val shizukuBinder =
+            try {
+                Shizuku.getBinder()
+            } catch (e: Exception) {
+                LOGGER.w(e, "getBinder failed")
+                return false
+            }
         if (shizukuBinder == null) {
             LOGGER.w("shizuku binder is null")
             return false

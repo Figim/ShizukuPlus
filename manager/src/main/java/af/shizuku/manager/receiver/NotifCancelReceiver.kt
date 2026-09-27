@@ -6,10 +6,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.work.WorkManager
 import timber.log.Timber
-import af.shizuku.manager.receiver.ShizukuReceiverStarter
 
 class NotifCancelReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         try {
             WorkManager.getInstance(context).cancelUniqueWork("adb_start_worker")
         } catch (e: Throwable) {

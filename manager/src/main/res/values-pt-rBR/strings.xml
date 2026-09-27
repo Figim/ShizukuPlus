@@ -995,6 +995,9 @@ Impressão digital da chave RSA:
     <string name="changelog_title">Novidades</string>
     <string name="changelog_close">Fechar</string>
     <string name="changelog_earlier_releases">Versões anteriores</string>
+    <string name="changelog_version_history">Histórico de versões</string>
+    <string name="changelog_all_new_updates">Todas as novidades (%d)</string>
+    <string name="changelog_tag_new">Novo</string>
     <string name="changelog_view_on_github">Ver no GitHub</string>
     <string name="changelog_fallback_message">Não foi possível carregar as notas de lançamento desta atualização (você pode estar offline). Toque em "Ver no GitHub" para ver o que mudou.</string>
 

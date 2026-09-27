@@ -1,35 +1,31 @@
 package af.shizuku.manager.adb
 import af.shizuku.manager.R
-
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.starter.Starter
+import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.SettingsPage
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
-import android.content.pm.PackageManager
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
+import android.content.pm.PackageManager
 import android.provider.Settings
-import timber.log.Timber
+import android.view.ContextThemeWrapper
 import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.sentry.Sentry
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.EOFException
 import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import javax.net.ssl.SSLException
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.adb.AdbClient
-import af.shizuku.manager.adb.AdbKey
-import af.shizuku.manager.adb.PreferenceAdbKeyStore
-import af.shizuku.manager.starter.Starter
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.manager.utils.ShizukuStateMachine
-import io.sentry.Sentry
-import android.app.Activity
-import android.content.ContextWrapper
-import android.view.ContextThemeWrapper
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import af.shizuku.manager.utils.SettingsPage
 
 object AdbStarter {
     private const val TAG = "AdbStarter"
@@ -45,15 +41,24 @@ object AdbStarter {
 
     /** Returns true for transient connection errors that are not bugs and should not go to Sentry. */
     private fun Throwable.isExpectedAdbError(includeIllegalState: Boolean = false) =
-        this is EOFException || this is SocketException || this is SocketTimeoutException ||
-        this is ConnectException || this is SSLException ||
-        this is AdbKeyException || (includeIllegalState && this is IllegalStateException)
+        this is EOFException ||
+            this is SocketException ||
+            this is SocketTimeoutException ||
+            this is ConnectException ||
+            this is SSLException ||
+            this is AdbKeyException ||
+            (includeIllegalState && this is IllegalStateException)
 
-    suspend fun startAdb(context: Context, port: Int, log: ((String) -> Unit)? = null) {
+    suspend fun startAdb(
+        context: Context,
+        port: Int,
+        log: ((String) -> Unit)? = null,
+    ) {
         if (port !in 1..65535) {
             Timber.tag(TAG).w("startAdb called with invalid port $port — skipping")
             return
         }
+
         suspend fun AdbClient.runCommand(cmd: String) {
             command(cmd) { log?.invoke(String(it)) }
         }
@@ -64,11 +69,15 @@ object AdbStarter {
             log?.invoke("Starting with wireless adb...\n")
 
             withContext(Dispatchers.IO) {
-                val key = runCatching { AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+") }
-                    .getOrElse {
-                        if (it is CancellationException) throw it
-                        else throw AdbKeyException(it)
-                    }
+                val key =
+                    runCatching { AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+") }
+                        .getOrElse {
+                            if (it is CancellationException) {
+                                throw it
+                            } else {
+                                throw AdbKeyException(it)
+                            }
+                        }
 
                 var activePort = port
                 val tcpMode = ShizukuSettings.getTcpMode()
@@ -119,8 +128,7 @@ object AdbStarter {
                             .setMessage(R.string.adb_error_ssl_message)
                             .setPositiveButton(R.string.adb_error_ssl_button_reset) { _, _ ->
                                 SettingsPage.Developer.Options.launch(activity)
-                            }
-                            .setNegativeButton(android.R.string.cancel, null)
+                            }.setNegativeButton(android.R.string.cancel, null)
                             .show()
                     } else {
                         // Fallback for non-activity context
@@ -134,12 +142,16 @@ object AdbStarter {
             }
             throw e
         } finally {
-            if (ShizukuSettings.getAutoDisableUsbDebugging() && context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED)
+            if (ShizukuSettings.getAutoDisableUsbDebugging() && context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 0)
+            }
         }
     }
 
-    suspend fun stopTcp(context: Context, port: Int) {
+    suspend fun stopTcp(
+        context: Context,
+        port: Int,
+    ) {
         if (port !in 1..65535) return
         runCatching {
             val cr = context.contentResolver
@@ -165,18 +177,23 @@ object AdbStarter {
             if (EnvironmentUtils.getAdbTcpPort() > 0) {
                 ShizukuStateMachine.update()
                 withContext(Dispatchers.Main) {
-                    val errorMsg = when (it) {
-                        is AdbKeyException -> context.getString(R.string.adb_error_key_store)
-                        else -> it.message
-                    }
-                    Toast.makeText(context, context.getString(R.string.adb_error_stop_tcp) + ". ${errorMsg?.take(80)}", Toast.LENGTH_LONG)
+                    val errorMsg =
+                        when (it) {
+                            is AdbKeyException -> context.getString(R.string.adb_error_key_store)
+                            else -> it.message
+                        }
+                    Toast
+                        .makeText(context, context.getString(R.string.adb_error_stop_tcp) + ". ${errorMsg?.take(80)}", Toast.LENGTH_LONG)
                         .show()
                 }
             }
         }
     }
 
-    private suspend fun connectWithRetry(client: AdbClient, port: Int) {
+    private suspend fun connectWithRetry(
+        client: AdbClient,
+        port: Int,
+    ) {
         var delayTime = 500L
         val maxAttempts = 8
         for (attempt in 1..maxAttempts) {
@@ -194,7 +211,9 @@ object AdbStarter {
                 if (
                     attempt == maxAttempts ||
                     e is CancellationException
-                ) throw e
+                ) {
+                    throw e
+                }
             }
         }
     }

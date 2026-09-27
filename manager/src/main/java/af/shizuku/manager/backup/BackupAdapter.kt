@@ -1,13 +1,12 @@
 package af.shizuku.manager.backup
 
+import af.shizuku.manager.databinding.ItemBackupAppBinding
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import af.shizuku.manager.databinding.ItemBackupAppBinding
 
 class BackupAdapter : ListAdapter<BackupViewModel.AppEntry, BackupAppViewHolder>(DIFF) {
-
     var onBackupClick: ((BackupViewModel.AppEntry) -> Unit)? = null
     var onRestoreClick: ((BackupViewModel.AppEntry) -> Unit)? = null
     var onFreezeClick: ((BackupViewModel.AppEntry) -> Unit)? = null
@@ -24,27 +23,34 @@ class BackupAdapter : ListAdapter<BackupViewModel.AppEntry, BackupAppViewHolder>
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BackupAppViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): BackupAppViewHolder {
         val binding = ItemBackupAppBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BackupAppViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: BackupAppViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: BackupAppViewHolder,
+        position: Int,
+    ) {
         val entry = getItem(position)
         holder.bind(entry, entry.packageName in busyPackages, onBackupClick, onRestoreClick, onFreezeClick)
     }
 
     companion object {
-        private val DIFF = object : DiffUtil.ItemCallback<BackupViewModel.AppEntry>() {
-            override fun areItemsTheSame(
-                oldItem: BackupViewModel.AppEntry,
-                newItem: BackupViewModel.AppEntry
-            ) = oldItem.packageName == newItem.packageName
+        private val DIFF =
+            object : DiffUtil.ItemCallback<BackupViewModel.AppEntry>() {
+                override fun areItemsTheSame(
+                    oldItem: BackupViewModel.AppEntry,
+                    newItem: BackupViewModel.AppEntry,
+                ) = oldItem.packageName == newItem.packageName
 
-            override fun areContentsTheSame(
-                oldItem: BackupViewModel.AppEntry,
-                newItem: BackupViewModel.AppEntry
-            ) = oldItem == newItem
-        }
+                override fun areContentsTheSame(
+                    oldItem: BackupViewModel.AppEntry,
+                    newItem: BackupViewModel.AppEntry,
+                ) = oldItem == newItem
+            }
     }
 }

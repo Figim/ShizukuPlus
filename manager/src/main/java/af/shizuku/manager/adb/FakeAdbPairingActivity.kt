@@ -1,29 +1,32 @@
 package af.shizuku.manager.adb
 
+import af.shizuku.manager.R
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import af.shizuku.manager.R
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
 
 class FakeAdbPairingActivity : Activity() {
-
     companion object {
         private var currentLatch: CountDownLatch? = null
         private var currentResult = AtomicBoolean(false)
 
-        fun requestPairingSync(context: Context, pubKeyStr: String): Boolean {
+        fun requestPairingSync(
+            context: Context,
+            pubKeyStr: String,
+        ): Boolean {
             val latch = CountDownLatch(1)
             currentLatch = latch
             currentResult.set(false)
 
-            val intent = Intent(context, FakeAdbPairingActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                putExtra("pubKey", pubKeyStr)
-            }
+            val intent =
+                Intent(context, FakeAdbPairingActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra("pubKey", pubKeyStr)
+                }
             context.startActivity(intent)
 
             try {
@@ -48,18 +51,15 @@ class FakeAdbPairingActivity : Activity() {
                 currentResult.set(true)
                 currentLatch?.countDown()
                 finish()
-            }
-            .setNegativeButton(R.string.fake_adb_pairing_deny) { _, _ ->
+            }.setNegativeButton(R.string.fake_adb_pairing_deny) { _, _ ->
                 currentResult.set(false)
                 currentLatch?.countDown()
                 finish()
-            }
-            .setOnCancelListener {
+            }.setOnCancelListener {
                 currentResult.set(false)
                 currentLatch?.countDown()
                 finish()
-            }
-            .setCancelable(false)
+            }.setCancelable(false)
             .show()
     }
 }

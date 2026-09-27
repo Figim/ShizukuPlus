@@ -1,5 +1,9 @@
 package af.shizuku.manager.backup
 
+import af.shizuku.core.ui.AppBarActivity
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.databinding.ActivityAppBackupBinding
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -13,14 +17,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import af.shizuku.core.ui.AppBarActivity
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.databinding.ActivityAppBackupBinding
 import kotlinx.coroutines.launch
 
 class AppBackupActivity : AppBarActivity() {
-
     private val viewModel: BackupViewModel by viewModels()
     private lateinit var binding: ActivityAppBackupBinding
     private lateinit var adapter: BackupAdapter
@@ -28,11 +27,12 @@ class AppBackupActivity : AppBarActivity() {
     private var backupAllItem: MenuItem? = null
 
     private var pendingRestoreEntry: BackupViewModel.AppEntry? = null
-    private val restoreFilePicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
-        val entry = pendingRestoreEntry ?: return@registerForActivityResult
-        pendingRestoreEntry = null
-        if (uri != null) viewModel.restoreExternalData(entry, uri)
-    }
+    private val restoreFilePicker =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+            val entry = pendingRestoreEntry ?: return@registerForActivityResult
+            pendingRestoreEntry = null
+            if (uri != null) viewModel.restoreExternalData(entry, uri)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,9 +75,10 @@ class AppBackupActivity : AppBarActivity() {
                             adapter.submitList(state.apps)
                         }
                         is BackupViewModel.UiState.Error -> showError(state.msg)
-                        is BackupViewModel.UiState.ServiceNotRunning -> showError(
-                            getString(R.string.home_status_service_not_running, getString(R.string.app_name))
-                        )
+                        is BackupViewModel.UiState.ServiceNotRunning ->
+                            showError(
+                                getString(R.string.home_status_service_not_running, getString(R.string.app_name)),
+                            )
                     }
                 }
             }
@@ -96,23 +97,26 @@ class AppBackupActivity : AppBarActivity() {
                 viewModel.events.collect { event ->
                     when (event) {
                         is BackupViewModel.BackupEvent.BackupComplete ->
-                            Snackbar.make(
-                                rootView,
-                                getString(R.string.backup_app_complete, event.pkg, event.path),
-                                Snackbar.LENGTH_LONG
-                            ).show()
+                            Snackbar
+                                .make(
+                                    rootView,
+                                    getString(R.string.backup_app_complete, event.pkg, event.path),
+                                    Snackbar.LENGTH_LONG,
+                                ).show()
                         is BackupViewModel.BackupEvent.BatchComplete ->
-                            Snackbar.make(
-                                rootView,
-                                getString(R.string.backup_batch_complete, event.succeeded, event.failed, event.path),
-                                Snackbar.LENGTH_LONG
-                            ).show()
+                            Snackbar
+                                .make(
+                                    rootView,
+                                    getString(R.string.backup_batch_complete, event.succeeded, event.failed, event.path),
+                                    Snackbar.LENGTH_LONG,
+                                ).show()
                         is BackupViewModel.BackupEvent.RestoreComplete ->
-                            Snackbar.make(
-                                rootView,
-                                getString(R.string.backup_restore_complete, event.pkg),
-                                Snackbar.LENGTH_LONG
-                            ).show()
+                            Snackbar
+                                .make(
+                                    rootView,
+                                    getString(R.string.backup_restore_complete, event.pkg),
+                                    Snackbar.LENGTH_LONG,
+                                ).show()
                         is BackupViewModel.BackupEvent.FreezeChanged -> {
                             val msg = if (event.nowFrozen) R.string.backup_freeze_success else R.string.backup_unfreeze_success
                             Snackbar.make(rootView, msg, Snackbar.LENGTH_SHORT).show()
@@ -142,27 +146,36 @@ class AppBackupActivity : AppBarActivity() {
 
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem?.actionView as? SearchView
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?) = true
-            override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.setQuery(newText.orEmpty())
-                return true
-            }
-        })
-        searchItem?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem) = true
-            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                viewModel.setQuery("")
-                return true
-            }
-        })
+        searchView?.setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?) = true
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.setQuery(newText.orEmpty())
+                    return true
+                }
+            },
+        )
+        searchItem?.setOnActionExpandListener(
+            object : MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionExpand(item: MenuItem) = true
+
+                override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                    viewModel.setQuery("")
+                    return true
+                }
+            },
+        )
 
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> { finish(); true }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
             R.id.action_backup_all -> {
                 val safUri = getSafUri()
                 if (safUri != null) {
@@ -180,17 +193,16 @@ class AppBackupActivity : AppBarActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
 
-    private fun getSafUri(): Uri? {
-        return ShizukuSettings.getExportDirUri()?.let { uriStr ->
+    private fun getSafUri(): Uri? =
+        ShizukuSettings.getExportDirUri()?.let { uriStr ->
             val uri = Uri.parse(uriStr)
-            val hasWritePermission = contentResolver.persistedUriPermissions.any {
-                it.uri == uri && it.isWritePermission
-            }
+            val hasWritePermission =
+                contentResolver.persistedUriPermissions.any {
+                    it.uri == uri && it.isWritePermission
+                }
             if (hasWritePermission) uri else null
         }
-    }
 
     private fun showLoading() {
         binding.progressBar.visibility = View.VISIBLE

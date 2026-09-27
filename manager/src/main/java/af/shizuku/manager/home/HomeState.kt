@@ -1,9 +1,9 @@
 package af.shizuku.manager.home
 
-import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.Uninitialized
 import af.shizuku.manager.model.ServiceStatus
+import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.Uninitialized
 
 data class HomeState(
     val serviceStatus: Async<ServiceStatus> = Uninitialized,
@@ -15,5 +15,5 @@ data class HomeState(
     val discoveredAdbPort: Int = -1,
     val companionInstalled: Boolean = false,
     val compatHubInstalled: Boolean = false,
-    val isOriginalShizukuRunning: Boolean = false
+    val isOriginalShizukuRunning: Boolean = false,
 ) : MavericksState

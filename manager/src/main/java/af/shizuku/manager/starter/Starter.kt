@@ -1,23 +1,20 @@
 package af.shizuku.manager.starter
 
-import android.content.Context
-import java.io.File
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeout
 import af.shizuku.manager.R
 import af.shizuku.manager.utils.ShizukuStateMachine
+import android.content.Context
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
+import java.io.File
 
 /**
  * Starter object for launching Shizuku service
  * Uses appContext from ShizukuApplication
  */
 object Starter {
-
     private var context: Context? = null
 
-    private fun getContext(): Context {
-        return context ?: throw IllegalStateException("Context not initialized")
-    }
+    private fun getContext(): Context = context ?: throw IllegalStateException("Context not initialized")
 
     fun initialize(context: Context) {
         this.context = context.applicationContext

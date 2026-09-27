@@ -1,5 +1,10 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.R
+import af.shizuku.manager.databinding.HomeItemContainerBinding
+import af.shizuku.manager.databinding.HomeStartRootBinding
+import af.shizuku.manager.ktx.themeColor
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +13,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.core.content.asActivity
-import af.shizuku.manager.R
-import af.shizuku.manager.databinding.HomeItemContainerBinding
-import af.shizuku.manager.databinding.HomeStartRootBinding
-import af.shizuku.manager.ktx.themeColor
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
@@ -21,15 +21,13 @@ class StartStockShizukuViewHolder(
     private val containerBinding: HomeItemContainerBinding,
     private val scope: CoroutineScope,
 ) : BaseViewHolder<Boolean>(containerBinding.root) {
-
     companion object {
-        fun creator(scope: CoroutineScope): Creator<Boolean> {
-            return Creator { inflater: LayoutInflater, parent: ViewGroup? ->
+        fun creator(scope: CoroutineScope): Creator<Boolean> =
+            Creator { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
                 val inner = HomeStartRootBinding.inflate(inflater, outer.cardContent, true)
                 StartStockShizukuViewHolder(inner, outer, scope)
             }
-        }
     }
 
     private inline val start get() = binding.button1
@@ -44,7 +42,9 @@ class StartStockShizukuViewHolder(
     }
 
     private fun onStartClicked(v: View) {
-        val hasRoot = af.shizuku.manager.migration.MigrationHelper.isRootAvailable()
+        val hasRoot =
+            af.shizuku.manager.migration.MigrationHelper
+                .isRootAvailable()
         val hasShizuku = rikka.shizuku.Shizuku.pingBinder()
 
         if (hasRoot || hasShizuku) {
@@ -55,7 +55,9 @@ class StartStockShizukuViewHolder(
             scope.launch(kotlinx.coroutines.Dispatchers.IO) {
                 try {
                     if (hasRoot) {
-                        com.topjohnwu.superuser.Shell.cmd(cmd).exec()
+                        com.topjohnwu.superuser.Shell
+                            .cmd(cmd)
+                            .exec()
                     } else {
                         val p = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
                         p?.waitFor()
@@ -65,12 +67,15 @@ class StartStockShizukuViewHolder(
                 }
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                     start.isEnabled = true
-                    android.widget.Toast.makeText(activity, R.string.stock_shizuku_restarting_via_root, android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast
+                        .makeText(activity, R.string.stock_shizuku_restarting_via_root, android.widget.Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         } else {
             val activity = v.context.asActivity<android.app.Activity>() ?: return
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
+            com.google.android.material.dialog
+                .MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.stock_shizuku_conflict_dialog_title)
                 .setMessage(R.string.stock_shizuku_conflict_dialog_message)
                 .setPositiveButton(android.R.string.ok, null)
@@ -91,6 +96,7 @@ class StartStockShizukuViewHolder(
         val context = binding.icon.context
         val errorContainer = context.themeColor(com.google.android.material.R.attr.colorErrorContainer)
         val onErrorContainer = context.themeColor(com.google.android.material.R.attr.colorOnErrorContainer)
-        af.shizuku.manager.utils.IconStyleHelper.applyToStatusCardIcon(binding.icon, pillColor = errorContainer, tintColor = onErrorContainer)
+        af.shizuku.manager.utils.IconStyleHelper
+            .applyToStatusCardIcon(binding.icon, pillColor = errorContainer, tintColor = onErrorContainer)
     }
 }

@@ -1,36 +1,51 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.ShizukuApplication
+import af.shizuku.manager.ShizukuSettings
 import android.content.Context
 import android.os.Build
 import android.os.SystemProperties
 import android.provider.Settings
-import af.shizuku.manager.ShizukuApplication
-import af.shizuku.manager.ShizukuSettings
 
 private val appContext: Context
-    get() = try {
-        ShizukuApplication.appContext
-    } catch (e: UninitializedPropertyAccessException) {
-        // Fallback for very early access if possible, or just rethrow with better message
-        throw IllegalStateException("EnvironmentUtils.appContext accessed before ShizukuApplication.appContext was initialized", e)
-    }
+    get() =
+        try {
+            ShizukuApplication.appContext
+        } catch (e: UninitializedPropertyAccessException) {
+            // Fallback for very early access if possible, or just rethrow with better message
+            throw IllegalStateException("EnvironmentUtils.appContext accessed before ShizukuApplication.appContext was initialized", e)
+        }
 
 object EnvironmentUtils {
+    @JvmStatic
+    fun isWatch(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isWatch(appContext)
 
     @JvmStatic
-    fun isWatch(): Boolean = af.shizuku.common.util.EnvironmentUtils.isWatch(appContext)
+    fun isTelevision(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isTelevision(appContext)
 
-    @JvmStatic
-    fun isTelevision(): Boolean = af.shizuku.common.util.EnvironmentUtils.isTelevision(appContext)
-
-    fun isTlsSupported(): Boolean = af.shizuku.common.util.EnvironmentUtils.isTlsSupported(appContext)
+    fun isTlsSupported(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isTlsSupported(appContext)
 
     fun isWifiRequired(): Boolean {
         if (ShizukuSettings.getTcpMode()) return false
         if (getAdbTcpPort() > 0) return false
-        if (af.shizuku.manager.adb.AdbPortProber.isPortOpen(5555, 50)) return false
+        if (af.shizuku.manager.adb.AdbPortProber
+                .isPortOpen(5555, 50)
+        ) {
+            return false
+        }
         val lastPort = ShizukuSettings.getLastPort()
-        if (lastPort in 1..65535 && af.shizuku.manager.adb.AdbPortProber.isPortOpen(lastPort, 50)) return false
+        if (lastPort in 1..65535 &&
+            af.shizuku.manager.adb.AdbPortProber
+                .isPortOpen(lastPort, 50)
+        ) {
+            return false
+        }
         return true
     }
 
@@ -52,11 +67,17 @@ object EnvironmentUtils {
 
     private fun startRootCheck() {
         if (isRootedCached != null) return
-        val t = Thread({
-            if (isRootedCached == null) {
-                isRootedCached = try { checkSuExists() } catch (_: Exception) { false }
-            }
-        }, "root-check")
+        val t =
+            Thread({
+                if (isRootedCached == null) {
+                    isRootedCached =
+                        try {
+                            checkSuExists()
+                        } catch (_: Exception) {
+                            false
+                        }
+                }
+            }, "root-check")
         t.isDaemon = true
         t.start()
     }
@@ -65,7 +86,12 @@ object EnvironmentUtils {
     fun isRooted(): Boolean {
         var result = isRootedCached
         if (result == null) {
-            result = try { checkSuExists() } catch (_: Exception) { false }
+            result =
+                try {
+                    checkSuExists()
+                } catch (_: Exception) {
+                    false
+                }
             isRootedCached = result
         }
         return result
@@ -74,19 +100,21 @@ object EnvironmentUtils {
     private fun checkSuExists(): Boolean {
         val paths = System.getenv("PATH")?.split(":")?.toMutableList() ?: mutableListOf()
         // Add common modern root paths that might not be in the standard PATH
-        paths.addAll(listOf(
-            "/data/adb/ksu/bin",
-            "/data/adb/ap/bin",
-            "/data/adb/magisk",
-            "/sbin",
-            "/system/bin",
-            "/system/xbin",
-            "/data/local/xbin",
-            "/data/local/bin",
-            "/system/sd/xbin",
-            "/system/bin/failsafe",
-            "/data/local"
-        ))
+        paths.addAll(
+            listOf(
+                "/data/adb/ksu/bin",
+                "/data/adb/ap/bin",
+                "/data/adb/magisk",
+                "/sbin",
+                "/system/bin",
+                "/system/xbin",
+                "/data/local/xbin",
+                "/data/local/bin",
+                "/system/sd/xbin",
+                "/system/bin/failsafe",
+                "/data/local",
+            ),
+        )
         for (path in paths) {
             if (java.io.File(path, "su").exists()) return true
         }
@@ -94,41 +122,55 @@ object EnvironmentUtils {
     }
 
     @JvmStatic
-    fun isSamsung(): Boolean = af.shizuku.common.util.EnvironmentUtils.isSamsung()
+    fun isSamsung(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isSamsung()
 
     @JvmStatic
-    fun getOneUiVersion(): Int = af.shizuku.common.util.EnvironmentUtils.getOneUiVersion()
+    fun getOneUiVersion(): Int =
+        af.shizuku.common.util.EnvironmentUtils
+            .getOneUiVersion()
 
     @JvmStatic
-    fun isOneUi8(): Boolean = af.shizuku.common.util.EnvironmentUtils.isOneUi8()
+    fun isOneUi8(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isOneUi8()
 
     @JvmStatic
-    fun isOppo(): Boolean = af.shizuku.common.util.EnvironmentUtils.isOppo()
+    fun isOppo(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isOppo()
 
     @JvmStatic
-    fun isOnePlus(): Boolean = af.shizuku.common.util.EnvironmentUtils.isOnePlus()
+    fun isOnePlus(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isOnePlus()
 
     @JvmStatic
-    fun getColorOsVersion(): String {
-        return SystemProperties.get("ro.build.version.opporom", "unknown")
-    }
+    fun getColorOsVersion(): String = SystemProperties.get("ro.build.version.opporom", "unknown")
 
     @JvmStatic
-    fun isXiaomi(): Boolean = af.shizuku.common.util.EnvironmentUtils.isXiaomi()
+    fun isXiaomi(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isXiaomi()
 
     @JvmStatic
-    fun getHyperOsVersion(): String {
-        return SystemProperties.get("ro.miui.ui.version.name", "unknown")
-    }
+    fun getHyperOsVersion(): String = SystemProperties.get("ro.miui.ui.version.name", "unknown")
 
     @JvmStatic
-    fun isTCL(): Boolean = af.shizuku.common.util.EnvironmentUtils.isTCL()
+    fun isTCL(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isTCL()
 
     @JvmStatic
-    fun isDeX(context: Context): Boolean = af.shizuku.common.util.EnvironmentUtils.isDeX(context)
+    fun isDeX(context: Context): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isDeX(context)
 
     @JvmStatic
-    fun isSecondaryUser(): Boolean = af.shizuku.common.util.EnvironmentUtils.isSecondaryUser()
+    fun isSecondaryUser(): Boolean =
+        af.shizuku.common.util.EnvironmentUtils
+            .isSecondaryUser()
 
     /**
      * Android 17 (API 37) redacts Settings.Global.ADB_ENABLED to 0 for third-party apps,
@@ -140,7 +182,9 @@ object EnvironmentUtils {
     }
 
     fun getAdbTcpPort(): Int {
-        var port = af.shizuku.common.util.EnvironmentUtils.getAdbTcpPort()
+        var port =
+            af.shizuku.common.util.EnvironmentUtils
+                .getAdbTcpPort()
         if (port == -1 && isTelevision() && !isTlsSupported()) port = ShizukuSettings.getTcpPort()
         return port
     }
@@ -159,26 +203,33 @@ object EnvironmentUtils {
             }
 
             // Check for common volume patterns
-            val basePath = when {
-                docId.startsWith("primary:") -> {
-                    val relative = docId.removePrefix("primary:")
-                    if (relative.isEmpty()) "/storage/emulated/0"
-                    else "/storage/emulated/0/$relative"
+            val basePath =
+                when {
+                    docId.startsWith("primary:") -> {
+                        val relative = docId.removePrefix("primary:")
+                        if (relative.isEmpty()) {
+                            "/storage/emulated/0"
+                        } else {
+                            "/storage/emulated/0/$relative"
+                        }
+                    }
+                    docId.contains(":") -> {
+                        val parts = docId.split(":")
+                        val volumeId = parts[0]
+                        val relative = parts[1]
+                        "/storage/$volumeId/$relative"
+                    }
+                    docId.startsWith("Download") || docId.startsWith("Documents") || docId.startsWith("Movies") -> {
+                        "/storage/emulated/0/$docId"
+                    }
+                    else -> {
+                        if (!docId.startsWith("/")) {
+                            "/storage/emulated/0/$docId"
+                        } else {
+                            docId
+                        }
+                    }
                 }
-                docId.contains(":") -> {
-                    val parts = docId.split(":")
-                    val volumeId = parts[0]
-                    val relative = parts[1]
-                    "/storage/$volumeId/$relative"
-                }
-                docId.startsWith("Download") || docId.startsWith("Documents") || docId.startsWith("Movies") -> {
-                    "/storage/emulated/0/$docId"
-                }
-                else -> {
-                    if (!docId.startsWith("/")) "/storage/emulated/0/$docId"
-                    else docId
-                }
-            }
 
             val path = basePath.replace("//", "/") + "/" + filename
             path.replace("//", "/")

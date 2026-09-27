@@ -1,26 +1,29 @@
 package af.shizuku.manager.widget
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ktx.themeColor
+import af.shizuku.manager.ktx.themeCornerSizePx
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import af.shizuku.manager.R
-import af.shizuku.manager.ktx.themeColor
-import af.shizuku.manager.ktx.themeCornerSizePx
 
 /**
  * Base ItemDecoration for Material 3 Expressive card-style lists.
  * Handles unified background card drawing and dividers with consistent spacing.
  */
-abstract class M3ECardItemDecoration(protected val context: Context) : RecyclerView.ItemDecoration() {
+abstract class M3ECardItemDecoration(
+    protected val context: Context,
+) : RecyclerView.ItemDecoration() {
     protected val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     protected val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     // Outer corner radius — matches the ExtraLarge shape token used by all M3E cards.
-    protected val cornerRadius = context.themeCornerSizePx(
-        com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge
-    )
+    protected val cornerRadius =
+        context.themeCornerSizePx(
+            com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge,
+        )
 
     protected open val cardMargin: Float get() = context.resources.getDimension(R.dimen.m3e_spacing_medium)
     protected val density = context.resources.displayMetrics.density
@@ -31,7 +34,11 @@ abstract class M3ECardItemDecoration(protected val context: Context) : RecyclerV
         dividerPaint.strokeWidth = 1f * density
     }
 
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+    override fun onDraw(
+        c: Canvas,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
         val count = parent.childCount
         if (count == 0) return
 
@@ -84,13 +91,25 @@ abstract class M3ECardItemDecoration(protected val context: Context) : RecyclerV
     }
 
     protected open fun isHeader(view: View): Boolean = false
+
     protected open fun shouldDecorate(view: View): Boolean = true
+
     protected open fun getDividerInset(view: View): Float = 56f * density
+
     protected open fun getDividerEndInset(view: View): Float = 16f * density
 
-    protected open fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean = false
+    protected open fun shouldDrawDivider(
+        parent: RecyclerView,
+        index: Int,
+        count: Int,
+    ): Boolean = false
 
-    protected fun drawCard(c: Canvas, parent: RecyclerView, top: Float, bottom: Float) {
+    protected fun drawCard(
+        c: Canvas,
+        parent: RecyclerView,
+        top: Float,
+        bottom: Float,
+    ) {
         c.drawRoundRect(cardMargin, top, parent.width - cardMargin, bottom, cornerRadius, cornerRadius, cardPaint)
     }
 }

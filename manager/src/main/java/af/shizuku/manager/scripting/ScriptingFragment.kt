@@ -1,5 +1,10 @@
 package af.shizuku.manager.scripting
 
+import af.shizuku.core.ui.EmptyStateView
+import af.shizuku.manager.R
+import af.shizuku.manager.database.ScriptSnippetManager
+import af.shizuku.manager.database.ScriptSnippetRoom
+import af.shizuku.manager.databinding.ItemScriptSnippetBinding
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -9,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import com.google.android.material.checkbox.MaterialCheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -22,27 +26,29 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import af.shizuku.core.ui.EmptyStateView
-import af.shizuku.manager.R
-import af.shizuku.manager.databinding.ItemScriptSnippetBinding
-import af.shizuku.manager.database.ScriptSnippetManager
-import af.shizuku.manager.database.ScriptSnippetRoom
 
 class ScriptingFragment : Fragment() {
-
-    private val adapter = SnippetAdapter(
-        onRun = { runSnippet(it) },
-        onEdit = { showEditDialog(it) },
-        onLongPress = { showDeleteConfirmation(it) }
-    )
+    private val adapter =
+        SnippetAdapter(
+            onRun = { runSnippet(it) },
+            onEdit = { showEditDialog(it) },
+            onLongPress = { showDeleteConfirmation(it) },
+        )
     private lateinit var emptyStateView: EmptyStateView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = af.shizuku.core.ui.databinding.AppsActivityBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        val binding =
+            af.shizuku.core.ui.databinding.AppsActivityBinding
+                .inflate(inflater, container, false)
 
         emptyStateView = binding.emptyStateView
         emptyStateView.setIcon(R.drawable.ic_code_24)
@@ -54,9 +60,10 @@ class ScriptingFragment : Fragment() {
 
         binding.list.clipToPadding = false
         ViewCompat.setOnApplyWindowInsetsListener(binding.list) { view, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-            )
+            val bars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
             view.setPadding(bars.left, view.paddingTop, bars.right, bars.bottom)
             insets
         }
@@ -64,20 +71,23 @@ class ScriptingFragment : Fragment() {
         binding.list.adapter = adapter
 
         // FAB in the inner FrameLayout (parent of list + emptyStateView in apps_activity.xml)
-        val fab = FloatingActionButton(requireContext()).apply {
-            setImageResource(R.drawable.ic_add_24)
-            contentDescription = getString(R.string.scripting_add)
-            visibility = View.GONE // hidden until snippets exist; empty state has its own action button
-        }
-        val fabLp = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
-            val margin = (16 * resources.displayMetrics.density).toInt()
-            bottomMargin = margin
-            rightMargin = margin
-        }
+        val fab =
+            FloatingActionButton(requireContext()).apply {
+                setImageResource(R.drawable.ic_add_24)
+                contentDescription = getString(R.string.scripting_add)
+                visibility = View.GONE // hidden until snippets exist; empty state has its own action button
+            }
+        val fabLp =
+            FrameLayout
+                .LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                ).apply {
+                    gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
+                    val margin = (16 * resources.displayMetrics.density).toInt()
+                    bottomMargin = margin
+                    rightMargin = margin
+                }
         (binding.list.parent as? FrameLayout)?.addView(fab, fabLp)
 
         ViewCompat.setOnApplyWindowInsetsListener(fab) { v, insets ->
@@ -113,14 +123,15 @@ class ScriptingFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val result = ScriptSnippetManager.run(snippet.script)
             if (!isAdded) return@launch
-            val output = buildString {
-                if (result.stdout.isNotBlank()) append(result.stdout.trim())
-                if (result.stderr.isNotBlank()) {
-                    if (isNotEmpty()) append("\n\n")
-                    append("stderr:\n").append(result.stderr.trim())
+            val output =
+                buildString {
+                    if (result.stdout.isNotBlank()) append(result.stdout.trim())
+                    if (result.stderr.isNotBlank()) {
+                        if (isNotEmpty()) append("\n\n")
+                        append("stderr:\n").append(result.stderr.trim())
+                    }
+                    if (isEmpty()) append(getString(R.string.scripting_no_output))
                 }
-                if (isEmpty()) append(getString(R.string.scripting_no_output))
-            }
             val heading = getString(R.string.scripting_exit_code, result.exitCode)
             MaterialAlertDialogBuilder(ctx)
                 .setTitle(snippet.title)
@@ -130,8 +141,7 @@ class ScriptingFragment : Fragment() {
                     val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     cm.setPrimaryClip(ClipData.newPlainText(snippet.title, output))
                     Toast.makeText(ctx, R.string.scripting_output_copied, Toast.LENGTH_SHORT).show()
-                }
-                .show()
+                }.show()
         }
     }
 
@@ -139,35 +149,47 @@ class ScriptingFragment : Fragment() {
         val ctx = context ?: return
         val dp16 = (16 * resources.displayMetrics.density).toInt()
 
-        val titleInput = EditText(ctx).apply {
-            inputType = InputType.TYPE_CLASS_TEXT
-            hint = getString(R.string.scripting_title_hint)
-            existing?.let { setText(it.title) }
-        }
-        val scriptInput = EditText(ctx).apply {
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
-            typeface = android.graphics.Typeface.MONOSPACE
-            hint = getString(R.string.scripting_script_hint)
-            minLines = 4
-            existing?.let { setText(it.script) }
-        }
-        val autoRunCheck = MaterialCheckBox(ctx).apply {
-            text = getString(R.string.scripting_auto_run_label)
-            isChecked = existing?.autoRun ?: false
-        }
-        val container = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp16, dp16 / 2, dp16, dp16 / 2)
-            addView(titleInput)
-            addView(scriptInput, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp16 / 2 })
-            addView(autoRunCheck, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = dp16 / 2 })
-        }
+        val titleInput =
+            EditText(ctx).apply {
+                inputType = InputType.TYPE_CLASS_TEXT
+                hint = getString(R.string.scripting_title_hint)
+                existing?.let { setText(it.title) }
+            }
+        val scriptInput =
+            EditText(ctx).apply {
+                inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                typeface = android.graphics.Typeface.MONOSPACE
+                hint = getString(R.string.scripting_script_hint)
+                minLines = 4
+                existing?.let { setText(it.script) }
+            }
+        val autoRunCheck =
+            MaterialCheckBox(ctx).apply {
+                text = getString(R.string.scripting_auto_run_label)
+                isChecked = existing?.autoRun ?: false
+            }
+        val container =
+            LinearLayout(ctx).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp16, dp16 / 2, dp16, dp16 / 2)
+                addView(titleInput)
+                addView(
+                    scriptInput,
+                    LinearLayout
+                        .LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                        ).apply { topMargin = dp16 / 2 },
+                )
+                addView(
+                    autoRunCheck,
+                    LinearLayout
+                        .LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                        ).apply { topMargin = dp16 / 2 },
+                )
+            }
 
         MaterialAlertDialogBuilder(ctx)
             .setTitle(if (existing == null) R.string.scripting_add else R.string.scripting_edit)
@@ -182,8 +204,7 @@ class ScriptingFragment : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     ScriptSnippetManager.save(existing?.id, title, script, autoRunCheck.isChecked)
                 }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
+            }.setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
@@ -196,25 +217,39 @@ class ScriptingFragment : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     ScriptSnippetManager.delete(snippet)
                 }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
+            }.setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
     internal class SnippetAdapter(
         private val onRun: (ScriptSnippetRoom) -> Unit,
         private val onEdit: (ScriptSnippetRoom) -> Unit,
-        private val onLongPress: (ScriptSnippetRoom) -> Unit
+        private val onLongPress: (ScriptSnippetRoom) -> Unit,
     ) : ListAdapter<ScriptSnippetRoom, SnippetViewHolder>(DIFF) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        override fun onCreateViewHolder(
+            parent: ViewGroup,
+            viewType: Int,
+        ) =
             SnippetViewHolder.create(parent, onRun, onEdit, onLongPress)
-        override fun onBindViewHolder(holder: SnippetViewHolder, position: Int) = holder.bind(getItem(position))
+
+        override fun onBindViewHolder(
+            holder: SnippetViewHolder,
+            position: Int,
+        ) = holder.bind(getItem(position))
 
         companion object {
-            private val DIFF = object : DiffUtil.ItemCallback<ScriptSnippetRoom>() {
-                override fun areItemsTheSame(a: ScriptSnippetRoom, b: ScriptSnippetRoom) = a.id == b.id
-                override fun areContentsTheSame(a: ScriptSnippetRoom, b: ScriptSnippetRoom) = a == b
-            }
+            private val DIFF =
+                object : DiffUtil.ItemCallback<ScriptSnippetRoom>() {
+                    override fun areItemsTheSame(
+                        a: ScriptSnippetRoom,
+                        b: ScriptSnippetRoom,
+                    ) = a.id == b.id
+
+                    override fun areContentsTheSame(
+                        a: ScriptSnippetRoom,
+                        b: ScriptSnippetRoom,
+                    ) = a == b
+                }
         }
     }
 
@@ -222,27 +257,36 @@ class ScriptingFragment : Fragment() {
         private val binding: ItemScriptSnippetBinding,
         private val onRun: (ScriptSnippetRoom) -> Unit,
         private val onEdit: (ScriptSnippetRoom) -> Unit,
-        private val onLongPress: (ScriptSnippetRoom) -> Unit
+        private val onLongPress: (ScriptSnippetRoom) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
         companion object {
             fun create(
                 parent: ViewGroup,
                 onRun: (ScriptSnippetRoom) -> Unit,
                 onEdit: (ScriptSnippetRoom) -> Unit,
-                onLongPress: (ScriptSnippetRoom) -> Unit
+                onLongPress: (ScriptSnippetRoom) -> Unit,
             ) = SnippetViewHolder(
                 ItemScriptSnippetBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-                onRun, onEdit, onLongPress
+                onRun,
+                onEdit,
+                onLongPress,
             )
         }
 
         fun bind(snippet: ScriptSnippetRoom) {
             binding.title.text = snippet.title
-            binding.scriptPreview.text = snippet.script.lineSequence().firstOrNull().orEmpty()
+            binding.scriptPreview.text =
+                snippet.script
+                    .lineSequence()
+                    .firstOrNull()
+                    .orEmpty()
             binding.autoRunBadge.visibility = if (snippet.autoRun) View.VISIBLE else View.GONE
             binding.runButton.setOnClickListener { onRun(snippet) }
             binding.root.setOnClickListener { onEdit(snippet) }
-            binding.root.setOnLongClickListener { onLongPress(snippet); true }
+            binding.root.setOnLongClickListener {
+                onLongPress(snippet)
+                true
+            }
         }
     }
 }

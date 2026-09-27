@@ -11,7 +11,6 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 object CryptoUtils {
-
     // The auth-required alias is versioned (_v2): keys created before the device-credential fix
     // (#332/#315) were biometric-only, so a password/PIN-locked device could pass canAuthenticate,
     // authenticate with its credential, yet the credential couldn't unlock the biometric-only key -
@@ -38,17 +37,21 @@ object CryptoUtils {
                 if (key != null) return key
             }
         } catch (_: Exception) {
-            try { keyStore.deleteEntry(alias) } catch (_: Exception) {}
+            try {
+                keyStore.deleteEntry(alias)
+            } catch (_: Exception) {
+            }
         }
 
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
-        val builder = KeyGenParameterSpec.Builder(
-            alias,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-        )
-            .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-            .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            
+        val builder =
+            KeyGenParameterSpec
+                .Builder(
+                    alias,
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+                ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+
         if (userAuthRequired) {
             builder.setUserAuthenticationRequired(true)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -58,7 +61,7 @@ object CryptoUtils {
                 // Timeout 0 = authenticate per use, keeping the existing CryptoObject flow intact.
                 builder.setUserAuthenticationParameters(
                     0,
-                    KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+                    KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL,
                 )
             }
             // Pre-R keeps the legacy biometric-only CryptoObject binding (BiometricLock already
@@ -74,7 +77,8 @@ object CryptoUtils {
             val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
             keyStore.load(null)
             keyStore.deleteEntry(keyAlias(userAuthRequired))
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     fun getCipherForEncryption(userAuthRequired: Boolean): Cipher {
@@ -91,15 +95,19 @@ object CryptoUtils {
         return cipher
     }
 
-    private fun keyExists(userAuthRequired: Boolean): Boolean = try {
-        val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
-        keyStore.load(null)
-        keyStore.containsAlias(keyAlias(userAuthRequired))
-    } catch (_: Exception) {
-        false
-    }
+    private fun keyExists(userAuthRequired: Boolean): Boolean =
+        try {
+            val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
+            keyStore.load(null)
+            keyStore.containsAlias(keyAlias(userAuthRequired))
+        } catch (_: Exception) {
+            false
+        }
 
-    fun getCipherForDecryption(iv: ByteArray, userAuthRequired: Boolean): Cipher {
+    fun getCipherForDecryption(
+        iv: ByteArray,
+        userAuthRequired: Boolean,
+    ): Cipher {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec = GCMParameterSpec(128, iv)
         // If the key alias is gone (the app was uninstalled/reinstalled, or its data was cleared),
@@ -125,8 +133,9 @@ object CryptoUtils {
  * on this device (typically after uninstall/reinstall or clearing app data). Distinct from
  * AEADBadTagException so the UI can explain the real cause rather than showing a raw crypto error.
  */
-class BackupKeyUnavailableException : java.security.GeneralSecurityException(
-    "The encryption key for this backup no longer exists on this device. Settings backups are " +
-        "encrypted with a hardware-backed key that is destroyed when Shizuku+ is uninstalled or its " +
-        "data is cleared, so a backup can only be restored by the installation that created it."
-)
+class BackupKeyUnavailableException :
+    java.security.GeneralSecurityException(
+        "The encryption key for this backup no longer exists on this device. Settings backups are " +
+            "encrypted with a hardware-backed key that is destroyed when Shizuku+ is uninstalled or its " +
+            "data is cleared, so a backup can only be restored by the installation that created it.",
+    )

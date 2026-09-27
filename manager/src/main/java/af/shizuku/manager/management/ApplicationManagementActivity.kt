@@ -1,5 +1,15 @@
 package af.shizuku.manager.management
 
+import af.shizuku.core.ui.AppBarActivity
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.authorization.AuthorizationManager
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.databinding.AppsActivityBinding
+import af.shizuku.manager.databinding.SwipeHintOverlayBinding
+import af.shizuku.manager.management.AppViewHolder.Callbacks
+import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
@@ -22,34 +32,25 @@ import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
-import com.google.android.material.chip.ChipGroup
-import com.google.android.material.textfield.TextInputLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.google.android.material.snackbar.Snackbar
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.core.ui.AppBarActivity
-import af.shizuku.manager.authorization.AuthorizationManager
-import af.shizuku.manager.databinding.AppsActivityBinding
-import af.shizuku.manager.databinding.SwipeHintOverlayBinding
-import timber.log.Timber
-import af.shizuku.manager.management.AppViewHolder.Callbacks
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.utils.HapticUtils
-import af.shizuku.manager.utils.ShizukuStateMachine
 import rikka.lifecycle.Status
 import rikka.recyclerview.addEdgeSpacing
 import rikka.recyclerview.fixEdgeEffect
+import timber.log.Timber
 import java.util.Objects
 
-open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks {
-
+open class ApplicationManagementActivity :
+    AppBarActivity(),
+    AppViewHolder.Callbacks {
     private val viewModel: AppsViewModel by viewModels()
     private val adapter = AppsAdapter()
     private lateinit var recyclerView: RecyclerView
@@ -104,16 +105,17 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         }
 
         // Predictive back support for selection mode
-        backCallback = object : androidx.activity.OnBackPressedCallback(false) {
-            override fun handleOnBackPressed() {
-                if (adapter.isSelectionMode) {
-                    adapter.isSelectionMode = false
-                    invalidateOptionsMenu()
-                    supportActionBar?.title = getString(R.string.home_app_management_title)
-                    this.isEnabled = false
+        backCallback =
+            object : androidx.activity.OnBackPressedCallback(false) {
+                override fun handleOnBackPressed() {
+                    if (adapter.isSelectionMode) {
+                        adapter.isSelectionMode = false
+                        invalidateOptionsMenu()
+                        supportActionBar?.title = getString(R.string.home_app_management_title)
+                        this.isEnabled = false
+                    }
                 }
             }
-        }
         backCallback?.let {
             onBackPressedDispatcher.addCallback(this, it)
         }
@@ -129,20 +131,24 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             cornerAnimator?.cancel()
             val currentRadius = searchLayout.boxCornerRadiusTopStart
             if (kotlin.math.abs(currentRadius - toRadius) < 0.5f) return
-            cornerAnimator = android.animation.ValueAnimator.ofFloat(currentRadius, toRadius).apply {
-                duration = 240L
-                interpolator = androidx.interpolator.view.animation.FastOutSlowInInterpolator()
-                addUpdateListener { animator ->
-                    val r = animator.animatedValue as Float
-                    searchLayout.setBoxCornerRadii(r, r, r, r)
+            cornerAnimator =
+                android.animation.ValueAnimator.ofFloat(currentRadius, toRadius).apply {
+                    duration = 240L
+                    interpolator =
+                        androidx.interpolator.view.animation
+                            .FastOutSlowInInterpolator()
+                    addUpdateListener { animator ->
+                        val r = animator.animatedValue as Float
+                        searchLayout.setBoxCornerRadii(r, r, r, r)
+                    }
+                    start()
                 }
-                start()
-            }
         }
 
         searchEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                af.shizuku.manager.utils.HapticUtils.tick(searchEditText)
+                af.shizuku.manager.utils.HapticUtils
+                    .tick(searchEditText)
                 animateSearchCorners(squircleRadius)
             } else if (searchEditText.text.isNullOrEmpty()) {
                 animateSearchCorners(pillRadius)
@@ -162,7 +168,8 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         val chipGroup = rootView.findViewById<ChipGroup>(R.id.filter_chip_group)
         chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
-            af.shizuku.manager.utils.HapticUtils.segmentTick(group)
+            af.shizuku.manager.utils.HapticUtils
+                .segmentTick(group)
             when (checkedIds.first()) {
                 R.id.chip_all -> viewModel.setFilter(FilterState.ALL)
                 R.id.chip_granted -> viewModel.setFilter(FilterState.GRANTED)
@@ -212,43 +219,55 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         recyclerView.clipToPadding = false
 
         androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
-            val bars = insets.getInsets(
-                androidx.core.view.WindowInsetsCompat.Type.systemBars() or
-                androidx.core.view.WindowInsetsCompat.Type.displayCutout()
-            )
+            val bars =
+                insets.getInsets(
+                    androidx.core.view.WindowInsetsCompat.Type
+                        .systemBars() or
+                        androidx.core.view.WindowInsetsCompat.Type
+                            .displayCutout(),
+                )
             val extraBottomPadding = (72 * resources.displayMetrics.density).toInt()
-            val oneHandedTopPadding = if (ShizukuSettings.isOneHandedModeEnabled()) {
-                (resources.displayMetrics.heightPixels * 0.16f).toInt()
-            } else {
-                0
-            }
+            val oneHandedTopPadding =
+                if (ShizukuSettings.isOneHandedModeEnabled()) {
+                    (resources.displayMetrics.heightPixels * 0.16f).toInt()
+                } else {
+                    0
+                }
             v.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom + extraBottomPadding)
             insets
         }
 
         // M3E 2026 Layout Animation for fluid motion on entry
-        recyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(
-            this, R.anim.layout_animation_slide_bottom
-        )
+        recyclerView.layoutAnimation =
+            AnimationUtils.loadLayoutAnimation(
+                this,
+                R.anim.layout_animation_slide_bottom,
+            )
 
         recyclerView.setBackgroundColor(Color.TRANSPARENT)
         recyclerView.addItemDecoration(AppListItemDecoration(this))
         recyclerView.fixEdgeEffect()
         recyclerView.addEdgeSpacing(top = 8f, bottom = 8f, unit = TypedValue.COMPLEX_UNIT_DIP)
 
-        adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
-            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) {
-                viewModel.load(true)
-            }
-
-            override fun onChanged() {
-                backCallback?.isEnabled = adapter.isSelectionMode
-                if (adapter.isSelectionMode) {
-                    supportActionBar?.title = getString(R.string.app_management_selected, adapter.selectedPackages.size)
-                    invalidateOptionsMenu()
+        adapter.registerAdapterDataObserver(
+            object : AdapterDataObserver() {
+                override fun onItemRangeChanged(
+                    positionStart: Int,
+                    itemCount: Int,
+                    payload: Any?,
+                ) {
+                    viewModel.load(true)
                 }
-            }
-        })
+
+                override fun onChanged() {
+                    backCallback?.isEnabled = adapter.isSelectionMode
+                    if (adapter.isSelectionMode) {
+                        supportActionBar?.title = getString(R.string.app_management_selected, adapter.selectedPackages.size)
+                        invalidateOptionsMenu()
+                    }
+                }
+            },
+        )
 
         setupSwipe(recyclerView)
         ShizukuStateMachine.addListener(stateListener)
@@ -270,11 +289,12 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             return true
         }
         menuInflater.inflate(R.menu.apps_management_menu, menu)
-        val sortId = when (viewModel.sortOrder) {
-            SortOrder.NAME_ASC -> R.id.sort_name
-            SortOrder.LAST_INSTALLED -> R.id.sort_last_installed
-            SortOrder.LAST_UPDATED -> R.id.sort_last_updated
-        }
+        val sortId =
+            when (viewModel.sortOrder) {
+                SortOrder.NAME_ASC -> R.id.sort_name
+                SortOrder.LAST_INSTALLED -> R.id.sort_last_installed
+                SortOrder.LAST_UPDATED -> R.id.sort_last_updated
+            }
         menu.findItem(sortId)?.isChecked = true
         menu.findItem(R.id.action_hidden_apps)?.isVisible = false
         return true
@@ -284,12 +304,17 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         if (adapter.isSelectionMode) {
             when (item.itemId) {
                 10 -> { // Select all
-                    viewModel.packages.value?.data?.forEach { adapter.selectedPackages.add(it.packageName) }
+                    viewModel.packages.value
+                        ?.data
+                        ?.forEach { adapter.selectedPackages.add(it.packageName) }
                     adapter.notifyItemRangeChanged(0, adapter.itemCount)
                 }
                 11 -> { // Grant all
                     adapter.selectedPackages.toList().forEach { pkg ->
-                        val pi = viewModel.packages.value?.data?.find { it.packageName == pkg }
+                        val pi =
+                            viewModel.packages.value
+                                ?.data
+                                ?.find { it.packageName == pkg }
                         pi?.applicationInfo?.uid?.let { uid -> AuthorizationManager.grant(pkg, uid) }
                     }
                     adapter.isSelectionMode = false
@@ -297,7 +322,10 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                 }
                 12 -> { // Revoke all
                     adapter.selectedPackages.toList().forEach { pkg ->
-                        val pi = viewModel.packages.value?.data?.find { it.packageName == pkg }
+                        val pi =
+                            viewModel.packages.value
+                                ?.data
+                                ?.find { it.packageName == pkg }
                         pi?.applicationInfo?.uid?.let { uid -> AuthorizationManager.revoke(pkg, uid) }
                     }
                     adapter.isSelectionMode = false
@@ -323,10 +351,25 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             return true
         }
         return when (item.itemId) {
-            android.R.id.home -> { finish(); true }
-            R.id.sort_name -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.NAME_ASC); true }
-            R.id.sort_last_installed -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.LAST_INSTALLED); true }
-            R.id.sort_last_updated -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.LAST_UPDATED); true }
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            R.id.sort_name -> {
+                item.isChecked = true
+                viewModel.setSortOrder(SortOrder.NAME_ASC)
+                true
+            }
+            R.id.sort_last_installed -> {
+                item.isChecked = true
+                viewModel.setSortOrder(SortOrder.LAST_INSTALLED)
+                true
+            }
+            R.id.sort_last_updated -> {
+                item.isChecked = true
+                viewModel.setSortOrder(SortOrder.LAST_UPDATED)
+                true
+            }
             R.id.action_root_compat -> {
                 startActivity(Intent(this, af.shizuku.manager.settings.RootCompatibilityActivity::class.java))
                 true
@@ -344,12 +387,12 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             viewModel.load()
         } else {
             viewModel.hidePackage(packageName)
-            Snackbar.make(rootView, R.string.app_management_hidden, Snackbar.LENGTH_LONG)
+            Snackbar
+                .make(rootView, R.string.app_management_hidden, Snackbar.LENGTH_LONG)
                 .setAction(R.string.app_management_undo) {
                     viewModel.unhidePackage(packageName)
                     viewModel.load()
-                }
-                .show()
+                }.show()
         }
     }
 
@@ -359,52 +402,77 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
         swipeLeftAction = ShizukuSettings.getSwipeLeftAction()
 
-        val cb = object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-        ) {
-            override fun getSwipeDirs(r: RecyclerView, vh: RecyclerView.ViewHolder): Int {
-                if (vh !is AppViewHolder) return 0
-                var dirs = 0
-                if (swipeRightAction != "none") dirs = dirs or ItemTouchHelper.RIGHT
-                if (swipeLeftAction != "none") dirs = dirs or ItemTouchHelper.LEFT
-                return dirs
-            }
-
-            override fun onMove(r: RecyclerView, v: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder) = false
-
-            override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {
-                val pos = vh.adapterPosition
-                val items = adapter.getItems<Any>()
-                val item = items.getOrNull(pos) as? PackageInfo
-                adapter.notifyItemChanged(pos) // snap back
-                item ?: return
-
-                val action = if (direction == ItemTouchHelper.RIGHT) swipeRightAction else swipeLeftAction
-                handleSwipeAction(item, action, vh.itemView)
-            }
-
-            override fun onChildDraw(
-                c: Canvas, rv: RecyclerView, vh: RecyclerView.ViewHolder,
-                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+        val cb =
+            object : ItemTouchHelper.SimpleCallback(
+                0,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
             ) {
-                val v = vh.itemView
-                val action = if (dX > 0) swipeRightAction else swipeLeftAction
-                if (action != "none") {
-                    drawSwipeBackground(c, v, dX, action)
+                override fun getSwipeDirs(
+                    r: RecyclerView,
+                    vh: RecyclerView.ViewHolder,
+                ): Int {
+                    if (vh !is AppViewHolder) return 0
+                    var dirs = 0
+                    if (swipeRightAction != "none") dirs = dirs or ItemTouchHelper.RIGHT
+                    if (swipeLeftAction != "none") dirs = dirs or ItemTouchHelper.LEFT
+                    return dirs
                 }
-                super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive)
+
+                override fun onMove(
+                    r: RecyclerView,
+                    v: RecyclerView.ViewHolder,
+                    t: RecyclerView.ViewHolder,
+                ) = false
+
+                override fun onSwiped(
+                    vh: RecyclerView.ViewHolder,
+                    direction: Int,
+                ) {
+                    val pos = vh.adapterPosition
+                    val items = adapter.getItems<Any>()
+                    val item = items.getOrNull(pos) as? PackageInfo
+                    adapter.notifyItemChanged(pos) // snap back
+                    item ?: return
+
+                    val action = if (direction == ItemTouchHelper.RIGHT) swipeRightAction else swipeLeftAction
+                    handleSwipeAction(item, action, vh.itemView)
+                }
+
+                override fun onChildDraw(
+                    c: Canvas,
+                    rv: RecyclerView,
+                    vh: RecyclerView.ViewHolder,
+                    dX: Float,
+                    dY: Float,
+                    actionState: Int,
+                    isCurrentlyActive: Boolean,
+                ) {
+                    val v = vh.itemView
+                    val action = if (dX > 0) swipeRightAction else swipeLeftAction
+                    if (action != "none") {
+                        drawSwipeBackground(c, v, dX, action)
+                    }
+                    super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive)
+                }
             }
-        }
         ItemTouchHelper(cb).attachToRecyclerView(rv)
     }
 
     // internal (not private): also invoked from AppViewHolder for the TalkBack-accessible
     // equivalent of the swipe gestures (#41) - swiping to trigger an action has no screen-reader
     // affordance, so AppViewHolder exposes the same actions via custom accessibility actions.
-    internal fun handleSwipeAction(item: PackageInfo, action: String, itemView: View) {
-        val opts = ActivityOptions.makeCustomAnimation(
-            this, android.R.anim.fade_in, android.R.anim.fade_out
-        ).toBundle()
+    internal fun handleSwipeAction(
+        item: PackageInfo,
+        action: String,
+        itemView: View,
+    ) {
+        val opts =
+            ActivityOptions
+                .makeCustomAnimation(
+                    this,
+                    android.R.anim.fade_in,
+                    android.R.anim.fade_out,
+                ).toBundle()
 
         val appLabel = item.applicationInfo?.loadLabel(packageManager)?.toString() ?: item.packageName
         ActivityLogManager.log(appLabel, item.packageName, "Swipe: $action")
@@ -418,13 +486,20 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         when (action) {
             "open_app" -> {
                 val intent = packageManager.getLaunchIntentForPackage(item.packageName)
-                if (intent != null) startActivity(intent, opts)
-                else Toast.makeText(this, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
+                if (intent != null) {
+                    startActivity(intent, opts)
+                } else {
+                    Toast.makeText(this, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
+                }
             }
-            "app_info" -> startActivity(
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.fromParts("package", item.packageName, null)), opts
-            )
+            "app_info" ->
+                startActivity(
+                    Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", item.packageName, null),
+                    ),
+                    opts,
+                )
             "toggle_permission" -> {
                 val uid = item.applicationInfo?.uid ?: return
                 // Binder IPC (granted + grant/revoke) must not block the main thread — an ANR
@@ -441,16 +516,21 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                         }
                         withContext(Dispatchers.Main) {
                             val items = adapter.getItems<Any>()
-                            val pos = items.indexOfFirst {
-                                it is PackageInfo && it.packageName == item.packageName
-                            }
+                            val pos =
+                                items.indexOfFirst {
+                                    it is PackageInfo && it.packageName == item.packageName
+                                }
                             if (pos >= 0) adapter.notifyItemChanged(pos, Any())
                             adapter.notifyItemChanged(0) // update toggle-all header
                         }
                     } catch (_: SecurityException) {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(this@ApplicationManagementActivity,
-                                R.string.app_management_dialog_adb_is_limited_title, Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(
+                                    this@ApplicationManagementActivity,
+                                    R.string.app_management_dialog_adb_is_limited_title,
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     }
                 }
@@ -459,34 +539,45 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         }
     }
 
-    private fun drawSwipeBackground(c: Canvas, v: android.view.View, dX: Float, action: String) {
-        val (bgAttr, onAttr, iconRes) = when (action) {
-            "open_app" -> Triple(
-                android.R.attr.colorPrimary,
-                com.google.android.material.R.attr.colorOnPrimary,
-                R.drawable.ic_outline_play_arrow_24,
-            )
-            "app_info" -> Triple(
-                com.google.android.material.R.attr.colorSecondary,
-                com.google.android.material.R.attr.colorOnSecondary,
-                R.drawable.ic_outline_info_24,
-            )
-            "toggle_permission" -> Triple(
-                com.google.android.material.R.attr.colorTertiary,
-                com.google.android.material.R.attr.colorOnTertiary,
-                R.drawable.ic_shield_24,
-            )
-            "hide_from_list" -> Triple(
-                android.R.attr.colorError,
-                com.google.android.material.R.attr.colorOnError,
-                R.drawable.ic_visibility_off_24,
-            )
-            else -> Triple(
-                com.google.android.material.R.attr.colorSecondary,
-                com.google.android.material.R.attr.colorOnSecondary,
-                R.drawable.ic_outline_info_24,
-            )
-        }
+    private fun drawSwipeBackground(
+        c: Canvas,
+        v: android.view.View,
+        dX: Float,
+        action: String,
+    ) {
+        val (bgAttr, onAttr, iconRes) =
+            when (action) {
+                "open_app" ->
+                    Triple(
+                        android.R.attr.colorPrimary,
+                        com.google.android.material.R.attr.colorOnPrimary,
+                        R.drawable.ic_outline_play_arrow_24,
+                    )
+                "app_info" ->
+                    Triple(
+                        com.google.android.material.R.attr.colorSecondary,
+                        com.google.android.material.R.attr.colorOnSecondary,
+                        R.drawable.ic_outline_info_24,
+                    )
+                "toggle_permission" ->
+                    Triple(
+                        com.google.android.material.R.attr.colorTertiary,
+                        com.google.android.material.R.attr.colorOnTertiary,
+                        R.drawable.ic_shield_24,
+                    )
+                "hide_from_list" ->
+                    Triple(
+                        android.R.attr.colorError,
+                        com.google.android.material.R.attr.colorOnError,
+                        R.drawable.ic_visibility_off_24,
+                    )
+                else ->
+                    Triple(
+                        com.google.android.material.R.attr.colorSecondary,
+                        com.google.android.material.R.attr.colorOnSecondary,
+                        R.drawable.ic_outline_info_24,
+                    )
+            }
         val tv = TypedValue()
         theme.resolveAttribute(bgAttr, tv, true)
         val bgColor = tv.data
@@ -530,7 +621,8 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         hint.doOnLayout { v ->
             // Start below screen, slide up
             v.translationY = v.height.toFloat()
-            v.animate()
+            v
+                .animate()
                 .translationY(0f)
                 .setDuration(ShizukuSettings.scaledAnimationDuration(350))
                 .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
@@ -539,12 +631,14 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             // Bounce the right-swipe icon right to hint the gesture
             val iconRight = hintBinding.hintIconRight
             iconRight.postDelayed({
-                iconRight.animate()
+                iconRight
+                    .animate()
                     .translationX(dpToPx(18f))
                     .setDuration(ShizukuSettings.scaledAnimationDuration(350))
                     .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
                     .withEndAction {
-                        iconRight.animate()
+                        iconRight
+                            .animate()
                             .translationX(0f)
                             .setDuration(ShizukuSettings.scaledAnimationDuration(250))
                             .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
@@ -555,12 +649,14 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             // Bounce the left-swipe icon left
             val iconLeft = hintBinding.hintIconLeft
             iconLeft.postDelayed({
-                iconLeft.animate()
+                iconLeft
+                    .animate()
                     .translationX(-dpToPx(18f))
                     .setDuration(ShizukuSettings.scaledAnimationDuration(350))
                     .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
                     .withEndAction {
-                        iconLeft.animate()
+                        iconLeft
+                            .animate()
                             .translationX(0f)
                             .setDuration(ShizukuSettings.scaledAnimationDuration(250))
                             .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
@@ -570,7 +666,8 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         }
 
         val dismiss = {
-            hint.animate()
+            hint
+                .animate()
                 .translationY(hint.height.toFloat())
                 .alpha(0f)
                 .setDuration(ShizukuSettings.scaledAnimationDuration(280))
@@ -608,11 +705,14 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         // without needing to rebuild the ItemTouchHelper.
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
         swipeLeftAction = ShizukuSettings.getSwipeLeftAction()
-        androidx.core.view.ViewCompat.requestApplyInsets(recyclerView)
+        androidx.core.view.ViewCompat
+            .requestApplyInsets(recyclerView)
     }
 }
 
-class AppListItemDecoration(context: Context) : af.shizuku.manager.widget.M3ECardItemDecoration(context) {
+class AppListItemDecoration(
+    context: Context,
+) : af.shizuku.manager.widget.M3ECardItemDecoration(context) {
     // 16dp matches @dimen/margin_horizontal (item paddingStart/End) so the card rect
     // aligns exactly with the visible content bounds.
     override val cardMargin: Float = 16f * density
@@ -626,7 +726,11 @@ class AppListItemDecoration(context: Context) : af.shizuku.manager.widget.M3ECar
         return view !is com.google.android.material.card.MaterialCardView
     }
 
-    override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
+    override fun shouldDrawDivider(
+        parent: RecyclerView,
+        index: Int,
+        count: Int,
+    ): Boolean {
         for (i in index + 1 until count) {
             val next = parent.getChildAt(i) ?: continue
             if (next.visibility != View.VISIBLE) continue
@@ -636,6 +740,7 @@ class AppListItemDecoration(context: Context) : af.shizuku.manager.widget.M3ECar
     }
 
     override fun getDividerInset(view: View): Float = dividerInset
+
     // Mirror the card's right edge (16dp from child.right).
     override fun getDividerEndInset(view: View): Float = 16f * density
 }

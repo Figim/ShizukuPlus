@@ -1,19 +1,19 @@
 package af.shizuku.manager.backup
 
-import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.ItemBackupAppBinding
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
-class BackupAppViewHolder(private val binding: ItemBackupAppBinding) :
-    RecyclerView.ViewHolder(binding.root) {
-
+class BackupAppViewHolder(
+    private val binding: ItemBackupAppBinding,
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(
         entry: BackupViewModel.AppEntry,
         isBusy: Boolean,
         onBackup: ((BackupViewModel.AppEntry) -> Unit)?,
         onRestore: ((BackupViewModel.AppEntry) -> Unit)?,
-        onFreeze: ((BackupViewModel.AppEntry) -> Unit)?
+        onFreeze: ((BackupViewModel.AppEntry) -> Unit)?,
     ) {
         val context = binding.root.context
         val pm = context.packageManager
@@ -37,7 +37,7 @@ class BackupAppViewHolder(private val binding: ItemBackupAppBinding) :
         binding.btnRestore.isEnabled = !isBusy
         binding.btnFreeze.isEnabled = !isBusy
         binding.btnFreeze.setText(
-            if (entry.isFrozen) R.string.backup_action_unfreeze else R.string.backup_action_freeze
+            if (entry.isFrozen) R.string.backup_action_unfreeze else R.string.backup_action_freeze,
         )
 
         binding.btnBackup.setOnClickListener { if (!isBusy) onBackup?.invoke(entry) }

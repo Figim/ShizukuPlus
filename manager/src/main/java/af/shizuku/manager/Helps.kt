@@ -9,37 +9,42 @@ object Helps {
     // "Setup" page 404 before that, and even after fixing it to a real page, this exact
     // section didn't exist yet — the link resolved but didn't actually answer what the
     // reader came for).
-    val ADB = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
-    }
+    val ADB =
+        MultiLocaleEntity().apply {
+            put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
+            put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
+            put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
+        }
 
-    val ADB_ANDROID11 = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
-    }
+    val ADB_ANDROID11 =
+        MultiLocaleEntity().apply {
+            put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
+            put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
+            put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
+        }
 
     // "Supported-apps" doesn't exist as its own page either — Knowledgebase is the closest
     // real landing page until a dedicated compatibility list is written.
 
-    val HOME = MultiLocaleEntity().apply {
-        put("en", "https://github.com/thejaustin/ShizukuPlus/tree/master/README.md#developer-guide")
-    }
+    val HOME =
+        MultiLocaleEntity().apply {
+            put("en", "https://github.com/thejaustin/ShizukuPlus/tree/master/README.md#developer-guide")
+        }
 
-    val ADB_PERMISSION = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
-    }
+    val ADB_PERMISSION =
+        MultiLocaleEntity().apply {
+            put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
+            put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
+            put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
+        }
 
-    val SUI = MultiLocaleEntity().apply {
-        put("en", "https://github.com/RikkaApps/Sui")
-    }
+    val SUI =
+        MultiLocaleEntity().apply {
+            put("en", "https://github.com/RikkaApps/Sui")
+        }
 
-    val RISH = MultiLocaleEntity().apply {
-        put("en", "https://github.com/thejaustin/ShizukuPlus-API/tree/master/rish")
-    }
-
+    val RISH =
+        MultiLocaleEntity().apply {
+            put("en", "https://github.com/thejaustin/ShizukuPlus-API/tree/master/rish")
+        }
 }

@@ -1,8 +1,5 @@
 package af.shizuku.manager.home
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import af.shizuku.manager.Helps
 import af.shizuku.manager.databinding.HomeExtraStepRequiredBinding
 import af.shizuku.manager.databinding.HomeItemContainerBinding
@@ -10,17 +7,23 @@ import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.utils.CustomTabsHelper
 import af.shizuku.manager.utils.IconStyleHelper
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
-class AdbPermissionLimitedViewHolder(private val binding: HomeExtraStepRequiredBinding, root: View) : BaseViewHolder<Any?>(root) {
-
+class AdbPermissionLimitedViewHolder(
+    private val binding: HomeExtraStepRequiredBinding,
+    root: View,
+) : BaseViewHolder<Any?>(root) {
     companion object {
-        val CREATOR = Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
-            val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeExtraStepRequiredBinding.inflate(inflater, outer.cardContent, true)
-            AdbPermissionLimitedViewHolder(inner, outer.root)
-        }
+        val CREATOR =
+            Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
+                val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
+                val inner = HomeExtraStepRequiredBinding.inflate(inflater, outer.cardContent, true)
+                AdbPermissionLimitedViewHolder(inner, outer.root)
+            }
     }
 
     init {

@@ -1,30 +1,32 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Build
-import timber.log.Timber
 import android.widget.ImageView
 import androidx.collection.LruCache
 import kotlinx.coroutines.*
 import me.zhanghai.android.appiconloader.AppIconLoader
-import af.shizuku.manager.R
 import rikka.core.util.BuildUtils
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 object AppIconCache {
-
     private const val TAG = "AppIconCache"
 
-    private class AppIconLruCache constructor(maxSize: Int) : LruCache<Triple<String, Int, Int>, Bitmap>(maxSize) {
-        override fun sizeOf(key: Triple<String, Int, Int>, bitmap: Bitmap): Int {
-            return bitmap.byteCount / 1024
-        }
+    private class AppIconLruCache constructor(
+        maxSize: Int,
+    ) : LruCache<Triple<String, Int, Int>, Bitmap>(maxSize) {
+        override fun sizeOf(
+            key: Triple<String, Int, Int>,
+            bitmap: Bitmap,
+        ): Int = bitmap.byteCount / 1024
     }
 
     private val lruCache: LruCache<Triple<String, Int, Int>, Bitmap>
@@ -43,11 +45,18 @@ object AppIconCache {
         lruCache = AppIconLruCache(availableCacheSize)
     }
 
-    private fun get(packageName: String, userId: Int, size: Int): Bitmap? {
-        return lruCache[Triple(packageName, userId, size)]
-    }
+    private fun get(
+        packageName: String,
+        userId: Int,
+        size: Int,
+    ): Bitmap? = lruCache[Triple(packageName, userId, size)]
 
-    private fun put(packageName: String, userId: Int, size: Int, bitmap: Bitmap) {
+    private fun put(
+        packageName: String,
+        userId: Int,
+        size: Int,
+        bitmap: Bitmap,
+    ) {
         if (get(packageName, userId, size) == null) {
             lruCache.put(Triple(packageName, userId, size), bitmap)
         }
@@ -59,7 +68,9 @@ object AppIconCache {
      * keeps showing the old one for as long as the LRU happens to hold it.
      */
     fun invalidate(packageName: String) {
-        lruCache.snapshot().keys
+        lruCache
+            .snapshot()
+            .keys
             .filter { it.first == packageName }
             .forEach { lruCache.remove(it) }
         labelCache.remove(packageName)
@@ -72,7 +83,8 @@ object AppIconCache {
      */
     fun trimMemory(level: Int) {
         if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE ||
-            level == android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
+            level == android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
+        ) {
             lruCache.evictAll()
             labelCache.evictAll()
         } else if (level >= android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
@@ -80,7 +92,10 @@ object AppIconCache {
         }
     }
 
-    fun getLabel(context: Context, info: ApplicationInfo): String {
+    fun getLabel(
+        context: Context,
+        info: ApplicationInfo,
+    ): String {
         val cached = labelCache[info.packageName]
         if (cached != null) return cached
         val label = info.loadLabel(context.packageManager).toString()
@@ -89,7 +104,12 @@ object AppIconCache {
     }
 
     @SuppressLint("NewApi")
-    fun getOrLoadBitmap(context: Context, info: ApplicationInfo, userId: Int, size: Int): Bitmap? {
+    fun getOrLoadBitmap(
+        context: Context,
+        info: ApplicationInfo,
+        userId: Int,
+        size: Int,
+    ): Bitmap? {
         val cachedBitmap = get(info.packageName, userId, size)
         if (cachedBitmap != null) {
             return cachedBitmap
@@ -100,17 +120,18 @@ object AppIconCache {
             loader = AppIconLoader(size, shrinkNonAdaptiveIcons, context)
             appIconLoaders[size] = loader
         }
-        val bitmap = try {
-            loader.loadIcon(info, false)
-        } catch (e: SecurityException) {
-            // Expected on some devices when loading icons for work-profile or cross-user apps.
-            // UserManager.getProfileType() requires INTERACT_ACROSS_USERS which we don't hold.
-            Timber.tag(TAG).w("Skipping badged icon for ${info.packageName}: ${e.message}")
-            null
-        } catch (e: Throwable) {
-            Timber.tag(TAG).e(e, "Failed to load icon for ${info.packageName}")
-            null
-        }
+        val bitmap =
+            try {
+                loader.loadIcon(info, false)
+            } catch (e: SecurityException) {
+                // Expected on some devices when loading icons for work-profile or cross-user apps.
+                // UserManager.getProfileType() requires INTERACT_ACROSS_USERS which we don't hold.
+                Timber.tag(TAG).w("Skipping badged icon for ${info.packageName}: ${e.message}")
+                null
+            } catch (e: Throwable) {
+                Timber.tag(TAG).e(e, "Failed to load icon for ${info.packageName}")
+                null
+            }
         if (bitmap != null) {
             put(info.packageName, userId, size, bitmap)
         }
@@ -118,9 +139,12 @@ object AppIconCache {
     }
 
     @JvmStatic
-    fun loadIconBitmapAsync(context: Context,
-                            info: ApplicationInfo, userId: Int,
-                            view: ImageView): Job {
+    fun loadIconBitmapAsync(
+        context: Context,
+        info: ApplicationInfo,
+        userId: Int,
+        view: ImageView,
+    ): Job {
         val packageName = info.packageName
         // Prefer the ImageView's declared layout_width: LayoutInflater bakes a fixed dp size
         // into LayoutParams synchronously at inflate time, before any measure pass, so it's
@@ -129,9 +153,10 @@ object AppIconCache {
         // 40dp/32dp); measuredWidth==0 on first bind used to fall back to one shared default
         // regardless of which layout was actually being bound, decoding+caching the wrong-size
         // bitmap for two of the three, then redoing the work at the real size on the next bind.
-        val size = view.layoutParams?.width?.takeIf { it > 0 }
-            ?: view.measuredWidth.takeIf { it > 0 }
-            ?: context.resources.getDimensionPixelSize(R.dimen.default_app_icon_size)
+        val size =
+            view.layoutParams?.width?.takeIf { it > 0 }
+                ?: view.measuredWidth.takeIf { it > 0 }
+                ?: context.resources.getDimensionPixelSize(R.dimen.default_app_icon_size)
 
         // Tag the view with the current package being loaded to handle recycling
         view.setTag(R.id.tag_app_icon_package, packageName)
@@ -160,17 +185,18 @@ object AppIconCache {
                 }
             }
 
-            val bitmap = try {
-                getOrLoadBitmap(context, info, userId, size)
-            } catch (_: CancellationException) {
-                null
-            } catch (e: SecurityException) {
-                Timber.tag(TAG).w("Skipping badged icon for $packageName: ${e.message}")
-                null
-            } catch (e: Throwable) {
-                Timber.tag(TAG).e(e, "Failed to load icon for $packageName")
-                null
-            }
+            val bitmap =
+                try {
+                    getOrLoadBitmap(context, info, userId, size)
+                } catch (_: CancellationException) {
+                    null
+                } catch (e: SecurityException) {
+                    Timber.tag(TAG).w("Skipping badged icon for $packageName: ${e.message}")
+                    null
+                } catch (e: Throwable) {
+                    Timber.tag(TAG).e(e, "Failed to load icon for $packageName")
+                    null
+                }
 
             if (bitmap != null) {
                 withContext(Dispatchers.Main) {

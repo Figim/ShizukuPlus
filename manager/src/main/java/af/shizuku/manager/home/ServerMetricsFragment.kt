@@ -1,5 +1,7 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.databinding.FragmentServerMetricsBinding
+import af.shizuku.server.IAICorePlus
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,31 +9,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import af.shizuku.manager.databinding.FragmentServerMetricsBinding
 import rikka.shizuku.Shizuku
-import af.shizuku.server.IAICorePlus
 import timber.log.Timber
 
 class ServerMetricsFragment : Fragment() {
-
     private var _binding: FragmentServerMetricsBinding? = null
     private val binding get() = _binding!!
     private val handler = Handler(Looper.getMainLooper())
     private var aiCore: IAICorePlus? = null
 
-    private val updateRunnable = object : Runnable {
-        override fun run() {
-            updateStats()
-            handler.postDelayed(this, 1000)
+    private val updateRunnable =
+        object : Runnable {
+            override fun run() {
+                updateStats()
+                handler.postDelayed(this, 1000)
+            }
         }
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
         _binding = FragmentServerMetricsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         initAiCore()
     }
@@ -40,7 +47,9 @@ class ServerMetricsFragment : Fragment() {
         try {
             if (Shizuku.pingBinder()) {
                 val binder = Shizuku.getBinder()
-                val shizukuService = moe.shizuku.server.IShizukuService.Stub.asInterface(binder)
+                val shizukuService =
+                    moe.shizuku.server.IShizukuService.Stub
+                        .asInterface(binder)
                 aiCore = shizukuService.aiCorePlus
             }
         } catch (e: Exception) {
@@ -88,8 +97,11 @@ class ServerMetricsFragment : Fragment() {
         val minutes = (ms / (1000 * 60)) % 60
         val hours = (ms / (1000 * 60 * 60)) % 24
         val days = (ms / (1000 * 60 * 60 * 24))
-        return if (days > 0) String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
-        else String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        return if (days > 0) {
+            String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+        } else {
+            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        }
     }
 
     private fun formatSize(bytes: Long): String {

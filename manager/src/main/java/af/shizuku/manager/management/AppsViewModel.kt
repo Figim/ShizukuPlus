@@ -1,5 +1,7 @@
 package af.shizuku.manager.management
 
+import af.shizuku.manager.authorization.AuthorizationManager
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageInfo
@@ -10,16 +12,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicInteger
-import af.shizuku.manager.authorization.AuthorizationManager
-import af.shizuku.manager.utils.ShizukuStateMachine
 import rikka.lifecycle.Resource
+import java.util.concurrent.atomic.AtomicInteger
 
 enum class SortOrder { NAME_ASC, LAST_INSTALLED, LAST_UPDATED }
+
 enum class FilterState { ALL, GRANTED, DENIED, HIDDEN }
 
-class AppsViewModel(application: Application) : AndroidViewModel(application) {
-
+class AppsViewModel(
+    application: Application,
+) : AndroidViewModel(application) {
     private val appContext = getApplication<Application>().applicationContext
     private val prefs = appContext.getSharedPreferences("app_management_prefs", Context.MODE_PRIVATE)
 
@@ -30,9 +32,10 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
     val hiddenPackages: MutableSet<String> =
         (prefs.getStringSet(KEY_HIDDEN, emptySet()) ?: emptySet()).toMutableSet()
 
-    var sortOrder: SortOrder = SortOrder.valueOf(
-        prefs.getString(KEY_SORT, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name
-    )
+    var sortOrder: SortOrder =
+        SortOrder.valueOf(
+            prefs.getString(KEY_SORT, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name,
+        )
         private set
 
     var filterState: FilterState = FilterState.ALL
@@ -93,8 +96,9 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
                 // empty while Shizuku is running AND we previously had a non-zero count, treat
                 // it as a transient IPC failure and skip posting rather than overwriting a valid
                 // count with 0 (#424). Fresh installs (previous count null or 0) post normally.
-                if (allPackages.isEmpty() && ShizukuStateMachine.isRunning()
-                        && (_grantedCount.value?.data ?: 0) > 0) {
+                if (allPackages.isEmpty() && ShizukuStateMachine.isRunning() &&
+                    (_grantedCount.value?.data ?: 0) > 0
+                ) {
                     return@launch
                 }
 
@@ -131,40 +135,52 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val pm = appContext.packageManager
-                var list = rawPackages.filter { pi ->
-                    if (filterState == FilterState.HIDDEN) {
-                        if (pi.packageName !in hiddenPackages) return@filter false
-                    } else {
-                        if (pi.packageName in hiddenPackages) return@filter false
-                    }
-
-                    val appInfo = pi.applicationInfo
-                    val label = appInfo?.loadLabel(pm)?.toString() ?: ""
-                    val matchesSearch = searchQuery.isBlank() ||
-                        label.contains(searchQuery, ignoreCase = true) ||
-                        pi.packageName.contains(searchQuery, ignoreCase = true)
-                    val matchesFilter = when (filterState) {
-                        FilterState.ALL, FilterState.HIDDEN -> true
-                        FilterState.GRANTED -> appInfo != null && runCatching {
-                            AuthorizationManager.granted(pi.packageName, appInfo.uid)
-                        }.getOrDefault(false)
-                        FilterState.DENIED -> {
-                            val isGranted = appInfo != null && runCatching {
-                                AuthorizationManager.granted(pi.packageName, appInfo.uid)
-                            }.getOrDefault(false)
-                            // If it's not granted, it's considered denied/pending in this view
-                            !isGranted
+                var list =
+                    rawPackages.filter { pi ->
+                        if (filterState == FilterState.HIDDEN) {
+                            if (pi.packageName !in hiddenPackages) return@filter false
+                        } else {
+                            if (pi.packageName in hiddenPackages) return@filter false
                         }
+
+                        val appInfo = pi.applicationInfo
+                        val label = appInfo?.loadLabel(pm)?.toString() ?: ""
+                        val matchesSearch =
+                            searchQuery.isBlank() ||
+                                label.contains(searchQuery, ignoreCase = true) ||
+                                pi.packageName.contains(searchQuery, ignoreCase = true)
+                        val matchesFilter =
+                            when (filterState) {
+                                FilterState.ALL, FilterState.HIDDEN -> true
+                                FilterState.GRANTED ->
+                                    appInfo != null &&
+                                        runCatching {
+                                            AuthorizationManager.granted(pi.packageName, appInfo.uid)
+                                        }.getOrDefault(false)
+                                FilterState.DENIED -> {
+                                    val isGranted =
+                                        appInfo != null &&
+                                            runCatching {
+                                                AuthorizationManager.granted(pi.packageName, appInfo.uid)
+                                            }.getOrDefault(false)
+                                    // If it's not granted, it's considered denied/pending in this view
+                                    !isGranted
+                                }
+                            }
+                        matchesSearch && matchesFilter
                     }
-                    matchesSearch && matchesFilter
-                }
-                list = when (sortOrder) {
-                    SortOrder.NAME_ASC -> list.sortedBy {
-                        it.applicationInfo?.loadLabel(pm)?.toString()?.lowercase() ?: it.packageName
+                list =
+                    when (sortOrder) {
+                        SortOrder.NAME_ASC ->
+                            list.sortedBy {
+                                it.applicationInfo
+                                    ?.loadLabel(pm)
+                                    ?.toString()
+                                    ?.lowercase() ?: it.packageName
+                            }
+                        SortOrder.LAST_INSTALLED -> list.sortedByDescending { it.firstInstallTime }
+                        SortOrder.LAST_UPDATED -> list.sortedByDescending { it.lastUpdateTime }
                     }
-                    SortOrder.LAST_INSTALLED -> list.sortedByDescending { it.firstInstallTime }
-                    SortOrder.LAST_UPDATED -> list.sortedByDescending { it.lastUpdateTime }
-                }
                 _packages.postValue(Resource.success(list))
             } catch (e: Throwable) {
                 _packages.postValue(Resource.error(e, null))

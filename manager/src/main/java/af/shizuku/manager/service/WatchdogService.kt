@@ -1,5 +1,13 @@
 package af.shizuku.manager.service
 
+import af.shizuku.manager.MainActivity
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.receiver.ShizukuReceiverStarter
+import af.shizuku.manager.utils.SettingsPage
+import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.StockShizukuCompat
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -11,26 +19,18 @@ import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
 import android.os.IBinder
-import timber.log.Timber
 import androidx.core.app.NotificationCompat
-import af.shizuku.manager.R
-import af.shizuku.manager.MainActivity
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.receiver.ShizukuReceiverStarter
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.utils.SettingsPage
-import af.shizuku.manager.utils.ShizukuStateMachine
-import af.shizuku.manager.utils.StockShizukuCompat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 
 class WatchdogService : Service() {
-
     private var lastRestartMs = 0L
     private var consecutiveCrashes = 0
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var job: Job? = null
+
     // Only true when the user explicitly taps "Turn off" from the notification — keeps
     // onDestroy() from clearing the watchdog setting when the service self-stops due to a
     // transient foreground-start rejection (background restrictions, FGS time limit, etc.).
@@ -39,18 +39,18 @@ class WatchdogService : Service() {
     // Returns false on failure so callers can bail out via stopSelf() instead of crashing
     // (RemoteServiceException$CannotPostForegroundServiceNotificationException, background-start
     // restrictions, etc. — same pattern as AutomationService.ensureForeground(), SHIZUKUPLUS-5P).
-    private fun startForegroundSafely(): Boolean {
-        return try {
+    private fun startForegroundSafely(): Boolean =
+        try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 startForeground(
                     NOTIFICATION_ID_WATCHDOG,
                     buildNotification(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
                 )
             } else {
                 startForeground(
                     NOTIFICATION_ID_WATCHDOG,
-                    buildNotification()
+                    buildNotification(),
                 )
             }
             true
@@ -58,7 +58,6 @@ class WatchdogService : Service() {
             Timber.tag(TAG).w(e, "startForeground refused; stopping watchdog service")
             false
         }
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -72,7 +71,7 @@ class WatchdogService : Service() {
             try {
                 val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
                 nm?.createNotificationChannel(
-                    NotificationChannel(WATCHDOG_CHANNEL_ID, "Watchdog", NotificationManager.IMPORTANCE_LOW)
+                    NotificationChannel(WATCHDOG_CHANNEL_ID, "Watchdog", NotificationManager.IMPORTANCE_LOW),
                 )
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "Failed to create watchdog notification channel")
@@ -87,30 +86,35 @@ class WatchdogService : Service() {
             return
         }
 
-        job = scope.launch {
-            ShizukuStateMachine.asFlow().collectLatest { state ->
-                if (state == ShizukuStateMachine.State.CRASHED) {
-                    val now = System.currentTimeMillis()
-                    val cooldown = backoffMs(consecutiveCrashes)
-                    if (now - lastRestartMs > cooldown) {
-                        consecutiveCrashes++
-                        lastRestartMs = now
-                        showCrashNotification()
-                        ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restarting after crash #$consecutiveCrashes")
-                        ShizukuReceiverStarter.start(applicationContext)
-                        Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
-                    } else {
-                        Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms / ${cooldown}ms)")
+        job =
+            scope.launch {
+                ShizukuStateMachine.asFlow().collectLatest { state ->
+                    if (state == ShizukuStateMachine.State.CRASHED) {
+                        val now = System.currentTimeMillis()
+                        val cooldown = backoffMs(consecutiveCrashes)
+                        if (now - lastRestartMs > cooldown) {
+                            consecutiveCrashes++
+                            lastRestartMs = now
+                            showCrashNotification()
+                            ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restarting after crash #$consecutiveCrashes")
+                            ShizukuReceiverStarter.start(applicationContext)
+                            Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
+                        } else {
+                            Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms / ${cooldown}ms)")
+                        }
+                    } else if (state == ShizukuStateMachine.State.RUNNING) {
+                        // Reset backoff counter once service is confirmed stable
+                        consecutiveCrashes = 0
                     }
-                } else if (state == ShizukuStateMachine.State.RUNNING) {
-                    // Reset backoff counter once service is confirmed stable
-                    consecutiveCrashes = 0
                 }
             }
-        }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         if (!startForegroundSafely()) {
             isRunning.set(false)
             stopSelf()
@@ -141,34 +145,44 @@ class WatchdogService : Service() {
 
     private fun buildNotification(): Notification {
         // Channel created in onCreate(); reference it by constant here
-        val launchIntent = Intent(this, MainActivity::class.java).apply {
-            addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK or
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val launchIntent =
+            Intent(this, MainActivity::class.java).apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP,
+                )
+            }
+        val launchPendingIntent =
+            PendingIntent.getActivity(
+                this,
+                0,
+                launchIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-        }
-        val launchPendingIntent = PendingIntent.getActivity(
-            this, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
 
-        val stopIntent = Intent(this, WatchdogService::class.java).apply {
-            action = ACTION_STOP_SERVICE
-        }
-        val stopPendingIntent = PendingIntent.getService(
-            this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        val stopIntent =
+            Intent(this, WatchdogService::class.java).apply {
+                action = ACTION_STOP_SERVICE
+            }
+        val stopPendingIntent =
+            PendingIntent.getService(
+                this,
+                1,
+                stopIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
 
-        return NotificationCompat.Builder(this, WATCHDOG_CHANNEL_ID)
+        return NotificationCompat
+            .Builder(this, WATCHDOG_CHANNEL_ID)
             .setContentTitle(getString(R.string.watchdog_running))
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentIntent(launchPendingIntent)
             .addAction(
                 R.drawable.ic_close_24,
                 getString(R.string.watchdog_turn_off),
-                stopPendingIntent
-            )
-            .setOngoing(true)
+                stopPendingIntent,
+            ).setOngoing(true)
             .build()
     }
 
@@ -178,17 +192,19 @@ class WatchdogService : Service() {
 
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                channelName,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+            val channel =
+                NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT,
+                )
             nm.createNotificationChannel(channel)
         }
 
-        val learnMoreIntent = Intent(Intent.ACTION_VIEW).apply {
-            setData(Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))
-        }
+        val learnMoreIntent =
+            Intent(Intent.ACTION_VIEW).apply {
+                setData(Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))
+            }
         val learnMorePendingIntent = PendingIntent.getActivity(this, 10, learnMoreIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val disableIntent = SettingsPage.Notifications.NotificationChannel.buildIntent(applicationContext)
@@ -198,27 +214,33 @@ class WatchdogService : Service() {
         val reportIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/issues/new"))
         val reportPendingIntent = PendingIntent.getActivity(this, 12, reportIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val builder = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(getString(R.string.watchdog_shizuku_crashed_title))
-            .setContentText(getString(R.string.watchdog_shizuku_crashed_text))
-            .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentIntent(learnMorePendingIntent)
-            .setAutoCancel(true)
-            .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_report_manually), reportPendingIntent)
-            .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_turn_off_alerts), disablePendingIntent)
+        val builder =
+            NotificationCompat
+                .Builder(this, channelId)
+                .setContentTitle(getString(R.string.watchdog_shizuku_crashed_title))
+                .setContentText(getString(R.string.watchdog_shizuku_crashed_text))
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentIntent(learnMorePendingIntent)
+                .setAutoCancel(true)
+                .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_report_manually), reportPendingIntent)
+                .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_turn_off_alerts), disablePendingIntent)
 
-        if (consecutiveCrashes >= 3
-            && ShizukuSettings.isCompanionFallbackEnabled()
-            && StockShizukuCompat.isInstalled(applicationContext)
+        if (consecutiveCrashes >= 3 &&
+            ShizukuSettings.isCompanionFallbackEnabled() &&
+            StockShizukuCompat.isInstalled(applicationContext)
         ) {
-            val companionIntent = applicationContext.packageManager
-                .getLaunchIntentForPackage(StockShizukuCompat.PACKAGE)
-                ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val companionIntent =
+                applicationContext.packageManager
+                    .getLaunchIntentForPackage(StockShizukuCompat.PACKAGE)
+                    ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (companionIntent != null) {
-                val companionPendingIntent = PendingIntent.getActivity(
-                    this, 3, companionIntent,
-                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                )
+                val companionPendingIntent =
+                    PendingIntent.getActivity(
+                        this,
+                        3,
+                        companionIntent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                    )
                 builder.addAction(0, getString(R.string.watchdog_open_stock_shizuku), companionPendingIntent)
             }
         }
@@ -237,7 +259,7 @@ class WatchdogService : Service() {
         const val CRASH_CHANNEL_ID = "crash_reports"
 
         private const val BASE_COOLDOWN_MS = 5_000L
-        private const val MAX_COOLDOWN_MS = 300_000L   // 5 min cap
+        private const val MAX_COOLDOWN_MS = 300_000L // 5 min cap
         private val isRunning = AtomicBoolean(false)
 
         fun backoffMs(crashes: Int): Long =
@@ -253,7 +275,7 @@ class WatchdogService : Service() {
                     context.startService(intent)
                 }
             } catch (e: Exception) {
-                Timber.tag("ShizukuApplication").w(e, "Failed to start WatchdogService: ${e.message}" )
+                Timber.tag("ShizukuApplication").w(e, "Failed to start WatchdogService: ${e.message}")
             }
         }
 

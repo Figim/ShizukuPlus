@@ -1,19 +1,18 @@
 package af.shizuku.manager.authorization
 
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
-import android.os.Parcel
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.Manifest
 import af.shizuku.manager.utils.Logger.LOGGER
 import af.shizuku.manager.utils.ShizukuSystemApis
-import rikka.shizuku.server.ServerConstants
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
+import android.os.Parcel
 import rikka.parcelablelist.ParcelableListSlice
 import rikka.shizuku.Shizuku
+import rikka.shizuku.server.ServerConstants
 import java.util.*
 
 object AuthorizationManager {
-
     private const val FLAG_ALLOWED = 1 shl 1
     private const val FLAG_DENIED = 1 shl 2
     private const val MASK_PERMISSION = FLAG_ALLOWED or FLAG_DENIED
@@ -24,8 +23,9 @@ object AuthorizationManager {
         return try {
             data.writeInterfaceToken("moe.shizuku.server.IShizukuService")
             data.writeInt(userId)
-            val binder = Shizuku.getBinder()
-                ?: throw IllegalStateException("Shizuku binder not available")
+            val binder =
+                Shizuku.getBinder()
+                    ?: throw IllegalStateException("Shizuku binder not available")
             try {
                 binder.transact(ServerConstants.BINDER_TRANSACTION_getApplications, data, reply, 0)
             } catch (e: Throwable) {
@@ -58,7 +58,10 @@ object AuthorizationManager {
                     val perms = pi.requestedPermissions
                     if (perms?.contains(Manifest.permission.API_V23) != true &&
                         perms?.contains(ServerConstants.PERMISSION_LEGACY) != true &&
-                        perms?.contains(ServerConstants.PERMISSION_ORIGINAL) != true) continue
+                        perms?.contains(ServerConstants.PERMISSION_ORIGINAL) != true
+                    ) {
+                        continue
+                    }
                     packages.add(pi)
                 }
             } else {
@@ -70,11 +73,12 @@ object AuthorizationManager {
         return packages
     }
 
-    fun isPlusApiSupported(pi: PackageInfo): Boolean {
-        return pi.applicationInfo?.metaData?.getBoolean("af.shizuku.plus.API") == true
-    }
+    fun isPlusApiSupported(pi: PackageInfo): Boolean = pi.applicationInfo?.metaData?.getBoolean("af.shizuku.plus.API") == true
 
-    fun granted(packageName: String, uid: Int): Boolean {
+    fun granted(
+        packageName: String,
+        uid: Int,
+    ): Boolean {
         return try {
             // Retry pingBinder up to 3x with 200 ms back-off: a momentary binder drop
             // (common right after a consent-action broadcast wakes the process) used to
@@ -101,7 +105,10 @@ object AuthorizationManager {
         }
     }
 
-    fun grant(packageName: String, uid: Int) {
+    fun grant(
+        packageName: String,
+        uid: Int,
+    ) {
         try {
             if (Shizuku.isPreV11()) {
                 ShizukuSystemApis.grantRuntimePermission(packageName, Manifest.permission.API_V23, uid / 100000)
@@ -113,7 +120,10 @@ object AuthorizationManager {
         }
     }
 
-    fun revoke(packageName: String, uid: Int) {
+    fun revoke(
+        packageName: String,
+        uid: Int,
+    ) {
         try {
             if (Shizuku.isPreV11()) {
                 ShizukuSystemApis.revokeRuntimePermission(packageName, Manifest.permission.API_V23, uid / 100000)

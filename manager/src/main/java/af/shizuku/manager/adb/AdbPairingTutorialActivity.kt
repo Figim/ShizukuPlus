@@ -1,6 +1,11 @@
 package af.shizuku.manager.adb
+import af.shizuku.core.ui.AppBarActivity
+import af.shizuku.manager.AppConstants
 import af.shizuku.manager.R
-
+import af.shizuku.manager.databinding.AdbPairingTutorialActivityBinding
+import af.shizuku.manager.utils.SettingsHelper
+import af.shizuku.manager.utils.SettingsPage
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
 import android.app.AppOpsManager
 import android.app.ForegroundServiceStartNotAllowedException
@@ -8,39 +13,34 @@ import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import timber.log.Timber
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import af.shizuku.manager.AppConstants
-import af.shizuku.core.ui.AppBarActivity
-import af.shizuku.manager.databinding.AdbPairingTutorialActivityBinding
-import af.shizuku.manager.utils.SettingsHelper
-import af.shizuku.manager.utils.SettingsPage
-import af.shizuku.manager.utils.ShizukuStateMachine
 import rikka.compatibility.DeviceCompatibility
+import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.R)
 class AdbPairingTutorialActivity : AppBarActivity() {
-
     private lateinit var binding: AdbPairingTutorialActivityBinding
 
     private var notificationEnabled: Boolean = false
 
     // Registered unconditionally (required before onStart); only invoked on API 33+.
-    private val notifPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (!granted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-            // Permanently denied — guide user to settings
-            Toast.makeText(this, R.string.dialog_notif_permission_denied, Toast.LENGTH_LONG).show()
-            SettingsPage.Notifications.NotificationSettings.launch(this)
+    private val notifPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            if (!granted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+            ) {
+                // Permanently denied — guide user to settings
+                Toast.makeText(this, R.string.dialog_notif_permission_denied, Toast.LENGTH_LONG).show()
+                SettingsPage.Notifications.NotificationSettings.launch(this)
+            }
+            // onResume() re-checks enabled state and starts service if now granted
         }
-        // onResume() re-checks enabled state and starts service if now granted
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,9 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             // shared-element transition into this screen doesn't visibly snap the icon's
             // shape/color back to the static droplet default mid-animation.
             af.shizuku.manager.utils.IconStyleHelper.applyToCardIcon(
-                headerIcon, headerIcon.drawable, "home_start_wireless_adb"
+                headerIcon,
+                headerIcon.drawable,
+                "home_start_wireless_adb",
             )
             headerIcon.transitionName = "icon_wireless_adb"
             headerTitle.setText(R.string.home_wireless_adb_title)
@@ -93,7 +95,8 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
     private fun requestOrOpenNotificationSettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val granted = checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+            val granted =
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED
             if (!granted) {
                 // Show rationale then request — or just request directly if first time
@@ -121,7 +124,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         val nm = context.getSystemService(NotificationManager::class.java)
         val channel = nm.getNotificationChannel(AdbPairingService.NOTIFICATION_CHANNEL)
         return nm.areNotificationsEnabled() &&
-                (channel == null || channel.importance != NotificationManager.IMPORTANCE_NONE)
+            (channel == null || channel.importance != NotificationManager.IMPORTANCE_NONE)
     }
 
     private val runningListener: (ShizukuStateMachine.State) -> Unit = { state ->
@@ -183,16 +186,17 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         } catch (e: Throwable) {
             Timber.tag(AppConstants.TAG).e(e, "startForegroundService")
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && e is ForegroundServiceStartNotAllowedException
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                e is ForegroundServiceStartNotAllowedException
             ) {
                 val appOps = getSystemService(AppOpsManager::class.java)
-                val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    appOps.unsafeCheckOpNoThrow("android:start_foreground", android.os.Process.myUid(), packageName)
-                } else {
-                    @Suppress("DEPRECATION")
-                    appOps.noteOpNoThrow("android:start_foreground", android.os.Process.myUid(), packageName, null, null)
-                }
+                val mode =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        appOps.unsafeCheckOpNoThrow("android:start_foreground", android.os.Process.myUid(), packageName)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        appOps.noteOpNoThrow("android:start_foreground", android.os.Process.myUid(), packageName, null, null)
+                    }
 
                 if (mode == AppOpsManager.MODE_ERRORED) {
                     Toast.makeText(this, R.string.adb_foreground_op_denied, Toast.LENGTH_LONG).show()

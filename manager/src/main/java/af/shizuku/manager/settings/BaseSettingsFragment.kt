@@ -1,26 +1,5 @@
 package af.shizuku.manager.settings
 
-import android.content.Context
-import android.content.Intent
-import android.graphics.drawable.Drawable
-import android.os.Bundle
-import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.lifecycleScope
-import androidx.preference.PreferenceFragmentCompat
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import kotlin.coroutines.resume
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.CancellableContinuation
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat.Type
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
@@ -33,11 +12,31 @@ import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.IconStyleHelper
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.ShizukuStateMachine
+import android.content.Context
+import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat.Type
+import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceFragmentCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import rikka.html.text.HtmlCompat
 import rikka.recyclerview.fixEdgeEffect
+import kotlin.coroutines.resume
 
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
-
     protected lateinit var batteryOptimizationListener: ActivityResultLauncher<Intent>
     protected var batteryOptimizationContinuation: CancellableContinuation<Boolean>? = null
     private val activeDialogs = mutableListOf<android.app.Dialog>()
@@ -47,15 +46,19 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     // changes icon style while staying on the settings page.
     private val originalIcons = HashMap<String, android.graphics.drawable.Drawable?>()
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         preferenceManager.setStorageDeviceProtected()
         preferenceManager.sharedPreferencesName = ShizukuSettings.NAME
         preferenceManager.sharedPreferencesMode = android.content.Context.MODE_PRIVATE
 
-        batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
-            batteryOptimizationContinuation?.resume(accepted)
-        }
+        batteryOptimizationListener =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
+                batteryOptimizationContinuation?.resume(accepted)
+            }
 
         onCreateSettingsPreferences(savedInstanceState, rootKey)
 
@@ -66,9 +69,10 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun getPrefIconCacheKey(pref: androidx.preference.Preference, index: Int): String {
-        return pref.key ?: "pref_${index}_${pref.title?.toString().hashCode()}"
-    }
+    private fun getPrefIconCacheKey(
+        pref: androidx.preference.Preference,
+        index: Int,
+    ): String = pref.key ?: "pref_${index}_${pref.title?.toString().hashCode()}"
 
     private fun captureOriginalIcons(group: androidx.preference.PreferenceGroup) {
         for (i in 0 until group.preferenceCount) {
@@ -101,7 +105,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         ctx: Context,
         group: androidx.preference.PreferenceGroup,
         style: IconStyleHelper.Style,
-        colorMode: IconStyleHelper.ColorMode
+        colorMode: IconStyleHelper.ColorMode,
     ) {
         var count = 0
         for (i in 0 until group.preferenceCount) {
@@ -116,7 +120,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             count++
         }
         timber.log.Timber.tag("BaseSettings").d(
-            "reapplyIconStyles: updated %d icons in group '%s'", count, group.key ?: group.title ?: "root"
+            "reapplyIconStyles: updated %d icons in group '%s'",
+            count,
+            group.key ?: group.title ?: "root",
         )
     }
 
@@ -138,7 +144,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     // which would trick this check into calling setSummaryProvider() a second time —
                     // throwing "Preference already has a SummaryProvider set." (#529 crash).
                     if (pref.summary == "%s" && pref.summaryProvider == null) {
-                        pref.summaryProvider = androidx.preference.ListPreference.SimpleSummaryProvider.getInstance()
+                        pref.summaryProvider =
+                            androidx.preference.ListPreference.SimpleSummaryProvider
+                                .getInstance()
                     }
                 }
                 is androidx.preference.PreferenceGroup -> fixDeprecatedListPreferenceSummaries(pref)
@@ -146,7 +154,10 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    abstract fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?)
+    abstract fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    )
 
     override fun onPreferenceTreeClick(preference: androidx.preference.Preference): Boolean {
         HapticUtils.tap(requireView())
@@ -186,13 +197,13 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                                 val tintColor = TypedValue()
                                 requireContext().theme.resolveAttribute(R.attr.colorPrimaryContainer, tintColor, true)
                                 itemView.setBackgroundColor(tintColor.data)
-                                itemView.animate()
+                                itemView
+                                    .animate()
                                     .setDuration(ShizukuSettings.scaledAnimationDuration(1200))
                                     .alpha(1.0f)
                                     .withEndAction {
                                         itemView.background = defaultBg
-                                    }
-                                    .start()
+                                    }.start()
                             }
                         }, 400)
                     }
@@ -208,7 +219,10 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         super.onDestroyView()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         setDivider(null)
     }
@@ -225,7 +239,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreateRecyclerView(
         inflater: LayoutInflater,
         parent: ViewGroup,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): RecyclerView {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         val context = recyclerView.context
@@ -235,25 +249,35 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         // Fix: Disable LayoutTransition to prevent IllegalArgumentException
         // "Providing a LayoutTransition into RecyclerView is not supported"
         recyclerView.layoutTransition = null
-        recyclerView.itemAnimator = androidx.recyclerview.widget.DefaultItemAnimator().apply {
-            supportsChangeAnimations = false
-        }
+        recyclerView.itemAnimator =
+            androidx.recyclerview.widget.DefaultItemAnimator().apply {
+                supportsChangeAnimations = false
+            }
 
-        val oneHandedTopPx = if (ShizukuSettings.isOneHandedModeEnabled()) {
-            (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
-        } else 0
-        val isOled = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context) &&
-            rikka.core.util.ResourceUtils.isNightMode(context.resources.configuration)
-        val pageBgColor = if (isOled) {
-            android.graphics.Color.BLACK
-        } else {
-            val pageBgValue = TypedValue()
-            context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, pageBgValue, true)
-            pageBgValue.data
-        }
+        val oneHandedTopPx =
+            if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else {
+                0
+            }
+        val isOled =
+            af.shizuku.manager.app.ThemeHelper
+                .isBlackNightTheme(context) &&
+                rikka.core.util.ResourceUtils
+                    .isNightMode(context.resources.configuration)
+        val pageBgColor =
+            if (isOled) {
+                android.graphics.Color.BLACK
+            } else {
+                val pageBgValue = TypedValue()
+                context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, pageBgValue, true)
+                pageBgValue.data
+            }
         recyclerView.setBackgroundColor(pageBgColor)
         timber.log.Timber.tag("BaseSettings").d(
-            "onCreateRecyclerView: isOled=%s, pageBgColor=0x%08X", isOled, pageBgColor
+            "onCreateRecyclerView: isOled=%s, pageBgColor=0x%08X",
+            isOled,
+            pageBgColor,
         )
         recyclerView.setPadding(cardMarginPx, oneHandedTopPx, cardMarginPx, 0)
         recyclerView.clipToPadding = false
@@ -262,33 +286,49 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
             val navBarClearancePx = (72 * context.resources.displayMetrics.density).toInt()
-            val currentOneHandedTop = if (ShizukuSettings.isOneHandedModeEnabled()) {
-                (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
-            } else 0
+            val currentOneHandedTop =
+                if (ShizukuSettings.isOneHandedModeEnabled()) {
+                    (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
+                } else {
+                    0
+                }
             recyclerView.setPadding(
                 cardMarginPx + systemBarsInsets.left,
                 currentOneHandedTop,
                 cardMarginPx + systemBarsInsets.right,
-                systemBarsInsets.bottom + navBarClearancePx
+                systemBarsInsets.bottom + navBarClearancePx,
             )
             insets
         }
 
         recyclerView.fixEdgeEffect()
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
-                (activity as? SettingsActivity)?.onPreferenceListScrolled(dy)
-            }
-            override fun onScrollStateChanged(rv: RecyclerView, newState: Int) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    (activity as? SettingsActivity)?.onPreferenceListScrollIdle()
+        recyclerView.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    rv: RecyclerView,
+                    dx: Int,
+                    dy: Int,
+                ) {
+                    (activity as? SettingsActivity)?.onPreferenceListScrolled(dy)
                 }
-            }
-        })
+
+                override fun onScrollStateChanged(
+                    rv: RecyclerView,
+                    newState: Int,
+                ) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        (activity as? SettingsActivity)?.onPreferenceListScrollIdle()
+                    }
+                }
+            },
+        )
         return recyclerView
     }
 
-    protected fun needsRestart(setting: String, newValue: Any? = null): Boolean {
+    protected fun needsRestart(
+        setting: String,
+        newValue: Any? = null,
+    ): Boolean {
         val currentPort = EnvironmentUtils.getAdbTcpPort()
         return when (setting) {
             KEY_TCP_MODE -> {
@@ -316,7 +356,10 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         return icon
     }
 
-    protected fun promptStopTcp(tcpModePref: androidx.preference.TwoStatePreference, applyChange: () -> Unit) {
+    protected fun promptStopTcp(
+        tcpModePref: androidx.preference.TwoStatePreference,
+        applyChange: () -> Unit,
+    ) {
         val context = requireContext()
         showDialog(
             MaterialAlertDialogBuilder(context)
@@ -331,22 +374,27 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                         AdbStarter.stopTcp(context, EnvironmentUtils.getAdbTcpPort())
                         if (EnvironmentUtils.getAdbTcpPort() <= 0) applyChange()
                     }
-                }
-                .setNegativeButton(android.R.string.cancel, null)
+                }.setNegativeButton(android.R.string.cancel, null),
         )
     }
 
-    protected fun maybePromptRestart(setting: String, newValue: Any? = null, applyChange: () -> Unit) {
+    protected fun maybePromptRestart(
+        setting: String,
+        newValue: Any? = null,
+        applyChange: () -> Unit,
+    ) {
         val context = requireContext()
         if (!ShizukuStateMachine.isRunning() || !needsRestart(setting, newValue)) {
             applyChange()
             context.sendBroadcast(Intent(context, NotifCancelReceiver::class.java))
         } else {
-            val message = buildString {
-                append(context.getString(R.string.settings_restart_dialog_message))
-                if (setting == KEY_TCP_MODE)
-                    append(context.getString(R.string.settings_restart_dialog_message_wifi_required))
-            }
+            val message =
+                buildString {
+                    append(context.getString(R.string.settings_restart_dialog_message))
+                    if (setting == KEY_TCP_MODE) {
+                        append(context.getString(R.string.settings_restart_dialog_message_wifi_required))
+                    }
+                }
             showDialog(
                 MaterialAlertDialogBuilder(context)
                     .setTitle(R.string.settings_restart_dialog_title)
@@ -354,39 +402,46 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         applyChange()
                         ShizukuReceiverStarter.start(context, true)
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
+                    }.setNegativeButton(android.R.string.cancel, null),
             )
         }
     }
 
-    protected fun maybeToggleBatterySensitiveSetting(newValue: Boolean, onResult: (Boolean) -> Unit) {
+    protected fun maybeToggleBatterySensitiveSetting(
+        newValue: Boolean,
+        onResult: (Boolean) -> Unit,
+    ) {
         val context = requireContext()
         if (!newValue || SettingsHelper.isIgnoringBatteryOptimizations(context) || EnvironmentUtils.isTelevision()) {
             onResult(true)
             return
         }
         lifecycleScope.launch {
-            val result = suspendCancellableCoroutine<Boolean> { continuation ->
-                batteryOptimizationContinuation = continuation
-                SnackbarHelper.show(
-                    context,
-                    requireView(),
-                    msg = context.getString(R.string.snackbar_battery_optimization_settings),
-                    duration = 6000,
-                    actionText = context.getString(R.string.snackbar_action_fix),
-                    action = { SettingsHelper.requestIgnoreBatteryOptimizations(context, batteryOptimizationListener) },
-                    onDismiss = { event ->
-                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION && continuation.isActive)
-                            continuation.resume(false)
-                    }
-                )
-            }
+            val result =
+                suspendCancellableCoroutine<Boolean> { continuation ->
+                    batteryOptimizationContinuation = continuation
+                    SnackbarHelper.show(
+                        context,
+                        requireView(),
+                        msg = context.getString(R.string.snackbar_battery_optimization_settings),
+                        duration = 6000,
+                        actionText = context.getString(R.string.snackbar_action_fix),
+                        action = { SettingsHelper.requestIgnoreBatteryOptimizations(context, batteryOptimizationListener) },
+                        onDismiss = { event ->
+                            if (event != Snackbar.Callback.DISMISS_EVENT_ACTION && continuation.isActive) {
+                                continuation.resume(false)
+                            }
+                        },
+                    )
+                }
             onResult(result)
         }
     }
 
-    protected fun maybeToggleSecureSetting(newValue: Boolean, onResult: (Boolean) -> Unit) {
+    protected fun maybeToggleSecureSetting(
+        newValue: Boolean,
+        onResult: (Boolean) -> Unit,
+    ) {
         val context = requireContext()
         if (!newValue || SettingsHelper.hasWriteSecureSettings(context) || EnvironmentUtils.isRooted()) {
             onResult(true)
@@ -396,8 +451,15 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         onResult(false)
     }
 
-    protected class SettingsItemDecoration(context: Context) : af.shizuku.manager.widget.M3ECardItemDecoration(context) {
-        override fun getItemOffsets(outRect: android.graphics.Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+    protected class SettingsItemDecoration(
+        context: Context,
+    ) : af.shizuku.manager.widget.M3ECardItemDecoration(context) {
+        override fun getItemOffsets(
+            outRect: android.graphics.Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State,
+        ) {
             val pos = parent.getChildAdapterPosition(view)
             if (pos == RecyclerView.NO_POSITION) return
 
@@ -409,7 +471,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
         override fun isHeader(view: View): Boolean = view.tag == "category_header"
 
-        override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
+        override fun shouldDrawDivider(
+            parent: RecyclerView,
+            index: Int,
+            count: Int,
+        ): Boolean {
             for (i in index + 1 until count) {
                 val next = parent.getChildAt(i) ?: continue
                 if (next.visibility != View.VISIBLE) continue

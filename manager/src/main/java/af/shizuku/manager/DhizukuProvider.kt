@@ -1,5 +1,6 @@
 package af.shizuku.manager
 
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
@@ -10,10 +11,8 @@ import android.os.Bundle
 import android.os.IBinder
 import android.os.ServiceManager
 import com.rosan.dhizuku.IDhizuku
-import af.shizuku.manager.utils.ShizukuStateMachine
 
 class DhizukuProvider : ContentProvider() {
-
     private inner class DhizukuV1Binder : IDhizuku.Stub() {
         override fun getVersion(): Int = 1
 
@@ -25,7 +24,9 @@ class DhizukuProvider : ContentProvider() {
             val myUid = android.os.Process.myUid()
             if (callingUid != myUid) {
                 val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-                if (!af.shizuku.manager.authorization.AuthorizationManager.granted(pkgName, callingUid)) {
+                if (!af.shizuku.manager.authorization.AuthorizationManager
+                        .granted(pkgName, callingUid)
+                ) {
                     return null
                 }
             }
@@ -42,12 +43,14 @@ class DhizukuProvider : ContentProvider() {
             val callingUid = Binder.getCallingUid()
             if (callingUid == android.os.Process.myUid()) return true
             val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-            return af.shizuku.manager.authorization.AuthorizationManager.granted(pkgName, callingUid)
+            return af.shizuku.manager.authorization.AuthorizationManager
+                .granted(pkgName, callingUid)
         }
 
-        override fun transact(code: Int, data: Bundle?): Bundle {
-            return Bundle()
-        }
+        override fun transact(
+            code: Int,
+            data: Bundle?,
+        ): Bundle = Bundle()
     }
 
     private inner class DhizukuV2Binder : Binder() {
@@ -59,10 +62,16 @@ class DhizukuProvider : ContentProvider() {
             val callingUid = Binder.getCallingUid()
             if (callingUid == android.os.Process.myUid()) return true
             val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-            return af.shizuku.manager.authorization.AuthorizationManager.granted(pkgName, callingUid)
+            return af.shizuku.manager.authorization.AuthorizationManager
+                .granted(pkgName, callingUid)
         }
 
-        override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+        override fun onTransact(
+            code: Int,
+            data: android.os.Parcel,
+            reply: android.os.Parcel?,
+            flags: Int,
+        ): Boolean {
             if (!ShizukuSettings.isDhizukuModeEnabled()) return false
 
             if (code == FIRST_CALL_TRANSACTION + 10) { // TRANSACT_CODE_REMOTE_BINDER
@@ -95,7 +104,8 @@ class DhizukuProvider : ContentProvider() {
                     try {
                         data.enforceInterface("com.rosan.dhizuku.IDhizuku")
                         isV2 = false
-                    } catch (_: SecurityException) {}
+                    } catch (_: SecurityException) {
+                    }
                 }
                 when (code) {
                     FIRST_CALL_TRANSACTION + 0 -> { // getVersionCode (v2) / getVersion (v1)
@@ -108,13 +118,16 @@ class DhizukuProvider : ContentProvider() {
                         if (isV2) {
                             reply?.writeString("5.0")
                         } else {
-                            val binder = if (isCallerAuthorized() && ShizukuStateMachine.isRunning()) {
-                                try {
-                                    ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
-                                } catch (_: Exception) {
+                            val binder =
+                                if (isCallerAuthorized() && ShizukuStateMachine.isRunning()) {
+                                    try {
+                                        ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
+                                    } catch (_: Exception) {
+                                        null
+                                    }
+                                } else {
                                     null
                                 }
-                            } else null
                             reply?.writeStrongBinder(binder)
                         }
                         return true
@@ -138,17 +151,39 @@ class DhizukuProvider : ContentProvider() {
 
     override fun onCreate(): Boolean = true
 
-    override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor? = null
+    override fun query(
+        uri: Uri,
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+        sortOrder: String?,
+    ): Cursor? = null
 
     override fun getType(uri: Uri): String? = null
 
-    override fun insert(uri: Uri, values: ContentValues?): Uri? = null
+    override fun insert(
+        uri: Uri,
+        values: ContentValues?,
+    ): Uri? = null
 
-    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int = 0
+    override fun delete(
+        uri: Uri,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ): Int = 0
 
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int = 0
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+    ): Int = 0
 
-    override fun call(method: String, arg: String?, extras: Bundle?): Bundle? {
+    override fun call(
+        method: String,
+        arg: String?,
+        extras: Bundle?,
+    ): Bundle? {
         if ("getBinder" == method) {
             val bundle = Bundle()
             bundle.putBinder("binder", DhizukuV1Binder())

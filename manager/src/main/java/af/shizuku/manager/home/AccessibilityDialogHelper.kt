@@ -1,5 +1,9 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.R
+import af.shizuku.manager.adb.AdbPairingAccessibilityService
+import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.SettingsPage
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.Context
 import android.content.Intent
@@ -12,10 +16,6 @@ import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.TypefaceSpan
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import af.shizuku.manager.R
-import af.shizuku.manager.adb.AdbPairingAccessibilityService
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.manager.utils.SettingsPage
 
 fun Context.showAccessibilityDialog() {
     if (isAccessibilityEnabled()) {
@@ -34,14 +34,15 @@ fun Context.showAccessibilityDialog() {
     // Attempt automatic elevation via root if available on device
     if (EnvironmentUtils.isRooted()) {
         try {
-            val process = Runtime.getRuntime().exec(
-                arrayOf(
-                    "su",
-                    "-c",
-                    "cmd appops set $packageName ACCESS_RESTRICTED_SETTINGS allow " +
-                        "&& pm grant $packageName android.permission.WRITE_SECURE_SETTINGS",
-                ),
-            )
+            val process =
+                Runtime.getRuntime().exec(
+                    arrayOf(
+                        "su",
+                        "-c",
+                        "cmd appops set $packageName ACCESS_RESTRICTED_SETTINGS allow " +
+                            "&& pm grant $packageName android.permission.WRITE_SECURE_SETTINGS",
+                    ),
+                )
             process.waitFor()
             if (enableAccessibilityService()) {
                 showNavigateDialog()
@@ -78,18 +79,17 @@ private fun Context.showPermissionDialog() {
                 permissionName,
                 styledPermissionCommand,
             ),
-        )
-        .setPositiveButton(R.string.accessibility_action_app_info) { _, _ ->
+        ).setPositiveButton(R.string.accessibility_action_app_info) { _, _ ->
             try {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", packageName, null)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
+                val intent =
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", packageName, null)
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                 startActivity(intent)
             } catch (_: Throwable) {
             }
-        }
-        .setNeutralButton(R.string.action_continue) { _, _ -> showEnableDialog() }
+        }.setNeutralButton(R.string.action_continue) { _, _ -> showEnableDialog() }
         .setNegativeButton(android.R.string.cancel, null)
         .show()
 }

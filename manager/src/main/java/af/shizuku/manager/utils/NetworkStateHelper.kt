@@ -6,7 +6,6 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 
 object NetworkStateHelper {
-
     /**
      * Checks if the device is currently connected to an active Wi-Fi or Ethernet network.
      */
@@ -16,7 +15,7 @@ object NetworkStateHelper {
         val activeNetwork = cm.activeNetwork ?: return false
         val capabilities = cm.getNetworkCapabilities(activeNetwork) ?: return false
         return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
     }
 
     /**
@@ -25,8 +24,8 @@ object NetworkStateHelper {
      * which satisfies Android's requirement for Wireless Debugging even on 5G/cellular data.
      */
     @JvmStatic
-    fun isHotspotEnabled(context: Context): Boolean {
-        return try {
+    fun isHotspotEnabled(context: Context): Boolean =
+        try {
             val wm = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
             val method = wm?.javaClass?.getDeclaredMethod("isWifiApEnabled")
             method?.isAccessible = true
@@ -34,7 +33,6 @@ object NetworkStateHelper {
         } catch (_: Exception) {
             false
         }
-    }
 
     /**
      * Returns true if network conditions allow standard Android mDNS Wireless Debugging

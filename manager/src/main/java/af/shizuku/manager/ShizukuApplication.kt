@@ -1,35 +1,29 @@
 package af.shizuku.manager
 
-import af.shizuku.manager.BuildConfig
+import af.shizuku.core.ui.ThemeDelegateManager
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.database.AppContextManager
+import af.shizuku.manager.di.appModule
+import af.shizuku.manager.service.WatchdogService
+import af.shizuku.manager.utils.ActivityLogSettingsImpl
+import af.shizuku.manager.utils.AppContextSettingsImpl
+import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.ThemeDelegateImpl
+import af.shizuku.manager.worker.RemoteDbSyncWorker
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.os.UserManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.work.Configuration
+import com.airbnb.mvrx.Mavericks
 import com.topjohnwu.superuser.Shell
+import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
 import io.sentry.android.timber.SentryTimberTree
-import io.sentry.Breadcrumb
-import android.content.Intent
-import af.shizuku.manager.service.WatchdogService
-import af.shizuku.manager.utils.ThemeDelegateImpl
-import af.shizuku.core.ui.ThemeDelegateManager
-import af.shizuku.manager.utils.AppContextSettingsImpl
-import af.shizuku.manager.database.AppContextManager
-import af.shizuku.manager.utils.ActivityLogSettingsImpl
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.utils.ShizukuStateMachine
-import org.lsposed.hiddenapibypass.HiddenApiBypass
-import rikka.core.util.BuildUtils.atLeast30
-import rikka.material.app.LocaleDelegate
-import rikka.shizuku.Shizuku
-import timber.log.Timber
-import af.shizuku.manager.di.appModule
-import af.shizuku.manager.worker.RemoteDbSyncWorker
-import android.os.UserManager
-import com.airbnb.mvrx.Mavericks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -39,6 +33,11 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.lsposed.hiddenapibypass.HiddenApiBypass
+import rikka.core.util.BuildUtils.atLeast30
+import rikka.material.app.LocaleDelegate
+import rikka.shizuku.Shizuku
+import timber.log.Timber
 
 /**
  * Shizuku+ Application class
@@ -49,8 +48,9 @@ import org.koin.core.context.startKoin
  * 3. Settings and managers
  * 4. State machine
  */
-class ShizukuApplication : Application(), Configuration.Provider {
-
+class ShizukuApplication :
+    Application(),
+    Configuration.Provider {
     companion object {
         lateinit var appContext: Context
             private set
@@ -64,7 +64,9 @@ class ShizukuApplication : Application(), Configuration.Provider {
          * emit hundreds of identical events in one session (one r1989 install produced 1143), which
          * drains the quota for no added signal — the first few events already capture the bug.
          */
-        private val sentrySessionEventCount = java.util.concurrent.atomic.AtomicInteger(0)
+        private val sentrySessionEventCount =
+            java.util.concurrent.atomic
+                .AtomicInteger(0)
         private const val MAX_SENTRY_EVENTS_PER_SESSION = 100
     }
 
@@ -74,7 +76,9 @@ class ShizukuApplication : Application(), Configuration.Provider {
     // ShizukuPlus frames in the stack. Without a custom TaskExecutor to catch it here, that
     // reaches the process-wide uncaught-exception handler and kills the whole app.
     private val workManagerTaskExecutor: java.util.concurrent.Executor by lazy {
-        val delegate = java.util.concurrent.Executors.newFixedThreadPool(4)
+        val delegate =
+            java.util.concurrent.Executors
+                .newFixedThreadPool(4)
         java.util.concurrent.Executor { command ->
             delegate.execute {
                 try {
@@ -87,10 +91,12 @@ class ShizukuApplication : Application(), Configuration.Provider {
     }
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.INFO)
-            .setTaskExecutor(workManagerTaskExecutor)
-            .build()
+        get() =
+            Configuration
+                .Builder()
+                .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.INFO)
+                .setTaskExecutor(workManagerTaskExecutor)
+                .build()
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -130,7 +136,10 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 // bug where one is actually worth the quota cost (UI-rendering/theme crashes,
                 // e.g. the black-screen recreate() bug) - gated by an allowlist so it only
                 // fires for those, not every event. See SelectiveScreenshotEventProcessor.
-                options.addEventProcessor(af.shizuku.manager.utils.SelectiveScreenshotEventProcessor())
+                options.addEventProcessor(
+                    af.shizuku.manager.utils
+                        .SelectiveScreenshotEventProcessor(),
+                )
 
                 // Breadcrumbs are bundled into the event itself (not separately billed), so
                 // keep them for context. isEnableUserInteractionTracing and
@@ -192,7 +201,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
                         throwable is java.net.ConnectException ||
                         throwable is javax.net.ssl.SSLException ||
                         throwable?.javaClass?.simpleName == "AdbKeyException" ||
-                        throwable?.javaClass?.simpleName == "AdbInvalidPairingCodeException") {
+                        throwable?.javaClass?.simpleName == "AdbInvalidPairingCodeException"
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -207,7 +217,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     // it without a prior exists() check is expected behaviour in the crash
                     // reporter. Not an actionable bug.
                     if (throwable is java.io.FileNotFoundException &&
-                        throwable.message?.contains("last_crash") == true) {
+                        throwable.message?.contains("last_crash") == true
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -218,11 +229,16 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     // expected on API 31+ when the app is backgrounded.
                     val simpleName = throwable?.javaClass?.simpleName ?: ""
                     if (simpleName == "BackgroundServiceStartNotAllowedException" ||
-                        (throwable is IllegalStateException &&
-                            (throwable.message?.contains("startForegroundService") == true ||
-                                // Plain startService() from background on API 31+ (AutomationService /
-                                // ShizukuLiveService). Already caught at the call site; expected, not a bug.
-                                throwable.message?.contains("Not allowed to start service") == true))) {
+                        (
+                            throwable is IllegalStateException &&
+                                (
+                                    throwable.message?.contains("startForegroundService") == true ||
+                                        // Plain startService() from background on API 31+ (AutomationService /
+                                        // ShizukuLiveService). Already caught at the call site; expected, not a bug.
+                                        throwable.message?.contains("Not allowed to start service") == true
+                                )
+                        )
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -233,7 +249,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     if (simpleName == "KeyStoreException" ||
                         (simpleName == "ProviderException" && message.contains("eystore")) ||
                         message.contains("AndroidKeyStore is unusable") ||
-                        message.contains("Keystore operation failed")) {
+                        message.contains("Keystore operation failed")
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -242,7 +259,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
                         simpleName == "SQLiteDiskIOException" ||
                         message.contains("ENOSPC") ||
                         message.contains("No space left on device") ||
-                        message.contains("disk I/O error")) {
+                        message.contains("disk I/O error")
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -250,14 +268,16 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     //    ConnectivityManager.getNetworkCapabilities() on some ROMs — already caught
                     //    defensively (AutomationService.checkNetworkState); non-eliminable from app code.
                     if (throwable is SecurityException &&
-                        (message.contains("ACCESS_WIFI_STATE") || message.contains("getNetworkCapabilities"))) {
+                        (message.contains("ACCESS_WIFI_STATE") || message.contains("getNetworkCapabilities"))
+                    ) {
                         return@setBeforeSend null
                     }
 
                     // 9. Drop SQLiteCantOpenDatabaseException for missing databases directory
                     // (Happens sporadically when OS or user clears data/cache while in background)
                     if (simpleName == "SQLiteCantOpenDatabaseException" &&
-                        throwable?.message?.contains("doesn't exist") == true) {
+                        throwable?.message?.contains("doesn't exist") == true
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -265,7 +285,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     if (throwable is java.security.KeyStoreException ||
                         throwable is java.security.UnrecoverableKeyException ||
                         simpleName == "KeyPermanentlyInvalidatedException" ||
-                        simpleName == "KeyStoreException") {
+                        simpleName == "KeyStoreException"
+                    ) {
                         return@setBeforeSend null
                     }
 
@@ -291,16 +312,39 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
                         // Deep Vendor Diagnostics for Triage
                         event.setTag("manufacturer", Build.MANUFACTURER)
-                        if (af.shizuku.manager.utils.EnvironmentUtils.isSamsung()) {
-                            event.setTag("oneui_version", af.shizuku.manager.utils.EnvironmentUtils.getOneUiVersion().toString())
+                        if (af.shizuku.manager.utils.EnvironmentUtils
+                                .isSamsung()
+                        ) {
+                            event.setTag(
+                                "oneui_version",
+                                af.shizuku.manager.utils.EnvironmentUtils
+                                    .getOneUiVersion()
+                                    .toString(),
+                            )
                         }
-                        if (af.shizuku.manager.utils.EnvironmentUtils.isOppo() || af.shizuku.manager.utils.EnvironmentUtils.isOnePlus()) {
-                            event.setTag("coloros_version", af.shizuku.manager.utils.EnvironmentUtils.getColorOsVersion())
+                        if (af.shizuku.manager.utils.EnvironmentUtils
+                                .isOppo() ||
+                            af.shizuku.manager.utils.EnvironmentUtils
+                                .isOnePlus()
+                        ) {
+                            event.setTag(
+                                "coloros_version",
+                                af.shizuku.manager.utils.EnvironmentUtils
+                                    .getColorOsVersion(),
+                            )
                         }
-                        if (af.shizuku.manager.utils.EnvironmentUtils.isXiaomi()) {
-                            event.setTag("hyperos_version", af.shizuku.manager.utils.EnvironmentUtils.getHyperOsVersion())
+                        if (af.shizuku.manager.utils.EnvironmentUtils
+                                .isXiaomi()
+                        ) {
+                            event.setTag(
+                                "hyperos_version",
+                                af.shizuku.manager.utils.EnvironmentUtils
+                                    .getHyperOsVersion(),
+                            )
                         }
-                        if (af.shizuku.manager.utils.EnvironmentUtils.isTCL()) {
+                        if (af.shizuku.manager.utils.EnvironmentUtils
+                                .isTCL()
+                        ) {
                             event.setTag("vendor", "tcl")
                         }
                     } catch (_: Exception) {
@@ -318,11 +362,13 @@ class ShizukuApplication : Application(), Configuration.Provider {
             // Plant Sentry Timber tree to automatically capture logs as breadcrumbs
             // Sentry 8.x requires: (scopes, minEventLevel, minBreadcrumbLevel)
             try {
-                Timber.plant(io.sentry.android.timber.SentryTimberTree(
-                    io.sentry.ScopesAdapter.getInstance(),
-                    io.sentry.SentryLevel.ERROR,
-                    io.sentry.SentryLevel.INFO
-                ))
+                Timber.plant(
+                    io.sentry.android.timber.SentryTimberTree(
+                        io.sentry.ScopesAdapter.getInstance(),
+                        io.sentry.SentryLevel.ERROR,
+                        io.sentry.SentryLevel.INFO,
+                    ),
+                )
             } catch (e: Exception) {
                 Timber.e(e, "Failed to plant SentryTimberTree")
             }
@@ -340,7 +386,12 @@ class ShizukuApplication : Application(), Configuration.Provider {
     private fun initializeStatics() {
         Timber.d("Initializing static components")
 
-        Shell.setDefaultBuilder(Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR).setTimeout(20))
+        Shell.setDefaultBuilder(
+            Shell.Builder
+                .create()
+                .setFlags(Shell.FLAG_REDIRECT_STDERR)
+                .setTimeout(20),
+        )
 
         if (Build.VERSION.SDK_INT >= 28) {
             HiddenApiBypass.setHiddenApiExemptions("")
@@ -366,32 +417,47 @@ class ShizukuApplication : Application(), Configuration.Provider {
      * so a changed icon doesn't keep showing the stale cached one.
      */
     private fun registerIconCacheMaintenance() {
-        registerComponentCallbacks(object : android.content.ComponentCallbacks2 {
-            override fun onTrimMemory(level: Int) {
-                af.shizuku.manager.utils.AppIconCache.trimMemory(level)
-            }
-            override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {}
-            @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory"))
-            override fun onLowMemory() {
-                af.shizuku.manager.utils.AppIconCache.trimMemory(android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
-            }
-        })
+        registerComponentCallbacks(
+            object : android.content.ComponentCallbacks2 {
+                override fun onTrimMemory(level: Int) {
+                    af.shizuku.manager.utils.AppIconCache
+                        .trimMemory(level)
+                }
 
-        val packageChangeReceiver = object : android.content.BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val packageName = intent.data?.schemeSpecificPart ?: return
-                af.shizuku.manager.utils.AppIconCache.invalidate(packageName)
+                override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {}
+
+                @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory"))
+                override fun onLowMemory() {
+                    af.shizuku.manager.utils.AppIconCache
+                        .trimMemory(android.content.ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+                }
+            },
+        )
+
+        val packageChangeReceiver =
+            object : android.content.BroadcastReceiver() {
+                override fun onReceive(
+                    context: Context,
+                    intent: Intent,
+                ) {
+                    val packageName = intent.data?.schemeSpecificPart ?: return
+                    af.shizuku.manager.utils.AppIconCache
+                        .invalidate(packageName)
+                }
             }
-        }
-        val filter = android.content.IntentFilter().apply {
-            addAction(Intent.ACTION_PACKAGE_REMOVED)
-            addAction(Intent.ACTION_PACKAGE_REPLACED)
-            addAction(Intent.ACTION_PACKAGE_CHANGED)
-            addDataScheme("package")
-        }
+        val filter =
+            android.content.IntentFilter().apply {
+                addAction(Intent.ACTION_PACKAGE_REMOVED)
+                addAction(Intent.ACTION_PACKAGE_REPLACED)
+                addAction(Intent.ACTION_PACKAGE_CHANGED)
+                addDataScheme("package")
+            }
         // Never unregistered — this is an Application-scoped singleton, same lifetime as the process.
         androidx.core.content.ContextCompat.registerReceiver(
-            this, packageChangeReceiver, filter, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            this,
+            packageChangeReceiver,
+            filter,
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED,
         )
     }
 
@@ -400,15 +466,21 @@ class ShizukuApplication : Application(), Configuration.Provider {
      */
     private fun initializeManagers() {
         ActivityLogManager.initialize(this, ActivityLogSettingsImpl())
-        af.shizuku.manager.database.ScriptSnippetManager.initialize(this)
-        af.shizuku.manager.plugin.PlusFeatureRegistry.register(af.shizuku.manager.scripting.ScriptingFeatureModule)
+        af.shizuku.manager.database.ScriptSnippetManager
+            .initialize(this)
+        af.shizuku.manager.plugin.PlusFeatureRegistry
+            .register(af.shizuku.manager.scripting.ScriptingFeatureModule)
 
         // Run auto-run snippets each time the Shizuku service transitions to RUNNING.
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            ShizukuStateMachine.asFlow()
+            ShizukuStateMachine
+                .asFlow()
                 .distinctUntilChanged()
                 .filter { it == ShizukuStateMachine.State.RUNNING }
-                .collect { af.shizuku.manager.database.ScriptSnippetManager.runAutoRunSnippets() }
+                .collect {
+                    af.shizuku.manager.database.ScriptSnippetManager
+                        .runAutoRunSnippets()
+                }
         }
 
         // Redeploy the SU bridge dex whenever the server comes up, not just on app self-update
@@ -421,16 +493,21 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // If disabled, ensure any stale /data/local/tmp/su binaries are cleaned up to prevent Google Wallet
         // and Play Integrity security failures.
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            ShizukuStateMachine.asFlow()
+            ShizukuStateMachine
+                .asFlow()
                 .distinctUntilChanged()
                 .filter { it == ShizukuStateMachine.State.RUNNING }
                 .collect {
                     try {
                         if (ShizukuSettings.isSuBridgeEnabled()) {
-                            af.shizuku.manager.database.RootCompatHelper.deployBridgeToTmp(this@ShizukuApplication)
+                            af.shizuku.manager.database.RootCompatHelper
+                                .deployBridgeToTmp(this@ShizukuApplication)
                         } else {
-                            if (af.shizuku.manager.database.RootCompatHelper.isBridgePresentInTmp()) {
-                                af.shizuku.manager.database.RootCompatHelper.cleanupBridgeFromTmp(this@ShizukuApplication)
+                            if (af.shizuku.manager.database.RootCompatHelper
+                                    .isBridgePresentInTmp()
+                            ) {
+                                af.shizuku.manager.database.RootCompatHelper
+                                    .cleanupBridgeFromTmp(this@ShizukuApplication)
                             }
                         }
                     } catch (e: Exception) {
@@ -464,18 +541,21 @@ class ShizukuApplication : Application(), Configuration.Provider {
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
 
         // Initialize Starter with context
-        af.shizuku.manager.starter.Starter.initialize(this)
+        af.shizuku.manager.starter.Starter
+            .initialize(this)
 
         if (ShizukuSettings.getWatchdog()) {
             WatchdogService.start(this)
             val userManagerWatchdog = getSystemService(Context.USER_SERVICE) as? UserManager
             if (userManagerWatchdog == null || userManagerWatchdog.isUserUnlocked) {
                 try {
-                    af.shizuku.manager.worker.WatchdogWorker.schedule(this)
+                    af.shizuku.manager.worker.WatchdogWorker
+                        .schedule(this)
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to schedule WatchdogWorker in direct boot")
                 }
-                af.shizuku.manager.receiver.WatchdogAlarmReceiver.schedule(this)
+                af.shizuku.manager.receiver.WatchdogAlarmReceiver
+                    .schedule(this)
             }
         }
 
@@ -490,9 +570,11 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // user who never touches either list sees nothing - see ShizukuPlusSettingsFragment's
         // change listeners for where the service gets started/stopped dynamically as the user
         // edits those lists after this initial launch-time check.
-        af.shizuku.manager.automation.registerDefaultRules()
+        af.shizuku.manager.automation
+            .registerDefaultRules()
         if (ShizukuSettings.isAnyAutomationConfigured()) {
-            af.shizuku.manager.automation.AutomationService.startIfNeeded(this)
+            af.shizuku.manager.automation.AutomationService
+                .startIfNeeded(this)
         }
 
         Shizuku.addLogListener { appName, packageName, action ->
@@ -510,18 +592,21 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 // Guard against a single device's hot-looping error from draining the shared
                 // quota by itself: skip re-sending the exact same tag+message within the
                 // dedup window instead of forwarding every single repeated occurrence.
-                if (!af.shizuku.manager.utils.SentryEventDeduper.shouldSend(tag, message)) {
+                if (!af.shizuku.manager.utils.SentryEventDeduper
+                        .shouldSend(tag, message)
+                ) {
                     return@addSentryEventListener
                 }
 
-                val sentryLevel = when (levelStr.uppercase()) {
-                    "INFO" -> io.sentry.SentryLevel.INFO
-                    "WARN", "WARNING" -> io.sentry.SentryLevel.WARNING
-                    "ERROR" -> io.sentry.SentryLevel.ERROR
-                    "FATAL" -> io.sentry.SentryLevel.FATAL
-                    "DEBUG" -> io.sentry.SentryLevel.DEBUG
-                    else -> io.sentry.SentryLevel.ERROR
-                }
+                val sentryLevel =
+                    when (levelStr.uppercase()) {
+                        "INFO" -> io.sentry.SentryLevel.INFO
+                        "WARN", "WARNING" -> io.sentry.SentryLevel.WARNING
+                        "ERROR" -> io.sentry.SentryLevel.ERROR
+                        "FATAL" -> io.sentry.SentryLevel.FATAL
+                        "DEBUG" -> io.sentry.SentryLevel.DEBUG
+                        else -> io.sentry.SentryLevel.ERROR
+                    }
 
                 io.sentry.Sentry.withScope { scope ->
                     scope.setTag("server_side", "true")
@@ -564,17 +649,25 @@ class ShizukuApplication : Application(), Configuration.Provider {
         }
 
         // Prewarm root check on a background thread early to avoid main thread delays/ANRs
-        af.shizuku.manager.utils.EnvironmentUtils.prewarmAsync()
+        af.shizuku.manager.utils.EnvironmentUtils
+            .prewarmAsync()
 
         // 1. Run security check
-        if (af.shizuku.manager.security.SecurityGuard.isTampered()) {
+        if (af.shizuku.manager.security.SecurityGuard
+                .isTampered()
+        ) {
             Timber.e("Security violation: Environment tampered!")
             // Optionally: crash or notify user
         }
 
         // Clear the Sentry quota flag only when the app version advances, not on every cold start.
         // Resetting unconditionally would silently re-enable Sentry for a user who hit the quota.
-        val currentCode = try { packageManager.getPackageInfo(packageName, 0).versionCode } catch (_: Exception) { 0 }
+        val currentCode =
+            try {
+                packageManager.getPackageInfo(packageName, 0).versionCode
+            } catch (_: Exception) {
+                0
+            }
         if (currentCode > ShizukuSettings.getLastSeenVersion()) {
             ShizukuSettings.setSentryLimitReached(false)
             ShizukuSettings.setLastSeenVersion(currentCode)
@@ -582,14 +675,18 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
         // Track the foreground Activity so a crash captured on a background thread can still
         // find "what was on screen" for SelectiveScreenshotEventProcessor.
-        af.shizuku.manager.utils.ForegroundActivityTracker.register(this)
+        af.shizuku.manager.utils.ForegroundActivityTracker
+            .register(this)
 
         // 2. Initialize Sentry FIRST to catch all crashes including early startup failures
         initializeSentryEarly()
 
         // 2. Register persistent crash handler
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler(af.shizuku.manager.utils.CrashHandler(this, defaultHandler))
+        Thread.setDefaultUncaughtExceptionHandler(
+            af.shizuku.manager.utils
+                .CrashHandler(this, defaultHandler),
+        )
 
         // 3. Initialize Mavericks and Koin
         Mavericks.initialize(this)
@@ -613,17 +710,19 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // 4. Strict mode for debugging (DEBUG only)
         if (BuildConfig.DEBUG) {
             android.os.StrictMode.setThreadPolicy(
-                android.os.StrictMode.ThreadPolicy.Builder()
+                android.os.StrictMode.ThreadPolicy
+                    .Builder()
                     .detectAll()
                     .penaltyLog()
                     .penaltyFlashScreen()
-                    .build()
+                    .build(),
             )
             android.os.StrictMode.setVmPolicy(
-                android.os.StrictMode.VmPolicy.Builder()
+                android.os.StrictMode.VmPolicy
+                    .Builder()
                     .detectAll()
                     .penaltyLog()
-                    .build()
+                    .build(),
             )
         }
 

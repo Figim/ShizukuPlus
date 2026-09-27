@@ -1,18 +1,17 @@
 package af.shizuku.manager.utils
 
-import android.os.Build
-import android.content.Context
-import android.net.Uri
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.ActivityLogManager
+import android.content.Context
+import android.net.Uri
+import android.os.Build
 import com.topjohnwu.superuser.Shell
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 object CrashReporter {
-
     fun generateReport(context: Context): String {
         val sb = StringBuilder()
 
@@ -62,7 +61,14 @@ object CrashReporter {
             sb.append("```text\n")
             recentLogs.forEach { log ->
                 val time = SimpleDateFormat("HH:mm:ss", Locale.US).format(Date(log.timestamp))
-                sb.append("[").append(time).append("] ").append(log.packageName).append(": ").append(log.action).append("\n")
+                sb
+                    .append("[")
+                    .append(time)
+                    .append("] ")
+                    .append(log.packageName)
+                    .append(": ")
+                    .append(log.action)
+                    .append("\n")
             }
             sb.append("```\n\n")
         } else {
@@ -104,8 +110,8 @@ object CrashReporter {
         val report = generateReport(context)
         val title = "Manual Crash Report: ${Build.MANUFACTURER} ${Build.MODEL} (Android ${Build.VERSION.RELEASE})"
         return "https://github.com/thejaustin/ShizukuPlus/issues/new" +
-               "?title=" + Uri.encode(title) +
-               "&body=" + Uri.encode(report)
+            "?title=" + Uri.encode(title) +
+            "&body=" + Uri.encode(report)
     }
 
     /**
@@ -131,17 +137,19 @@ object CrashReporter {
             return
         }
 
-        val uri = androidx.core.content.FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            file
-        )
+        val uri =
+            androidx.core.content.FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                file,
+            )
 
-        val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(android.content.Intent.EXTRA_STREAM, uri)
-            addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
+        val intent =
+            android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
         context.startActivity(android.content.Intent.createChooser(intent, "Share Crash Report"))
     }
 }

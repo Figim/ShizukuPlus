@@ -1,5 +1,12 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ShizukuSettings.Keys.KEY_COMPANION_FALLBACK
+import af.shizuku.manager.database.RootCompatHelper
+import af.shizuku.manager.service.AdbProxyService
+import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.StockShizukuCompat
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -10,13 +17,6 @@ import androidx.preference.PreferenceGroup
 import androidx.preference.TwoStatePreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.ShizukuSettings.Keys.KEY_COMPANION_FALLBACK
-import af.shizuku.manager.database.RootCompatHelper
-import af.shizuku.manager.service.AdbProxyService
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.manager.utils.StockShizukuCompat
 import rikka.shizuku.Shizuku
 
 /**
@@ -26,10 +26,12 @@ import rikka.shizuku.Shizuku
  * with apps that don't natively support Shizuku.
  */
 class RootIntegrationSettingsFragment : BaseSettingsFragment() {
-
     override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_root_compat_title)
 
-    override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         setPreferencesFromResource(R.xml.settings_root_integration, rootKey)
         val context = requireContext()
 
@@ -70,12 +72,17 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
         findPreference<TwoStatePreference>("on_device_adb_tcp")?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
-                preferenceManager.sharedPreferences?.edit()?.putBoolean("on_device_adb_tcp", newValue)?.apply()
+                preferenceManager.sharedPreferences
+                    ?.edit()
+                    ?.putBoolean("on_device_adb_tcp", newValue)
+                    ?.apply()
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (newValue) {
-                        af.shizuku.manager.service.AdbProxyService.enableAdbTcp()
+                        af.shizuku.manager.service.AdbProxyService
+                            .enableAdbTcp()
                     } else {
-                        af.shizuku.manager.service.AdbProxyService.disableAdbTcp()
+                        af.shizuku.manager.service.AdbProxyService
+                            .disableAdbTcp()
                     }
                 }
             }
@@ -84,7 +91,10 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
         findPreference<TwoStatePreference>("force_start_wadb")?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
-                preferenceManager.sharedPreferences?.edit()?.putBoolean("force_start_wadb", newValue)?.apply()
+                preferenceManager.sharedPreferences
+                    ?.edit()
+                    ?.putBoolean("force_start_wadb", newValue)
+                    ?.apply()
                 ShizukuSettings.syncAllPlusFeaturesToServer()
             }
             true
@@ -94,23 +104,29 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             if (newValue is Boolean) {
                 if (newValue) {
                     val ctx = context ?: return@setOnPreferenceChangeListener false
-                    com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                    com.google.android.material.dialog
+                        .MaterialAlertDialogBuilder(ctx)
                         .setTitle(R.string.su_bridge_warning_wallet_title)
                         .setMessage(R.string.su_bridge_warning_wallet_message)
                         .setPositiveButton(R.string.action_continue) { _, _ ->
-                            preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", true)?.apply()
+                            preferenceManager.sharedPreferences
+                                ?.edit()
+                                ?.putBoolean("su_bridge_enabled", true)
+                                ?.apply()
                             (pref as? TwoStatePreference)?.isChecked = true
                             ShizukuSettings.syncAllPlusFeaturesToServer()
                             val appCtx = context?.applicationContext ?: return@setPositiveButton
                             lifecycleScope.launch(Dispatchers.IO) {
                                 RootCompatHelper.deployBridgeToTmp(appCtx)
                             }
-                        }
-                        .setNegativeButton(android.R.string.cancel, null)
+                        }.setNegativeButton(android.R.string.cancel, null)
                         .show()
                     return@setOnPreferenceChangeListener false
                 } else {
-                    preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", false)?.apply()
+                    preferenceManager.sharedPreferences
+                        ?.edit()
+                        ?.putBoolean("su_bridge_enabled", false)
+                        ?.apply()
                     ShizukuSettings.syncAllPlusFeaturesToServer()
                     val appCtx = context?.applicationContext
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -124,53 +140,63 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        val rootModules = listOf(
-            "stealth_mode",
-            "root_build_prop_redirect_enabled",
-            "root_iptables_mocking_enabled",
-            "root_magisk_mocking_enabled",
-            "root_auto_grant_enabled",
-            "root_file_interceptor_enabled",
-            "root_busybox_mocking_enabled",
-            "overlay_fs_proxy_enabled",
-            "root_kernel_ghosting_enabled",
-            "root_partition_ghosting_enabled",
-            "root_power_ghosting_enabled",
-            "bootloader_flash_ota_enabled",
-            "bootloader_fastbootd_reboot_enabled"
-        )
+        val rootModules =
+            listOf(
+                "stealth_mode",
+                "root_build_prop_redirect_enabled",
+                "root_iptables_mocking_enabled",
+                "root_magisk_mocking_enabled",
+                "root_auto_grant_enabled",
+                "root_file_interceptor_enabled",
+                "root_busybox_mocking_enabled",
+                "overlay_fs_proxy_enabled",
+                "root_kernel_ghosting_enabled",
+                "root_partition_ghosting_enabled",
+                "root_power_ghosting_enabled",
+                "bootloader_flash_ota_enabled",
+                "bootloader_fastbootd_reboot_enabled",
+            )
         rootModules.forEach { key ->
             val pref = findPreference<TwoStatePreference>(key)
             pref?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
                     if (newValue && key == "bootloader_flash_ota_enabled") {
                         val ctx = context ?: return@setOnPreferenceChangeListener false
-                        com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                        com.google.android.material.dialog
+                            .MaterialAlertDialogBuilder(ctx)
                             .setTitle(R.string.ota_flash_danger_title)
                             .setMessage(R.string.ota_flash_danger_message)
                             .setPositiveButton(R.string.ota_flash_danger_confirm) { _, _ ->
-                                preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
+                                preferenceManager.sharedPreferences
+                                    ?.edit()
+                                    ?.putBoolean(key, true)
+                                    ?.apply()
                                 pref.isChecked = true
                                 ShizukuSettings.syncAllPlusFeaturesToServer()
-                            }
-                            .setNegativeButton(android.R.string.cancel, null)
+                            }.setNegativeButton(android.R.string.cancel, null)
                             .show()
                         return@setOnPreferenceChangeListener false
                     } else if (newValue && key == "root_magisk_mocking_enabled") {
                         val ctx = context ?: return@setOnPreferenceChangeListener false
-                        com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                        com.google.android.material.dialog
+                            .MaterialAlertDialogBuilder(ctx)
                             .setTitle(R.string.su_bridge_warning_wallet_title)
                             .setMessage(R.string.su_bridge_warning_wallet_message)
                             .setPositiveButton(R.string.action_continue) { _, _ ->
-                                preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
+                                preferenceManager.sharedPreferences
+                                    ?.edit()
+                                    ?.putBoolean(key, true)
+                                    ?.apply()
                                 pref.isChecked = true
                                 ShizukuSettings.syncAllPlusFeaturesToServer()
-                            }
-                            .setNegativeButton(android.R.string.cancel, null)
+                            }.setNegativeButton(android.R.string.cancel, null)
                             .show()
                         return@setOnPreferenceChangeListener false
                     } else {
-                        preferenceManager.sharedPreferences?.edit()?.putBoolean(key, newValue)?.apply()
+                        preferenceManager.sharedPreferences
+                            ?.edit()
+                            ?.putBoolean(key, newValue)
+                            ?.apply()
                         ShizukuSettings.syncAllPlusFeaturesToServer()
                         return@setOnPreferenceChangeListener true
                     }
@@ -191,37 +217,41 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             // Empty = reset to default (always valid). Non-empty must be an absolute path
             // using only safe characters to prevent shell metacharacter injection.
             if (path.isNotEmpty() && !path.matches(Regex("^/[a-zA-Z0-9_./\\-]+$"))) {
-                Toast.makeText(
-                    context,
-                    getString(R.string.su_path_invalid),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast
+                    .makeText(
+                        context,
+                        getString(R.string.su_path_invalid),
+                        Toast.LENGTH_LONG,
+                    ).show()
                 return@setOnPreferenceChangeListener false
             }
             ShizukuSettings.syncAllPlusFeaturesToServer()
             true
         }
         suPathPref?.setOnPreferenceClickListener {
-            val presets = arrayOf(
-                getString(R.string.su_path_preset_default),
-                "/system/bin/su (Standard AOSP)",
-                "/system/xbin/su (SuperSU Legacy)",
-                "/sbin/su (Magisk/Custom ROMs)",
-                "/data/adb/ksu/bin/su (KernelSU)",
-                "/data/adb/ap/bin/su (APatch)",
-                getString(R.string.su_path_preset_custom)
-            )
-            val presetValues = arrayOf(
-                "",
-                "/system/bin/su",
-                "/system/xbin/su",
-                "/sbin/su",
-                "/data/adb/ksu/bin/su",
-                "/data/adb/ap/bin/su",
-                "custom"
-            )
+            val presets =
+                arrayOf(
+                    getString(R.string.su_path_preset_default),
+                    "/system/bin/su (Standard AOSP)",
+                    "/system/xbin/su (SuperSU Legacy)",
+                    "/sbin/su (Magisk/Custom ROMs)",
+                    "/data/adb/ksu/bin/su (KernelSU)",
+                    "/data/adb/ap/bin/su (APatch)",
+                    getString(R.string.su_path_preset_custom),
+                )
+            val presetValues =
+                arrayOf(
+                    "",
+                    "/system/bin/su",
+                    "/system/xbin/su",
+                    "/sbin/su",
+                    "/data/adb/ksu/bin/su",
+                    "/data/adb/ap/bin/su",
+                    "custom",
+                )
 
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+            com.google.android.material.dialog
+                .MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.su_path_preset_dialog_title)
                 .setItems(presets) { _, which ->
                     val chosen = presetValues[which]
@@ -235,8 +265,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                         ShizukuSettings.syncAllPlusFeaturesToServer()
                         Toast.makeText(context, context?.getString(R.string.su_path_preset_applied, presets[which]), Toast.LENGTH_SHORT).show()
                     }
-                }
-                .show()
+                }.show()
             true // Intercept click to show presets dialog first
         }
 
@@ -262,20 +291,27 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
      * browse and configure settings before starting Shizuku.
      */
     private fun applyModeConstraints() {
-        val uid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
+        val uid =
+            try {
+                Shizuku.getUid()
+            } catch (_: Exception) {
+                -1
+            }
 
-        val isRootMode = EnvironmentUtils.isRooted() ||
-            ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
+        val isRootMode =
+            EnvironmentUtils.isRooted() ||
+                ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
 
         when {
             uid == 2000 -> {
                 // Running in ADB/shell mode -- enable rootless bridges, SU bridge (rish emulation),
                 // and mocking/simulation features so ADB users gain full access.
-                val bridgeCategories = listOf(
-                    "category_su_bridge",
-                    "category_root_modules",
-                    "category_ghost_bridge"
-                )
+                val bridgeCategories =
+                    listOf(
+                        "category_su_bridge",
+                        "category_root_modules",
+                        "category_ghost_bridge",
+                    )
                 for (key in bridgeCategories) {
                     findPreference<PreferenceGroup>(key)?.apply {
                         isEnabled = true
@@ -305,12 +341,16 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun isBootloaderUnlocked(): Boolean {
-        fun readProp(key: String): String? = try {
-            Class.forName("android.os.SystemProperties")
-                .getMethod("get", String::class.java, String::class.java)
-                .invoke(null, key, "") as? String
-        } catch (_: Exception) { null }
+        fun readProp(key: String): String? =
+            try {
+                Class
+                    .forName("android.os.SystemProperties")
+                    .getMethod("get", String::class.java, String::class.java)
+                    .invoke(null, key, "") as? String
+            } catch (_: Exception) {
+                null
+            }
         return readProp("ro.boot.flash.locked") == "0" ||
-               readProp("ro.boot.verifiedbootstate") == "orange"
+            readProp("ro.boot.verifiedbootstate") == "orange"
     }
 }

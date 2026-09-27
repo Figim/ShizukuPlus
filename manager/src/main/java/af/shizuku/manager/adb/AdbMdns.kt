@@ -1,14 +1,14 @@
 package af.shizuku.manager.adb
 
+import af.shizuku.manager.ShizukuSettings
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
-import timber.log.Timber
-import kotlinx.coroutines.*
 import androidx.annotation.RequiresApi
-import af.shizuku.manager.ShizukuSettings
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.*
+import timber.log.Timber
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
@@ -16,10 +16,10 @@ import java.net.ServerSocket
 
 @RequiresApi(Build.VERSION_CODES.R)
 class AdbMdns(
-    context: Context, private val serviceType: String,
-    private val observer: Observer<Int>
+    context: Context,
+    private val serviceType: String,
+    private val observer: Observer<Int>,
 ) {
-
     private var registered = false
     private var running = false
     private var serviceName: String? = null
@@ -84,14 +84,19 @@ class AdbMdns(
         val hostAddress = resolvedService.host.hostAddress
         val isLocal = hostAddress == "127.0.0.1" || hostAddress == "::1" || resolvedService.host.isLoopbackAddress
 
-        if (running && (isLocal || NetworkInterface.getNetworkInterfaces()
-                .asSequence()
-                .any { networkInterface ->
-                    networkInterface.inetAddresses
+        if (running &&
+            (
+                isLocal ||
+                    NetworkInterface
+                        .getNetworkInterfaces()
                         .asSequence()
-                        .any { hostAddress == it.hostAddress }
-                })
-            && isPortAvailable(resolvedService.port)
+                        .any { networkInterface ->
+                            networkInterface.inetAddresses
+                                .asSequence()
+                                .any { hostAddress == it.hostAddress }
+                        }
+            ) &&
+            isPortAvailable(resolvedService.port)
         ) {
             serviceName = resolvedService.serviceName
             resolvedHost = if (isLocal || hostAddress == null) "127.0.0.1" else hostAddress
@@ -100,39 +105,46 @@ class AdbMdns(
             attempts++
             restartScheduled = true
             val delayMs = attempts * 1000L
-            restartJob = mdnsScope.launch {
-                delay(delayMs)
-                if (registered) {
-                    try {
-                        nsdManager.stopServiceDiscovery(listener)
-                    } catch (e: IllegalArgumentException) {
-                        Timber.tag(TAG).e(e, "listener not registered when restarting service discovery")
+            restartJob =
+                mdnsScope.launch {
+                    delay(delayMs)
+                    if (registered) {
+                        try {
+                            nsdManager.stopServiceDiscovery(listener)
+                        } catch (e: IllegalArgumentException) {
+                            Timber.tag(TAG).e(e, "listener not registered when restarting service discovery")
+                        }
                     }
+                    delay(100L)
+                    if (!registered) nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, listener)
+                    restartScheduled = false
                 }
-                delay(100L)
-                if (!registered) nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, listener)
-                restartScheduled = false
+        }
+    }
+
+    private fun isPortAvailable(port: Int) =
+        try {
+            ServerSocket().use {
+                it.bind(InetSocketAddress("127.0.0.1", port), 1)
+                false
             }
+        } catch (_: IOException) {
+            true
         }
-    }
 
-    private fun isPortAvailable(port: Int) = try {
-        ServerSocket().use {
-            it.bind(InetSocketAddress("127.0.0.1", port), 1)
-            false
-        }
-    } catch (_: IOException) {
-        true
-    }
-
-    internal class DiscoveryListener(private val adbMdns: AdbMdns) : NsdManager.DiscoveryListener {
+    internal class DiscoveryListener(
+        private val adbMdns: AdbMdns,
+    ) : NsdManager.DiscoveryListener {
         override fun onDiscoveryStarted(serviceType: String) {
             Timber.tag(TAG).v("onDiscoveryStarted: $serviceType")
 
             adbMdns.onDiscoveryStart()
         }
 
-        override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
+        override fun onStartDiscoveryFailed(
+            serviceType: String,
+            errorCode: Int,
+        ) {
             Timber.tag(TAG).v("onStartDiscoveryFailed: $serviceType, $errorCode")
         }
 
@@ -142,7 +154,10 @@ class AdbMdns(
             adbMdns.onDiscoveryStop()
         }
 
-        override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
+        override fun onStopDiscoveryFailed(
+            serviceType: String,
+            errorCode: Int,
+        ) {
             Timber.tag(TAG).v("onStopDiscoveryFailed: $serviceType, $errorCode")
         }
 
@@ -159,13 +174,17 @@ class AdbMdns(
         }
     }
 
-    internal class ResolveListener(private val adbMdns: AdbMdns) : NsdManager.ResolveListener {
-        override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, i: Int) {}
+    internal class ResolveListener(
+        private val adbMdns: AdbMdns,
+    ) : NsdManager.ResolveListener {
+        override fun onResolveFailed(
+            nsdServiceInfo: NsdServiceInfo,
+            i: Int,
+        ) {}
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
             adbMdns.onServiceResolved(nsdServiceInfo)
         }
-
     }
 
     companion object {

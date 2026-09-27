@@ -1,8 +1,11 @@
 package af.shizuku.manager.automation
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.net.ConnectivityManager
@@ -12,15 +15,11 @@ import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.os.Build
 import android.os.IBinder
-import android.content.Context
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.*
 import timber.log.Timber
-import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
 
 class AutomationService : Service() {
-
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
@@ -33,25 +32,30 @@ class AutomationService : Service() {
     // Registering them again in onCreate()/onDestroy() would cause double-fire while the service
     // is running and lose rule state (isSafeNetwork, savedGlobalFirewall) across service restarts.
 
-    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-            checkNetworkState()
-        }
+    private val networkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                checkNetworkState()
+            }
 
-        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
-            super.onCapabilitiesChanged(network, networkCapabilities)
-            checkNetworkState(networkCapabilities)
-        }
+            override fun onCapabilitiesChanged(
+                network: Network,
+                networkCapabilities: NetworkCapabilities,
+            ) {
+                super.onCapabilitiesChanged(network, networkCapabilities)
+                checkNetworkState(networkCapabilities)
+            }
 
-        override fun onLost(network: Network) {
-            super.onLost(network)
-            checkNetworkState()
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                checkNetworkState()
+            }
         }
-    }
 
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "automation_service"
+
         // 1001/1002 are taken by WatchdogService; 1003 is taken by WatchdogWorker heal — use 1004
         private const val NOTIFICATION_ID = 1004
 
@@ -113,10 +117,12 @@ class AutomationService : Service() {
                 // TRANSPORT_WIFI covers normal wireless ADB; TRANSPORT_ETHERNET covers RNDIS/USB-
                 // tethering connections used on devices like Samsung XCover 7 (#403). Both trigger
                 // checkNetworkState() so NetworkFirewallRule and AdbStartWorker react to either.
-                val request = NetworkRequest.Builder()
-                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-                    .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
-                    .build()
+                val request =
+                    NetworkRequest
+                        .Builder()
+                        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                        .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET)
+                        .build()
                 cm.registerNetworkCallback(request, networkCallback)
                 callbackRegistered = true
             } catch (e: Exception) {
@@ -136,7 +142,11 @@ class AutomationService : Service() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         // Keep the notification current if the service is restarted (START_STICKY) after being
         // killed. If foregrounding is refused now, stop rather than risk a "did not start in
         // time" system crash.
@@ -149,20 +159,23 @@ class AutomationService : Service() {
 
     private fun ensureForeground(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                getString(R.string.notification_channel_automation),
-                NotificationManager.IMPORTANCE_MIN
-            ).apply { setShowBadge(false) }
+            val channel =
+                NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    getString(R.string.notification_channel_automation),
+                    NotificationManager.IMPORTANCE_MIN,
+                ).apply { setShowBadge(false) }
             val nm = getSystemService(NotificationManager::class.java)
             nm.createNotificationChannel(channel)
         }
-        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentTitle(getString(R.string.notification_automation_title))
-            .setPriority(NotificationCompat.PRIORITY_MIN)
-            .setSilent(true)
-            .build()
+        val notification =
+            NotificationCompat
+                .Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle(getString(R.string.notification_automation_title))
+                .setPriority(NotificationCompat.PRIORITY_MIN)
+                .setSilent(true)
+                .build()
         return try {
             // specialUse (not dataSync): this is an indefinite context monitor. dataSync FGS has a
             // 6h/day time budget and a must-stop-in-time requirement on Android 15+, which crashed
@@ -200,29 +213,33 @@ class AutomationService : Service() {
 
     private fun checkNetworkState(caps: NetworkCapabilities?) {
         try {
-            val isWifi = caps != null &&
-                    (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                     caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+            val isWifi =
+                caps != null &&
+                    (
+                        caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                            caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                    )
 
             // On API 29+ the SSID is available from NetworkCapabilities.getTransportInfo() within
             // a network callback without requiring ACCESS_FINE_LOCATION, which was revoked in Android 10.
             // WifiManager.getConnectionInfo() (deprecated API 31) throws SecurityException on some OEM
             // builds even with ACCESS_WIFI_STATE declared (SHIZUKUPLUS-50).
-            val ssid: String? = if (Build.VERSION.SDK_INT >= 29 && isWifi && caps != null) {
-                (caps.transportInfo as? WifiInfo)?.ssid?.let { raw ->
-                    // WifiInfo.getSSID() wraps SSIDs in double-quotes: "\"MyNetwork\""
-                    // Strip them; "<unknown ssid>" means the platform declined to share it.
-                    if (raw.startsWith("\"") && raw.endsWith("\"") && raw.length >= 2) {
-                        raw.substring(1, raw.length - 1)
-                    } else if (raw == "<unknown ssid>") {
-                        null
-                    } else {
-                        raw
+            val ssid: String? =
+                if (Build.VERSION.SDK_INT >= 29 && isWifi && caps != null) {
+                    (caps.transportInfo as? WifiInfo)?.ssid?.let { raw ->
+                        // WifiInfo.getSSID() wraps SSIDs in double-quotes: "\"MyNetwork\""
+                        // Strip them; "<unknown ssid>" means the platform declined to share it.
+                        if (raw.startsWith("\"") && raw.endsWith("\"") && raw.length >= 2) {
+                            raw.substring(1, raw.length - 1)
+                        } else if (raw == "<unknown ssid>") {
+                            null
+                        } else {
+                            raw
+                        }
                     }
+                } else {
+                    null
                 }
-            } else {
-                null
-            }
 
             AutomationEngine.dispatchEvent(NetworkEvent(isWifi, ssid), applicationContext)
         } catch (e: Exception) {
@@ -250,7 +267,9 @@ class AutomationService : Service() {
                     val events = usageStatsManager.queryEvents(startTime, endTime)
                     var currentApp: String? = null
 
-                    val event = android.app.usage.UsageEvents.Event()
+                    val event =
+                        android.app.usage.UsageEvents
+                            .Event()
                     while (events.hasNextEvent()) {
                         events.getNextEvent(event)
                         if (event.eventType == android.app.usage.UsageEvents.Event.ACTIVITY_RESUMED) {

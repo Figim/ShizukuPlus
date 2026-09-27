@@ -12,7 +12,6 @@ private const val DEFAULT_TOKEN_LENGTH = 24
 private val random = SecureRandom()
 
 object Token {
-
     @JvmStatic
     fun generateToken(): String = generateToken(DEFAULT_TOKEN_LENGTH)
 
@@ -21,5 +20,4 @@ object Token {
         (1..length)
             .map { CHARS[random.nextInt(CHARS.length)] }
             .joinToString("")
-
 }

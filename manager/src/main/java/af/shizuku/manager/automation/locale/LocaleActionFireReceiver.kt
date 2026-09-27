@@ -1,13 +1,13 @@
 package af.shizuku.manager.automation.locale
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import af.shizuku.manager.automation.locale.LocalePluginContract.ACTION_START
 import af.shizuku.manager.automation.locale.LocalePluginContract.ACTION_STOP
 import af.shizuku.manager.automation.locale.LocalePluginContract.BUNDLE_KEY_ACTION
 import af.shizuku.manager.automation.locale.LocalePluginContract.EXTRA_BUNDLE
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import timber.log.Timber
 
 /**
@@ -15,8 +15,10 @@ import timber.log.Timber
  * compatible apps when a plugin instance configured via LocaleActionEditActivity actually fires.
  */
 class LocaleActionFireReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         val bundle = intent.getBundleExtra(EXTRA_BUNDLE) ?: return
 
         when (bundle.getString(BUNDLE_KEY_ACTION)) {

@@ -1,9 +1,9 @@
 package af.shizuku.manager.notifications
 
-import java.io.File
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
+import java.io.File
 
 /**
  * Regression test for SHIZUKUPLUS-#422 (fixed in 64f552d8).
@@ -28,7 +28,6 @@ import org.junit.Test
  * untinted variant instead of adding `android:tint` back.
  */
 class NotificationIconTintRegressionTest {
-
     private val iconCallRegex =
         Regex("""\.(?:setSmallIcon|addAction)\(\s*R\.drawable\.([A-Za-z0-9_]+)""")
 
@@ -46,15 +45,18 @@ class NotificationIconTintRegressionTest {
         error("Could not locate repo root (no settings.gradle found above ${File(".").absolutePath})")
     }
 
-    private fun findDrawable(repoRoot: File, name: String): File? {
-        return repoRoot.walkTopDown()
+    private fun findDrawable(
+        repoRoot: File,
+        name: String,
+    ): File? =
+        repoRoot
+            .walkTopDown()
             .firstOrNull { file ->
                 file.isFile &&
                     file.name == "$name.xml" &&
                     file.path.contains("${File.separator}res${File.separator}drawable") &&
                     !file.path.contains("${File.separator}build${File.separator}")
             }
-    }
 
     @Test
     fun `notification icon call sites reference only untinted drawables`() {
@@ -72,8 +74,9 @@ class NotificationIconTintRegressionTest {
             file.readLines().forEachIndexed { index, line ->
                 val match = iconCallRegex.find(line) ?: return@forEachIndexed
                 val drawableName = match.groupValues[1]
-                val drawableFile = findDrawable(repoRoot, drawableName)
-                    ?: return@forEachIndexed // resolved elsewhere (e.g. a dependency); nothing to check here
+                val drawableFile =
+                    findDrawable(repoRoot, drawableName)
+                        ?: return@forEachIndexed // resolved elsewhere (e.g. a dependency); nothing to check here
 
                 checkedCallSites++
                 if (tintRegex.containsMatchIn(drawableFile.readText())) {

@@ -1,5 +1,8 @@
 package af.shizuku.manager.settings.compose
 
+import af.shizuku.manager.R
+import af.shizuku.manager.settings.SettingsSearchEngine
+import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -19,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -37,10 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import af.shizuku.manager.R
-import af.shizuku.manager.settings.SettingsSearchEngine
-import android.widget.FrameLayout
-import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +52,7 @@ fun SettingsScreen(
     onSearchQueryChanged: (String) -> Unit,
     onContainerCreated: () -> Unit,
     isScrollIdle: Boolean = true,
-    onScrollStateCreated: (TopAppBarState) -> Unit = {}
+    onScrollStateCreated: (TopAppBarState) -> Unit = {},
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -74,12 +74,22 @@ fun SettingsScreen(
         }
     }
 
-    val isOneUi = af.shizuku.manager.ShizukuSettings.isOneUiThemeEnabled()
-    val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
-    val isExpandedHeaders = isOneUi || af.shizuku.manager.ShizukuSettings.isExpandedHeadersEnabled()
+    val isOneUi =
+        af.shizuku.manager.ShizukuSettings
+            .isOneUiThemeEnabled()
+    val isOneHanded =
+        af.shizuku.manager.ShizukuSettings
+            .isOneHandedModeEnabled()
+    val isExpandedHeaders =
+        isOneUi ||
+            af.shizuku.manager.ShizukuSettings
+                .isExpandedHeadersEnabled()
     val context = LocalContext.current
     val isDarkTheme = isSystemInDarkTheme()
-    val isBlackTheme = isDarkTheme && af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context)
+    val isBlackTheme =
+        isDarkTheme &&
+            af.shizuku.manager.app.ThemeHelper
+                .isBlackNightTheme(context)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
     LaunchedEffect(isScrollIdle) {
@@ -89,7 +99,8 @@ fun SettingsScreen(
             if (fraction > 0.001f && fraction < 0.999f) {
                 val target = if (fraction >= 0.5f) state.heightOffsetLimit else 0f
                 Animatable(state.heightOffset).animateTo(
-                    target, spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium)
+                    target,
+                    spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium),
                 ) { state.heightOffset = value }
             }
         }
@@ -103,74 +114,89 @@ fun SettingsScreen(
                     title = {
                         TextField(
                             value = searchQuery,
-                            onValueChange = { q -> searchQuery = q; onSearchQueryChanged(q) },
+                            onValueChange = { q ->
+                                searchQuery = q
+                                onSearchQueryChanged(q)
+                            },
                             placeholder = { Text(stringResource(R.string.settings_search_hint)) },
                             singleLine = true,
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent
-                            ),
+                            colors =
+                                TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                ),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(searchFocusRequester)
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .focusRequester(searchFocusRequester),
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = { exitSearch() }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_back_24),
-                                contentDescription = stringResource(R.string.cd_navigate_back)
+                                contentDescription = stringResource(R.string.cd_navigate_back),
                             )
                         }
                     },
                     actions = {
                         if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { searchQuery = ""; onSearchQueryChanged("") }) {
+                            IconButton(onClick = {
+                                searchQuery = ""
+                                onSearchQueryChanged("")
+                            }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_close_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search_clear)
+                                    contentDescription = stringResource(R.string.cd_settings_search_clear),
                                 )
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = if (isBlackTheme) Color.Black
-                        else MaterialTheme.colorScheme.surface
-                    )
+                    colors =
+                        TopAppBarDefaults.topAppBarColors(
+                            containerColor =
+                                if (isBlackTheme) {
+                                    Color.Black
+                                } else {
+                                    MaterialTheme.colorScheme.surface
+                                },
+                        ),
                 )
             } else {
                 if (isExpandedHeaders) {
                     LargeTopAppBar(
                         title = {
                             val fraction = scrollBehavior.state.collapsedFraction
-                            val currentFontSize = lerp(
-                                start = 28.sp,
-                                stop = 20.sp,
-                                fraction = fraction
-                            )
+                            val currentFontSize =
+                                lerp(
+                                    start = 28.sp,
+                                    stop = 20.sp,
+                                    fraction = fraction,
+                                )
                             val currentFontWeight = if (fraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
                             val currentLetterSpacing = lerp((-0.5).sp, (-0.2).sp, fraction)
                             Text(
                                 text = title,
-                                style = MaterialTheme.typography.headlineLarge.copy(
-                                    fontWeight = currentFontWeight,
-                                    fontSize = currentFontSize,
-                                    letterSpacing = currentLetterSpacing
-                                ),
+                                style =
+                                    MaterialTheme.typography.headlineLarge.copy(
+                                        fontWeight = currentFontWeight,
+                                        fontSize = currentFontSize,
+                                        letterSpacing = currentLetterSpacing,
+                                    ),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
                         },
                         navigationIcon = {
                             IconButton(onClick = { onNavigateUp() }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_back_24),
-                                    contentDescription = stringResource(R.string.cd_navigate_back)
+                                    contentDescription = stringResource(R.string.cd_navigate_back),
                                 )
                             }
                         },
@@ -178,21 +204,26 @@ fun SettingsScreen(
                             IconButton(onClick = { isSearchActive = true }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_search_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search)
+                                    contentDescription = stringResource(R.string.cd_settings_search),
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                            scrolledContainerColor = if (af.shizuku.manager.ShizukuSettings.isBlurUiEnabled())
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
-                            else
-                                MaterialTheme.colorScheme.surfaceContainer,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                            actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        ),
-                        scrollBehavior = scrollBehavior
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent,
+                                scrolledContainerColor =
+                                    if (af.shizuku.manager.ShizukuSettings
+                                            .isBlurUiEnabled()
+                                    ) {
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceContainer
+                                    },
+                                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                                actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                        scrollBehavior = scrollBehavior,
                     )
                 } else {
                     TopAppBar(
@@ -203,7 +234,7 @@ fun SettingsScreen(
                             IconButton(onClick = { onNavigateUp() }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_back_24),
-                                    contentDescription = stringResource(R.string.cd_navigate_back)
+                                    contentDescription = stringResource(R.string.cd_navigate_back),
                                 )
                             }
                         },
@@ -211,57 +242,73 @@ fun SettingsScreen(
                             IconButton(onClick = { isSearchActive = true }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_search_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search)
+                                    contentDescription = stringResource(R.string.cd_settings_search),
                                 )
                             }
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Transparent,
-                            scrolledContainerColor = if (af.shizuku.manager.ShizukuSettings.isBlurUiEnabled())
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
-                            else
-                                MaterialTheme.colorScheme.surfaceContainer
-                        )
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent,
+                                scrolledContainerColor =
+                                    if (af.shizuku.manager.ShizukuSettings
+                                            .isBlurUiEnabled()
+                                    ) {
+                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
+                                    } else {
+                                        MaterialTheme.colorScheme.surfaceContainer
+                                    },
+                            ),
                     )
                 }
             }
-        }
+        },
     ) { innerPadding ->
         val screenHeightDp = LocalConfiguration.current.screenHeightDp
         val targetThumbTop = (screenHeightDp * 0.38f).dp
         val extraOneHanded = (targetThumbTop - innerPadding.calculateTopPadding()).coerceAtLeast(0.dp)
         val oneHandedOffset by animateDpAsState(
             targetValue = if (isOneHanded) extraOneHanded else 0.dp,
-            animationSpec = if (!af.shizuku.manager.ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                snap()
-            } else {
-                spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium / af.shizuku.manager.ShizukuSettings.getAnimationDurationScale().coerceAtLeast(0.1f)
-                )
-            },
-            label = "settingsOneHandedOffset"
+            animationSpec =
+                if (!af.shizuku.manager.ShizukuSettings
+                        .isExpressiveAnimationsEnabled()
+                ) {
+                    snap()
+                } else {
+                    spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness =
+                            Spring.StiffnessMedium /
+                                af.shizuku.manager.ShizukuSettings
+                                    .getAnimationDurationScale()
+                                    .coerceAtLeast(0.1f),
+                    )
+                },
+            label = "settingsOneHandedOffset",
         )
 
         Box(modifier = Modifier.fillMaxSize()) {
             if (isOneHanded && oneHandedOffset > 16.dp) {
                 val handleAlpha = (1f - (scrollBehavior.state.collapsedFraction * 2.5f)).coerceIn(0f, 1f)
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(oneHandedOffset + innerPadding.calculateTopPadding())
-                        .padding(top = innerPadding.calculateTopPadding() + 8.dp)
-                        .graphicsLayer { alpha = handleAlpha },
-                    contentAlignment = Alignment.TopCenter
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(oneHandedOffset + innerPadding.calculateTopPadding())
+                            .padding(top = innerPadding.calculateTopPadding() + 8.dp)
+                            .graphicsLayer { alpha = handleAlpha },
+                    contentAlignment = Alignment.TopCenter,
                 ) {
                     Box(
-                        modifier = Modifier
-                            .width(36.dp)
-                            .height(4.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
-                                shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)
-                            )
+                        modifier =
+                            Modifier
+                                .width(36.dp)
+                                .height(4.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
+                                    shape =
+                                        androidx.compose.foundation.shape
+                                            .RoundedCornerShape(2.dp),
+                                ),
                     )
                 }
             }
@@ -278,47 +325,54 @@ fun SettingsScreen(
                 update = { view ->
                     view.visibility = if (isSearchActive) android.view.View.GONE else android.view.View.VISIBLE
                 },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        top = innerPadding.calculateTopPadding(),
-                        bottom = innerPadding.calculateBottomPadding()
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom = innerPadding.calculateBottomPadding(),
+                        ),
             )
 
             // Inline search results — appears below the search TopAppBar
-            val searchFadeMs = af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(200L).toInt()
+            val searchFadeMs =
+                af.shizuku.manager.ShizukuSettings
+                    .scaledAnimationDuration(200L)
+                    .toInt()
             AnimatedVisibility(
                 visible = isSearchActive,
                 enter = fadeIn(tween(searchFadeMs)),
                 exit = fadeOut(tween(searchFadeMs)),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding())
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = innerPadding.calculateTopPadding()),
             ) {
                 val bgColor = if (isBlackTheme) Color.Black else MaterialTheme.colorScheme.surface
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(bgColor)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(bgColor),
                 ) {
                     if (searchQuery.isBlank()) {
                         // Empty query: just show the background so the fragment is covered
                     } else if (searchResults.isEmpty()) {
                         Text(
                             text = stringResource(R.string.settings_search_empty_state),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(32.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     } else {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             items(searchResults) { item ->
                                 SearchResultItem(
@@ -327,7 +381,7 @@ fun SettingsScreen(
                                     onClick = {
                                         exitSearch()
                                         onNavigateToSetting(item)
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -343,7 +397,7 @@ fun SettingsScreen(
 fun SearchResultItem(
     item: SettingsSearchEngine.SettingItem,
     isBlackTheme: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     // Use Material3's clickable Card overload rather than Modifier.clickable: the latter reads
     // LocalIndication, and on Android 16 / Compose Foundation 1.7+ that threw
@@ -352,24 +406,27 @@ fun SearchResultItem(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isBlackTheme) Color(0xFF141414) else MaterialTheme.colorScheme.surfaceContainerLow
-        )
+        colors =
+            CardDefaults.cardColors(
+                containerColor = if (isBlackTheme) Color(0xFF141414) else MaterialTheme.colorScheme.surfaceContainerLow,
+            ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (item.iconResId != 0) {
                 Icon(
                     painter = painterResource(item.iconResId),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .padding(end = 0.dp)
+                    modifier =
+                        Modifier
+                            .size(24.dp)
+                            .padding(end = 0.dp),
                 )
                 Spacer(modifier = Modifier.width(16.dp))
             }
@@ -378,20 +435,20 @@ fun SearchResultItem(
                     text = item.category ?: "Settings",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
                 if (!item.summary.isNullOrEmpty()) {
                     Text(
                         text = item.summary,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp)
+                        modifier = Modifier.padding(top = 2.dp),
                     )
                 }
             }

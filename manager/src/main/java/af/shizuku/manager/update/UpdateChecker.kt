@@ -1,32 +1,32 @@
 package af.shizuku.manager.update
 
+import af.shizuku.manager.BuildConfig
 import android.util.Xml
-import timber.log.Timber
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
-import javax.net.ssl.SSLException
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.BuildConfig
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
+import timber.log.Timber
+import java.io.IOException
+import java.net.ConnectException
 import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 import java.net.URL
+import java.net.UnknownHostException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import javax.net.ssl.SSLException
 
 object UpdateChecker {
-
     private const val TAG = "UpdateChecker"
     private const val RELEASES_URL = "https://api.github.com/repos/thejaustin/ShizukuPlus/releases"
     private const val LATEST_URL = "$RELEASES_URL/latest"
+
     // Fallback: GitHub's Atom feed is served from github.com CDN — different IP range
     // than api.github.com, so routing issues specific to that host don't affect it.
     private const val ATOM_URL = "https://github.com/thejaustin/ShizukuPlus/releases.atom"
@@ -37,7 +37,8 @@ object UpdateChecker {
     data class ReleaseEntry(
         val tagName: String,
         val publishedAt: String,
-        val body: String
+        val body: String,
+        val isNew: Boolean = false,
     )
 
     data class UpdateInfo(
@@ -48,12 +49,16 @@ object UpdateChecker {
         val publishedAt: String,
         val isPrerelease: Boolean,
         // True when only the Atom fallback succeeded — no direct APK URL available.
-        val requiresManualDownload: Boolean = false
+        val requiresManualDownload: Boolean = false,
     )
 
     sealed class CheckResult {
-        data class UpdateAvailable(val info: UpdateInfo) : CheckResult()
+        data class UpdateAvailable(
+            val info: UpdateInfo,
+        ) : CheckResult()
+
         object UpToDate : CheckResult()
+
         object NetworkError : CheckResult()
     }
 
@@ -67,78 +72,82 @@ object UpdateChecker {
      *      directed to GitHub Releases manually)
      *   3. If all three fail → NetworkError
      */
-    suspend fun checkForUpdate(channel: String = "stable"): CheckResult = withContext(Dispatchers.IO) {
-        val transaction = Sentry.startTransaction("UpdateCheck", "check_for_update")
-        Sentry.getSpan()?.setTag("channel", channel)
+    suspend fun checkForUpdate(channel: String = "stable"): CheckResult =
+        withContext(Dispatchers.IO) {
+            val transaction = Sentry.startTransaction("UpdateCheck", "check_for_update")
+            Sentry.getSpan()?.setTag("channel", channel)
 
-        try {
-            for (attempt in 0 until 2) {
-                if (attempt > 0) delay(RETRY_DELAY_MS)
-                val span = transaction.startChild("github_api", "attempt_$attempt")
-                try {
-                    val result = checkViaApi(channel)
-                    span.finish(io.sentry.SpanStatus.OK)
-                    return@withContext result
-                } catch (e: Exception) {
-                    span.throwable = e
-                    span.finish(io.sentry.SpanStatus.INTERNAL_ERROR)
-                    if (e.isNetworkError()) {
-                        Timber.tag(TAG).w("Update check attempt ${attempt + 1} failed (network): ${e.message}")
-                    } else {
-                        Sentry.captureException(e)
-                        return@withContext CheckResult.NetworkError
+            try {
+                for (attempt in 0 until 2) {
+                    if (attempt > 0) delay(RETRY_DELAY_MS)
+                    val span = transaction.startChild("github_api", "attempt_$attempt")
+                    try {
+                        val result = checkViaApi(channel)
+                        span.finish(io.sentry.SpanStatus.OK)
+                        return@withContext result
+                    } catch (e: Exception) {
+                        span.throwable = e
+                        span.finish(io.sentry.SpanStatus.INTERNAL_ERROR)
+                        if (e.isNetworkError()) {
+                            Timber.tag(TAG).w("Update check attempt ${attempt + 1} failed (network): ${e.message}")
+                        } else {
+                            Sentry.captureException(e)
+                            return@withContext CheckResult.NetworkError
+                        }
                     }
                 }
-            }
 
-            Timber.tag(TAG).w("API unreachable after 2 attempts, trying Atom feed fallback")
-            val fallbackSpan = transaction.startChild("atom_feed", "fallback")
-            try {
-                val fallback = checkViaAtomFeed()
-                fallbackSpan.finish(io.sentry.SpanStatus.OK)
-                if (fallback != null) return@withContext CheckResult.UpdateAvailable(fallback)
-            } catch (e: Exception) {
-                fallbackSpan.throwable = e
-                fallbackSpan.finish(io.sentry.SpanStatus.INTERNAL_ERROR)
-                Timber.tag(TAG).w(e, "Atom feed fallback also failed")
-            }
+                Timber.tag(TAG).w("API unreachable after 2 attempts, trying Atom feed fallback")
+                val fallbackSpan = transaction.startChild("atom_feed", "fallback")
+                try {
+                    val fallback = checkViaAtomFeed()
+                    fallbackSpan.finish(io.sentry.SpanStatus.OK)
+                    if (fallback != null) return@withContext CheckResult.UpdateAvailable(fallback)
+                } catch (e: Exception) {
+                    fallbackSpan.throwable = e
+                    fallbackSpan.finish(io.sentry.SpanStatus.INTERNAL_ERROR)
+                    Timber.tag(TAG).w(e, "Atom feed fallback also failed")
+                }
 
-            CheckResult.NetworkError
-        } finally {
-            transaction.finish()
+                CheckResult.NetworkError
+            } finally {
+                transaction.finish()
+            }
         }
-    }
 
     private fun checkViaApi(channel: String): CheckResult {
-        val json: JSONObject = if (channel == "dev" || channel == "beta") {
-            val arr = fetchJson("$RELEASES_URL?per_page=5") as? JSONArray
-            // Dev/beta channel must track the newest *prerelease* build, not simply the newest
-            // release entry overall. Index 0 is whichever release was created most recently
-            // regardless of its "prerelease" flag, so as soon as a stable release is cut after a
-            // dev build, index 0 silently becomes that stable release and the dev channel starts
-            // resolving to the exact same release as the stable channel's /releases/latest — the
-            // user's channel choice stops making any difference. Explicitly prefer the newest
-            // entry flagged prerelease=true within the fetched page, falling back to index 0 only
-            // if none of the recent releases are marked as a prerelease.
-            val prerelease = arr?.let { a ->
-                (0 until a.length()).map { a.getJSONObject(it) }
-                    .firstOrNull { it.optBoolean("prerelease", false) }
+        val json: JSONObject =
+            if (channel == "dev" || channel == "beta") {
+                val arr = fetchJson("$RELEASES_URL?per_page=5") as? JSONArray
+                // Dev/beta channel must track the newest *prerelease* build, not simply the newest
+                // release entry overall. Index 0 is whichever release was created most recently
+                // regardless of its "prerelease" flag, so as soon as a stable release is cut after a
+                // dev build, index 0 silently becomes that stable release and the dev channel starts
+                // resolving to the exact same release as the stable channel's /releases/latest — the
+                // user's channel choice stops making any difference. Explicitly prefer the newest
+                // entry flagged prerelease=true within the fetched page, falling back to index 0 only
+                // if none of the recent releases are marked as a prerelease.
+                val prerelease =
+                    arr?.let { a ->
+                        (0 until a.length())
+                            .map { a.getJSONObject(it) }
+                            .firstOrNull { it.optBoolean("prerelease", false) }
+                    }
+                val newestOverall = arr?.optJSONObject(0)
+                // ...but a stable release is still a valid, newer build for a Dev/Beta user — a
+                // prerelease cut before the latest stable shouldn't keep them stuck on an older
+                // version just because it's tagged "prerelease". Compare actual version codes and
+                // take whichever is newer, so a fresher stable release "wins" over a stale dev build.
+                val prereleaseCode = prerelease?.let { parseVersionCode(it.optString("tag_name", "").removePrefix("v")) } ?: -1
+                val overallCode = newestOverall?.let { parseVersionCode(it.optString("tag_name", "").removePrefix("v")) } ?: -1
+                when {
+                    prerelease != null && prereleaseCode >= overallCode -> prerelease
+                    newestOverall != null -> newestOverall
+                    else -> return CheckResult.UpToDate
+                }
+            } else {
+                fetchJson(LATEST_URL) as? JSONObject ?: return CheckResult.UpToDate
             }
-            val newestOverall = arr?.optJSONObject(0)
-            // ...but a stable release is still a valid, newer build for a Dev/Beta user — a
-            // prerelease cut before the latest stable shouldn't keep them stuck on an older
-            // version just because it's tagged "prerelease". Compare actual version codes and
-            // take whichever is newer, so a fresher stable release "wins" over a stale dev build.
-            val prereleaseCode = prerelease?.let { parseVersionCode(it.optString("tag_name", "").removePrefix("v")) } ?: -1
-            val overallCode = newestOverall?.let { parseVersionCode(it.optString("tag_name", "").removePrefix("v")) } ?: -1
-            when {
-                prerelease != null && prereleaseCode >= overallCode -> prerelease
-                newestOverall != null -> newestOverall
-                else -> return CheckResult.UpToDate
-            }
-        } else {
-            fetchJson(LATEST_URL) as? JSONObject ?: return CheckResult.UpToDate
-        }
 
         val tagName = json.getString("tag_name")
         val versionName = tagName.removePrefix("v")
@@ -148,24 +157,27 @@ object UpdateChecker {
 
         val assets = json.getJSONArray("assets")
         val isDropIn = BuildConfig.APPLICATION_ID == "moe.shizuku.privileged.api"
-        val apkAssets = (0 until assets.length())
-            .map { assets.getJSONObject(it) }
-            .filter { it.getString("name").endsWith(".apk", ignoreCase = true) }
+        val apkAssets =
+            (0 until assets.length())
+                .map { assets.getJSONObject(it) }
+                .filter { it.getString("name").endsWith(".apk", ignoreCase = true) }
 
-        val targetAsset = if (isDropIn) {
-            apkAssets.firstOrNull { 
-                val name = it.getString("name")
-                name.contains("Drop-In", ignoreCase = true) || name.contains("dropin", ignoreCase = true)
-            }
-        } else {
-            apkAssets.firstOrNull { 
-                val name = it.getString("name")
-                !name.contains("Drop-In", ignoreCase = true) && !name.contains("dropin", ignoreCase = true)
-            }
-        } ?: apkAssets.firstOrNull()
+        val targetAsset =
+            if (isDropIn) {
+                apkAssets.firstOrNull {
+                    val name = it.getString("name")
+                    name.contains("Drop-In", ignoreCase = true) || name.contains("dropin", ignoreCase = true)
+                }
+            } else {
+                apkAssets.firstOrNull {
+                    val name = it.getString("name")
+                    !name.contains("Drop-In", ignoreCase = true) && !name.contains("dropin", ignoreCase = true)
+                }
+            } ?: apkAssets.firstOrNull()
 
-        val downloadUrl = targetAsset?.getString("browser_download_url")
-            ?: return CheckResult.UpToDate
+        val downloadUrl =
+            targetAsset?.getString("browser_download_url")
+                ?: return CheckResult.UpToDate
 
         val versionCode = parseVersionCode(versionName)
         val currentVersionCode = parseVersionCode(BuildConfig.VERSION_NAME)
@@ -173,7 +185,7 @@ object UpdateChecker {
         return if (versionCode > currentVersionCode) {
             Timber.tag(TAG).d("Update available: $versionName (channel=$channel, current=${BuildConfig.VERSION_NAME})")
             CheckResult.UpdateAvailable(
-                UpdateInfo(versionName, versionCode, releaseNotes, downloadUrl, publishedAt, isPrerelease)
+                UpdateInfo(versionName, versionCode, releaseNotes, downloadUrl, publishedAt, isPrerelease),
             )
         } else {
             Timber.tag(TAG).d("Already on latest ($channel): ${BuildConfig.VERSION_NAME}")
@@ -188,59 +200,63 @@ object UpdateChecker {
      * the app. Returns null on any failure (offline, tag not found, etc.) so callers can fall
      * back to a generic message instead of failing the whole dialog.
      */
-    suspend fun fetchReleaseNotesForTag(tag: String): String? = withContext(Dispatchers.IO) {
-        try {
-            val json = fetchJson("$RELEASES_URL/tags/$tag") as? JSONObject ?: return@withContext null
-            json.optString("body", "").takeIf { it.isNotBlank() }
-        } catch (e: Exception) {
-            Timber.tag(TAG).w(e, "Failed to fetch release notes for tag $tag")
-            null
+    suspend fun fetchReleaseNotesForTag(tag: String): String? =
+        withContext(Dispatchers.IO) {
+            try {
+                val json = fetchJson("$RELEASES_URL/tags/$tag") as? JSONObject ?: return@withContext null
+                json.optString("body", "").takeIf { it.isNotBlank() }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Failed to fetch release notes for tag $tag")
+                null
+            }
         }
-    }
 
     /**
-     * Fetches all releases newer than [sinceVersionCode] so the in-app "What's New" dialog
-     * shows everything the user missed — not just the last 5, but every release since their
-     * previous install. Paginates the GitHub API until it finds a release at or before the
-     * cutoff, or until [maxReleases] is reached (safety cap).
+     * Fetches up to [maxReleases] from GitHub.
+     * When [sinceVersionCode] > 0, releases with versionCode > [sinceVersionCode] are marked
+     * with [ReleaseEntry.isNew] = true.
      *
-     * [sinceVersionCode] == 0 means fresh install — returns at most [maxReleases] = 5 so the
-     * first-run dialog isn't overwhelming.
+     * Unlike prior behavior which terminated immediately upon hitting [sinceVersionCode] (which
+     * truncated older releases and left the user unable to browse historical releases in-app),
+     * this continues collecting releases up to [maxReleases] so the What's New dialog has both
+     * all new updates and previous releases available.
      */
     suspend fun fetchReleasesSince(
         sinceVersionCode: Int,
-        maxReleases: Int = if (sinceVersionCode == 0) 5 else 30
-    ): List<ReleaseEntry> = withContext(Dispatchers.IO) {
-        val result = mutableListOf<ReleaseEntry>()
-        try {
-            var page = 1
-            val maxPages = 5
-            while (page <= maxPages && result.size < maxReleases) {
-                val arr = fetchJson("$RELEASES_URL?per_page=10&page=$page") as? JSONArray ?: break
-                if (arr.length() == 0) break
-                var foundCutoff = false
-                for (i in 0 until arr.length()) {
-                    val obj = arr.getJSONObject(i)
-                    val tag = obj.optString("tag_name", "").ifBlank { continue }
-                    val vc = parseVersionCode(tag.removePrefix("v"))
-                    if (vc <= sinceVersionCode) { foundCutoff = true; break }
-                    result.add(
-                        ReleaseEntry(
-                            tagName = tag,
-                            publishedAt = obj.optString("published_at", ""),
-                            body = obj.optString("body", "")
+        maxReleases: Int = 25,
+    ): List<ReleaseEntry> =
+        withContext(Dispatchers.IO) {
+            val result = mutableListOf<ReleaseEntry>()
+            try {
+                var page = 1
+                val maxPages = 4
+                val perPage = minOf(maxReleases, 30)
+                while (page <= maxPages && result.size < maxReleases) {
+                    val arr = fetchJson("$RELEASES_URL?per_page=$perPage&page=$page") as? JSONArray ?: break
+                    if (arr.length() == 0) break
+                    for (i in 0 until arr.length()) {
+                        val obj = arr.getJSONObject(i)
+                        val tag = obj.optString("tag_name", "").ifBlank { continue }
+                        val vc = parseVersionCode(tag.removePrefix("v"))
+                        val isNew = sinceVersionCode > 0 && vc > sinceVersionCode
+                        result.add(
+                            ReleaseEntry(
+                                tagName = tag,
+                                publishedAt = obj.optString("published_at", ""),
+                                body = obj.optString("body", ""),
+                                isNew = isNew,
+                            ),
                         )
-                    )
-                    if (result.size >= maxReleases) break
+                        if (result.size >= maxReleases) break
+                    }
+                    if (arr.length() < perPage) break
+                    page++
                 }
-                if (foundCutoff || arr.length() < 10) break
-                page++
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Failed to fetch releases since versionCode $sinceVersionCode")
             }
-        } catch (e: Exception) {
-            Timber.tag(TAG).w(e, "Failed to fetch releases since versionCode $sinceVersionCode")
+            result
         }
-        result
-    }
 
     /**
      * Reads GitHub's public Atom feed as a last-resort fallback.
@@ -248,12 +264,13 @@ object UpdateChecker {
      * Can tell us whether an update exists but cannot provide a direct APK URL.
      */
     private fun checkViaAtomFeed(): UpdateInfo? {
-        val connection = (URL(ATOM_URL).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = CONNECT_TIMEOUT_MS
-            readTimeout = READ_TIMEOUT_MS
-            setRequestProperty("User-Agent", "Shizuku+/${BuildConfig.VERSION_NAME}")
-        }
+        val connection =
+            (URL(ATOM_URL).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = CONNECT_TIMEOUT_MS
+                readTimeout = READ_TIMEOUT_MS
+                setRequestProperty("User-Agent", "Shizuku+/${BuildConfig.VERSION_NAME}")
+            }
         try {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) return null
 
@@ -278,9 +295,10 @@ object UpdateChecker {
                                 releaseNotes = "",
                                 downloadUrl = "",
                                 publishedAt = "",
-                                isPrerelease = versionName.contains("beta", ignoreCase = true)
-                                        || versionName.contains("alpha", ignoreCase = true),
-                                requiresManualDownload = true
+                                isPrerelease =
+                                    versionName.contains("beta", ignoreCase = true) ||
+                                        versionName.contains("alpha", ignoreCase = true),
+                                requiresManualDownload = true,
                             )
                         }
                         return null // First release entry checked — already up to date
@@ -295,17 +313,21 @@ object UpdateChecker {
     }
 
     private fun Exception.isNetworkError(): Boolean =
-        this is UnknownHostException || this is SocketTimeoutException ||
-        this is ConnectException || this is SSLException || this is IOException
+        this is UnknownHostException ||
+            this is SocketTimeoutException ||
+            this is ConnectException ||
+            this is SSLException ||
+            this is IOException
 
     private fun fetchJson(urlString: String): Any? {
-        val connection = (URL(urlString).openConnection() as HttpURLConnection).apply {
-            requestMethod = "GET"
-            connectTimeout = CONNECT_TIMEOUT_MS
-            readTimeout = READ_TIMEOUT_MS
-            setRequestProperty("Accept", "application/vnd.github.v3+json")
-            setRequestProperty("User-Agent", "Shizuku+/${BuildConfig.VERSION_NAME}")
-        }
+        val connection =
+            (URL(urlString).openConnection() as HttpURLConnection).apply {
+                requestMethod = "GET"
+                connectTimeout = CONNECT_TIMEOUT_MS
+                readTimeout = READ_TIMEOUT_MS
+                setRequestProperty("Accept", "application/vnd.github.v3+json")
+                setRequestProperty("User-Agent", "Shizuku+/${BuildConfig.VERSION_NAME}")
+            }
         try {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                 Timber.tag(TAG).w("HTTP ${connection.responseCode} from $urlString")
@@ -319,17 +341,20 @@ object UpdateChecker {
     }
 
     /** Extracts the build number from "r2673", "Shizuku+ r2673", or "13.6.0.r1488" → the number. */
-    fun parseVersionCode(versionName: String): Int = try {
-        """\br(\d+)\b""".toRegex().find(versionName)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-    } catch (_: Exception) {
-        0
-    }
+    fun parseVersionCode(versionName: String): Int =
+        try {
+            """\br(\d+)\b""".toRegex().find(versionName)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+        } catch (_: Exception) {
+            0
+        }
 
-    fun formatPublishedDate(dateString: String): String = try {
-        val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
-            .apply { timeZone = TimeZone.getTimeZone("UTC") }
-        SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(input.parse(dateString) as Date)
-    } catch (_: Exception) {
-        dateString
-    }
+    fun formatPublishedDate(dateString: String): String =
+        try {
+            val input =
+                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+                    .apply { timeZone = TimeZone.getTimeZone("UTC") }
+            SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(input.parse(dateString) as Date)
+        } catch (_: Exception) {
+            dateString
+        }
 }

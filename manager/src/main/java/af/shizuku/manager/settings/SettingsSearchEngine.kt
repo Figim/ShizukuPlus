@@ -1,13 +1,12 @@
 package af.shizuku.manager.settings
 
-import android.content.Context
-import timber.log.Timber
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import android.content.Context
 import org.xmlpull.v1.XmlPullParser
+import timber.log.Timber
 
 object SettingsSearchEngine {
-
     data class SettingItem(
         val key: String?,
         val title: String,
@@ -15,7 +14,7 @@ object SettingsSearchEngine {
         val category: String?,
         val fragmentClass: String,
         val xmlResId: Int,
-        val iconResId: Int = 0
+        val iconResId: Int = 0,
     )
 
     private var indexedItems: List<SettingItem>? = null
@@ -24,16 +23,17 @@ object SettingsSearchEngine {
         indexedItems = null
     }
 
-    private val screens = mapOf(
-        R.xml.settings_shizuku_plus to "af.shizuku.manager.settings.ShizukuPlusSettingsFragment",
-        R.xml.settings_personalization to "af.shizuku.manager.settings.PersonalizationSettingsFragment",
-        R.xml.settings_behavior to "af.shizuku.manager.settings.BehaviorSettingsFragment",
-        R.xml.settings_advanced to "af.shizuku.manager.settings.AdvancedSettingsFragment",
-        R.xml.settings_developer_options to "af.shizuku.manager.settings.DeveloperOptionsFragment",
-        R.xml.settings_root_integration to "af.shizuku.manager.settings.RootIntegrationSettingsFragment",
-        R.xml.settings_app_management to "af.shizuku.manager.settings.AppManagementSettingsFragment",
-        R.xml.settings_about to "af.shizuku.manager.settings.AboutSettingsFragment"
-    )
+    private val screens =
+        mapOf(
+            R.xml.settings_shizuku_plus to "af.shizuku.manager.settings.ShizukuPlusSettingsFragment",
+            R.xml.settings_personalization to "af.shizuku.manager.settings.PersonalizationSettingsFragment",
+            R.xml.settings_behavior to "af.shizuku.manager.settings.BehaviorSettingsFragment",
+            R.xml.settings_advanced to "af.shizuku.manager.settings.AdvancedSettingsFragment",
+            R.xml.settings_developer_options to "af.shizuku.manager.settings.DeveloperOptionsFragment",
+            R.xml.settings_root_integration to "af.shizuku.manager.settings.RootIntegrationSettingsFragment",
+            R.xml.settings_app_management to "af.shizuku.manager.settings.AppManagementSettingsFragment",
+            R.xml.settings_about to "af.shizuku.manager.settings.AboutSettingsFragment",
+        )
 
     fun init(context: Context) {
         if (indexedItems != null) return
@@ -52,8 +52,8 @@ object SettingsSearchEngine {
                         val tagName = parser.name
                         if (tagName == "PreferenceCategory" ||
                             tagName == "af.shizuku.manager.settings.CollapsiblePreferenceCategory" ||
-                            tagName.endsWith("PreferenceCategory")) {
-
+                            tagName.endsWith("PreferenceCategory")
+                        ) {
                             val catTitleResId = parser.getAttributeResourceValue(namespace, "title", 0)
                             currentCategory = if (catTitleResId != 0) context.getString(catTitleResId) else parser.getAttributeValue(namespace, "title")
                         } else if (tagName != "PreferenceScreen") {
@@ -81,7 +81,10 @@ object SettingsSearchEngine {
         indexedItems = items
     }
 
-    fun search(context: Context, query: String): List<SettingItem> {
+    fun search(
+        context: Context,
+        query: String,
+    ): List<SettingItem> {
         init(context)
         val items = indexedItems ?: return emptyList()
         if (query.isBlank()) return emptyList()
@@ -91,8 +94,8 @@ object SettingsSearchEngine {
         return items.filter { item ->
             if (!devUnlocked && item.fragmentClass == "af.shizuku.manager.settings.DeveloperOptionsFragment") return@filter false
             item.title.lowercase().contains(q) ||
-            (item.summary != null && item.summary.lowercase().contains(q)) ||
-            (item.category != null && item.category.lowercase().contains(q))
+                (item.summary != null && item.summary.lowercase().contains(q)) ||
+                (item.category != null && item.category.lowercase().contains(q))
         }
     }
 }

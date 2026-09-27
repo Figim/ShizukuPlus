@@ -1198,6 +1198,9 @@
     <string name="changelog_view_on_github">在 GitHub 上查看</string>
     <string name="changelog_fallback_message">无法加载本次更新的发布说明（你可能处于离线状态）。点按「在 GitHub 上查看」了解变更内容。</string>
     <string name="changelog_earlier_releases">更早的版本</string>
+    <string name="changelog_version_history">版本历史</string>
+    <string name="changelog_all_new_updates">所有新更新 (%d)</string>
+    <string name="changelog_tag_new">新</string>
 
     <string name="aicore_plus_label">AICore+ 自动化桥接</string>
     <string name="aicore_plus_description">Shizuku+ AICore+ 功能所需。为 AI 驱动的自动化提供特权 UI 层级转储与物理输入模拟能力，不会读取密码或个人数据。</string>

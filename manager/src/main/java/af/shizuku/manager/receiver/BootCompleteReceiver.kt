@@ -1,5 +1,8 @@
 package af.shizuku.manager.receiver
 
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.database.RootCompatHelper
+import af.shizuku.manager.service.WatchdogService
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,21 +10,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.database.RootCompatHelper
-import af.shizuku.manager.service.WatchdogService
 
 class BootCompleteReceiver : BroadcastReceiver() {
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         val action = intent.action ?: return
-        val handled = when (action) {
-            Intent.ACTION_BOOT_COMPLETED,
-            Intent.ACTION_LOCKED_BOOT_COMPLETED,
-            Intent.ACTION_MY_PACKAGE_REPLACED,
-            "android.intent.action.QUICKBOOT_POWERON",
-            "com.htc.intent.action.QUICKBOOT_POWERON" -> true
-            else -> false
-        }
+        val handled =
+            when (action) {
+                Intent.ACTION_BOOT_COMPLETED,
+                Intent.ACTION_LOCKED_BOOT_COMPLETED,
+                Intent.ACTION_MY_PACKAGE_REPLACED,
+                "android.intent.action.QUICKBOOT_POWERON",
+                "com.htc.intent.action.QUICKBOOT_POWERON",
+                -> true
+                else -> false
+            }
         if (!handled) return
 
         Timber.tag("BootCompleteReceiver").i("Triggered by: $action")
@@ -51,7 +56,8 @@ class BootCompleteReceiver : BroadcastReceiver() {
         // Restart AutomationService if any automation rules were configured before the reboot.
         if (ShizukuSettings.hasAnyAutomationRulesConfigured()) {
             try {
-                af.shizuku.manager.automation.AutomationService.startIfNeeded(context)
+                af.shizuku.manager.automation.AutomationService
+                    .startIfNeeded(context)
             } catch (e: Exception) {
                 Timber.tag("BootCompleteReceiver").w(e, "AutomationService start skipped")
             }

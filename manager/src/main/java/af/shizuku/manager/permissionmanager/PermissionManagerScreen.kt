@@ -1,5 +1,6 @@
 package af.shizuku.manager.permissionmanager
 
+import af.shizuku.manager.R
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
@@ -26,36 +27,36 @@ import androidx.core.graphics.drawable.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.R
 import rikka.shizuku.ShizukuPlusAPI
 import timber.log.Timber
 
 // Shell-grantable privileged permissions commonly needed by backup/root apps.
 // These are PROTECTION_SIGNATURE but grantable to any package by uid=2000 (shell).
-private val PRIVILEGED_PERMISSIONS = setOf(
-    "android.permission.READ_LOGS",
-    "android.permission.DUMP",
-    "android.permission.PACKAGE_USAGE_STATS",
-    "android.permission.WRITE_SECURE_SETTINGS",
-    "android.permission.READ_FRAME_BUFFER",
-    "android.permission.INTERACT_ACROSS_USERS",
-    "android.permission.INTERACT_ACROSS_USERS_FULL",
-    "android.permission.MANAGE_USB",
-    "android.permission.BATTERY_STATS",
-    "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
-    "android.permission.INSTALL_PACKAGES",
-    "android.permission.DELETE_PACKAGES",
-    "android.permission.CHANGE_NETWORK_STATE",
-    "android.permission.CHANGE_WIFI_STATE",
-    "android.permission.ACCESS_WIFI_STATE",
-    "android.permission.MANAGE_NETWORK_POLICY",
-    "android.permission.CONNECTIVITY_INTERNAL",
-    "android.permission.OBSERVE_APP_USAGE",
-    "android.permission.GET_APP_OPS_STATS",
-    "android.permission.MANAGE_APP_OPS_MODES",
-    "android.permission.CHANGE_COMPONENT_ENABLED_STATE",
-    "android.permission.FORCE_STOP_PACKAGES",
-)
+private val PRIVILEGED_PERMISSIONS =
+    setOf(
+        "android.permission.READ_LOGS",
+        "android.permission.DUMP",
+        "android.permission.PACKAGE_USAGE_STATS",
+        "android.permission.WRITE_SECURE_SETTINGS",
+        "android.permission.READ_FRAME_BUFFER",
+        "android.permission.INTERACT_ACROSS_USERS",
+        "android.permission.INTERACT_ACROSS_USERS_FULL",
+        "android.permission.MANAGE_USB",
+        "android.permission.BATTERY_STATS",
+        "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
+        "android.permission.INSTALL_PACKAGES",
+        "android.permission.DELETE_PACKAGES",
+        "android.permission.CHANGE_NETWORK_STATE",
+        "android.permission.CHANGE_WIFI_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.MANAGE_NETWORK_POLICY",
+        "android.permission.CONNECTIVITY_INTERNAL",
+        "android.permission.OBSERVE_APP_USAGE",
+        "android.permission.GET_APP_OPS_STATS",
+        "android.permission.MANAGE_APP_OPS_MODES",
+        "android.permission.CHANGE_COMPONENT_ENABLED_STATE",
+        "android.permission.FORCE_STOP_PACKAGES",
+    )
 
 data class AppItem(
     val packageName: String,
@@ -93,22 +94,33 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             val packages = pm.getInstalledPackages(0)
-            val list = packages.mapNotNull { pi ->
-                val label = try { pm.getApplicationLabel(pi.applicationInfo ?: return@mapNotNull null).toString() } catch (_: Exception) { pi.packageName }
-                AppItem(pi.packageName, label)
-            }.sortedBy { it.label.lowercase() }
+            val list =
+                packages
+                    .mapNotNull { pi ->
+                        val label =
+                            try {
+                                pm.getApplicationLabel(pi.applicationInfo ?: return@mapNotNull null).toString()
+                            } catch (_: Exception) {
+                                pi.packageName
+                            }
+                        AppItem(pi.packageName, label)
+                    }.sortedBy { it.label.lowercase() }
             allApps = list
             isLoadingApps = false
         }
     }
 
-    val filteredApps = remember(allApps, query) {
-        val q = query.trim().lowercase()
-        if (q.isEmpty()) allApps
-        else allApps.filter {
-            it.label.lowercase().contains(q) || it.packageName.lowercase().contains(q)
+    val filteredApps =
+        remember(allApps, query) {
+            val q = query.trim().lowercase()
+            if (q.isEmpty()) {
+                allApps
+            } else {
+                allApps.filter {
+                    it.label.lowercase().contains(q) || it.packageName.lowercase().contains(q)
+                }
+            }
         }
-    }
 
     Scaffold(
         topBar = {
@@ -131,12 +143,12 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                     }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back_24),
-                            contentDescription = stringResource(R.string.nav_back)
+                            contentDescription = stringResource(R.string.nav_back),
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         if (selectedApp != null) {
             // ── Permission detail view ────────────────────────────────────────
@@ -149,23 +161,25 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                     val app = selectedApp
                     if (app != null) {
                         scope.launch(Dispatchers.IO) {
-                            val ok = if (grant) {
-                                ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
-                            } else {
-                                ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
-                            }
+                            val ok =
+                                if (grant) {
+                                    ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
+                                } else {
+                                    ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
+                                }
                             if (ok) {
                                 withContext(Dispatchers.Main) {
-                                    appPerms = appPerms.map {
-                                        if (it.name == perm.name) it.copy(isGranted = grant) else it
-                                    }
+                                    appPerms =
+                                        appPerms.map {
+                                            if (it.name == perm.name) it.copy(isGranted = grant) else it
+                                        }
                                 }
                             } else {
                                 Timber.w("PermissionManager: toggle failed for ${perm.name}")
                             }
                         }
                     }
-                }
+                },
             )
         } else {
             // ── App list view ─────────────────────────────────────────────────
@@ -186,7 +200,7 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                             isLoadingPerms = false
                         }
                     }
-                }
+                },
             )
         }
     }
@@ -202,20 +216,22 @@ private fun AppListPane(
     onAppClick: (AppItem) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
     ) {
         OutlinedTextField(
             value = query,
             onValueChange = onQueryChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
             placeholder = { Text(stringResource(R.string.permission_manager_search_hint)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {})
+            keyboardActions = KeyboardActions(onSearch = {}),
         )
 
         if (isLoading) {
@@ -227,7 +243,7 @@ private fun AppListPane(
                 Text(
                     stringResource(R.string.permission_manager_no_apps),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         } else {
@@ -242,34 +258,39 @@ private fun AppListPane(
 }
 
 @Composable
-private fun AppRow(app: AppItem, onClick: () -> Unit) {
+private fun AppRow(
+    app: AppItem,
+    onClick: () -> Unit,
+) {
     val context = LocalContext.current
     val pm = context.packageManager
-    val iconBitmap = remember(app.packageName) {
-        runCatching {
-            pm.getApplicationIcon(app.packageName).toBitmap().asImageBitmap()
-        }.getOrNull()
-    }
+    val iconBitmap =
+        remember(app.packageName) {
+            runCatching {
+                pm.getApplicationIcon(app.packageName).toBitmap().asImageBitmap()
+            }.getOrNull()
+        }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (iconBitmap != null) {
             Image(
                 bitmap = iconBitmap,
                 contentDescription = null,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(40.dp),
             )
         } else {
             Icon(
                 painter = painterResource(R.drawable.ic_default_app_icon),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
-                tint = MaterialTheme.colorScheme.outline
+                tint = MaterialTheme.colorScheme.outline,
             )
         }
         Spacer(Modifier.width(16.dp))
@@ -278,21 +299,21 @@ private fun AppRow(app: AppItem, onClick: () -> Unit) {
                 text = app.label,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = app.packageName,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
         Icon(
             painter = painterResource(R.drawable.ic_outline_open_in_new_24),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.outline,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
         )
     }
 }
@@ -313,7 +334,7 @@ private fun PermissionDetailPane(
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             CircularProgressIndicator()
         }
@@ -325,21 +346,22 @@ private fun PermissionDetailPane(
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 stringResource(R.string.permission_manager_no_permissions),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         return
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
     ) {
         if (privileged.isNotEmpty()) {
             item {
@@ -347,15 +369,16 @@ private fun PermissionDetailPane(
             }
             item {
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
                 ) {
                     Text(
                         text = stringResource(R.string.permission_manager_privileged_note),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(12.dp),
                     )
                 }
             }
@@ -385,40 +408,47 @@ private fun PermSectionHeader(title: String) {
         text = title,
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, top = 20.dp, bottom = 4.dp, end = 16.dp)
+        modifier = Modifier.padding(start = 16.dp, top = 20.dp, bottom = 4.dp, end = 16.dp),
     )
 }
 
 @Composable
-private fun PermToggleRow(perm: PermItem, onToggle: (PermItem, Boolean) -> Unit) {
+private fun PermToggleRow(
+    perm: PermItem,
+    onToggle: (PermItem, Boolean) -> Unit,
+) {
     // Row handles the click; Switch.onCheckedChange=null avoids double-firing.
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onToggle(perm, !perm.isGranted) }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onToggle(perm, !perm.isGranted) }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = perm.shortName,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = perm.name,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
         Switch(checked = perm.isGranted, onCheckedChange = null)
     }
 }
 
-private fun loadPermissions(pm: PackageManager, packageName: String): List<PermItem> {
+private fun loadPermissions(
+    pm: PackageManager,
+    packageName: String,
+): List<PermItem> {
     return try {
         val info: PackageInfo = pm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
         val declared = info.requestedPermissions ?: return emptyList()
@@ -428,13 +458,14 @@ private fun loadPermissions(pm: PackageManager, packageName: String): List<PermI
             val name = declared[i] ?: continue
             val isGranted = flags.getOrElse(i) { 0 } and PackageInfo.REQUESTED_PERMISSION_GRANTED != 0
             val isPriv = name in PRIVILEGED_PERMISSIONS
-            val protection = try {
-                val pi = pm.getPermissionInfo(name, 0)
-                pi.protection
-            } catch (_: Exception) {
-                // Unknown permission — include if it's in our privileged set, otherwise skip
-                if (isPriv) PermissionInfo.PROTECTION_SIGNATURE else continue
-            }
+            val protection =
+                try {
+                    val pi = pm.getPermissionInfo(name, 0)
+                    pi.protection
+                } catch (_: Exception) {
+                    // Unknown permission — include if it's in our privileged set, otherwise skip
+                    if (isPriv) PermissionInfo.PROTECTION_SIGNATURE else continue
+                }
             when {
                 isPriv -> result.add(PermItem(name, name.substringAfterLast('.'), isGranted, isPrivileged = true))
                 protection == PermissionInfo.PROTECTION_DANGEROUS ->

@@ -3,7 +3,10 @@ package af.shizuku.manager.ktx
 import android.content.ComponentName
 import android.content.pm.PackageManager
 
-fun PackageManager.setComponentEnabled(componentName: ComponentName, enabled: Boolean) {
+fun PackageManager.setComponentEnabled(
+    componentName: ComponentName,
+    enabled: Boolean,
+) {
     val oldState = getComponentEnabledSetting(componentName)
     val newState = if (enabled) PackageManager.COMPONENT_ENABLED_STATE_ENABLED else PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     if (newState != oldState) {
@@ -11,4 +14,3 @@ fun PackageManager.setComponentEnabled(componentName: ComponentName, enabled: Bo
         setComponentEnabledSetting(componentName, newState, flags)
     }
 }
-

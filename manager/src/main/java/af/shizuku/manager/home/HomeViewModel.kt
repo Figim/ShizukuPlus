@@ -1,20 +1,5 @@
 package af.shizuku.manager.home
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Parcel
-import android.os.Build
-import androidx.annotation.Keep
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.Observer
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
-import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.ViewModelContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.Manifest
 import af.shizuku.manager.ShizukuApplication
@@ -26,14 +11,28 @@ import af.shizuku.manager.utils.Logger.LOGGER
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.ShizukuSystemApis
 import af.shizuku.manager.utils.StockShizukuCompat
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Parcel
+import androidx.annotation.Keep
+import androidx.annotation.RequiresApi
+import androidx.lifecycle.Observer
+import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.Loading
+import com.airbnb.mvrx.MavericksViewModel
+import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.ViewModelContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import rikka.shizuku.server.ServerConstants
 
 @Keep
 class HomeViewModel(
-    initialState: HomeState
+    initialState: HomeState,
 ) : MavericksViewModel<HomeState>(initialState) {
-
     // Fetched lazily from application context; avoids a second constructor param that
     // triggers a bytecode register-count VerifyError in release (R8) builds.
     private val appContext: Context = ShizukuApplication.appContext
@@ -49,15 +48,18 @@ class HomeViewModel(
 
     @RequiresApi(Build.VERSION_CODES.R)
     private fun startAdbPortDiscovery() {
-        val observer = Observer<Int> { port ->
-            setState { copy(discoveredAdbPort = port) }
-        }
+        val observer =
+            Observer<Int> { port ->
+                setState { copy(discoveredAdbPort = port) }
+            }
         adbMdns = AdbMdns(appContext, AdbMdns.TLS_CONNECT, observer).also { it.start() }
 
         // Probe loopback ports (5555, lastPort) in the background so 5G/cellular sessions
         // without Wi-Fi are immediately marked ready without waiting for mDNS discovery.
         viewModelScope.launch(Dispatchers.IO) {
-            val loopbackPort = af.shizuku.manager.adb.AdbPortProber.findActiveLoopbackPort(appContext)
+            val loopbackPort =
+                af.shizuku.manager.adb.AdbPortProber
+                    .findActiveLoopbackPort(appContext)
             if (loopbackPort in 1..65535) {
                 setState { copy(discoveredAdbPort = loopbackPort) }
             }
@@ -77,12 +79,14 @@ class HomeViewModel(
                 val companionInstalled = StockShizukuCompat.isStockShizukuInstalled(appContext)
                 val compatHubInstalled = StockShizukuCompat.isCompatAppInstalled(appContext)
                 val isOriginalRunning = StockShizukuCompat.isOriginalRunning()
-                setState { copy(
-                    serviceStatus = Success(status),
-                    companionInstalled = companionInstalled,
-                    compatHubInstalled = compatHubInstalled,
-                    isOriginalShizukuRunning = isOriginalRunning
-                ) }
+                setState {
+                    copy(
+                        serviceStatus = Success(status),
+                        companionInstalled = companionInstalled,
+                        compatHubInstalled = compatHubInstalled,
+                        isOriginalShizukuRunning = isOriginalRunning,
+                    )
+                }
             } catch (e: Exception) {
                 LOGGER.w(e, "Failed to load Shizuku status")
                 setState { copy(serviceStatus = Fail(e)) }
@@ -105,25 +109,29 @@ class HomeViewModel(
         // render "unknown".
         val cachedPatch = Shizuku.getServerPatchVersion()
         val patchVersion = if (cachedPatch >= 0) cachedPatch else queryServerPatchVersion()
-        val seContext = if (apiVersion >= 6) {
-            try {
-                Shizuku.getSELinuxContext()
-            } catch (tr: Throwable) {
-                LOGGER.w(tr, "getSELinuxContext")
+        val seContext =
+            if (apiVersion >= 6) {
+                try {
+                    Shizuku.getSELinuxContext()
+                } catch (tr: Throwable) {
+                    LOGGER.w(tr, "getSELinuxContext")
+                    null
+                }
+            } else {
                 null
             }
-        } else null
 
         // checkRemotePermission enforceCallingPermission-gates on the caller being an attached
         // client; right after start the manager may not be attached yet, and an unguarded throw
         // here aborts the whole status load (reload() -> Fail -> shown as "not running") even though
         // pingBinder already confirmed the service is up. Treat a failure as "not granted".
-        val permissionTest = try {
-            Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
-        } catch (e: Throwable) {
-            LOGGER.w(e, "checkRemotePermission")
-            false
-        }
+        val permissionTest =
+            try {
+                Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
+            } catch (e: Throwable) {
+                LOGGER.w(e, "checkRemotePermission")
+                false
+            }
 
         try {
             ShizukuSystemApis.checkPermission(Manifest.permission.API_V23, BuildConfig.APPLICATION_ID, 0)
@@ -224,8 +232,9 @@ class HomeViewModel(
 
     @Keep
     companion object : com.airbnb.mvrx.MavericksViewModelFactory<HomeViewModel, HomeState> {
-        override fun create(viewModelContext: com.airbnb.mvrx.ViewModelContext, state: HomeState): HomeViewModel {
-            return HomeViewModel(state)
-        }
+        override fun create(
+            viewModelContext: com.airbnb.mvrx.ViewModelContext,
+            state: HomeState,
+        ): HomeViewModel = HomeViewModel(state)
     }
 }

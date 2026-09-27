@@ -1,36 +1,37 @@
 package af.shizuku.manager.settings
 
-import android.content.Intent
-import android.content.SharedPreferences
-import android.os.Build
-import android.os.Bundle
-import android.text.InputType
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
-import androidx.preference.TwoStatePreference
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.app.SnackbarHelper
-import af.shizuku.manager.service.ShizukuLiveService
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.manager.utils.ShizukuStateMachine
-import af.shizuku.manager.utils.DeviceOptimizer
 import af.shizuku.manager.home.ChangelogDialogFragment
-import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import android.net.Uri
-import androidx.preference.ListPreference
-import af.shizuku.manager.BuildConfig
+import af.shizuku.manager.service.ShizukuLiveService
 import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.update.UpdateManager
+import af.shizuku.manager.utils.DeviceOptimizer
+import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.ShizukuStateMachine
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.text.InputType
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.TwoStatePreference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 
-class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
-
+class BehaviorSettingsFragment :
+    BaseSettingsFragment(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
     companion object {
         private const val TAG = "BehaviorSettingsFragment"
         private const val KEY_AUTO_UPDATE = "auto_update_enabled"
@@ -51,6 +52,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
     private lateinit var tcpPortPreference: EditTextPreference
     private lateinit var networkCategory: CollapsiblePreferenceCategory
     private lateinit var startupCategory: CollapsiblePreferenceCategory
+
     // True when tcp_mode is logically available on this device (TLS-capable or TV).
     // Used to gate syncTcpPortVisibility() so root-mode hides are not undone.
     private var tcpModeAvailable = false
@@ -62,7 +64,10 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
         }
     }
 
-    override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         setPreferencesFromResource(R.xml.settings_behavior, rootKey)
         val context = requireContext()
 
@@ -91,23 +96,23 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
                         }
                     }
                     // https://r.android.com/2128832
-                        if (newValue &&
-                            !EnvironmentUtils.isTelevision() &&
-                            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                        ) {
-                            showDialog(
-                                MaterialAlertDialogBuilder(context)
-                                    .setTitle(android.R.string.dialog_alert_title)
-                                    .setMessage(R.string.settings_start_on_boot_bug)
-                                    .setPositiveButton(android.R.string.ok) { _, _ -> doToggle() }
-                                    .setNegativeButton(android.R.string.cancel) { _, _ -> isChecked = !newValue }
-                            )
-                        } else {
-                            doToggle()
-                        }
+                    if (newValue &&
+                        !EnvironmentUtils.isTelevision() &&
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    ) {
+                        showDialog(
+                            MaterialAlertDialogBuilder(context)
+                                .setTitle(android.R.string.dialog_alert_title)
+                                .setMessage(R.string.settings_start_on_boot_bug)
+                                .setPositiveButton(android.R.string.ok) { _, _ -> doToggle() }
+                                .setNegativeButton(android.R.string.cancel) { _, _ -> isChecked = !newValue },
+                        )
+                    } else {
+                        doToggle()
                     }
-                    false
                 }
+                false
+            }
         }
 
         watchdogPreference.apply {
@@ -187,10 +192,11 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
                 editText.inputType = InputType.TYPE_CLASS_NUMBER
                 editText.setSelection(editText.text.length)
             }
-            summaryProvider = Preference.SummaryProvider<EditTextPreference> { pref ->
-                val text = pref.text
-                if (text.isNullOrEmpty()) context.getString(R.string.settings_tcp_port_default) else text
-            }
+            summaryProvider =
+                Preference.SummaryProvider<EditTextPreference> { pref ->
+                    val text = pref.text
+                    if (text.isNullOrEmpty()) context.getString(R.string.settings_tcp_port_default) else text
+                }
             setOnPreferenceChangeListener { _, newValue ->
                 val port = (newValue as? String)?.toIntOrNull()
                 if (port == null || port in 1..65535) {
@@ -225,8 +231,11 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
             val ctx = requireContext()
             val svcIntent = Intent(ctx, ShizukuLiveService::class.java)
             if (enable) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ctx.startForegroundService(svcIntent)
-                else ctx.startService(svcIntent)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ctx.startForegroundService(svcIntent)
+                } else {
+                    ctx.startService(svcIntent)
+                }
             } else {
                 ctx.stopService(svcIntent)
             }
@@ -252,8 +261,9 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
      * Mode is refreshed on every onResume() so it updates if the user switches modes.
      */
     private fun syncModeVisibility() {
-        val isRootMode = EnvironmentUtils.isRooted() ||
-            ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
+        val isRootMode =
+            EnvironmentUtils.isRooted() ||
+                ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
         val isAdbMode = !isRootMode
 
         // Route through setChildAvailable so the category's expand/collapse cycle
@@ -273,8 +283,9 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
     }
 
     private fun syncTcpPortVisibility() {
-        val isRootMode = EnvironmentUtils.isRooted() ||
-            ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
+        val isRootMode =
+            EnvironmentUtils.isRooted() ||
+                ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
         if (tcpModeAvailable && !isRootMode) {
             networkCategory.setChildAvailable(KEY_TCP_PORT, tcpModePreference.isChecked)
         }
@@ -293,7 +304,10 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
         super.onPause()
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences,
+        key: String?,
+    ) {
         if (key == KEY_WATCHDOG) watchdogPreference.isChecked = ShizukuSettings.isWatchdogRunning()
     }
 
@@ -339,8 +353,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
                     .setPositiveButton(R.string.update_channel_dev) { _, _ ->
                         ShizukuSettings.setUpdateChannel("dev")
                         pref.value = "dev"
-                    }
-                    .setNegativeButton(android.R.string.cancel, null)
+                    }.setNegativeButton(android.R.string.cancel, null)
                     .show()
                 false
             } else {
@@ -360,24 +373,28 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
     private fun updateLastCheckSummary() {
         val pref = findPreference<Preference>(KEY_LAST_CHECK) ?: return
         val lastCheck = ShizukuSettings.getLastUpdateCheckTime()
-        pref.summary = when {
-            ShizukuSettings.wasLastUpdateCheckFailed() && lastCheck > 0 -> {
-                val date = UpdateChecker.formatPublishedDate(
-                    java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                        .format(java.util.Date(lastCheck))
-                )
-                "$date · ${getString(R.string.update_last_check_failed)}"
+        pref.summary =
+            when {
+                ShizukuSettings.wasLastUpdateCheckFailed() && lastCheck > 0 -> {
+                    val date =
+                        UpdateChecker.formatPublishedDate(
+                            java.text
+                                .SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
+                                .format(java.util.Date(lastCheck)),
+                        )
+                    "$date · ${getString(R.string.update_last_check_failed)}"
+                }
+                ShizukuSettings.wasLastUpdateCheckFailed() ->
+                    getString(R.string.update_last_check_failed)
+                lastCheck > 0 ->
+                    UpdateChecker.formatPublishedDate(
+                        java.text
+                            .SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
+                            .format(java.util.Date(lastCheck)),
+                    )
+                else ->
+                    getString(R.string.update_never_checked)
             }
-            ShizukuSettings.wasLastUpdateCheckFailed() ->
-                getString(R.string.update_last_check_failed)
-            lastCheck > 0 ->
-                UpdateChecker.formatPublishedDate(
-                    java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                        .format(java.util.Date(lastCheck))
-                )
-            else ->
-                getString(R.string.update_never_checked)
-        }
     }
 
     private fun checkForUpdate() {
@@ -425,24 +442,27 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
     private fun showUpdateAvailableDialog(info: UpdateChecker.UpdateInfo) {
         val context = context ?: return
         val devBadge = if (info.isPrerelease) " ⚠ Dev" else ""
-        val builder = MaterialAlertDialogBuilder(context)
-            .setTitle(getString(R.string.update_available_title) + devBadge)
-            .setNegativeButton(R.string.update_later, null)
-            .setNeutralButton(R.string.update_release_notes) { _, _ ->
-                val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setNeutralButton
-                activity.lifecycleScope.launch {
-                    val releases = try {
-                        UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 15)
-                    } catch (e: Exception) {
-                        Timber.w(e, "Failed to fetch releases for in-app changelog")
-                        emptyList()
-                    }
-                    if (isAdded && !isDetached) {
-                        ChangelogDialogFragment.newInstance(releases, info.versionName)
-                            .show(activity.supportFragmentManager, ChangelogDialogFragment.TAG)
+        val builder =
+            MaterialAlertDialogBuilder(context)
+                .setTitle(getString(R.string.update_available_title) + devBadge)
+                .setNegativeButton(R.string.update_later, null)
+                .setNeutralButton(R.string.update_release_notes) { _, _ ->
+                    val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setNeutralButton
+                    activity.lifecycleScope.launch {
+                        val releases =
+                            try {
+                                UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 25)
+                            } catch (e: Exception) {
+                                Timber.w(e, "Failed to fetch releases for in-app changelog")
+                                emptyList()
+                            }
+                        if (isAdded && !isDetached) {
+                            ChangelogDialogFragment
+                                .newInstance(releases, info.versionName)
+                                .show(activity.supportFragmentManager, ChangelogDialogFragment.TAG)
+                        }
                     }
                 }
-            }
 
         if (info.requiresManualDownload) {
             builder
@@ -481,8 +501,9 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
     private fun showPermissionRequiredDialog() {
         val context = context ?: return
         try {
-            val intent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                .setData(Uri.parse("package:${context.packageName}"))
+            val intent =
+                Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                    .setData(Uri.parse("package:${context.packageName}"))
             startActivity(intent)
         } catch (_: Exception) {
             MaterialAlertDialogBuilder(context)
@@ -497,7 +518,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
         try {
             startActivity(
                 Intent(Intent.ACTION_VIEW, Uri.parse(RELEASES_URL))
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             )
         } catch (e: android.content.ActivityNotFoundException) {
             Timber.w(e, "No activity found to handle releases URL")

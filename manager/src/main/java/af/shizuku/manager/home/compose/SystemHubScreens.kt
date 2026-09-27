@@ -1,5 +1,9 @@
 package af.shizuku.manager.home.compose
 
+import af.shizuku.manager.R
+import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.database.ActivityLogRecord
+import af.shizuku.manager.utils.AppIconCache
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,10 +24,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import af.shizuku.manager.R
-import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.database.ActivityLogRecord
-import af.shizuku.manager.utils.AppIconCache
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import java.util.*
@@ -41,7 +41,9 @@ fun ServerMetricsScreen() {
             try {
                 if (Shizuku.pingBinder()) {
                     val binder = Shizuku.getBinder()
-                    val shizukuService = moe.shizuku.server.IShizukuService.Stub.asInterface(binder)
+                    val shizukuService =
+                        moe.shizuku.server.IShizukuService.Stub
+                            .asInterface(binder)
                     val ai = shizukuService.aiCorePlus
                     if (ai == null) {
                         // Null when connected to a stock/mismatched server that doesn't implement
@@ -56,24 +58,34 @@ fun ServerMetricsScreen() {
                     val minutes = (uptimeMs / (1000 * 60)) % 60
                     val hours = (uptimeMs / (1000 * 60 * 60)) % 24
                     val days = (uptimeMs / (1000 * 60 * 60 * 24))
-                    uptimeText = if (days > 0) String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
-                    else String.format("%02d:%02d:%02d", hours, minutes, seconds)
-                    
+                    uptimeText =
+                        if (days > 0) {
+                            String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+                        } else {
+                            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+                        }
+
                     clientCountText = context.getString(R.string.server_clients_connected, stats.getInt("client_count"))
-                    
+
                     val maxRaw = stats.getLong("mem_max")
                     val total = stats.getLong("mem_total")
                     val free = stats.getLong("mem_free")
                     val used = (total - free).coerceAtLeast(0L)
                     val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
-                    
+
                     memoryProgress = if (max > 0) (used.toFloat() / max.toFloat()).coerceIn(0f, 1f) else 0f
-                    
+
                     val formatSize = { bytes: Long ->
                         val kb = bytes / 1024
                         val mb = kb / 1024
                         val gb = mb / 1024
-                        if (gb > 0) "$gb GB" else if (mb > 0) "$mb MB" else "$kb KB"
+                        if (gb > 0) {
+                            "$gb GB"
+                        } else if (mb > 0) {
+                            "$mb MB"
+                        } else {
+                            "$kb KB"
+                        }
                     }
                     val maxStr = if (maxRaw == Long.MAX_VALUE) context.getString(R.string.server_memory_uncapped) else formatSize(max)
                     memoryDetails = "${formatSize(used)} / $maxStr (Max Allowed)"
@@ -85,22 +97,25 @@ fun ServerMetricsScreen() {
         }
     }
 
-    val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
+    val isOneHanded =
+        af.shizuku.manager.ShizukuSettings
+            .isOneHandedModeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val oneHandedTop = if (isOneHanded) (screenHeightDp * 0.16f).dp else 0.dp
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(top = oneHandedTop),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(top = oneHandedTop),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         MetricCard(title = stringResource(R.string.server_uptime), value = uptimeText)
         MetricCard(title = stringResource(R.string.active_connections), value = clientCountText)
         Card(
             shape = RoundedCornerShape(24.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(stringResource(R.string.server_memory_usage), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -119,10 +134,13 @@ fun ServerMetricsScreen() {
 }
 
 @Composable
-fun MetricCard(title: String, value: String) {
+fun MetricCard(
+    title: String,
+    value: String,
+) {
     Card(
         shape = RoundedCornerShape(24.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -137,19 +155,23 @@ fun ActivityLogScreen() {
     val logs by ActivityLogManager.logs.collectAsState(initial = emptyList())
     // Include the date, not just the time - logs persist across days (matches the RecyclerView
     // implementation of this same screen in ActivityLogActivity.kt).
-    val dateFormat = remember {
-        java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.MEDIUM, Locale.getDefault())
-    }
-    val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
+    val dateFormat =
+        remember {
+            java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.MEDIUM, Locale.getDefault())
+        }
+    val isOneHanded =
+        af.shizuku.manager.ShizukuSettings
+            .isOneHandedModeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val oneHandedTop = if (isOneHanded) (screenHeightDp * 0.16f).dp else 0.dp
 
     if (logs.isEmpty()) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = oneHandedTop),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = oneHandedTop),
+            contentAlignment = Alignment.Center,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(painterResource(R.drawable.ic_empty_log_24), contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -161,7 +183,7 @@ fun ActivityLogScreen() {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp + oneHandedTop, bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(logs, key = { it.timestamp.toString() + it.packageName }) { record ->
                 ActivityLogRow(record, dateFormat)
@@ -171,7 +193,10 @@ fun ActivityLogScreen() {
 }
 
 @Composable
-private fun ActivityLogRow(record: ActivityLogRecord, dateFormat: java.text.DateFormat) {
+private fun ActivityLogRow(
+    record: ActivityLogRecord,
+    dateFormat: java.text.DateFormat,
+) {
     val context = LocalContext.current
     val density = LocalDensity.current
     var appName by remember(record.packageName) { mutableStateOf(record.appName.ifEmpty { record.packageName }) }
@@ -186,24 +211,31 @@ private fun ActivityLogRow(record: ActivityLogRecord, dateFormat: java.text.Date
     LaunchedEffect(record.packageName) {
         val pm = context.packageManager
         val sizePx = with(density) { 40.dp.roundToPx() }
-        val ai = withContext(Dispatchers.IO) {
-            try { pm.getApplicationInfo(record.packageName, 0) } catch (_: Exception) { null }
-        } ?: return@LaunchedEffect
+        val ai =
+            withContext(Dispatchers.IO) {
+                try {
+                    pm.getApplicationInfo(record.packageName, 0)
+                } catch (_: Exception) {
+                    null
+                }
+            } ?: return@LaunchedEffect
         appName = AppIconCache.getLabel(context, ai)
-        val bitmap = withContext(Dispatchers.IO) {
-            AppIconCache.getOrLoadBitmap(context, ai, ai.uid / 100000, sizePx)
-        }
+        val bitmap =
+            withContext(Dispatchers.IO) {
+                AppIconCache.getOrLoadBitmap(context, ai, ai.uid / 100000, sizePx)
+            }
         if (bitmap != null) iconBitmap = bitmap.asImageBitmap()
     }
 
     // mergeDescendants: without this, TalkBack stops on each child (icon/name/package/timestamp)
     // separately when swiping through a long log list - one stop per row instead of four.
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .semantics(mergeDescendants = true) {},
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .semantics(mergeDescendants = true) {},
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         val bitmap = iconBitmap
         if (bitmap != null) {

@@ -1,16 +1,15 @@
 package af.shizuku.manager
 
-import android.os.Bundle
-import androidx.core.os.bundleOf
 import af.shizuku.api.BinderContainer
 import af.shizuku.manager.utils.Logger.LOGGER
 import af.shizuku.manager.utils.ShizukuStateMachine
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuApiConstants.USER_SERVICE_ARG_TOKEN
 import rikka.shizuku.ShizukuProvider
 
 class ShizukuManagerProvider : ShizukuProvider() {
-
     companion object {
         private const val EXTRA_BINDER = "af.shizuku.plus.api.intent.extra.BINDER"
         private const val METHOD_SEND_USER_SERVICE = "sendUserService"
@@ -21,7 +20,11 @@ class ShizukuManagerProvider : ShizukuProvider() {
         return super.onCreate()
     }
 
-    override fun call(method: String, arg: String?, extras: Bundle?): Bundle? {
+    override fun call(
+        method: String,
+        arg: String?,
+        extras: Bundle?,
+    ): Bundle? {
         if (extras == null) return null
 
         return if (method == METHOD_SEND_USER_SERVICE) {

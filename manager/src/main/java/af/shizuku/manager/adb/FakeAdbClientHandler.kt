@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class FakeAdbClientHandler(
     private val context: Context,
-    private val socket: Socket
+    private val socket: Socket,
 ) {
     companion object {
         private const val TAG = "FakeAdbClient"
@@ -50,10 +50,11 @@ class FakeAdbClientHandler(
             msg = readMessage()
             if (msg.command == AdbProtocol.A_AUTH) {
                 if (msg.arg0 == AdbProtocol.ADB_AUTH_SIGNATURE) {
-                    val signature = msg.data ?: run {
-                        Timber.tag(TAG).w("AUTH_SIGNATURE with null data — ignoring")
-                        continue
-                    }
+                    val signature =
+                        msg.data ?: run {
+                            Timber.tag(TAG).w("AUTH_SIGNATURE with null data — ignoring")
+                            continue
+                        }
                     if (verifySignature(token, signature)) {
                         authenticated = true
                         writeMessage(AdbMessage(AdbProtocol.A_CNXN, AdbProtocol.A_VERSION, AdbProtocol.A_MAXDATA, "device::"))
@@ -63,10 +64,11 @@ class FakeAdbClientHandler(
                         writeMessage(AdbMessage(AdbProtocol.A_AUTH, AdbProtocol.ADB_AUTH_TOKEN, 0, token))
                     }
                 } else if (msg.arg0 == AdbProtocol.ADB_AUTH_RSAPUBLICKEY) {
-                    val rawKeyData = msg.data ?: run {
-                        Timber.tag(TAG).w("AUTH_RSAPUBLICKEY with null data — ignoring")
-                        continue
-                    }
+                    val rawKeyData =
+                        msg.data ?: run {
+                            Timber.tag(TAG).w("AUTH_RSAPUBLICKEY with null data — ignoring")
+                            continue
+                        }
                     val pubKeyStr = String(rawKeyData).trimEnd('\u0000')
                     Timber.tag(TAG).i("Received public key: $pubKeyStr")
 
@@ -138,7 +140,10 @@ class FakeAdbClientHandler(
         }
     }
 
-    private fun startShellProcess(remoteId: Int, cmd: String) {
+    private fun startShellProcess(
+        remoteId: Int,
+        cmd: String,
+    ) {
         val localId = localIdCounter.getAndIncrement()
         try {
             // Acknowledge the OPEN
@@ -147,8 +152,9 @@ class FakeAdbClientHandler(
             val commandArray = if (cmd.isEmpty()) arrayOf("sh") else arrayOf("sh", "-c", cmd)
             // newProcess() is a Java platform type: null on some chipsets (e.g. MT6833) when the
             // binder is alive but process spawn fails. Treat null the same as an exception.
-            val process = Shizuku.newProcess(commandArray, null, null)
-                ?: throw IllegalStateException("Shizuku.newProcess returned null")
+            val process =
+                Shizuku.newProcess(commandArray, null, null)
+                    ?: throw IllegalStateException("Shizuku.newProcess returned null")
             activeProcesses[localId] = process
 
             // Read stdout
@@ -164,7 +170,8 @@ class FakeAdbClientHandler(
                         // Actually, ADB requires us to wait for OKAY before sending another WRTE.
                         // We will just blast WRTEs for now (fake adb clients might not care).
                     }
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
 
                 // Read stderr (optional, usually multiplexed in ADB but we can just blast it)
                 try {
@@ -173,21 +180,24 @@ class FakeAdbClientHandler(
                         if (r <= 0) break
                         writeMessage(AdbMessage(AdbProtocol.A_WRTE, localId, remoteId, buf.copyOf(r)))
                     }
-                } catch (_: Exception) {}
+                } catch (_: Exception) {
+                }
 
                 process.waitFor()
                 process.destroy()
                 activeProcesses.remove(localId)
                 writeMessage(AdbMessage(AdbProtocol.A_CLSE, localId, remoteId, ByteArray(0)))
             }.also { it.isDaemon = true }.start()
-
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Failed to start shell process")
             writeMessage(AdbMessage(AdbProtocol.A_CLSE, localId, remoteId, ByteArray(0)))
         }
     }
 
-    private fun verifySignature(token: ByteArray, signature: ByteArray): Boolean {
+    private fun verifySignature(
+        token: ByteArray,
+        signature: ByteArray,
+    ): Boolean {
         val allKeys = prefs.getStringSet("keys", emptySet()) ?: emptySet()
         for (keyStr in allKeys) {
             try {
@@ -239,7 +249,10 @@ class FakeAdbClientHandler(
     private fun readMessage(): AdbMessage {
         val header = ByteArray(24)
         inputStream.readFully(header)
-        val buf = java.nio.ByteBuffer.wrap(header).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+        val buf =
+            java.nio.ByteBuffer
+                .wrap(header)
+                .order(java.nio.ByteOrder.LITTLE_ENDIAN)
         val command = buf.int
         val arg0 = buf.int
         val arg1 = buf.int

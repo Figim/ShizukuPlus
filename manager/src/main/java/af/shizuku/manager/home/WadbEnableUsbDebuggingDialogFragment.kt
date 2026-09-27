@@ -1,19 +1,19 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.R
+import af.shizuku.manager.utils.SettingsPage
 import android.app.Dialog
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import af.shizuku.manager.R
-import af.shizuku.manager.utils.SettingsPage
 
-class WadbEnableUsbDebuggingDialogFragment :DialogFragment() {
-
+class WadbEnableUsbDebuggingDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
-        val dialog = MaterialAlertDialogBuilder(context)
+        val dialog =
+            MaterialAlertDialogBuilder(context)
                 .setMessage(R.string.dialog_usb_debugging_not_enabled)
                 .setPositiveButton(R.string.development_settings, null)
                 .setNegativeButton(android.R.string.cancel, null)

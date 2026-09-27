@@ -1,5 +1,21 @@
 package af.shizuku.manager.home
 
+import af.shizuku.manager.Helps
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.adb.AdbPairingTutorialActivity
+import af.shizuku.manager.adb.AdbStarter
+import af.shizuku.manager.databinding.HomeItemContainerBinding
+import af.shizuku.manager.databinding.HomeStartWirelessAdbBinding
+import af.shizuku.manager.ktx.startWithSceneTransition
+import af.shizuku.manager.ktx.toHtml
+import af.shizuku.manager.receiver.NotifCancelReceiver
+import af.shizuku.manager.starter.StarterActivity
+import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.IconStyleHelper
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.Context
 import android.content.Intent
@@ -15,64 +31,53 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
-
-import kotlinx.coroutines.launch
+import com.airbnb.mvrx.withState
 import kotlinx.coroutines.CoroutineScope
-import af.shizuku.manager.Helps
-import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.R
-import af.shizuku.manager.adb.AdbPairingTutorialActivity
-import af.shizuku.manager.adb.AdbStarter
-import af.shizuku.manager.databinding.HomeItemContainerBinding
-import af.shizuku.manager.databinding.HomeStartWirelessAdbBinding
-import af.shizuku.manager.ktx.startWithSceneTransition
-import af.shizuku.manager.home.showAccessibilityDialog
-import af.shizuku.manager.ktx.toHtml
-import af.shizuku.manager.receiver.NotifCancelReceiver
-import af.shizuku.manager.starter.StarterActivity
-import af.shizuku.manager.utils.CustomTabsHelper
-import af.shizuku.manager.utils.EnvironmentUtils
-import af.shizuku.manager.utils.IconStyleHelper
-import af.shizuku.manager.utils.ShizukuStateMachine
+import kotlinx.coroutines.launch
 import rikka.core.content.asActivity
 import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
-import com.airbnb.mvrx.withState
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 
 class StartWirelessAdbViewHolder(
     private val binding: HomeStartWirelessAdbBinding,
     private val containerBinding: HomeItemContainerBinding,
     private val scope: CoroutineScope,
-    private val homeModel: HomeViewModel
+    private val homeModel: HomeViewModel,
 ) : BaseViewHolder<Any?>(containerBinding.root) {
-
     companion object {
-        fun creator(scope: CoroutineScope, homeModel: HomeViewModel): Creator<Any> {
-            return Creator { inflater: LayoutInflater, parent: ViewGroup? ->
+        fun creator(
+            scope: CoroutineScope,
+            homeModel: HomeViewModel,
+        ): Creator<Any> =
+            Creator { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
                 val inner = HomeStartWirelessAdbBinding.inflate(inflater, outer.cardContent, true)
                 StartWirelessAdbViewHolder(inner, outer, scope, homeModel)
             }
-        }
 
-        fun start(context: android.content.Context, scope: CoroutineScope, discoveredPort: Int = -1) {
+        fun start(
+            context: android.content.Context,
+            scope: CoroutineScope,
+            discoveredPort: Int = -1,
+        ) {
             val sysPropPort = EnvironmentUtils.getAdbTcpPort()
             val tcpPort = if (sysPropPort in 1..65535) sysPropPort else discoveredPort
             val lastPort = ShizukuSettings.getLastPort()
-            val validTcpPort = when {
-                tcpPort in 1..65535 -> tcpPort
-                lastPort in 1..65535 -> lastPort
-                else -> -1
-            }
+            val validTcpPort =
+                when {
+                    tcpPort in 1..65535 -> tcpPort
+                    lastPort in 1..65535 -> lastPort
+                    else -> -1
+                }
             // If the port is already known (TLS-discovered or TCP mode), start immediately.
             // This path is taken from the mDNS notification, where the port was already resolved.
             if (validTcpPort > 0) {
-                val intent = android.content.Intent(context, StarterActivity::class.java).apply {
-                    putExtra(StarterActivity.EXTRA_PORT, validTcpPort)
-                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
+                val intent =
+                    android.content.Intent(context, StarterActivity::class.java).apply {
+                        putExtra(StarterActivity.EXTRA_PORT, validTcpPort)
+                        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                 context.startActivity(intent)
             } else {
                 (context as? androidx.fragment.app.FragmentActivity)?.supportFragmentManager?.let { fm ->
@@ -86,7 +91,10 @@ class StartWirelessAdbViewHolder(
 
     init {
         containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener { HomeEditMode.enter(); true }
+        containerBinding.root.setOnLongClickListener {
+            HomeEditMode.enter()
+            true
+        }
         binding.button1.setOnClickListener { _: View ->
             if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
                 Toast.makeText(context, context.getString(R.string.toast_shizuku_already_starting), Toast.LENGTH_SHORT).show()
@@ -114,15 +122,25 @@ class StartWirelessAdbViewHolder(
 
                 // Fast active probe on loopback (127.0.0.1:5555, lastPort, etc.)
                 // This enables 1-tap start on 5G/cellular without Wi-Fi when TCP mode is active.
-                val activeLoopbackPort = af.shizuku.manager.adb.AdbPortProber.findActiveLoopbackPort(context)
+                val activeLoopbackPort =
+                    af.shizuku.manager.adb.AdbPortProber
+                        .findActiveLoopbackPort(context)
 
-                val livePort = when {
-                    activeLoopbackPort in 1..65535 -> activeLoopbackPort
-                    sysPropPort in 1..65535 -> sysPropPort
-                    discoveredPort in 1..65535 -> discoveredPort
-                    else -> -1
-                }
-                val validPort = if (livePort > 0) livePort else if (lastPort in 1..65535) lastPort else -1
+                val livePort =
+                    when {
+                        activeLoopbackPort in 1..65535 -> activeLoopbackPort
+                        sysPropPort in 1..65535 -> sysPropPort
+                        discoveredPort in 1..65535 -> discoveredPort
+                        else -> -1
+                    }
+                val validPort =
+                    if (livePort > 0) {
+                        livePort
+                    } else if (lastPort in 1..65535) {
+                        lastPort
+                    } else {
+                        -1
+                    }
 
                 if (validPort <= 0 && !EnvironmentUtils.isTlsSupported()) {
                     WadbNotEnabledDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
@@ -136,9 +154,10 @@ class StartWirelessAdbViewHolder(
                 } else if (livePort > 0) {
                     // Live port confirmed: loopback responsive, TCP active, or TLS already resolved by mDNS.
                     // Skip the intermediate dialog — go straight to the connect flow.
-                    val intent = Intent(context, StarterActivity::class.java).apply {
-                        putExtra(StarterActivity.EXTRA_PORT, livePort)
-                    }
+                    val intent =
+                        Intent(context, StarterActivity::class.java).apply {
+                            putExtra(StarterActivity.EXTRA_PORT, livePort)
+                        }
                     val activity = context.asActivity<android.app.Activity>()
                     if (activity != null) {
                         activity.startWithSceneTransition(intent, binding.icon, "icon_wireless_adb")
@@ -147,9 +166,10 @@ class StartWirelessAdbViewHolder(
                     }
                 } else if (tcpMode) {
                     // Only a stale cached port in TCP mode — try it directly (TCP port is stable).
-                    val intent = Intent(context, StarterActivity::class.java).apply {
-                        putExtra(StarterActivity.EXTRA_PORT, lastPort)
-                    }
+                    val intent =
+                        Intent(context, StarterActivity::class.java).apply {
+                            putExtra(StarterActivity.EXTRA_PORT, lastPort)
+                        }
                     context.startActivity(intent)
                 } else {
                     // Only a stale cached TLS port — open dialog so mDNS can rediscover the current port.
@@ -163,9 +183,11 @@ class StartWirelessAdbViewHolder(
                 if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartWirelessAdbViewHolder)
                 false
             }
-            setOnLongClickListener { HomeEditMode.enter(); true }
+            setOnLongClickListener {
+                HomeEditMode.enter()
+                true
+            }
         }
-
 
         if (EnvironmentUtils.isTlsSupported()) {
             binding.button3.setOnClickListener { v: View ->
@@ -175,11 +197,15 @@ class StartWirelessAdbViewHolder(
                 onPairClicked(v.context)
             }
             binding.text1.movementMethod = LinkMovementMethod.getInstance()
-            binding.text1.text = context.getString(R.string.home_wireless_adb_description)
-                .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            binding.text1.text =
+                context
+                    .getString(R.string.home_wireless_adb_description)
+                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         } else {
-            binding.text1.text = context.getString(R.string.home_wireless_adb_description_pre_11)
-                .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            binding.text1.text =
+                context
+                    .getString(R.string.home_wireless_adb_description_pre_11)
+                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
             binding.button2.isVisible = false
             binding.button3.isVisible = false
         }

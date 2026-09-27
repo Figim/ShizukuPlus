@@ -12,18 +12,18 @@ import timber.log.Timber
  * data directory via a root shell so no settings are lost.
  */
 object MigrationHelper {
-
     private const val TAG = "MigrationHelper"
 
     /** Returns true if root or Shizuku privileged shell is available. */
-    fun isRootAvailable(): Boolean = try {
-        Shell.getShell().isRoot || rikka.shizuku.Shizuku.pingBinder()
-    } catch (e: Exception) {
+    fun isRootAvailable(): Boolean =
         try {
-            rikka.shizuku.Shizuku.pingBinder()
-        } catch (_: Exception) {
-            Timber.tag(TAG).d(e, "Privileged shell check failed")
-            false
+            Shell.getShell().isRoot || rikka.shizuku.Shizuku.pingBinder()
+        } catch (e: Exception) {
+            try {
+                rikka.shizuku.Shizuku.pingBinder()
+            } catch (_: Exception) {
+                Timber.tag(TAG).d(e, "Privileged shell check failed")
+                false
+            }
         }
-    }
 }

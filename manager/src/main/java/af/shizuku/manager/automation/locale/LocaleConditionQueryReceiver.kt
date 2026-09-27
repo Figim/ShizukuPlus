@@ -1,11 +1,11 @@
 package af.shizuku.manager.automation.locale
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
 import af.shizuku.manager.automation.locale.LocalePluginContract.RESULT_CONDITION_SATISFIED
 import af.shizuku.manager.automation.locale.LocalePluginContract.RESULT_CONDITION_UNSATISFIED
 import af.shizuku.manager.utils.ShizukuStateMachine
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 
 /**
  * com.twofortyfouram.locale.intent.action.QUERY_CONDITION handler. Must answer synchronously via
@@ -13,12 +13,15 @@ import af.shizuku.manager.utils.ShizukuStateMachine
  * async work belongs here.
  */
 class LocaleConditionQueryReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
-        resultCode = if (ShizukuStateMachine.isRunning()) {
-            RESULT_CONDITION_SATISFIED
-        } else {
-            RESULT_CONDITION_UNSATISFIED
-        }
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
+        resultCode =
+            if (ShizukuStateMachine.isRunning()) {
+                RESULT_CONDITION_SATISFIED
+            } else {
+                RESULT_CONDITION_UNSATISFIED
+            }
     }
 }

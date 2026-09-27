@@ -1,16 +1,17 @@
 package af.shizuku.manager.home
 
-import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import rikka.core.content.asActivity
-import androidx.core.content.ContextCompat
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeServerStatusBinding
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.model.ServiceStatus
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import android.text.TextUtils
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import rikka.core.content.asActivity
 import rikka.html.text.HtmlCompat
 import rikka.html.text.toHtml
 import rikka.recyclerview.BaseViewHolder
@@ -18,19 +19,19 @@ import rikka.recyclerview.BaseViewHolder.Creator
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuApiConstants
 
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
-
-class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root: View) :
-    BaseViewHolder<ServiceStatus>(root) {
-
+class ServerStatusViewHolder(
+    private val binding: HomeServerStatusBinding,
+    root: View,
+) : BaseViewHolder<ServiceStatus>(root) {
     private val cardView: com.google.android.material.card.MaterialCardView = itemView as com.google.android.material.card.MaterialCardView
 
     companion object {
-        val CREATOR = Creator<ServiceStatus> { inflater: LayoutInflater, parent: ViewGroup? ->
-            val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeServerStatusBinding.inflate(inflater, outer.cardContent, true)
-            ServerStatusViewHolder(inner, outer.root)
-        }
+        val CREATOR =
+            Creator<ServiceStatus> { inflater: LayoutInflater, parent: ViewGroup? ->
+                val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
+                val inner = HomeServerStatusBinding.inflate(inflater, outer.cardContent, true)
+                ServerStatusViewHolder(inner, outer.root)
+            }
     }
 
     private var prevBgColor: Int? = null
@@ -51,50 +52,66 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         val context = itemView.context
         val status = data
         val ok = status.isRunning
-        val state = af.shizuku.manager.utils.ShizukuStateMachine.get()
+        val state =
+            af.shizuku.manager.utils.ShizukuStateMachine
+                .get()
 
         // Live Status Indicator — ok/error use M3 theme tokens so the dot respects dynamic color
         // and custom accents; starting stays amber (no standard M3 "warning" token, and amber is
         // universally understood as "in progress" regardless of active theme).
-        statusIndicator.backgroundTintList = android.content.res.ColorStateList.valueOf(
-            when {
-                ok -> com.google.android.material.color.MaterialColors.getColor(
-                    context, androidx.appcompat.R.attr.colorPrimary,
-                    ContextCompat.getColor(context, R.color.status_ok)
-                )
-                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
-                    ContextCompat.getColor(context, R.color.status_starting)
-                else -> com.google.android.material.color.MaterialColors.getColor(
-                    context, androidx.appcompat.R.attr.colorError,
-                    ContextCompat.getColor(context, R.color.status_error)
-                )
-            }
-        )
+        statusIndicator.backgroundTintList =
+            android.content.res.ColorStateList.valueOf(
+                when {
+                    ok ->
+                        com.google.android.material.color.MaterialColors.getColor(
+                            context,
+                            androidx.appcompat.R.attr.colorPrimary,
+                            ContextCompat.getColor(context, R.color.status_ok),
+                        )
+                    state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
+                        ContextCompat.getColor(context, R.color.status_starting)
+                    else ->
+                        com.google.android.material.color.MaterialColors.getColor(
+                            context,
+                            androidx.appcompat.R.attr.colorError,
+                            ContextCompat.getColor(context, R.color.status_error),
+                        )
+                },
+            )
 
         // Pulse animation for Starting/Running state
         if (state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING || ok) {
-            val pulse = android.view.animation.AlphaAnimation(0.4f, 1.0f).apply {
-                duration = if (ok) 1500 else 600
-                repeatMode = android.view.animation.Animation.REVERSE
-                repeatCount = android.view.animation.Animation.INFINITE
-                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
-            }
+            val pulse =
+                android.view.animation.AlphaAnimation(0.4f, 1.0f).apply {
+                    duration = if (ok) 1500 else 600
+                    repeatMode = android.view.animation.Animation.REVERSE
+                    repeatCount = android.view.animation.Animation.INFINITE
+                    interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+                }
             statusIndicator.startAnimation(pulse)
         } else {
             statusIndicator.clearAnimation()
         }
 
         // Show Sentry offline button only if limit is reached
-        sentryButton.visibility = if (af.shizuku.manager.ShizukuSettings.isSentryLimitReached()) View.VISIBLE else View.GONE
+        sentryButton.visibility =
+            if (af.shizuku.manager.ShizukuSettings
+                    .isSentryLimitReached()
+            ) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         sentryButton.setOnClickListener {
-            com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+            com.google.android.material.dialog
+                .MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.sentry_offline_notice_title)
                 .setMessage(R.string.sentry_offline_notice_learn_more)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNeutralButton(R.string.update_view_on_github) { _, _ ->
-                    af.shizuku.manager.utils.CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus/issues")
-                }
-                .show()
+                    af.shizuku.manager.utils.CustomTabsHelper
+                        .launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus/issues")
+                }.show()
         }
 
         // S-Pen / DeX Mouse Hover Effect (Expressive Polish)
@@ -102,22 +119,28 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             itemView.setOnHoverListener { v, event ->
                 when (event.action) {
                     android.view.MotionEvent.ACTION_HOVER_ENTER -> {
-                        v?.animate()
+                        v
+                            ?.animate()
                             ?.scaleX(1.015f)
                             ?.scaleY(1.015f)
                             ?.translationZ(6f)
-                            ?.setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(150))
-                            ?.setInterpolator(android.view.animation.DecelerateInterpolator())
+                            ?.setDuration(
+                                af.shizuku.manager.ShizukuSettings
+                                    .scaledAnimationDuration(150),
+                            )?.setInterpolator(android.view.animation.DecelerateInterpolator())
                             ?.start()
                         true
                     }
                     android.view.MotionEvent.ACTION_HOVER_EXIT -> {
-                        v?.animate()
+                        v
+                            ?.animate()
                             ?.scaleX(1f)
                             ?.scaleY(1f)
                             ?.translationZ(0f)
-                            ?.setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(150))
-                            ?.setInterpolator(android.view.animation.AccelerateInterpolator())
+                            ?.setDuration(
+                                af.shizuku.manager.ShizukuSettings
+                                    .scaledAnimationDuration(150),
+                            )?.setInterpolator(android.view.animation.AccelerateInterpolator())
                             ?.start()
                         true
                     }
@@ -126,12 +149,21 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             }
         }
 
-        logChip.visibility = if (ok && af.shizuku.manager.ShizukuSettings.showActivityLogHome()) View.VISIBLE else View.GONE
+        logChip.visibility =
+            if (ok &&
+                af.shizuku.manager.ShizukuSettings
+                    .showActivityLogHome()
+            ) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
         logChip.setOnClickListener {
             val activity = context.asActivity<android.app.Activity>() ?: return@setOnClickListener
             activity.startWithSceneTransition(
                 android.content.Intent(activity, af.shizuku.manager.activitylog.ActivityLogActivity::class.java),
-                iconView, "icon_server_status"
+                iconView,
+                "icon_server_status",
             )
         }
 
@@ -144,56 +176,79 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         val okColorAttr = if (ok) com.google.android.material.R.attr.colorPrimaryContainer else com.google.android.material.R.attr.colorErrorContainer
         val onColorAttr = if (ok) com.google.android.material.R.attr.colorOnPrimaryContainer else com.google.android.material.R.attr.colorOnErrorContainer
 
-        val bgColor = com.google.android.material.color.MaterialColors.getColor(
-            context, okColorAttr,
+        val bgColor =
             com.google.android.material.color.MaterialColors.getColor(
-                context, com.google.android.material.R.attr.colorSurfaceContainerHigh, android.graphics.Color.TRANSPARENT
+                context,
+                okColorAttr,
+                com.google.android.material.color.MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorSurfaceContainerHigh,
+                    android.graphics.Color.TRANSPARENT,
+                ),
             )
-        )
-        val textColor = com.google.android.material.color.MaterialColors.getColor(
-            context, onColorAttr,
+        val textColor =
             com.google.android.material.color.MaterialColors.getColor(
-                context, com.google.android.material.R.attr.colorOnSurface, android.graphics.Color.BLACK
+                context,
+                onColorAttr,
+                com.google.android.material.color.MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorOnSurface,
+                    android.graphics.Color.BLACK,
+                ),
             )
-        )
 
         // Animate background color transition when service state changes (running ↔ stopped)
         val prevBg = prevBgColor
         prevBgColor = bgColor
         if (prevBg != null && prevBg != bgColor) {
-            android.animation.ValueAnimator.ofArgb(prevBg, bgColor).apply {
-                duration = af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(450)
-                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
-                addUpdateListener { cardView.setCardBackgroundColor(it.animatedValue as Int) }
-            }.start()
+            android.animation.ValueAnimator
+                .ofArgb(prevBg, bgColor)
+                .apply {
+                    duration =
+                        af.shizuku.manager.ShizukuSettings
+                            .scaledAnimationDuration(450)
+                    interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+                    addUpdateListener { cardView.setCardBackgroundColor(it.animatedValue as Int) }
+                }.start()
         } else {
             cardView.setCardBackgroundColor(bgColor)
         }
 
         // Outline: hidden when user disables it. Style toggles between Material (theme roles) and
         // Status (semantic green/amber/red). Starting state always uses amber regardless of style.
-        if (af.shizuku.manager.ShizukuSettings.isShowStatusCardOutlineEnabled()) {
+        if (af.shizuku.manager.ShizukuSettings
+                .isShowStatusCardOutlineEnabled()
+        ) {
             val strokeDp = 2f
             cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
-            val useStatusColors = af.shizuku.manager.ShizukuSettings.getStatusCardOutlineStyle() == "status"
-            cardView.strokeColor = when {
-                ok -> if (useStatusColors)
-                    ContextCompat.getColor(context, R.color.status_ok)
-                else
-                    com.google.android.material.color.MaterialColors.getColor(
-                        context, androidx.appcompat.R.attr.colorPrimary,
-                        ContextCompat.getColor(context, R.color.status_ok)
-                    )
-                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
-                    ContextCompat.getColor(context, R.color.status_starting)
-                else -> if (useStatusColors)
-                    ContextCompat.getColor(context, R.color.status_error)
-                else
-                    com.google.android.material.color.MaterialColors.getColor(
-                        context, androidx.appcompat.R.attr.colorError,
-                        ContextCompat.getColor(context, R.color.status_error)
-                    )
-            }
+            val useStatusColors =
+                af.shizuku.manager.ShizukuSettings
+                    .getStatusCardOutlineStyle() == "status"
+            cardView.strokeColor =
+                when {
+                    ok ->
+                        if (useStatusColors) {
+                            ContextCompat.getColor(context, R.color.status_ok)
+                        } else {
+                            com.google.android.material.color.MaterialColors.getColor(
+                                context,
+                                androidx.appcompat.R.attr.colorPrimary,
+                                ContextCompat.getColor(context, R.color.status_ok),
+                            )
+                        }
+                    state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
+                        ContextCompat.getColor(context, R.color.status_starting)
+                    else ->
+                        if (useStatusColors) {
+                            ContextCompat.getColor(context, R.color.status_error)
+                        } else {
+                            com.google.android.material.color.MaterialColors.getColor(
+                                context,
+                                androidx.appcompat.R.attr.colorError,
+                                ContextCompat.getColor(context, R.color.status_error),
+                            )
+                        }
+                }
         } else {
             cardView.strokeWidth = 0
         }
@@ -201,32 +256,48 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         textView.setTextColor(textColor)
         summaryView.setTextColor(textColor)
         logChip.setTextColor(textColor)
-        logChip.chipIconTint = android.content.res.ColorStateList.valueOf(textColor)
+        logChip.chipIconTint =
+            android.content.res.ColorStateList
+                .valueOf(textColor)
         diagnosticsChip.setTextColor(textColor)
-        diagnosticsChip.chipIconTint = android.content.res.ColorStateList.valueOf(textColor)
+        diagnosticsChip.chipIconTint =
+            android.content.res.ColorStateList
+                .valueOf(textColor)
 
         // Icon pill uses vivid semantic role colors so it stands out against the card's lighter
         // container background — matching pill-to-card was invisible in users' issue screenshots.
-        val (iconPillColor, iconOnPillColor) = when {
-            ok -> {
-                com.google.android.material.color.MaterialColors.getColor(
-                    context, R.attr.colorPrimary, android.graphics.Color.TRANSPARENT
-                ) to com.google.android.material.color.MaterialColors.getColor(
-                    context, com.google.android.material.R.attr.colorOnPrimary, android.graphics.Color.WHITE
-                )
+        val (iconPillColor, iconOnPillColor) =
+            when {
+                ok -> {
+                    com.google.android.material.color.MaterialColors.getColor(
+                        context,
+                        R.attr.colorPrimary,
+                        android.graphics.Color.TRANSPARENT,
+                    ) to
+                        com.google.android.material.color.MaterialColors.getColor(
+                            context,
+                            com.google.android.material.R.attr.colorOnPrimary,
+                            android.graphics.Color.WHITE,
+                        )
+                }
+                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING -> {
+                    ContextCompat.getColor(context, R.color.status_starting) to android.graphics.Color.WHITE
+                }
+                else -> {
+                    com.google.android.material.color.MaterialColors.getColor(
+                        context,
+                        R.attr.colorError,
+                        android.graphics.Color.RED,
+                    ) to
+                        com.google.android.material.color.MaterialColors.getColor(
+                            context,
+                            com.google.android.material.R.attr.colorOnError,
+                            android.graphics.Color.WHITE,
+                        )
+                }
             }
-            state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING -> {
-                ContextCompat.getColor(context, R.color.status_starting) to android.graphics.Color.WHITE
-            }
-            else -> {
-                com.google.android.material.color.MaterialColors.getColor(
-                    context, R.attr.colorError, android.graphics.Color.RED
-                ) to com.google.android.material.color.MaterialColors.getColor(
-                    context, com.google.android.material.R.attr.colorOnError, android.graphics.Color.WHITE
-                )
-            }
-        }
-        af.shizuku.manager.utils.IconStyleHelper.applyToStatusCardIcon(iconView, pillColor = iconPillColor, tintColor = iconOnPillColor)
+        af.shizuku.manager.utils.IconStyleHelper
+            .applyToStatusCardIcon(iconView, pillColor = iconPillColor, tintColor = iconOnPillColor)
 
         val isRoot = status.uid == 0
         val apiVersion = status.apiVersion
@@ -236,34 +307,38 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         } else {
             iconView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_server_error_24))
         }
-        val user = when {
-            isRoot -> context.getString(R.string.home_status_service_user_root)
-            !status.startMethod.isNullOrEmpty() -> status.startMethod
-            else -> context.getString(R.string.home_status_service_user_adb)
-        }
-        val title = if (ok) {
-            context.getString(R.string.home_status_service_is_running, context.getString(R.string.app_name))
-        } else {
-            context.getString(R.string.home_status_service_not_running, context.getString(R.string.app_name))
-        }
-        val summary = if (ok) {
-            // patchVersion is -1 when unknown (not yet delivered / not supported by the server);
-            // 0 is a legitimate patch value. Don't claim the server is outdated based on an unknown
-            // patch, or the "restart to update" prompt shows spuriously.
-            val patchKnown = patchVersion >= 0
-            val versionText = if (patchKnown) "${apiVersion}.${patchVersion}" else "$apiVersion"
-            if (apiVersion != Shizuku.getLatestServiceVersion() || (patchKnown && patchVersion != ShizukuApiConstants.SERVER_PATCH_VERSION)) {
-                context.getString(
-                    R.string.home_status_service_version_update, user,
-                    versionText,
-                    "${Shizuku.getLatestServiceVersion()}.${ShizukuApiConstants.SERVER_PATCH_VERSION}"
-                )
-            } else {
-                context.getString(R.string.home_status_service_version, user, versionText)
+        val user =
+            when {
+                isRoot -> context.getString(R.string.home_status_service_user_root)
+                !status.startMethod.isNullOrEmpty() -> status.startMethod
+                else -> context.getString(R.string.home_status_service_user_adb)
             }
-        } else {
-            context.getString(R.string.home_status_service_not_running_summary, context.getString(R.string.app_name))
-        }
+        val title =
+            if (ok) {
+                context.getString(R.string.home_status_service_is_running, context.getString(R.string.app_name))
+            } else {
+                context.getString(R.string.home_status_service_not_running, context.getString(R.string.app_name))
+            }
+        val summary =
+            if (ok) {
+                // patchVersion is -1 when unknown (not yet delivered / not supported by the server);
+                // 0 is a legitimate patch value. Don't claim the server is outdated based on an unknown
+                // patch, or the "restart to update" prompt shows spuriously.
+                val patchKnown = patchVersion >= 0
+                val versionText = if (patchKnown) "$apiVersion.$patchVersion" else "$apiVersion"
+                if (apiVersion != Shizuku.getLatestServiceVersion() || (patchKnown && patchVersion != ShizukuApiConstants.SERVER_PATCH_VERSION)) {
+                    context.getString(
+                        R.string.home_status_service_version_update,
+                        user,
+                        versionText,
+                        "${Shizuku.getLatestServiceVersion()}.${ShizukuApiConstants.SERVER_PATCH_VERSION}",
+                    )
+                } else {
+                    context.getString(R.string.home_status_service_version, user, versionText)
+                }
+            } else {
+                context.getString(R.string.home_status_service_not_running_summary, context.getString(R.string.app_name))
+            }
         textView.text = title.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.text = summary.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.visibility = if (TextUtils.isEmpty(summaryView.text)) View.GONE else View.VISIBLE

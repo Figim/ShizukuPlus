@@ -1,15 +1,5 @@
 package af.shizuku.manager.home
 
-import android.os.Build
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.view.isVisible
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
-import com.google.android.material.textfield.TextInputEditText
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
@@ -20,6 +10,16 @@ import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.IconStyleHelper
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import android.os.Build
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import rikka.core.util.ClipboardUtils
 import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
@@ -41,25 +41,35 @@ class AutomationViewHolder(
     private data class Field(
         val layout: TextInputLayout,
         val input: TextInputEditText,
-        val initText: String
+        val initText: String,
     )
 
     private val originalIcon = binding.icon.drawable
 
     init {
         containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener { HomeEditMode.enter(); true }
+        containerBinding.root.setOnLongClickListener {
+            HomeEditMode.enter()
+            true
+        }
         containerBinding.dragHandle.apply {
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@AutomationViewHolder)
                 false
             }
-            setOnLongClickListener { HomeEditMode.enter(); true }
+            setOnLongClickListener {
+                HomeEditMode.enter()
+                true
+            }
         }
         binding.button1.setOnClickListener { v ->
             val context = v.context
-            val authToken = af.shizuku.manager.ShizukuSettings.getAuthToken()
-            val encryptedToken = af.shizuku.manager.utils.IntentCrypto.encrypt(authToken)
+            val authToken =
+                af.shizuku.manager.ShizukuSettings
+                    .getAuthToken()
+            val encryptedToken =
+                af.shizuku.manager.utils.IntentCrypto
+                    .encrypt(authToken)
             // If AndroidKeyStore is unavailable (restricted OEMs such as Vivo), fall back to the
             // raw plaintext token.  AuthenticatedReceiver / ShellRequestHandlerActivity already
             // accept both encrypted (bare base64) and raw-plaintext values via constant-time
@@ -68,9 +78,10 @@ class AutomationViewHolder(
                 Toast.makeText(context, R.string.home_automation_token_encrypt_failed, Toast.LENGTH_SHORT).show()
             }
 
-            val sheetBinding = HomeAutomationBottomSheetBinding.inflate(
-                LayoutInflater.from(context)
-            )
+            val sheetBinding =
+                HomeAutomationBottomSheetBinding.inflate(
+                    LayoutInflater.from(context),
+                )
 
             // The extrasLayout already has app:prefixText="auth: " in the layout XML, so we do NOT
             // add the "auth:" prefix to the EditText value here — doing so would double-prefix the
@@ -89,12 +100,13 @@ class AutomationViewHolder(
 
             sheetBinding.apply {
                 val action = getIntentAction(buttonGroup.checkedButtonId)
-                val fields = listOf(
-                    Field(actionLayout, actionEditText, action),
-                    Field(packageLayout, packageEditText, context.packageName),
-                    Field(targetLayout, targetEditText, "Broadcast Receiver"),
-                    Field(extrasLayout, extrasEditText, extrasValue)
-                )
+                val fields =
+                    listOf(
+                        Field(actionLayout, actionEditText, action),
+                        Field(packageLayout, packageEditText, context.packageName),
+                        Field(targetLayout, targetEditText, "Broadcast Receiver"),
+                        Field(extrasLayout, extrasEditText, extrasValue),
+                    )
 
                 fields.forEach { (layout, input, initText) ->
                     input.setText(initText)
@@ -106,11 +118,12 @@ class AutomationViewHolder(
                             ClipboardUtils.put(context, input.text) &&
                             Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2
                         ) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.toast_copied_to_clipboard),
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    context.getString(R.string.toast_copied_to_clipboard),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
                         }
                     }
                 }
@@ -128,7 +141,9 @@ class AutomationViewHolder(
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok, { _, _ ->
                             val newToken = ShizukuSettings.generateAuthToken()
-                            val newEncryptedToken = af.shizuku.manager.utils.IntentCrypto.encrypt(newToken)
+                            val newEncryptedToken =
+                                af.shizuku.manager.utils.IntentCrypto
+                                    .encrypt(newToken)
                             if (newEncryptedToken == null) {
                                 // AndroidKeyStore unavailable: show a warning but still populate the
                                 // field with the raw token so the automation can be saved and used.
@@ -157,8 +172,10 @@ class AutomationViewHolder(
         ) {
             binding.text2.apply {
                 isVisible = true
-                text = context.getString(R.string.home_automation_description_device_restriction, "adb tcpip 5555")
-                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+                text =
+                    context
+                        .getString(R.string.home_automation_description_device_restriction, "adb tcpip 5555")
+                        .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
             }
         }
     }

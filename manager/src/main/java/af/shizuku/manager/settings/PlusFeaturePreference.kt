@@ -1,5 +1,6 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.manager.R
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -12,13 +13,14 @@ import android.util.AttributeSet
 import android.widget.TextView
 import androidx.preference.PreferenceViewHolder
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import af.shizuku.manager.R
+import com.google.android.material.materialswitch.MaterialSwitch
 
-class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIconSwitchPreference(context, attrs) {
-
+class PlusFeaturePreference(
+    context: Context,
+    attrs: AttributeSet,
+) : GrayableIconSwitchPreference(context, attrs) {
     private val infoTitle: Int
     private val infoDetail: Int
     private val badgeType: Int
@@ -34,7 +36,10 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
         a.recycle()
     }
 
-    fun setIntegration(packageName: String, appName: String) {
+    fun setIntegration(
+        packageName: String,
+        appName: String,
+    ) {
         this.integrationPackage = packageName
         notifyChanged()
     }
@@ -62,37 +67,43 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
         }
     }
 
-    private fun badgeStyleFor(type: Int): Triple<String, Int, Int>? = when (type) {
-        1 -> Triple(
-            "PLUS",
-            resolveColor(com.google.android.material.R.attr.colorPrimaryContainer, 0xFFE8DEF8.toInt()),
-            resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF21005D.toInt())
-        )
-        2 -> Triple(
-            "ROOT",
-            resolveColor(com.google.android.material.R.attr.colorErrorContainer, 0xFFFFDAD6.toInt()),
-            resolveColor(com.google.android.material.R.attr.colorOnErrorContainer, 0xFF410002.toInt())
-        )
-        3 -> Triple(
-            "EXP",
-            resolveColor(com.google.android.material.R.attr.colorTertiaryContainer, 0xFFFFD8E4.toInt()),
-            resolveColor(com.google.android.material.R.attr.colorOnTertiaryContainer, 0xFF31111D.toInt())
-        )
-        else -> null
-    }
+    private fun badgeStyleFor(type: Int): Triple<String, Int, Int>? =
+        when (type) {
+            1 ->
+                Triple(
+                    "PLUS",
+                    resolveColor(com.google.android.material.R.attr.colorPrimaryContainer, 0xFFE8DEF8.toInt()),
+                    resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF21005D.toInt()),
+                )
+            2 ->
+                Triple(
+                    "ROOT",
+                    resolveColor(com.google.android.material.R.attr.colorErrorContainer, 0xFFFFDAD6.toInt()),
+                    resolveColor(com.google.android.material.R.attr.colorOnErrorContainer, 0xFF410002.toInt()),
+                )
+            3 ->
+                Triple(
+                    "EXP",
+                    resolveColor(com.google.android.material.R.attr.colorTertiaryContainer, 0xFFFFD8E4.toInt()),
+                    resolveColor(com.google.android.material.R.attr.colorOnTertiaryContainer, 0xFF31111D.toInt()),
+                )
+            else -> null
+        }
 
-    private fun severityBadgeStyleFor(type: Int): Triple<String, Int, Int>? = when (type) {
-        // No M3 "warning" role exists, so RISKY is a fixed amber rather than theme-resolved.
-        1 -> Triple("RISKY", 0xFFFFE0B2.toInt(), 0xFF7A4A00.toInt())
-        // Solid colorError (not the softer colorErrorContainer ROOT uses) so DANGEROUS reads as
-        // a step up in severity even when both badges appear on the same item.
-        2 -> Triple(
-            "DANGEROUS",
-            resolveColor(android.R.attr.colorError, 0xFFB3261E.toInt()),
-            resolveColor(com.google.android.material.R.attr.colorOnError, 0xFFFFFFFF.toInt())
-        )
-        else -> null
-    }
+    private fun severityBadgeStyleFor(type: Int): Triple<String, Int, Int>? =
+        when (type) {
+            // No M3 "warning" role exists, so RISKY is a fixed amber rather than theme-resolved.
+            1 -> Triple("RISKY", 0xFFFFE0B2.toInt(), 0xFF7A4A00.toInt())
+            // Solid colorError (not the softer colorErrorContainer ROOT uses) so DANGEROUS reads as
+            // a step up in severity even when both badges appear on the same item.
+            2 ->
+                Triple(
+                    "DANGEROUS",
+                    resolveColor(android.R.attr.colorError, 0xFFB3261E.toInt()),
+                    resolveColor(com.google.android.material.R.attr.colorOnError, 0xFFFFFFFF.toInt()),
+                )
+            else -> null
+        }
 
     private fun applyBadges(titleView: TextView) {
         val badges = listOfNotNull(badgeStyleFor(badgeType), severityBadgeStyleFor(severityBadge))
@@ -109,8 +120,9 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
             val end = spannable.length
             spannable.setSpan(
                 InlineBadgeSpan(badgeLabel, bgColor, fgColor, density),
-                start, end,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                start,
+                end,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
         }
         titleView.text = spannable
@@ -125,19 +137,25 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
         private val fgColor: Int,
         private val density: Float,
     ) : ReplacementSpan() {
-
         private val textSizePx = 9f * density
         private val paddingH = 5f * density
         private val paddingV = 2f * density
         private val cornerRadius = 4f * density
 
-        private fun styledPaint(base: Paint) = Paint(base).apply {
-            textSize = textSizePx
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            isAntiAlias = true
-        }
+        private fun styledPaint(base: Paint) =
+            Paint(base).apply {
+                textSize = textSizePx
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                isAntiAlias = true
+            }
 
-        override fun getSize(paint: Paint, text: CharSequence?, start: Int, end: Int, fm: Paint.FontMetricsInt?): Int {
+        override fun getSize(
+            paint: Paint,
+            text: CharSequence?,
+            start: Int,
+            end: Int,
+            fm: Paint.FontMetricsInt?,
+        ): Int {
             val p = styledPaint(paint)
             if (fm != null) {
                 val pfm = p.fontMetricsInt
@@ -151,7 +169,17 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
             return (p.measureText(label) + paddingH * 2).toInt()
         }
 
-        override fun draw(canvas: Canvas, text: CharSequence?, start: Int, end: Int, x: Float, top: Int, y: Int, bottom: Int, paint: Paint) {
+        override fun draw(
+            canvas: Canvas,
+            text: CharSequence?,
+            start: Int,
+            end: Int,
+            x: Float,
+            top: Int,
+            y: Int,
+            bottom: Int,
+            paint: Paint,
+        ) {
             val p = styledPaint(paint)
             val w = p.measureText(label) + paddingH * 2
             val badgeH = textSizePx + paddingV * 2
@@ -174,13 +202,19 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
         if (intent != null) {
             context.startActivity(intent)
         } else {
-            android.widget.Toast.makeText(
-                context, R.string.app_management_no_launcher, android.widget.Toast.LENGTH_SHORT
-            ).show()
+            android.widget.Toast
+                .makeText(
+                    context,
+                    R.string.app_management_no_launcher,
+                    android.widget.Toast.LENGTH_SHORT,
+                ).show()
         }
     }
 
-    private fun resolveColor(attr: Int, fallback: Int): Int {
+    private fun resolveColor(
+        attr: Int,
+        fallback: Int,
+    ): Int {
         val typedValue = android.util.TypedValue()
         val resolved = context.theme.resolveAttribute(attr, typedValue, true)
         return if (resolved) typedValue.data else fallback
@@ -188,142 +222,163 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : GrayableIco
 
     private fun showHelp() {
         if (infoDetail != 0) {
-            val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(context)
+            val dialog =
+                com.google.android.material.bottomsheet
+                    .BottomSheetDialog(context)
 
             // Outer container
-            val container = android.widget.LinearLayout(context).apply {
-                orientation = android.widget.LinearLayout.VERTICAL
-                setPadding(
-                    (24 * context.resources.displayMetrics.density).toInt(),
-                    (16 * context.resources.displayMetrics.density).toInt(),
-                    (24 * context.resources.displayMetrics.density).toInt(),
-                    (24 * context.resources.displayMetrics.density).toInt()
-                )
-                // Use theme surface background
-                setBackgroundColor(resolveColor(com.google.android.material.R.attr.colorSurface, 0xFFFFFFFF.toInt()))
-            }
+            val container =
+                android.widget.LinearLayout(context).apply {
+                    orientation = android.widget.LinearLayout.VERTICAL
+                    setPadding(
+                        (24 * context.resources.displayMetrics.density).toInt(),
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                        (24 * context.resources.displayMetrics.density).toInt(),
+                        (24 * context.resources.displayMetrics.density).toInt(),
+                    )
+                    // Use theme surface background
+                    setBackgroundColor(resolveColor(com.google.android.material.R.attr.colorSurface, 0xFFFFFFFF.toInt()))
+                }
 
             // Drag handle indicator
-            val dragHandle = android.view.View(context).apply {
-                val params = android.widget.LinearLayout.LayoutParams(
-                    (36 * context.resources.displayMetrics.density).toInt(),
-                    (4 * context.resources.displayMetrics.density).toInt()
-                ).apply {
-                    gravity = android.view.Gravity.CENTER_HORIZONTAL
-                    bottomMargin = (16 * context.resources.displayMetrics.density).toInt()
+            val dragHandle =
+                android.view.View(context).apply {
+                    val params =
+                        android.widget.LinearLayout
+                            .LayoutParams(
+                                (36 * context.resources.displayMetrics.density).toInt(),
+                                (4 * context.resources.displayMetrics.density).toInt(),
+                            ).apply {
+                                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                                bottomMargin = (16 * context.resources.displayMetrics.density).toInt()
+                            }
+                    layoutParams = params
+                    setBackgroundColor(resolveColor(com.google.android.material.R.attr.colorOutlineVariant, 0xFFCCCCCC.toInt()))
                 }
-                layoutParams = params
-                setBackgroundColor(resolveColor(com.google.android.material.R.attr.colorOutlineVariant, 0xFFCCCCCC.toInt()))
-            }
             container.addView(dragHandle)
 
             // Title
-            val titleTextView = TextView(context).apply {
-                text = context.getString(if (infoTitle != 0) infoTitle else R.string.settings_plus_learn_more)
-                setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 20f)
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface, 0xFF000000.toInt()))
-                setPadding(0, 0, 0, (12 * context.resources.displayMetrics.density).toInt())
-            }
+            val titleTextView =
+                TextView(context).apply {
+                    text = context.getString(if (infoTitle != 0) infoTitle else R.string.settings_plus_learn_more)
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 20f)
+                    setTypeface(null, android.graphics.Typeface.BOLD)
+                    setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface, 0xFF000000.toInt()))
+                    setPadding(0, 0, 0, (12 * context.resources.displayMetrics.density).toInt())
+                }
             container.addView(titleTextView)
 
             // Detail Card (container for content)
-            val cardView = com.google.android.material.card.MaterialCardView(context).apply {
-                radius = (16 * context.resources.displayMetrics.density)
-                strokeWidth = 0
-                cardElevation = 0f
-                setCardBackgroundColor(resolveColor(com.google.android.material.R.attr.colorSurfaceVariant, 0xFFF5F5F5.toInt()))
-                val params = android.widget.LinearLayout.LayoutParams(
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = (20 * context.resources.displayMetrics.density).toInt()
+            val cardView =
+                com.google.android.material.card.MaterialCardView(context).apply {
+                    radius = (16 * context.resources.displayMetrics.density)
+                    strokeWidth = 0
+                    cardElevation = 0f
+                    setCardBackgroundColor(resolveColor(com.google.android.material.R.attr.colorSurfaceVariant, 0xFFF5F5F5.toInt()))
+                    val params =
+                        android.widget.LinearLayout
+                            .LayoutParams(
+                                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ).apply {
+                                bottomMargin = (20 * context.resources.displayMetrics.density).toInt()
+                            }
+                    layoutParams = params
                 }
-                layoutParams = params
-            }
 
-            val detailTextView = TextView(context).apply {
-                text = context.getString(infoDetail)
-                setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14f)
-                setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurfaceVariant, 0xFF333333.toInt()))
-                setLineSpacing(0f, 1.25f)
-                setPadding(
-                    (16 * context.resources.displayMetrics.density).toInt(),
-                    (16 * context.resources.displayMetrics.density).toInt(),
-                    (16 * context.resources.displayMetrics.density).toInt(),
-                    (16 * context.resources.displayMetrics.density).toInt()
-                )
-            }
+            val detailTextView =
+                TextView(context).apply {
+                    text = context.getString(infoDetail)
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14f)
+                    setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurfaceVariant, 0xFF333333.toInt()))
+                    setLineSpacing(0f, 1.25f)
+                    setPadding(
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                    )
+                }
             cardView.addView(detailTextView)
             container.addView(cardView)
 
             // Interactive Switch Card
-            val switchCard = com.google.android.material.card.MaterialCardView(context).apply {
-                radius = (16 * context.resources.displayMetrics.density)
-                strokeWidth = 0
-                cardElevation = 0f
-                setCardBackgroundColor(resolveColor(com.google.android.material.R.attr.colorPrimaryContainer, 0xFFE0F2F1.toInt()))
-                val params = android.widget.LinearLayout.LayoutParams(
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = (24 * context.resources.displayMetrics.density).toInt()
+            val switchCard =
+                com.google.android.material.card.MaterialCardView(context).apply {
+                    radius = (16 * context.resources.displayMetrics.density)
+                    strokeWidth = 0
+                    cardElevation = 0f
+                    setCardBackgroundColor(resolveColor(com.google.android.material.R.attr.colorPrimaryContainer, 0xFFE0F2F1.toInt()))
+                    val params =
+                        android.widget.LinearLayout
+                            .LayoutParams(
+                                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ).apply {
+                                bottomMargin = (24 * context.resources.displayMetrics.density).toInt()
+                            }
+                    layoutParams = params
                 }
-                layoutParams = params
-            }
 
-            val switchLayout = android.widget.LinearLayout(context).apply {
-                orientation = android.widget.LinearLayout.HORIZONTAL
-                gravity = android.view.Gravity.CENTER_VERTICAL
-                setPadding(
-                    (16 * context.resources.displayMetrics.density).toInt(),
-                    (12 * context.resources.displayMetrics.density).toInt(),
-                    (16 * context.resources.displayMetrics.density).toInt(),
-                    (12 * context.resources.displayMetrics.density).toInt()
-                )
-            }
+            val switchLayout =
+                android.widget.LinearLayout(context).apply {
+                    orientation = android.widget.LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    setPadding(
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                        (12 * context.resources.displayMetrics.density).toInt(),
+                        (16 * context.resources.displayMetrics.density).toInt(),
+                        (12 * context.resources.displayMetrics.density).toInt(),
+                    )
+                }
 
             val enableFeatureLabel = context.getString(R.string.settings_plus_feature_help_enable)
-            val switchText = TextView(context).apply {
-                text = enableFeatureLabel
-                setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 15f)
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setTextColor(resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF004D40.toInt()))
-                val params = android.widget.LinearLayout.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-                layoutParams = params
-            }
+            val switchText =
+                TextView(context).apply {
+                    text = enableFeatureLabel
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 15f)
+                    setTypeface(null, android.graphics.Typeface.BOLD)
+                    setTextColor(resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF004D40.toInt()))
+                    val params = android.widget.LinearLayout.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                    layoutParams = params
+                }
             switchLayout.addView(switchText)
 
-            val mSwitch = com.google.android.material.materialswitch.MaterialSwitch(context).apply {
-                isChecked = this@PlusFeaturePreference.isChecked
-                // Standalone switch with no adjacent Preference row for TalkBack to borrow a
-                // label from - without this it announces only "Switch, on/off" with no context.
-                contentDescription = enableFeatureLabel
-                setOnCheckedChangeListener { view, isCheckedVal ->
-                    if (isCheckedVal) {
-                        af.shizuku.manager.utils.HapticUtils.toggleOn(view)
-                    } else {
-                        af.shizuku.manager.utils.HapticUtils.toggleOff(view)
+            val mSwitch =
+                com.google.android.material.materialswitch.MaterialSwitch(context).apply {
+                    isChecked = this@PlusFeaturePreference.isChecked
+                    // Standalone switch with no adjacent Preference row for TalkBack to borrow a
+                    // label from - without this it announces only "Switch, on/off" with no context.
+                    contentDescription = enableFeatureLabel
+                    setOnCheckedChangeListener { view, isCheckedVal ->
+                        if (isCheckedVal) {
+                            af.shizuku.manager.utils.HapticUtils
+                                .toggleOn(view)
+                        } else {
+                            af.shizuku.manager.utils.HapticUtils
+                                .toggleOff(view)
+                        }
+                        this@PlusFeaturePreference.isChecked = isCheckedVal
+                        this@PlusFeaturePreference.callChangeListener(isCheckedVal)
                     }
-                    this@PlusFeaturePreference.isChecked = isCheckedVal
-                    this@PlusFeaturePreference.callChangeListener(isCheckedVal)
                 }
-            }
             switchLayout.addView(mSwitch)
             switchCard.addView(switchLayout)
             container.addView(switchCard)
 
             // Dismiss Button
-            val closeButton = com.google.android.material.button.MaterialButton(context).apply {
-                text = context.getString(R.string.settings_plus_feature_help_close)
-                cornerRadius = (24 * context.resources.displayMetrics.density).toInt()
-                val params = android.widget.LinearLayout.LayoutParams(
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                    (48 * context.resources.displayMetrics.density).toInt()
-                )
-                layoutParams = params
-                setOnClickListener { dialog.dismiss() }
-            }
+            val closeButton =
+                com.google.android.material.button.MaterialButton(context).apply {
+                    text = context.getString(R.string.settings_plus_feature_help_close)
+                    cornerRadius = (24 * context.resources.displayMetrics.density).toInt()
+                    val params =
+                        android.widget.LinearLayout.LayoutParams(
+                            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                            (48 * context.resources.displayMetrics.density).toInt(),
+                        )
+                    layoutParams = params
+                    setOnClickListener { dialog.dismiss() }
+                }
             container.addView(closeButton)
 
             dialog.setContentView(container)

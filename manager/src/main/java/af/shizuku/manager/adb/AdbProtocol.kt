@@ -1,7 +1,6 @@
 package af.shizuku.manager.adb
 
 object AdbProtocol {
-
     const val A_SYNC = 0x434e5953
     const val A_CNXN = 0x4e584e43
     const val A_AUTH = 0x48545541

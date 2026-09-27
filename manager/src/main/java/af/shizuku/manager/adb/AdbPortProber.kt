@@ -1,7 +1,7 @@
 package af.shizuku.manager.adb
 
-import android.content.Context
 import af.shizuku.manager.ShizukuSettings
+import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -9,12 +9,14 @@ import java.net.InetSocketAddress
 import java.net.Socket
 
 object AdbPortProber {
-
     /**
      * Rapidly probes whether a given port is actively accepting TCP connections on 127.0.0.1.
      * Uses a short timeout (150ms) to ensure UI responsiveness.
      */
-    fun isPortOpen(port: Int, timeoutMs: Int = 150): Boolean {
+    fun isPortOpen(
+        port: Int,
+        timeoutMs: Int = 150,
+    ): Boolean {
         if (port !in 1..65535) return false
         return try {
             Socket().use { socket ->
@@ -36,30 +38,31 @@ object AdbPortProber {
      *
      * Returns the first port that responds to a TCP socket connection, or -1 if none.
      */
-    suspend fun findActiveLoopbackPort(context: Context? = null): Int = withContext(Dispatchers.IO) {
-        val candidates = LinkedHashSet<Int>()
+    suspend fun findActiveLoopbackPort(context: Context? = null): Int =
+        withContext(Dispatchers.IO) {
+            val candidates = LinkedHashSet<Int>()
 
-        // 1. Standard ADB TCP port
-        candidates.add(5555)
+            // 1. Standard ADB TCP port
+            candidates.add(5555)
 
-        // 2. Last known port
-        val lastPort = ShizukuSettings.getLastPort()
-        if (lastPort in 1..65535) {
-            candidates.add(lastPort)
-        }
-
-        // 3. User configured TCP port
-        val tcpPort = ShizukuSettings.getTcpPort()
-        if (tcpPort in 1..65535) {
-            candidates.add(tcpPort)
-        }
-
-        for (port in candidates) {
-            if (isPortOpen(port, 150)) {
-                return@withContext port
+            // 2. Last known port
+            val lastPort = ShizukuSettings.getLastPort()
+            if (lastPort in 1..65535) {
+                candidates.add(lastPort)
             }
-        }
 
-        -1
-    }
+            // 3. User configured TCP port
+            val tcpPort = ShizukuSettings.getTcpPort()
+            if (tcpPort in 1..65535) {
+                candidates.add(tcpPort)
+            }
+
+            for (port in candidates) {
+                if (isPortOpen(port, 150)) {
+                    return@withContext port
+                }
+            }
+
+            -1
+        }
 }
