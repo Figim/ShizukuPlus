@@ -1,6 +1,5 @@
 package af.shizuku.manager
 
-import af.shizuku.manager.R
 import af.shizuku.manager.home.ChangelogDialogFragment
 import af.shizuku.manager.home.HomeActivity
 import af.shizuku.manager.update.UpdateChecker

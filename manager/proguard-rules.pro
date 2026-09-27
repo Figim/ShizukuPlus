@@ -40,18 +40,15 @@
 -keep class moe.shizuku.api.BinderContainer { *; }
 
 # Android 16 (API 36) ART verifier now enforces hidden API restrictions at class-definition
-# time, not just at field/method access time.  All adapter classes in this package extend
-# hidden framework stubs (IProcessObserver$Stub, IUidObserver$Stub, etc.) that ART 16 cannot
-# resolve during verification.  R8 9.4 (AGP 9.4) rewrites these classes differently from
-# R8 8.x; the new bytecode triggers a hard VerifyError that fails the entire DEX on Android 16,
-# breaking rish, the SU Bridge, and every authorised app that connects to Shizuku (#537, #544).
+# time, not just at field/method access time. All adapter and compat classes in this package
+# extend hidden framework stubs (IProcessObserver$Stub, IUidObserver$Stub, etc.) that ART 16
+# cannot resolve during verification. R8 9.4 (AGP 9.4) rewrites these classes differently
+# from R8 8.x; the new bytecode triggers a hard VerifyError that fails the entire DEX on
+# Android 16, breaking rish, the SU Bridge, and every authorised app that connects to Shizuku (#537, #544).
 #
-# The initial fix (0aa38709) kept only ProcessObserverAdapter and UidObserverAdapter.
-# A third adapter (obfuscated as e42 in the R8 output) still failed verification after that
-# fix (#544).  Broadening the keep to the entire adapter sub-package prevents R8 from
-# touching ANY class that extends a hidden framework stub, matching the behaviour of
-# R8 8.x (AGP 8.x) which left all these classes unchanged.
--keep class rikka.hidden.compat.adapter.** { *; }
+# Broadening the keep to the entire rikka.hidden.compat package prevents R8 from touching ANY
+# class that extends a hidden framework stub (#544).
+-keep class rikka.hidden.compat.** { *; }
 
 # Entrance of Shizuku service
 -keep class rikka.shizuku.server.ShizukuService {
@@ -63,18 +60,12 @@
     public static void main(java.lang.String[]);
 }
 
-# Entrance of shell
--keep class af.shizuku.manager.shell.Shell {
-    public static void main(java.lang.String[], java.lang.String, android.os.IBinder, android.os.Handler);
-}
-
-# Entrance of "plus" shell (rish's "plus" command) - loaded reflectively by
-# ShizukuShellLoader the same way as Shell above, but had no keep rule of its own,
-# so R8 stripped it and every "sh plus" invocation failed with
-# ClassNotFoundException on af.shizuku.manager.shell.PlusShell (#377).
--keep class af.shizuku.manager.shell.PlusShell {
-    public static void main(java.lang.String[], java.lang.String, android.os.IBinder, android.os.Handler);
-}
+# Keep all rish and shizuku API classes used by Shell and PlusShell
+-keep class rikka.rish.** { *; }
+-keep class rikka.shizuku.** { *; }
+-keep class af.shizuku.manager.shell.** { *; }
+-keep class moe.shizuku.server.** { *; }
+-keep class af.shizuku.server.** { *; }
 
 # Keep settings fragments instantiated by name via reflection in PreferenceFragmentCompat
 -keep public class af.shizuku.manager.settings.** extends androidx.fragment.app.Fragment {

@@ -31,7 +31,47 @@ fun Context.showAccessibilityDialog() {
         }
     }
 
-    // Attempt automatic elevation via root if available on device
+    // 1. Attempt automatic elevation via Shizuku if alive and granted
+    if (rikka.shizuku.Shizuku.pingBinder() && rikka.shizuku.Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+        try {
+            val serviceName = "$packageName/${AdbPairingAccessibilityService::class.java.canonicalName}"
+            val p1 =
+                rikka.shizuku.Shizuku.newProcess(
+                    arrayOf("cmd", "appops", "set", packageName, "ACCESS_RESTRICTED_SETTINGS", "allow"),
+                    null,
+                    null,
+                )
+            p1?.waitFor()
+            p1?.destroy()
+
+            val p2 =
+                rikka.shizuku.Shizuku.newProcess(
+                    arrayOf("pm", "grant", packageName, "android.permission.WRITE_SECURE_SETTINGS"),
+                    null,
+                    null,
+                )
+            p2?.waitFor()
+            p2?.destroy()
+
+            val p3 =
+                rikka.shizuku.Shizuku.newProcess(
+                    arrayOf("cmd", "accessibility", "enable-accessibility-service", serviceName),
+                    null,
+                    null,
+                )
+            p3?.waitFor()
+            p3?.destroy()
+
+            if (enableAccessibilityService() || isAccessibilityEnabled()) {
+                showNavigateDialog()
+                return
+            }
+        } catch (e: Exception) {
+            timber.log.Timber.w(e, "Auto-elevation via Shizuku failed")
+        }
+    }
+
+    // 2. Attempt automatic elevation via root if available on device
     if (EnvironmentUtils.isRooted()) {
         try {
             val process =

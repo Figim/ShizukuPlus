@@ -64,7 +64,12 @@ fi
 step "Checking for missing R imports in Kotlin"
 # Find Kotlin files using R but not importing af.shizuku.manager.R
 # Specifically look for R.layout, R.id, etc. and ignore android.R
-MISSING_R=$(grep -rl "[^a-zA-Z.]R\.[a-z]" manager/src/main/java --include="*.kt" | xargs grep -L "import af.shizuku.manager.R" | grep -v "android.R")
+MISSING_R=$(grep -rl "[^a-zA-Z.]R\.[a-z]" manager/src/main/java --include="*.kt" | xargs grep -L "import af.shizuku.manager.R" | grep -v "android.R" | while read -r file; do
+    [ -z "$file" ] && continue
+    if ! grep -q "^package af.shizuku.manager$" "$file"; then
+        echo "$file"
+    fi
+done)
 if [ ! -z "$MISSING_R" ]; then
     echo -e "${COLOR_RED}FAIL${COLOR_RESET}"
     echo "$MISSING_R"
