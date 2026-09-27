@@ -44,24 +44,30 @@ abstract class M3ECardItemDecoration(
 
         var currentCardTop = Float.MIN_VALUE
         var lastItemBottom = Float.MIN_VALUE
+        var currentCardLeft = Float.MIN_VALUE
+        var currentCardRight = Float.MIN_VALUE
 
         for (i in 0 until count) {
             val child = parent.getChildAt(i) ?: continue
             if (child.visibility != View.VISIBLE || !shouldDecorate(child)) {
                 if (currentCardTop != Float.MIN_VALUE) {
-                    drawCard(c, parent, currentCardTop, lastItemBottom)
+                    drawCard(c, parent, currentCardTop, lastItemBottom, currentCardLeft, currentCardRight)
                     currentCardTop = Float.MIN_VALUE
                     lastItemBottom = Float.MIN_VALUE
+                    currentCardLeft = Float.MIN_VALUE
+                    currentCardRight = Float.MIN_VALUE
                 }
                 continue
             }
 
             if (isHeader(child)) {
                 if (currentCardTop != Float.MIN_VALUE) {
-                    drawCard(c, parent, currentCardTop, lastItemBottom)
+                    drawCard(c, parent, currentCardTop, lastItemBottom, currentCardLeft, currentCardRight)
                 }
                 currentCardTop = child.top.toFloat()
                 lastItemBottom = child.bottom.toFloat()
+                currentCardLeft = child.left.toFloat()
+                currentCardRight = child.right.toFloat()
 
                 // Draw a divider under the header if it has visible child preferences following
                 if (shouldDrawDivider(parent, i, count)) {
@@ -73,6 +79,8 @@ abstract class M3ECardItemDecoration(
             } else {
                 if (currentCardTop == Float.MIN_VALUE) {
                     currentCardTop = child.top.toFloat()
+                    currentCardLeft = child.left.toFloat()
+                    currentCardRight = child.right.toFloat()
                 }
                 lastItemBottom = child.bottom.toFloat()
 
@@ -86,7 +94,7 @@ abstract class M3ECardItemDecoration(
         }
 
         if (currentCardTop != Float.MIN_VALUE) {
-            drawCard(c, parent, currentCardTop, lastItemBottom)
+            drawCard(c, parent, currentCardTop, lastItemBottom, currentCardLeft, currentCardRight)
         }
     }
 
@@ -109,7 +117,11 @@ abstract class M3ECardItemDecoration(
         parent: RecyclerView,
         top: Float,
         bottom: Float,
+        left: Float = cardMargin,
+        right: Float = parent.width - cardMargin,
     ) {
-        c.drawRoundRect(cardMargin, top, parent.width - cardMargin, bottom, cornerRadius, cornerRadius, cardPaint)
+        val actualLeft = if (left != Float.MIN_VALUE) left else cardMargin
+        val actualRight = if (right != Float.MIN_VALUE) right else parent.width - cardMargin
+        c.drawRoundRect(actualLeft, top, actualRight, bottom, cornerRadius, cornerRadius, cardPaint)
     }
 }

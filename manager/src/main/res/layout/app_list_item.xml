@@ -14,7 +14,6 @@
     android:gravity="center_vertical"
     android:minHeight="72dp"
     android:orientation="horizontal"
-    app:fitsSystemWindowsInsets="start|end"
     tools:ignore="UseCompoundDrawables">
 
     <ImageView

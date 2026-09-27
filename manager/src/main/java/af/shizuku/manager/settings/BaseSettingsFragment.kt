@@ -244,7 +244,6 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         val context = recyclerView.context
         val cardMarginPx = (16 * context.resources.displayMetrics.density).toInt()
-        val contentPaddingPx = (8 * context.resources.displayMetrics.density).toInt()
 
         // Fix: Disable LayoutTransition to prevent IllegalArgumentException
         // "Providing a LayoutTransition into RecyclerView is not supported"
@@ -463,9 +462,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             val pos = parent.getChildAdapterPosition(view)
             if (pos == RecyclerView.NO_POSITION) return
 
-            // 12dp spacing above category headers to cleanly separate card groups
-            if (view.tag == "category_header") {
-                outRect.top = (12 * density).toInt()
+            // 16dp spacing above subsequent category headers to cleanly separate card groups
+            if (view.tag == "category_header" && pos > 0) {
+                outRect.top = (16 * density).toInt()
             }
         }
 
