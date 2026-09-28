@@ -200,7 +200,9 @@ class AboutSettingsFragment : BaseSettingsFragment() {
 
     private fun checkForUpdate() {
         val context = context ?: return
-        Toast.makeText(context, R.string.update_checking, Toast.LENGTH_SHORT).show()
+        val pref = findPreference<Preference>(KEY_CHECK_FOR_UPDATE)
+        pref?.isEnabled = false
+        pref?.summary = getString(R.string.update_checking)
         val channel = ShizukuSettings.getUpdateChannel()
         lifecycleScope.launch {
             try {
@@ -209,6 +211,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                         if (isAdded) {
                             ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
                             ShizukuSettings.setLastUpdateCheckFailed(false)
+                            pref?.isEnabled = true
                             updateLastCheckSummary()
                             showUpdateAvailableDialog(result.info)
                         }
@@ -217,6 +220,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                         if (isAdded) {
                             ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
                             ShizukuSettings.setLastUpdateCheckFailed(false)
+                            pref?.isEnabled = true
                             updateLastCheckSummary()
                             showUpToDateDialog()
                         }
@@ -224,6 +228,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                     is UpdateChecker.CheckResult.NetworkError -> {
                         if (isAdded) {
                             ShizukuSettings.setLastUpdateCheckFailed(true)
+                            pref?.isEnabled = true
                             updateLastCheckSummary()
                             showErrorDialog()
                         }
@@ -233,6 +238,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 Timber.tag(TAG).e(e, "Unexpected error checking for update")
                 if (isAdded) {
                     ShizukuSettings.setLastUpdateCheckFailed(true)
+                    pref?.isEnabled = true
                     updateLastCheckSummary()
                     showErrorDialog()
                 }

@@ -36,17 +36,14 @@ class AdbPairingAccessibilityService : AccessibilityService() {
             },
         )
 
-        val isSamsung = EnvironmentUtils.isSamsung()
         val isTv = EnvironmentUtils.isTelevision()
 
-        if (!(isTv || isSamsung) || !EnvironmentUtils.isTlsSupported()) {
+        if (!EnvironmentUtils.isTlsSupported()) {
             Toast.makeText(this, getString(R.string.toast_accessibility_tv_only), Toast.LENGTH_SHORT).show()
             disableSelf()
             return
         }
 
-        // On Samsung, we don't necessarily want to jump to MainActivity immediately
-        // as the user might be manually navigating Developer Options.
         if (isTv) {
             val intent =
                 Intent(this, MainActivity::class.java).apply {
@@ -183,6 +180,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                             val intent =
                                 Intent(this@AdbPairingAccessibilityService, MainActivity::class.java).apply {
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                    putExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, true)
                                 }
                             startActivity(intent)
                         } else {
