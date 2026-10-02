@@ -57,10 +57,17 @@ class AdbStartWorker(
 
             val cr = applicationContext.contentResolver
 
-            // Give the system ~1.5 s to finish initializing after reboot before toggling ADB.
-            // On first attempt with ADB currently disabled, this avoids an immediate connect failure.
+            // Give the system time to finish initializing after reboot before toggling ADB.
+            // Samsung One UI firmware takes longer to stabilize — give it an extra 1.5 s on top
+            // of the base 1.5 s delay to reduce the chance the firmware immediately resets
+            // adb_wifi_enabled after our first write.
             if (runAttemptCount == 0) {
-                if (!EnvironmentUtils.isAdbEnabled()) delay(1500L)
+                if (!EnvironmentUtils.isAdbEnabled()) {
+                    val baseDelay = if (
+                        Build.MANUFACTURER.equals("samsung", ignoreCase = true)
+                    ) 3000L else 1500L
+                    delay(baseDelay)
+                }
             }
 
             Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
@@ -128,6 +135,14 @@ class AdbStartWorker(
                             var awaitingAuth = false
                             var timeoutJob: Job? = null
                             var unlockReceiver: BroadcastReceiver? = null
+                            // Samsung firmware aggressively resets adb_wifi_enabled to 0 on boot
+                            // (observed on One UI 6/7/8). Track how many times we've re-enabled it
+                            // so we don't loop forever — after MAX_SAMSUNG_RESETS we fall through to
+                            // the normal handleAuth() path.
+                            var samsungResetCount = 0
+                            val maxSamsungResets = if (
+                                Build.MANUFACTURER.equals("samsung", ignoreCase = true)
+                            ) 4 else 0
 
                             fun startDiscoveryWithTimeout() {
                                 adbMdns.start()
@@ -195,6 +210,15 @@ class AdbStartWorker(
                                             0 ->
                                                 if (awaitingAuth) {
                                                     close(SecurityException("Network is not authorized for wireless debugging"))
+                                                } else if (samsungResetCount < maxSamsungResets) {
+                                                    // Samsung firmware reset detected — re-enable wireless
+                                                    // debugging with brief exponential backoff rather than
+                                                    // falling through to handleAuth() (which stops discovery).
+                                                    samsungResetCount++
+                                                    launch {
+                                                        delay(300L * samsungResetCount)
+                                                        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                                                    }
                                                 } else {
                                                     handleAuth()
                                                 }

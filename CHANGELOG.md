@@ -19,6 +19,9 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Fixed battery optimization snackbar persisting after the user grants the exemption** — `checkBatteryOptimization()` was only called in `onCreate()`, so returning from system settings never cleared the snackbar. Now called in `onResume()` as well. ([#535](https://github.com/thejaustin/ShizukuPlus/issues/535))
 - **Fixed settings search results showing no icons** — `SettingsSearchEngine` now reads `android:icon` from preference XML; `SearchResultItem` renders the icon on the left when present. TCP mode and all other preferences with icons now display correctly in search. ([#540](https://github.com/thejaustin/ShizukuPlus/issues/540))
 
+### 🐛 Bug Fixes (Boot / Samsung)
+- **Fixed Shizuku failing to start on boot on Samsung One UI 6/7/8 devices** — Samsung's firmware aggressively resets `adb_wifi_enabled` to 0 on boot, sometimes multiple times in quick succession. The `AdbStartWorker` now detects these firmware-originated resets (distinguished from genuine auth failures) and retries re-enabling wireless debugging up to 4 times with exponential backoff (300 ms × reset count) before falling through to the normal auth path. Non-Samsung devices are unaffected. Also increased the initial stabilization delay from 1.5 s to 3 s on Samsung to reduce the chance the firmware resets the setting before our first write is processed. ([#545](https://github.com/thejaustin/ShizukuPlus/issues/545))
+
 ### 🌍 Localization
 - **Complete Korean (ko) translation applied across all modules** — community contribution by @lightcorejs777: manager `strings.xml` expanded from ~187 to ~1290 strings (full coverage), new `arrays.xml`, new core/ui `strings.xml` + `arrays.xml` (773 strings), and new compat `strings.xml`. All format placeholders (`%1$s`, `%d`) preserved and verified. ([#554](https://github.com/thejaustin/ShizukuPlus/issues/554))
 
