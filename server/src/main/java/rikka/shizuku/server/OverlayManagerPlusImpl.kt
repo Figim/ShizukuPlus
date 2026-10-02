@@ -25,12 +25,44 @@ import rikka.shizuku.server.util.ShellExecutor
  *               FabricatedOverlay.Builder(String name, String target)
  *   Samsung OneUI 8 (API 36 base): Samsung-extended OverlayManager — reflection is unreliable;
  *               `cmd overlay` remains the authoritative path.
+ *
+ * One UI 7+ theme activation:
+ *   On API 35+ Samsung devices, enabling a themed overlay triggers Samsung's setup wizard
+ *   unless `settings/system/current_sec_active_themepackage` already names an active theme.
+ *   setOverlayEnabled() auto-writes this setting after a successful enable on those devices
+ *   (discovered by community contributor Bingblop, issue #533). The explicit
+ *   setActiveThemePackage() method lets callers write it independently with any package name.
  */
 class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
 
     companion object {
         private const val TAG = "OverlayManagerPlus"
         private const val OVERLAY_SERVICE = "overlay"
+
+        /** True on Samsung devices running One UI 7+ (Android 15 / API 35+). */
+        private fun isSamsungOneUI7Plus(): Boolean =
+            Build.MANUFACTURER.equals("samsung", ignoreCase = true) &&
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+
+        /**
+         * Resolve a UID to its primary package name via IPackageManager reflection.
+         * Returns null if the lookup fails — callers should be defensive.
+         */
+        private fun getPackageNameForUid(uid: Int): String? {
+            return try {
+                val pmBinder = ServiceManager.getService("package") ?: return null
+                val stub = Class.forName("android.content.pm.IPackageManager\$Stub")
+                val pm = stub.getMethod("asInterface", IBinder::class.java).invoke(null, pmBinder)
+                @Suppress("UNCHECKED_CAST")
+                val pkgs = pm.javaClass
+                    .getMethod("getPackagesForUid", Int::class.java)
+                    .invoke(pm, uid) as? Array<String>
+                pkgs?.firstOrNull()
+            } catch (e: Exception) {
+                Log.w(TAG, "getPackageNameForUid($uid): ${e.message}")
+                null
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -82,23 +114,25 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
         if (packageName == null) return false
         // Derive user from the caller's UID, not the server's own UID (which is always shell/root
         // and always maps to user 0 — incorrect for multi-user setups).
-        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
+        val callingUid = Binder.getCallingUid()
+        val userId = UserHandleCompat.getUserId(callingUid)
         Log.d(TAG, "setOverlayEnabled pkg=$packageName enabled=$enabled userId=$userId")
 
         val service = getIOverlayManager()
+        var succeeded = false
 
         // --- Primary path: IOverlayManager.setEnabled(String, boolean, int) ---
         // This method exists in the AIDL on ALL API levels (including 31+); the previous
         // implementation incorrectly skipped it for API 31+ and used a transaction-builder
         // path whose setEnabled() method doesn't actually exist on the builder class.
-        if (service != null) {
+        if (!succeeded && service != null) {
             try {
                 val method = service.javaClass.getMethod(
                     "setEnabled", String::class.java, Boolean::class.java, Int::class.java
                 )
                 method.invoke(service, packageName, enabled, userId)
                 Log.i(TAG, "setOverlayEnabled: setEnabled() reflection succeeded")
-                return true
+                succeeded = true
             } catch (e: Exception) {
                 Log.w(TAG, "setOverlayEnabled: setEnabled() reflection failed — ${e.message}")
             }
@@ -107,33 +141,36 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
         // --- Secondary path: Samsung-specific setEnabledExclusive (OneUI font/theme overlays) ---
         // Samsung's IOverlayManager adds setEnabledExclusive and setEnabledExclusiveInCategory
         // for themed overlays where only one overlay per target resource should be active.
-        if (service != null && enabled) {
+        if (!succeeded && service != null && enabled) {
             try {
                 val method = service.javaClass.getMethod(
                     "setEnabledExclusive", String::class.java, Boolean::class.java, Int::class.java
                 )
                 method.invoke(service, packageName, true, userId)
                 Log.i(TAG, "setOverlayEnabled: setEnabledExclusive() reflection succeeded")
-                return true
+                succeeded = true
             } catch (_: Exception) {}
 
-            try {
-                val method = service.javaClass.getMethod(
-                    "setEnabledExclusiveInCategory", String::class.java, Int::class.java
-                )
-                method.invoke(service, packageName, userId)
-                Log.i(TAG, "setOverlayEnabled: setEnabledExclusiveInCategory() reflection succeeded")
-                return true
-            } catch (_: Exception) {}
+            if (!succeeded) {
+                try {
+                    val method = service.javaClass.getMethod(
+                        "setEnabledExclusiveInCategory", String::class.java, Int::class.java
+                    )
+                    method.invoke(service, packageName, userId)
+                    Log.i(TAG, "setOverlayEnabled: setEnabledExclusiveInCategory() reflection succeeded")
+                    succeeded = true
+                } catch (_: Exception) {}
+            }
         }
 
         // --- Tertiary path: OverlayManagerTransaction (API 31+, AOSP OMT commit) ---
-        if (service != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (!succeeded && service != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
                 val txBuilderClass = Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
                 val txBuilder = txBuilderClass.getConstructor().newInstance()
                 // On some AOSP builds, the transaction builder has setEnabled/setEnabledExclusive
                 for (methodName in listOf("setEnabled", "setEnabledExclusive")) {
+                    if (succeeded) break
                     try {
                         val m = txBuilderClass.getMethod(
                             methodName, String::class.java, Boolean::class.java, Int::class.java
@@ -143,7 +180,7 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
                         val txClass = Class.forName("android.content.om.OverlayManagerTransaction")
                         service.javaClass.getMethod("commit", txClass).invoke(service, tx)
                         Log.i(TAG, "setOverlayEnabled: OMT.$methodName() succeeded")
-                        return true
+                        succeeded = true
                     } catch (_: Exception) {}
                 }
             } catch (e: Exception) {
@@ -152,11 +189,23 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
         }
 
         // --- Fallback path: cmd overlay ---
-        val action = if (enabled) "enable" else "disable"
-        val ok = runOverlayCmd(action, "--user", userId.toString(), packageName)
-        if (ok) Log.i(TAG, "setOverlayEnabled: cmd overlay fallback succeeded")
-        else Log.e(TAG, "setOverlayEnabled: all paths failed for $packageName")
-        return ok
+        if (!succeeded) {
+            val action = if (enabled) "enable" else "disable"
+            succeeded = runOverlayCmd(action, "--user", userId.toString(), packageName)
+            if (succeeded) Log.i(TAG, "setOverlayEnabled: cmd overlay fallback succeeded")
+            else Log.e(TAG, "setOverlayEnabled: all paths failed for $packageName")
+        }
+
+        // On Samsung One UI 7+, bypass the mandatory theme setup wizard by writing
+        // current_sec_active_themepackage right after a successful enable. Use the caller's
+        // package name when available (Hex Installer), falling back to the overlay package.
+        if (succeeded && enabled && isSamsungOneUI7Plus()) {
+            val callerPkg = getPackageNameForUid(callingUid) ?: packageName
+            Log.d(TAG, "setOverlayEnabled: auto-setting active theme package → $callerPkg")
+            setActiveThemePackage(callerPkg)
+        }
+
+        return succeeded
     }
 
     // -------------------------------------------------------------------------
@@ -437,5 +486,32 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
         // Mock success for Ghost Bridge emulation.
         // Actual overlay logic requires root/Magisk to mount OverlayFS.
         return true
+    }
+
+    // -------------------------------------------------------------------------
+    // setActiveThemePackage (Samsung One UI 7+)
+    // -------------------------------------------------------------------------
+
+    override fun setActiveThemePackage(packageName: String?): Boolean {
+        if (!isSamsungOneUI7Plus()) {
+            Log.d(TAG, "setActiveThemePackage: skipping (not Samsung One UI 7+)")
+            return true // not an error — simply a no-op on non-Samsung devices
+        }
+
+        val cmd = if (packageName.isNullOrEmpty()) {
+            Log.d(TAG, "setActiveThemePackage: clearing current_sec_active_themepackage")
+            arrayOf("settings", "delete", "system", "current_sec_active_themepackage")
+        } else {
+            Log.d(TAG, "setActiveThemePackage: setting current_sec_active_themepackage=$packageName")
+            arrayOf("settings", "put", "system", "current_sec_active_themepackage", packageName)
+        }
+
+        val ok = ShellExecutor.execBool(*cmd)
+        if (ok) {
+            Log.i(TAG, "setActiveThemePackage: succeeded for ${packageName ?: "(cleared)"}")
+        } else {
+            Log.e(TAG, "setActiveThemePackage: failed for ${packageName ?: "(cleared)"}")
+        }
+        return ok
     }
 }
