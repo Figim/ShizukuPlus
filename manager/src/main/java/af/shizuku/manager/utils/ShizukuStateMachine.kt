@@ -123,6 +123,32 @@ object ShizukuStateMachine {
                     }
                 }
 
+                if ((newState == State.STOPPED || newState == State.CRASHED) &&
+                    ShizukuSettings.isAutoCloseTcpPortEnabled()
+                ) {
+                    try {
+                        val context = ShizukuApplication.appContext
+                        if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+                            // Close the ADB TCP listening port by disabling wireless debugging.
+                            // This runs asynchronously so it doesn't block the state transition.
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    Settings.Global.putInt(
+                                        context.contentResolver,
+                                        "adb_wifi_enabled",
+                                        0,
+                                    )
+                                    Timber.tag("ShizukuStateMachine").i("auto-closed TCP port (disabled wireless debugging)")
+                                } catch (e: Exception) {
+                                    Timber.tag("ShizukuStateMachine").w(e, "Failed to auto-close TCP port")
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to initiate TCP auto-close on $newState")
+                    }
+                }
+
                 // Persist so a future cold-started process (see loadPersistedSettledState() above)
                 // can tell a crash from a deliberate stop instead of defaulting to "assume stopped".
                 try {

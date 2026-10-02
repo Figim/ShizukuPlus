@@ -28,6 +28,9 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🔒 Security
 - **Added "Randomize TCP Port" action in Behavior settings** — tapping the new preference picks a random port in the IANA private range (49152–65535), which avoids the commonly-scanned ranges (e.g. 5555) and large-scan alarm thresholds. Visible only when TCP mode is enabled; hidden in root mode and on non-TLS devices. Respects the existing restart-confirmation flow if Shizuku is running. ([#518](https://github.com/thejaustin/ShizukuPlus/issues/518))
 
+### 🔒 Security (TCP)
+- **Added "Auto-close TCP port on stop" setting in Behavior → Network** — when enabled, disabling Shizuku (or an unexpected crash) automatically writes `adb_wifi_enabled = 0`, closing the ADB wireless debugging listener and the TCP port it was bound to. Visible only when TCP mode is on; hidden in root mode and on non-TLS devices. Off by default. ([#518](https://github.com/thejaustin/ShizukuPlus/issues/518))
+
 ### 🔧 Features (Overlay Bridge)
 - **Overlay Bridge automatically bypasses the One UI 7+ mandatory theme setup wizard** — on Samsung devices running Android 15 / One UI 7+ (API 35+), enabling an overlay via `IOverlayManagerPlus.setOverlayEnabled()` now also writes `settings/system/current_sec_active_themepackage` immediately after a successful enable. This skips the one-time Samsung setup wizard that would otherwise interrupt the theming flow in Hex Installer. The bridge prefers the calling app's package name (e.g. `project.vivid.hex.nx`) and falls back to the overlay package name. A new explicit `setActiveThemePackage(String)` AIDL method is also available for theming engines that want manual control. No-op on non-Samsung devices. (Community research by @Bingblop, [#533](https://github.com/thejaustin/ShizukuPlus/issues/533))
 

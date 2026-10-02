@@ -36,6 +36,7 @@ class BehaviorSettingsFragment :
     private lateinit var tcpModePreference: TwoStatePreference
     private lateinit var tcpPortPreference: EditTextPreference
     private lateinit var tcpRandomizePreference: Preference
+    private lateinit var tcpAutoClosePreference: TwoStatePreference
     private lateinit var networkCategory: CollapsiblePreferenceCategory
     private lateinit var startupCategory: CollapsiblePreferenceCategory
 
@@ -63,6 +64,7 @@ class BehaviorSettingsFragment :
         tcpModePreference = requireNotNull(findPreference(KEY_TCP_MODE))
         tcpPortPreference = requireNotNull(findPreference(KEY_TCP_PORT))
         tcpRandomizePreference = requireNotNull(findPreference("tcp_port_randomize"))
+        tcpAutoClosePreference = requireNotNull(findPreference(KEY_TCP_AUTO_CLOSE_PORT))
         networkCategory = requireNotNull(findPreference("category_network_activity"))
         startupCategory = requireNotNull(findPreference("category_startup"))
 
@@ -164,11 +166,12 @@ class BehaviorSettingsFragment :
                 isEnabled = false
                 isChecked = true
             } else {
-                // Non-TLS device: hide tcp_mode, tcp_port, and randomize through the category
-                // so expand/collapse cycles don't accidentally restore them.
+                // Non-TLS device: hide tcp_mode, tcp_port, randomize, and auto-close through the
+                // category so expand/collapse cycles don't accidentally restore them.
                 networkCategory.setChildAvailable(KEY_TCP_MODE, false)
                 networkCategory.setChildAvailable(KEY_TCP_PORT, false)
                 networkCategory.setChildAvailable("tcp_port_randomize", false)
+                networkCategory.setChildAvailable(KEY_TCP_AUTO_CLOSE_PORT, false)
             }
         }
 
@@ -270,6 +273,7 @@ class BehaviorSettingsFragment :
             networkCategory.setChildAvailable(KEY_TCP_MODE, false)
             networkCategory.setChildAvailable(KEY_TCP_PORT, false)
             networkCategory.setChildAvailable("tcp_port_randomize", false)
+            networkCategory.setChildAvailable(KEY_TCP_AUTO_CLOSE_PORT, false)
         } else if (tcpModeAvailable) {
             networkCategory.setChildAvailable(KEY_TCP_MODE, true)
             syncTcpPortVisibility()
@@ -289,6 +293,7 @@ class BehaviorSettingsFragment :
             val tcpOn = tcpModePreference.isChecked
             networkCategory.setChildAvailable(KEY_TCP_PORT, tcpOn)
             networkCategory.setChildAvailable("tcp_port_randomize", tcpOn)
+            networkCategory.setChildAvailable(KEY_TCP_AUTO_CLOSE_PORT, tcpOn)
         }
     }
 

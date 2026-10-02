@@ -62,6 +62,12 @@
             android:icon="@drawable/ic_refresh_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="tcp_auto_close_port"
+            android:title="@string/settings_tcp_auto_close_port"
+            android:summary="@string/settings_tcp_auto_close_port_summary"
+            android:icon="@drawable/ic_shield_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="auto_disable_usb_debugging"
             android:title="@string/settings_auto_disable_usb_debugging"
             android:summary="@string/settings_auto_disable_usb_debugging_summary"
