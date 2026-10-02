@@ -86,7 +86,13 @@ class SettingsActivity :
                         }
                     },
                     onContainerCreated = {
-                        if (savedInstanceState == null && supportFragmentManager.findFragmentById(R.id.fragment_container) == null) {
+                        // Do not gate on savedInstanceState here. When the activity is killed in
+                        // the background and recreated, the Fragment Manager may not be able to
+                        // restore the fragment into the Compose-created AndroidView container
+                        // before onContainerCreated fires, leaving the page blank. Checking
+                        // findFragmentById is reliable: if FM did restore the fragment it is
+                        // non-null (skip); if it wasn't restored we add a fresh one.
+                        if (supportFragmentManager.findFragmentById(R.id.fragment_container) == null) {
                             supportFragmentManager
                                 .beginTransaction()
                                 .replace(R.id.fragment_container, SettingsFragment())

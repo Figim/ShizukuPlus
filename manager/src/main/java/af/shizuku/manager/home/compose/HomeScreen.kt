@@ -78,6 +78,13 @@ fun HomeScreen(
     SideEffect {
         if (topAppBarState.heightOffsetLimit != heightOffsetLimit) {
             topAppBarState.heightOffsetLimit = heightOffsetLimit
+            // Re-coerce the existing offset to the new limit via the setter.
+            // heightOffset's getter returns the raw stored float without coercion; only the
+            // setter enforces [heightOffsetLimit, 0f]. Without this reassignment, switching
+            // from one-handed (large bar) to flat mode while scrolled down leaves heightOffset
+            // far below the new limit, making the next Compose frame produce a negative Surface
+            // height that throws "Padding must be non-negative".
+            topAppBarState.heightOffset = topAppBarState.heightOffset
         }
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
