@@ -35,6 +35,7 @@ class BehaviorSettingsFragment :
     private lateinit var deviceHardeningPreference: TwoStatePreference
     private lateinit var tcpModePreference: TwoStatePreference
     private lateinit var tcpPortPreference: EditTextPreference
+    private lateinit var tcpRandomizePreference: Preference
     private lateinit var networkCategory: CollapsiblePreferenceCategory
     private lateinit var startupCategory: CollapsiblePreferenceCategory
 
@@ -61,6 +62,7 @@ class BehaviorSettingsFragment :
         deviceHardeningPreference = requireNotNull(findPreference(KEY_DEVICE_HARDENING_ENABLED))
         tcpModePreference = requireNotNull(findPreference(KEY_TCP_MODE))
         tcpPortPreference = requireNotNull(findPreference(KEY_TCP_PORT))
+        tcpRandomizePreference = requireNotNull(findPreference("tcp_port_randomize"))
         networkCategory = requireNotNull(findPreference("category_network_activity"))
         startupCategory = requireNotNull(findPreference("category_startup"))
 
@@ -162,10 +164,11 @@ class BehaviorSettingsFragment :
                 isEnabled = false
                 isChecked = true
             } else {
-                // Non-TLS device: hide tcp_mode and tcp_port through the category so
-                // expand/collapse cycles don't accidentally restore them.
+                // Non-TLS device: hide tcp_mode, tcp_port, and randomize through the category
+                // so expand/collapse cycles don't accidentally restore them.
                 networkCategory.setChildAvailable(KEY_TCP_MODE, false)
                 networkCategory.setChildAvailable(KEY_TCP_PORT, false)
+                networkCategory.setChildAvailable("tcp_port_randomize", false)
             }
         }
 
@@ -196,6 +199,21 @@ class BehaviorSettingsFragment :
                 }
                 false
             }
+        }
+
+        tcpRandomizePreference.setOnPreferenceClickListener {
+            val randomPort = (49152..65535).random()
+            val applyChange: () -> Unit = {
+                ShizukuSettings.setTcpPort(randomPort)
+                tcpPortPreference.text = randomPort.toString()
+                SnackbarHelper.show(
+                    requireContext(),
+                    requireView(),
+                    requireContext().getString(R.string.snackbar_tcp_port_randomized, randomPort),
+                )
+            }
+            maybePromptRestart(KEY_TCP_PORT, randomPort) { applyChange() }
+            true
         }
 
         findPreference<TwoStatePreference>(KEY_AUTO_DISABLE_USB_DEBUGGING)?.apply {
@@ -251,6 +269,7 @@ class BehaviorSettingsFragment :
         if (isRootMode) {
             networkCategory.setChildAvailable(KEY_TCP_MODE, false)
             networkCategory.setChildAvailable(KEY_TCP_PORT, false)
+            networkCategory.setChildAvailable("tcp_port_randomize", false)
         } else if (tcpModeAvailable) {
             networkCategory.setChildAvailable(KEY_TCP_MODE, true)
             syncTcpPortVisibility()
@@ -267,7 +286,9 @@ class BehaviorSettingsFragment :
             EnvironmentUtils.isRooted() ||
                 ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
         if (tcpModeAvailable && !isRootMode) {
-            networkCategory.setChildAvailable(KEY_TCP_PORT, tcpModePreference.isChecked)
+            val tcpOn = tcpModePreference.isChecked
+            networkCategory.setChildAvailable(KEY_TCP_PORT, tcpOn)
+            networkCategory.setChildAvailable("tcp_port_randomize", tcpOn)
         }
     }
 

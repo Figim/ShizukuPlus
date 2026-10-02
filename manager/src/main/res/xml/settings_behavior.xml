@@ -55,6 +55,12 @@
             android:inputType="number"
             app:useSimpleSummaryProvider="true" />
 
+        <Preference
+            android:key="tcp_port_randomize"
+            android:title="@string/settings_tcp_randomize_port"
+            android:summary="@string/settings_tcp_randomize_port_summary"
+            android:icon="@drawable/ic_refresh_24" />
+
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="auto_disable_usb_debugging"
             android:title="@string/settings_auto_disable_usb_debugging"
