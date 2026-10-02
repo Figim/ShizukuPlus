@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="icon_styles">
+        <item>표준 (채움)</item>
+        <item>외곽선</item>
+        <item>투톤</item>
+    </string-array>
+    <string-array name="shape_styles">
+        <item>젠 (아티스틱)</item>
+        <item>모던 (Material 3)</item>
+        <item>클래식 (Material 2)</item>
+        <item>오가닉 (스쿼클)</item>
+    </string-array>
+    <string-array name="animation_intensities">
+        <item>없음</item>
+        <item>은은하게</item>
+        <item>표준</item>
+        <item>익스프레시브</item>
+    </string-array>
+</resources>

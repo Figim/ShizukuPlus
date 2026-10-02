@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="night_mode">
+        <item>@string/dark_theme_off</item>
+        <item>@string/dark_theme_on</item>
+        <item>@string/follow_system</item>
+    </string-array>
+    <string-array name="swipe_actions">
+        <item>@string/settings_action_none</item>
+        <item>@string/settings_action_open_app</item>
+        <item>@string/settings_action_app_info</item>
+        <item>@string/settings_action_toggle_permission</item>
+        <item>@string/settings_action_hide_from_list</item>
+    </string-array>
+    <string-array name="spoof_targets">
+        <item>자동 감지 (시스템 기본값)</item>
+        <item>Pixel 10 Pro XL</item>
+        <item>Pixel 9 Pro XL</item>
+        <item>Pixel 8 Pro</item>
+        <item>Galaxy S25 Ultra</item>
+        <item>Galaxy S24 Ultra</item>
+        <item>Galaxy S23 Ultra</item>
+        <item>Galaxy S22 Ultra</item>
+        <item>OnePlus 13</item>
+        <item>OnePlus 12</item>
+        <item>Nothing Phone (3)</item>
+        <item>Nothing Phone (2)</item>
+        <item>Xiaomi 15 Pro</item>
+        <item>Xiaomi 14 Ultra</item>
+        <item>Oppo Find X8 Ultra</item>
+        <item>TCL 50 Pro</item>
+    </string-array>
+    <string-array name="corner_style_entries">
+        <item>@string/corner_style_global</item>
+        <item>@string/corner_style_sharp</item>
+        <item>@string/corner_style_rounded</item>
+        <item>@string/corner_style_large</item>
+        <item>@string/corner_style_squircle</item>
+        <item>@string/corner_style_extra_large</item>
+    </string-array>
+    <string-array name="corner_rounding_entries">
+        <item>강조 — 32dp (기본값)</item>
+        <item>은은하게 — 20dp</item>
+        <item>표준 M3 — 28dp</item>
+        <item>크게 — 36dp</item>
+        <item>최대 — 44dp</item>
+        <item>시스템 기본값</item>
+    </string-array>
+    <string-array name="update_channel_entries">
+        <item>@string/update_channel_stable</item>
+        <item>@string/update_channel_dev</item>
+    </string-array>
+    <string-array name="custom_accents">
+        <item>표준 파랑 (기본값)</item>
+        <item>미드나잇 바이올렛</item>
+        <item>포레스트 그린</item>
+        <item>크림슨 로즈</item>
+        <item>딥 오션</item>
+        <item>앰버 선셋</item>
+        <item>로즈 페탈</item>
+        <item>미드나잇 슬레이트</item>
+    </string-array>
+    <string-array name="icon_styles">
+        <item>표준 (채움)</item>
+        <item>외곽선</item>
+        <item>투톤</item>
+    </string-array>
+    <string-array name="icon_color_modes">
+        <item>색상 없음 (단색)</item>
+        <item>모두 같은 색상</item>
+        <item>각기 다른 색상</item>
+    </string-array>
+    <string-array name="shape_styles">
+        <item>젠 (잎/물방울)</item>
+        <item>모던 (Material 3)</item>
+        <item>클래식 (Material 2)</item>
+        <item>오가닉 (스쿼클)</item>
+        <item>컷 (앵귤러)</item>
+    </string-array>
+    <string-array name="animation_intensities">
+        <item>없음</item>
+        <item>은은하게</item>
+        <item>표준</item>
+        <item>익스프레시브</item>
+    </string-array>
+    <string-array name="status_card_outline_styles">
+        <item>Material (테마 색상)</item>
+        <item>초록 / 빨강 (상태 색상)</item>
+    </string-array>
+</resources>
