@@ -120,6 +120,20 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-03 — Claude Code (Opus 4.7) [Release v13.7.0.r2737 cut]
+
+**Done:**
+- **Fixed broken `api` submodule pointer** — CI was failing on every master push since the submodule pointed to `02db531b` (a local commit never pushed to `thejaustin/ShizukuPlus-API`). Updated pointer to current remote HEAD `5c8cccd7`. Commit `81b57270`.
+- **Cut stable release v13.7.0.r2737** — Stamped CHANGELOG `## [Unreleased]` → `## [v13.7.0.r2737 — Stable Release]`, tagged `v13.7.0.r2737`, dispatched `Build App` workflow via `workflow_dispatch` (stable path — `push` to master creates prerelease; only `workflow_dispatch` with `prerelease=false` publishes stable). Build in progress: run `37130016516`.
+- **Verified #530 (monochrome icon) already fixed** — `ic_monochrome.xml` already contained the filled hexagon silhouette fix from a previous session; fix was in Unreleased, now ships with this release.
+
+**Open:**
+- CI stable build result pending (run 37130016516).
+- Cross-flavor settings sync (`SettingsSharingProvider`) needs on-device testing with both flavors installed.
+- Hex Installer One UI 7+ deep compat (#533) deferred.
+
+---
+
 ### 2026-10-03 — Claude Code (Sonnet 4.6) [CLAUDE.md + version scheme fix + issue triage]
 
 **Done:**
