@@ -965,7 +965,7 @@
     <string name="settings_main_nav_startup_behavior_summary">Boot options, watchdog, network, activity, and updates</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; Diagnostics</string>
     <string name="settings_main_nav_advanced_diagnostics_summary">Logs, ADB tools, and troubleshooting</string>
-    <string name="settings_main_nav_about_summary">Version, licenses, and developer options</string>
+    <string name="settings_main_nav_about_summary">Version, backup &amp; restore, licenses, and developer options</string>
     <string name="settings_accent_violet_applied">Midnight Violet applied</string>
     <string name="settings_accent_green_applied">Forest Green applied</string>
     <string name="settings_accent_crimson_applied">Crimson Rose applied</string>
@@ -1460,6 +1460,19 @@
     <string name="backup_no_file_manager_save">No file manager app found to save the backup</string>
     <string name="backup_no_file_manager_open">No file manager app found to open the backup</string>
 
+    <!-- Peer Settings Sharing / Drop-In Sync -->
+    <string name="settings_sync_peer_title">Sync with %1$s</string>
+    <string name="settings_sync_peer_summary_installed">%1$s is installed • Tap to sync settings</string>
+    <string name="settings_sync_peer_summary_not_installed">%1$s is not installed on this device</string>
+    <string name="settings_sync_peer_not_installed_dialog">%1$s is not currently installed. When you install %1$s for testing or as a drop-in replacement, you can seamlessly import and sync settings between both apps.</string>
+    <string name="settings_sync_peer_import">Import settings from %1$s</string>
+    <string name="settings_sync_peer_export">Export settings to %1$s</string>
+    <string name="settings_sync_peer_import_success">Settings successfully imported from %1$s</string>
+    <string name="settings_sync_peer_export_success">Settings successfully exported to %1$s</string>
+    <string name="settings_sync_peer_failed">Failed to sync settings with %1$s. Ensure both apps are installed and up to date.</string>
+    <string name="settings_auto_sync_peer_title">Auto-sync with %1$s</string>
+    <string name="settings_auto_sync_peer_summary">Automatically synchronize preferences and configurations when switching between apps</string>
+
     <!-- Samsung ADB dialog -->
     <string name="adb_dialog_popup_settings">Pop-up Settings</string>
 
@@ -1530,7 +1543,7 @@
 
     <!-- Hide backup settings (#461) -->
     <string name="settings_hide_backup_settings">Hide Backup &amp; Restore</string>
-    <string name="settings_hide_backup_settings_summary">Remove the Backup &amp; Restore section from the Feature Hub settings screen</string>
+    <string name="settings_hide_backup_settings_summary">Remove the Backup &amp; Restore section from the About settings screen</string>
 
     <!-- Package identity / MDM bypass UI (#469) -->
     <string name="settings_package_identity_category">Package Identity</string>

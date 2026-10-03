@@ -153,9 +153,11 @@ class DiagnosticsDashboardPreference
                             }
                         }
                         "dhizuku_not_owner" -> {
+                            // applicationId differs from namespace (af.shizuku.manager), so the full class name
+                            // must be explicit rather than dot shorthand notation (issue #560).
                             val cmd =
                                 "adb shell dpm set-device-owner " +
-                                    "${context.packageName}/.admin.DhizukuAdminReceiver"
+                                    "${context.packageName}/af.shizuku.manager.admin.DhizukuAdminReceiver"
                             MaterialAlertDialogBuilder(context)
                                 .setTitle(R.string.diagnostics_device_owner_setup_title)
                                 .setMessage(context.getString(R.string.diagnostics_device_owner_setup_message, cmd))

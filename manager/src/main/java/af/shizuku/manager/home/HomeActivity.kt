@@ -45,8 +45,10 @@ import com.airbnb.mvrx.withState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import io.noties.markwon.Markwon
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rikka.core.ktx.unsafeLazy
 import rikka.lifecycle.Status
 import rikka.recyclerview.addEdgeSpacing
@@ -685,10 +687,22 @@ open class HomeActivity :
         adapter.notifyDataSetChanged()
         checkServerStatus()
         appsModel.load()
-        // Re-check battery optimization every time the Activity resumes so the snackbar
-        // is dismissed immediately after the user grants the exemption in system settings
-        // and returns to the app (#535).
         homeModel.checkBatteryOptimization()
+
+        // Sync settings from peer app (Drop-In <-> Shizuku+) if peer was modified
+        lifecycleScope.launch(Dispatchers.IO) {
+            val synced =
+                af.shizuku.manager.settings.SettingsShareManager
+                    .checkAndPerformAutoSync(this@HomeActivity)
+            if (synced) {
+                withContext(Dispatchers.Main) {
+                    isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                    isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+                    isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        }
     }
 
     override fun onPause() {

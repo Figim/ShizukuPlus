@@ -708,13 +708,14 @@ class ShizukuApplication :
         Sentry.addBreadcrumb(Breadcrumb("App started: ${BuildConfig.VERSION_NAME}"))
 
         // 4. Strict mode for debugging (DEBUG only)
+        // Note: penaltyFlashScreen() intentionally removed to prevent red screen flashing
+        // during main-thread disk reads / preference inflation.
         if (BuildConfig.DEBUG) {
             android.os.StrictMode.setThreadPolicy(
                 android.os.StrictMode.ThreadPolicy
                     .Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyFlashScreen()
                     .build(),
             )
             android.os.StrictMode.setVmPolicy(
@@ -731,6 +732,7 @@ class ShizukuApplication :
         // 5. Initialize settings and managers
         try {
             initializeManagers()
+            initPeerSettingsSync()
             if (ShizukuSettings.getWatchdog() && ShizukuSettings.isLiveActivityEnabled()) {
                 try {
                     // startForegroundService() is required on API 26+ to start from background;
@@ -761,5 +763,39 @@ class ShizukuApplication :
 
         Timber.d("Shizuku+ ${BuildConfig.VERSION_NAME} initialization complete")
         Sentry.addBreadcrumb(Breadcrumb("App initialization complete"))
+    }
+
+    private fun initPeerSettingsSync() {
+        val prefs = ShizukuSettings.getPreferences() ?: return
+        prefs.registerOnSharedPreferenceChangeListener { _, key ->
+            if (key != null &&
+                key != ShizukuSettings.Keys.KEY_SETTINGS_LAST_MODIFIED &&
+                key != ShizukuSettings.Keys.KEY_PEER_INITIAL_IMPORT_DONE &&
+                key != ShizukuSettings.Keys.KEY_AUTO_SYNC_PEER_SETTINGS
+            ) {
+                af.shizuku.manager.settings.SettingsShareManager
+                    .markSettingsModified()
+                if (af.shizuku.manager.settings.SettingsShareManager
+                        .isAutoSyncEnabled() &&
+                    af.shizuku.manager.settings.SettingsShareManager
+                        .isPeerInstalled(this)
+                ) {
+                    CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                        af.shizuku.manager.settings.SettingsShareManager
+                            .exportToPeer(this@ShizukuApplication)
+                    }
+                }
+            }
+        }
+
+        // On startup: check for initial import or auto-sync in background
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            try {
+                af.shizuku.manager.settings.SettingsShareManager
+                    .checkAndPerformAutoSync(this@ShizukuApplication)
+            } catch (e: Exception) {
+                Timber.tag("ShizukuApplication").w(e, "Peer settings initial auto-sync failed")
+            }
+        }
     }
 }

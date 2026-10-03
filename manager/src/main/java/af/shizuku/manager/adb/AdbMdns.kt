@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.IOException
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.NetworkInterface
 import java.net.ServerSocket
@@ -96,7 +97,7 @@ class AdbMdns(
                                 .any { hostAddress == it.hostAddress }
                         }
             ) &&
-            isPortAvailable(resolvedService.port)
+            isPortAvailable(resolvedService.host, resolvedService.port)
         ) {
             serviceName = resolvedService.serviceName
             resolvedHost = if (isLocal || hostAddress == null) "127.0.0.1" else hostAddress
@@ -122,15 +123,43 @@ class AdbMdns(
         }
     }
 
-    private fun isPortAvailable(port: Int) =
+    /**
+     * Checks if the ADB service port is actively in use / responding on this device (issue #559).
+     *
+     * In upstream Shizuku, this only tested binding to `127.0.0.1:port`. On modern Android (15/16)
+     * and OEM ROMs (e.g., Honor MagicOS, Xiaomi HyperOS, OnePlus OxygenOS), wireless debugging
+     * binds directly to the network interface IP (e.g. wlan0) rather than loopback. A loopback bind
+     * succeeds in that case, falsely reporting the port as "not in use" and getting stuck searching forever.
+     */
+    private fun isPortAvailable(
+        host: InetAddress?,
+        port: Int,
+    ): Boolean {
+        // Step 1: If binding to 127.0.0.1 throws IOException (EADDRINUSE), adbd is bound on loopback or 0.0.0.0
         try {
             ServerSocket().use {
                 it.bind(InetSocketAddress("127.0.0.1", port), 1)
-                false
             }
         } catch (_: IOException) {
-            true
+            return true
         }
+
+        // Step 2: adbd bound to the resolved interface IP only (e.g. wlan0) — the loopback bind
+        // above succeeds in that case, so also try binding the exact address mDNS resolved to.
+        if (host != null && !host.isLoopbackAddress) {
+            try {
+                ServerSocket().use {
+                    it.bind(InetSocketAddress(host, port), 1)
+                }
+            } catch (_: IOException) {
+                return true
+            }
+        }
+
+        // Deliberately no active connect() probe: opening a raw TCP connection to adbd's TLS
+        // pairing port without completing the handshake can be treated as a failed pairing attempt.
+        return false
+    }
 
     internal class DiscoveryListener(
         private val adbMdns: AdbMdns,

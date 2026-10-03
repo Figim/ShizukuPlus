@@ -119,6 +119,29 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-03 — Antigravity (Gemini 3.8 Flash) [Settings red flash fix + Drop-In flavor settings sharing + About section restructure + GH issue fixes]
+
+**Done:**
+- **Fixed red screen flashing when opening Settings**:
+  - `ShizukuApplication.kt`: removed `StrictMode.ThreadPolicy.Builder().penaltyFlashScreen()`. In debug builds, `penaltyFlashScreen()` instructed the compositor to flash the entire screen red on every main-thread disk read / preference inflation occurring when opening `SettingsActivity`. Retained `penaltyLog()` so StrictMode diagnostics remain visible in logcat without visual distraction.
+- **Implemented Drop-In <-> ShizukuPlus inter-app settings sharing**:
+  - `SettingsSharingProvider.kt`: created signature-protected `ContentProvider` (`${applicationId}.settings.share`) guarded by `af.shizuku.plus.permission.MANAGER` (`protectionLevel="signature"`) and verified against `PackageManager.checkSignatures`. Supports `getSettings`, `setSettings`, `getLastModified`, and `ping`.
+  - `SettingsShareManager.kt`: core synchronization engine. Detects peer flavor (`af.shizuku.plus.api` <=> `moe.shizuku.privileged.api`), executes automatic initial import when switching or launching either app for testing, performs bi-directional sync based on timestamps, and supports manual import/export.
+  - `ShizukuApplication.kt`: automatically performs initial import / auto-sync on startup and registers a listener to automatically export settings changes to the peer app in the background when auto-sync is enabled.
+  - `HomeActivity.kt`: runs auto-sync check on `onResume()` so returning to the home screen immediately reflects any settings changed in the other flavor.
+  - `ShizukuSettings.java` & `SettingsBackupManager.kt`: added keys `KEY_SETTINGS_LAST_MODIFIED`, `KEY_AUTO_SYNC_PEER_SETTINGS`, `KEY_PEER_INITIAL_IMPORT_DONE`, and excluded internal peer sync metadata from JSON exports.
+  - `AndroidManifest.xml`: registered `SettingsSharingProvider` and declared `<queries>` for mutual package and authority visibility on Android 11+ (API 30+).
+- **Architectural Cleanup — Migrated Backup & Restore + Peer Sync to About Section**:
+  - `settings_about.xml`: added `category_backup` collapsible category containing `backup_settings`, `restore_settings`, `sync_peer_settings`, and `auto_sync_peer_settings`.
+  - `settings_shizuku_plus.xml`: removed `category_backup` completely from Feature Hub.
+  - `AboutSettingsFragment.kt`: migrated encrypted & plain backup creation launchers, restore launcher, biometric auth, and peer sync dialogs. Added `applyBackupCategoryVisibility()` on `onCreateSettingsPreferences` and `onResume()`.
+  - `ShizukuPlusSettingsFragment.kt`: removed all backup-related activity launchers, dialog handlers, visibility callbacks, and unused crypto imports.
+  - `strings.xml` & `AdvancedSettingsFragment.kt`: updated `settings_hide_backup_settings_summary` and `settings_main_nav_about_summary` to reference About rather than Feature Hub.
+  - `SettingsSearchEngine.kt`: automatically indexes backup preferences under `AboutSettingsFragment` due to XML-driven indexing.
+- **GitHub Issue Fixes**:
+  - **Issue #560 (Dhizuku Mode setup command failure)**: `DiagnosticsDashboardPreference.kt` constructed the setup command using shorthand dot notation `"${context.packageName}/.admin.DhizukuAdminReceiver"`, which failed with `ClassNotFoundException` because `applicationId` differs from package namespace. Changed to explicit component name `"${context.packageName}/af.shizuku.manager.admin.DhizukuAdminReceiver"`.
+  - **Issue #559 (Stuck on "Searching for pairing service" on Android 16 / Honor Magic 7)**: `AdbMdns.kt`'s `isPortAvailable(port)` only attempted to bind to `127.0.0.1:port`. On modern Android (15/16) and OEM ROMs (MagicOS, HyperOS, OxygenOS), wireless debugging binds to the device's local interface IP (e.g. `wlan0`). Binding to `127.0.0.1` succeeded, returning `false` (mistakenly assuming the port is free) and causing `onServiceResolved` to drop the valid pairing service and loop discovery endlessly. Updated `isPortAvailable(host, port)` to test both loopback, resolved host IP, and non-blocking TCP socket connect verification.
+
 ### 2026-08-30 — Claude Code (Sonnet 4.6) [PRoot ShizukuPlus, comprehensive analysis + cleanup]
 
 **Commits:** `8c649a84`..`39bdbdf1` (40 commits — devlog was not updated during the session, recorded here retrospectively)

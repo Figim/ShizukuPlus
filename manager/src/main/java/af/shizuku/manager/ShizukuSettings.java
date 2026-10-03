@@ -136,6 +136,11 @@ public class ShizukuSettings {
         public static final String KEY_VIRUSTOTAL_API_KEY = "virustotal_api_key";
         public static final String KEY_PITHUS_API_KEY = "pithus_api_key";
 
+        // Peer flavor settings sharing & sync (Drop-In <-> Shizuku+)
+        public static final String KEY_SETTINGS_LAST_MODIFIED = "settings_last_modified_timestamp";
+        public static final String KEY_AUTO_SYNC_PEER_SETTINGS = "auto_sync_peer_settings";
+        public static final String KEY_PEER_INITIAL_IMPORT_DONE = "peer_initial_import_done";
+
         public static final String KEY_EXPRESSIVE_SHAPES = "expressive_shapes";
         public static final String KEY_SENTRY_LIMIT_REACHED = "sentry_limit_reached";
         public static final String KEY_EXPRESSIVE_ANIMATIONS = "expressive_animations";
@@ -1475,5 +1480,25 @@ public class ShizukuSettings {
     public static void setAutomationAppProfilesJson(@NonNull String json) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, json).apply();
+    }
+
+    public static boolean isAutoSyncPeerSettingsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_AUTO_SYNC_PEER_SETTINGS, true);
+    }
+
+    public static void setAutoSyncPeerSettingsEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_AUTO_SYNC_PEER_SETTINGS, enabled).apply();
+    }
+
+    public static long getSettingsLastModified() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getLong(Keys.KEY_SETTINGS_LAST_MODIFIED, 0L) : 0L;
+    }
+
+    public static void setSettingsLastModified(long timestamp) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putLong(Keys.KEY_SETTINGS_LAST_MODIFIED, timestamp).apply();
     }
 }

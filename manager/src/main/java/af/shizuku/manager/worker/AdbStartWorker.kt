@@ -63,9 +63,14 @@ class AdbStartWorker(
             // adb_wifi_enabled after our first write.
             if (runAttemptCount == 0) {
                 if (!EnvironmentUtils.isAdbEnabled()) {
-                    val baseDelay = if (
-                        Build.MANUFACTURER.equals("samsung", ignoreCase = true)
-                    ) 3000L else 1500L
+                    val baseDelay =
+                        if (
+                            Build.MANUFACTURER.equals("samsung", ignoreCase = true)
+                        ) {
+                            3000L
+                        } else {
+                            1500L
+                        }
                     delay(baseDelay)
                 }
             }
@@ -140,9 +145,14 @@ class AdbStartWorker(
                             // so we don't loop forever — after MAX_SAMSUNG_RESETS we fall through to
                             // the normal handleAuth() path.
                             var samsungResetCount = 0
-                            val maxSamsungResets = if (
-                                Build.MANUFACTURER.equals("samsung", ignoreCase = true)
-                            ) 4 else 0
+                            val maxSamsungResets =
+                                if (
+                                    Build.MANUFACTURER.equals("samsung", ignoreCase = true)
+                                ) {
+                                    4
+                                } else {
+                                    0
+                                }
 
                             fun startDiscoveryWithTimeout() {
                                 adbMdns.start()

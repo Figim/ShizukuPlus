@@ -126,8 +126,8 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         }
 
         // Feature 2 (#461): hide_backup_settings toggle — hides the Backup & Restore category
-        // from the Feature Hub (ShizukuPlusSettingsFragment). The toggle is effective on next
-        // entry into Feature Hub (no recreate needed; the fragment re-reads the setting on resume).
+        // from the About screen (AboutSettingsFragment). The toggle is effective on next
+        // entry into About (no recreate needed; the fragment re-reads the setting on resume).
         findPreference<TwoStatePreference>("hide_backup_settings")?.apply {
             isChecked = ShizukuSettings.isHideBackupSettingsEnabled()
             setOnPreferenceChangeListener { _, newValue ->
