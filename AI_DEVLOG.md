@@ -13,6 +13,7 @@ Items carried forward from previous sessions that have not yet been committed.
 ### Features
 
 - [x] **AICore 5 advanced method implementations** — Implemented `getPixelColor`, `captureLayer`, and `getSystemContext` in `AICorePlusService.kt` using `AccessibilityService.takeScreenshot` (API 30+) as a high-performance manager-side bridge. Done 2026-05-03.
+- [ ] **Hex Installer One UI 7+ deep compat (Issue #533)** — Overlay Bridge Samsung wizard bypass shipped in Unreleased, but the underlying theming flow still fails on One UI 7+. Holding off — needs dedicated investigation session.
 - [/] **Shadow Binder Deep Implementation (Issue #199)** — Implemented `IPackageManager` shadowing in `ShizukuService.java` to hide specific apps based on the `shadow_hidden_packages` setting. Added UI for managing hidden packages. **Needs testing with hidden packages.**
 - [x] **Root Compat Hub "Shizuku-aware only" label** — Info banner added to
   `activity_root_compatibility.xml` with string `root_hub_shizuku_aware_note`. Done 2026-04-24.
@@ -129,7 +130,7 @@ Things discussed or sketched that we never formally decided to build.
   - #551 (blank settings): `onContainerCreated` guard fixed (already in Unreleased). Needs release.
   - #556 (padding crash): negative `heightOffset` after one-handed/OneUI theme toggle. Fix already in Unreleased.
   - #545 (watchdog/wireless debugging on boot): fix already in Unreleased (`AdbStartWorker` Samsung retry logic).
-  - #533 (Hex Installer): Overlay Bridge Samsung wizard bypass already in Unreleased.
+  - #533 (Hex Installer): Overlay Bridge Samsung wizard bypass is in Unreleased, but deeper One UI 7+ compatibility work is still needed — holding off for now.
   - Next step: cut a release tagged `v13.7.0.r{N}` to land all the Unreleased fixes.
 
 ---
