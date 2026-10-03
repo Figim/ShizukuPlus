@@ -2771,7 +2771,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // (moe.shizuku.api.BinderContainer is the only kept class). Including the rikka key
             // triggers ClassNotFoundException / BadParcelableException inside Bundle.unparcel(), which
             // invalidates the entire bundle — including the moe key — on Android 11 (#446, #389).
-            extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binder));
+            //
+            // Apps that declare moe.shizuku.manager.permission.API_V23 (original Shizuku permission,
+            // not the ShizukuPlus af.shizuku variant) were compiled against the old positional AIDL
+            // transaction codes, which are all +1 relative to ShizukuPlus's explicit codes. Wrap the
+            // service binder in a proxy that applies the -1 offset so calls land on the right methods.
+            IBinder binderForLegacy = isLegacyOriginalShizukuApp(packageName, userId)
+                    ? new LegacyShizukuBinderProxy(binder) : binder;
+            extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binderForLegacy));
             extra.putBinder("binder", binder);
 
             Bundle reply = IContentProviderUtils.callCompat(provider, null, name, "sendBinder", null, extra);
@@ -2793,6 +2800,16 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     LOGGER.w(tr, "removeContentProviderExternal");
                 }
             }
+        }
+    }
+
+    private static boolean isLegacyOriginalShizukuApp(String packageName, int userId) {
+        try {
+            PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS, userId);
+            return pi != null && pi.requestedPermissions != null
+                    && ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL);
+        } catch (Throwable e) {
+            return false;
         }
     }
 
