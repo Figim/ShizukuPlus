@@ -119,6 +119,13 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-03 — Claude Code (Sonnet 4.6) [CLAUDE.md update]
+
+**Done:**
+- Updated `CLAUDE.md`: added `SettingsShareManager.kt` + `SettingsSharingProvider.kt` to the key files table; added cross-flavor sync as a pending verification item in "Open / needs verification".
+
+---
+
 ### 2026-10-03 — Antigravity (Gemini 3.8 Flash) [Settings red flash fix + Drop-In flavor settings sharing + About section restructure + GH issue fixes]
 
 **Done:**
