@@ -128,9 +128,12 @@ Things discussed or sketched that we never formally decided to build.
 - **Verified #530 (monochrome icon) already fixed** — `ic_monochrome.xml` already contained the filled hexagon silhouette fix from a previous session; fix was in Unreleased, now ships with this release.
 
 **Open:**
-- CI stable build result pending (run 37130016516).
+- CI stable build result pending (run 37139936339 — 2nd attempt after lint fix).
 - Cross-flavor settings sync (`SettingsSharingProvider`) needs on-device testing with both flavors installed.
 - Hex Installer One UI 7+ deep compat (#533) deferred.
+
+**Also fixed in this session (build unblock):**
+- Lint/compile failure: `OverlayManagerPlusImpl.kt:495` had `override fun setActiveThemePackage(...)` but the method was missing from `IOverlayManagerPlus.aidl`. Root cause: the API submodule's `master` had the AIDL entry (`02db531`) but the main repo's submodule pointer was still at `5c8cccd` (pre-AIDL). Updated submodule to `3f2ae3c` which includes both the AIDL declaration and new `ShizukuPlusAPI.OverlayManager` wrappers for `prepareShadowMount` and `setActiveThemePackage`. Commit `2d7f9ba0`.
 
 ---
 
