@@ -119,10 +119,18 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
-### 2026-10-03 — Claude Code (Sonnet 4.6) [CLAUDE.md update]
+### 2026-10-03 — Claude Code (Sonnet 4.6) [CLAUDE.md + version scheme fix + issue triage]
 
 **Done:**
 - Updated `CLAUDE.md`: added `SettingsShareManager.kt` + `SettingsSharingProvider.kt` to the key files table; added cross-flavor sync as a pending verification item in "Open / needs verification".
+- **Corrected version scheme** (`CHANGELOG.md` + `MainActivity.kt`, commit `dcfca78c`): renamed the "v14.0.0" release label to `v13.7.0.r2664` — ShizukuPlus tracks upstream Shizuku version numbers. GitHub tags `v14.0.0.r2663–r2668` kept for existing installs; legacy branch in `checkAndShowChangelog()` maps them to their published pages.
+- **Issue triage** (open issues reviewed, several addressed in the Unreleased CHANGELOG section already):
+  - #541 (appearance crash): root cause found — `fixDeprecatedListPreferenceSummaries` double-installs `SimpleSummaryProvider` on rikka prefs that already have one → `IllegalStateException`. Fix already in Unreleased. Needs release to land.
+  - #551 (blank settings): `onContainerCreated` guard fixed (already in Unreleased). Needs release.
+  - #556 (padding crash): negative `heightOffset` after one-handed/OneUI theme toggle. Fix already in Unreleased.
+  - #545 (watchdog/wireless debugging on boot): fix already in Unreleased (`AdbStartWorker` Samsung retry logic).
+  - #533 (Hex Installer): Overlay Bridge Samsung wizard bypass already in Unreleased.
+  - Next step: cut a release tagged `v13.7.0.r{N}` to land all the Unreleased fixes.
 
 ---
 
