@@ -6,7 +6,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ---
 
-## [v13.7.0.r2735 — Stable Release]
+## [v13.7.0.r2737 — Stable Release]
 
 ### 🐛 Bug Fixes
 
