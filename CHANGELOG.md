@@ -4,6 +4,10 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+---
+
+## [v13.7.0.r2732 — Stable Release]
+
 ### 🐛 Bug Fixes
 
 #### Server / Service
