@@ -2,12 +2,12 @@
 
 All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
-## [Unreleased — post-v14.0.0]
+## [Unreleased]
 
 ### 🐛 Bug Fixes
 
 #### Server / Service
-- **Fixed Android 16 ART VerifyError crashing rish, SU Bridge, and all third-party Shizuku connections** — R8 9.4 (AGP 9.4, new in v14) transforms `ProcessObserverAdapter` and `UidObserverAdapter` (from `dev.rikka.hidden:compat`) differently from R8 8.x, producing bytecode that Android 16's eager class verifier rejects for the entire DEX. Added `-keep { *; }` rules for both adapter classes so R8 emits the original library bytecode unchanged. ([#537](https://github.com/thejaustin/ShizukuPlus/issues/537))
+- **Fixed Android 16 ART VerifyError crashing rish, SU Bridge, and all third-party Shizuku connections** — R8 9.4 (AGP 9.4, new in v13.7.0) transforms `ProcessObserverAdapter` and `UidObserverAdapter` (from `dev.rikka.hidden:compat`) differently from R8 8.x, producing bytecode that Android 16's eager class verifier rejects for the entire DEX. Added `-keep { *; }` rules for both adapter classes so R8 emits the original library bytecode unchanged. ([#537](https://github.com/thejaustin/ShizukuPlus/issues/537))
 - **Broadened Android 16 VerifyError fix to cover all `rikka.hidden.compat.adapter.*` classes** — the initial fix kept only `ProcessObserverAdapter` and `UidObserverAdapter`; a third adapter class (obfuscated as `e42`) still failed ART verification on Samsung One UI 8.5 (Android 16). Changed the ProGuard rule from two named keeps to `-keep class rikka.hidden.compat.adapter.** { *; }` so every hidden-API adapter is emitted unchanged by R8. ([#544](https://github.com/thejaustin/ShizukuPlus/issues/544))
 - **Completed Android 16 VerifyError fix by targeting the shell module's separate R8 pass** — the previous two fixes added the `-keep` rule to `manager/proguard-rules.pro`, but class `e42` (identified by a stable `r8-map-id` across all builds) was not in the manager's R8 pass. The `shell/` module compiles independently: its R8 output is `rish_shizuku.dex`, bundled as an asset and loaded at runtime via `BaseDexClassLoader`. The shell's own `proguard-rules.pro` had `-repackageclasses` (producing the short name `e42`) but no keep rule for `rikka.hidden.compat.**`. Added `-keep class rikka.hidden.compat.** { *; }` to `shell/proguard-rules.pro` (covering all subpackages, not just `adapter.**`, since the exact hidden-stub-extending class may be anywhere in the library). ([#537](https://github.com/thejaustin/ShizukuPlus/issues/537), [#544](https://github.com/thejaustin/ShizukuPlus/issues/544))
 
@@ -50,11 +50,13 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🐛 Bug Fixes
 - **Fixed Device Control home card not appearing immediately after being enabled in Feature Hub** — `HomeActivity`'s `SharedPreferences` listener was missing `KEY_DEVICE_CONTROL_HOME_ENABLED`, so navigating back from Settings did not trigger a home-list refresh. Card now appears as soon as the toggle is flipped.
 
-## [v14.0.0 — Stable Release / Build r2664]
+## [v13.7.0.r2664 — Stable Release]
 
 *Co-developed with Antigravity & Claude Code*
 
-> **Major release** — Shizuku+ 14 brings a full Material 3 Expressive UI overhaul, compileSdk 37 / AGP 9.4 / Gradle 9.7 build infrastructure, 100% Ukrainian and Brazilian Portuguese localizations, and 30+ bug fixes across the server, manager UI, and Plus APIs. Minimum Android remains API 24 (Android 7); fully tested through Android 17 / One UI 9.
+> **Note:** This release was previously labelled `v14.0.0` — that numbering was incorrect; ShizukuPlus tracks upstream Shizuku version numbers. The correct identifier for this build is `13.7.0.r2664` (upstream Shizuku 13.7.0, build r2664). GitHub tags `v14.0.0.r2663–v14.0.0.r2668` remain for backward compatibility with existing installs.
+
+> **Major release** — Shizuku+ 13.7.0 brings a full Material 3 Expressive UI overhaul, compileSdk 37 / AGP 9.4 / Gradle 9.7 build infrastructure, 100% Ukrainian and Brazilian Portuguese localizations, and 30+ bug fixes across the server, manager UI, and Plus APIs. Minimum Android remains API 24 (Android 7); fully tested through Android 17 / One UI 9.
 
 ### 🔧 Build / Infrastructure
 - **Upgraded AGP to 9.4.0, Gradle to 9.7.1, compileSdk to 37, targetSdk to 36, buildToolsVersion to 36.0.0** — required by Compose BOM 2026.08.00 (→ Compose 1.12.0 requires AGP 9.1.0+ and compileSdk 37); enables Android 16 / One UI 9 readiness.
