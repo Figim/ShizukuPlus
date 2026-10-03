@@ -30,7 +30,14 @@ object Starter {
         get() = "adb shell $userCommand"
 
     val internalCommand: String
-        get() = "$userCommand --apk=${getContext().applicationInfo.sourceDir}"
+        get() {
+            // Prepend LD_LIBRARY_PATH so the shell linker can find libc++_shared.so alongside
+            // libshizuku.so and librish.so. On Android 16 (and some OEM builds) libc++_shared.so
+            // is absent from the default shell linker search path; without this, libshizuku.so
+            // fails to load even when the library is bundled inside the APK's native-lib dir.
+            val nativeLibDir = getContext().applicationInfo.nativeLibraryDir
+            return "LD_LIBRARY_PATH=$nativeLibDir $userCommand --apk=${getContext().applicationInfo.sourceDir}"
+        }
 
     val serviceStartedMessage: String
         get() = getContext().getString(R.string.starter_service_started)
