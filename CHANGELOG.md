@@ -4,6 +4,17 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+### 🐛 Bug Fixes
+
+#### Server / Binder
+- **Fixed Installer X Revived, Universal Installer X, and Total Commander broken with r2739** — `LegacyShizukuBinderProxy` was applied to any app declaring `moe.shizuku.manager.permission.API_V23`, but many modern apps (including the above) still declare this original-Shizuku permission for backward-compat while actually using ShizukuPlus explicit AIDL transaction codes. The −1 offset proxy corrupted all binder calls, causing `IInterface.asBinder() on null` crashes. Proxy now only applies when the app declares the original Shizuku permission AND does **not** also declare any ShizukuPlus permission (`af.shizuku.plus.permission.API_V23` / `af.shizuku.manager.permission.API_V23`). ([#567](https://github.com/thejaustin/ShizukuPlus/issues/567), [#566](https://github.com/thejaustin/ShizukuPlus/issues/566))
+
+#### Manager App (Settings)
+- **Fixed Settings page still blank after background kill on some devices** — the previous fix checked `findFragmentById == null`, but the Fragment Manager restores the fragment into its internal state during `super.onCreate()` before the Compose `AndroidView` container exists. `findFragmentById` returned non-null even though the fragment had no live view (its container didn't exist at restore time). Added `existing.view == null` check so the fragment is replaced whenever it lacks an attached view; switched to `commitNow()` to guarantee the container is populated synchronously. ([#551](https://github.com/thejaustin/ShizukuPlus/issues/551))
+
+### 📖 Documentation
+- **Added fork migration guide** — `FORK_MIGRATION.md` provides an AI-assisted migration prompt (contributed by [@djbclark](https://github.com/djbclark)) for developers rebasing their own Shizuku forks onto Shizuku+, plus Shizuku+-specific tips covering the API submodule boundary, explicit AIDL transaction codes, and ProGuard keep requirements. Linked from `CONTRIBUTING.md`. ([#562](https://github.com/thejaustin/ShizukuPlus/issues/562))
+
 ---
 
 ## [v13.7.0.r2737 — Stable Release]
