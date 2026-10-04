@@ -2804,10 +2804,20 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     private static boolean isLegacyOriginalShizukuApp(String packageName, int userId) {
+        // Only apply the legacy proxy when the app declares the original Shizuku permission
+        // (moe.shizuku.manager.permission.API_V23) AND does NOT declare any ShizukuPlus
+        // permission. Apps like Installer X Revived declare the original permission for
+        // backward-compat but are compiled against ShizukuPlus explicit AIDL codes; wrapping
+        // them in the -1 offset proxy corrupts their calls (#567).
         try {
             PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS, userId);
-            return pi != null && pi.requestedPermissions != null
-                    && ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL);
+            if (pi == null || pi.requestedPermissions == null) return false;
+            String[] perms = pi.requestedPermissions;
+            boolean hasOriginal = ArraysKt.contains(perms, ServerConstants.PERMISSION_ORIGINAL);
+            if (!hasOriginal) return false;
+            boolean hasPlus = ArraysKt.contains(perms, ServerConstants.PERMISSION)
+                    || ArraysKt.contains(perms, ServerConstants.PERMISSION_LEGACY);
+            return !hasPlus;
         } catch (Throwable e) {
             return false;
         }
