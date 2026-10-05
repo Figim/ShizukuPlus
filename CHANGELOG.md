@@ -17,6 +17,25 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Fixed Settings top bar briefly showing preference name instead of section name after tapping a search result** — `navigateToSetting()` was setting `currentTitle = item.title` (e.g. "Blur UI") before committing the fragment transaction. The fragment's `onResume → updateTitle()` already sets the correct section title ("Personalization"), making the preemptive assignment both redundant and wrong. Removed the early assignment; the fragment now owns the title update entirely.
 - **Fixed Settings page still blank after background kill on some devices** — the previous fix checked `findFragmentById == null`, but the Fragment Manager restores the fragment into its internal state during `super.onCreate()` before the Compose `AndroidView` container exists. `findFragmentById` returned non-null even though the fragment had no live view (its container didn't exist at restore time). Added `existing.view == null` check so the fragment is replaced whenever it lacks an attached view; switched to `commitNow()` to guarantee the container is populated synchronously. ([#551](https://github.com/thejaustin/ShizukuPlus/issues/551))
 
+#### Manager App (Home)
+- **Fixed compat hub card disappearing after a successful hub install** — `rebuildItems()` had an extra inner condition (`isCompanionModeEnabled() || needsAction`) inside the `ID_COMPANION` case that was not present for any other card type. This caused the compat hub card to be excluded from the item list once installed (both conditions false), even when the user had not hidden it. Removed the inner condition; the card now follows the standard hidden-set visibility logic shared by all other home cards.
+
+### ✨ Features
+
+#### Setup / Home Cards
+- **WADB and ADB cards now reflect Shizuku's running state** — the Wireless ADB and (wired) ADB ViewHolders previously received `null` service data, so they could never adapt their UI after Shizuku started. The adapter now passes the live `ServiceStatus` to both ViewHolders, and each `onBind()` detects whether Shizuku is already running via that method. When running: WADB button label changes to "Reconnect" and the description confirms active status; ADB description similarly updates to reflect the active session. This makes all home cards consistently state-aware.
+- **Root card adapts for Samsung SystemUID escalation mode** — when "Samsung System UID Escalation" is enabled and the device is not rooted, the root card now shows a Samsung-specific description instead of the generic Magisk/Sui text. The conditional check is in `onBind()` so it updates if the user toggles the setting without restarting the app.
+- **Compat hub card gains Uninstall button in installed state** — previously both action buttons (`button1`/`button2`) were hidden after the hub was installed, leaving the card as a dead-end with no actions. The uninstall button is now shown in the installed state, keeping the card actionable. Card title and descriptions also clarified: installed → "Compat Hub Active" with a list of compatible apps; not-installed → explains most apps use the standard Shizuku API and that the hub bridges compatibility.
+
+### 🎨 UI / Visual Polish
+
+#### Card Drag-to-Reorder
+- **Dramatically improved drag-to-reorder haptics, animations, and tactile feel** — the previous drag implementation used a subtle lift (1.04× scale, `DecelerateInterpolator`), a barely-noticeable spring-back on drop (`OvershootInterpolator(0.8f)`), and fired haptic on the wrong view (`target` instead of the dragged card). Replaced with:
+  - **Lift**: 1.06× scale + 24dp elevation + 0.96 alpha, using M3 "emphasized" easing (`PathInterpolatorCompat(0.2, 0, 0, 1)`) over 180 ms — the card visibly rises off the surface.
+  - **Per-move haptic**: `HapticUtils.segmentTick()` fired on the dragged card's view on every position swap — each reorder step has a distinct tactile tick.
+  - **Drop (clearView)**: `OvershootInterpolator(2.2f)` over 350 ms — the card springs back with a satisfying overshoot before settling; `gestureEnd` haptic fires unconditionally on release.
+  - **gestureEnd()** added to `HapticUtils`: uses `GESTURE_END` on API 30+, falls back to `LONG_PRESS` on older devices.
+
 ### 📖 Documentation
 - **Added fork migration guide** — `FORK_MIGRATION.md` provides an AI-assisted migration prompt (contributed by [@djbclark](https://github.com/djbclark)) for developers rebasing their own Shizuku forks onto Shizuku+, plus Shizuku+-specific tips covering the API submodule boundary, explicit AIDL transaction codes, and ProGuard keep requirements. Linked from `CONTRIBUTING.md`. ([#562](https://github.com/thejaustin/ShizukuPlus/issues/562))
 
