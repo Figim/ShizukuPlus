@@ -91,15 +91,12 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [v13.7.0.r2664 — Stable Release]
 
-*Co-developed with Antigravity & Claude Code*
-
 > **Note:** This release was previously labelled `v14.0.0` — that numbering was incorrect; ShizukuPlus tracks upstream Shizuku version numbers. The correct identifier for this build is `13.7.0.r2664` (upstream Shizuku 13.7.0, build r2664). GitHub tags `v14.0.0.r2663–v14.0.0.r2668` remain for backward compatibility with existing installs.
 
 > **Major release** — Shizuku+ 13.7.0 brings a full Material 3 Expressive UI overhaul, compileSdk 37 / AGP 9.4 / Gradle 9.7 build infrastructure, 100% Ukrainian and Brazilian Portuguese localizations, and 30+ bug fixes across the server, manager UI, and Plus APIs. Minimum Android remains API 24 (Android 7); fully tested through Android 17 / One UI 9.
 
 ### 🔧 Build / Infrastructure
 - **Upgraded AGP to 9.4.0, Gradle to 9.7.1, compileSdk to 37, targetSdk to 36, buildToolsVersion to 36.0.0** — required by Compose BOM 2026.08.00 (→ Compose 1.12.0 requires AGP 9.1.0+ and compileSdk 37); enables Android 16 / One UI 9 readiness.
-- **Full on-device APK build now works on ARM64 PRoot (Termux)** — custom cmake wrapper + NDK toolchain stub lets Termux's clang build all three native libraries (`libshizuku.so`, `libadb.so`, `librish.so`) locally without a CI round-trip. Fixes AGP 9.4.0 NPE in `CmakeFileApiV1.kt:94` (`CMAKE_LINKER` must be a CMake CACHE variable), cmake 4.x `-Wl,` arg handling, and libcxx prefab include-path conflicts.
 - **Fixed release notes major/critical release tags pointing to non-existent or deleted tags** — `MAJOR_RELEASE` updated to `v13.6.0.r2551` (latest stable), `CRITICAL_RELEASE` updated to `v13.6.0.r2647`. Fixes 404 errors on changelog links reported in [#532](https://github.com/thejaustin/ShizukuPlus/issues/532).
 
 ### 🌍 Localization
@@ -218,8 +215,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 
 ## [v13.6.0.r2287 → r2343]
 
-*Co-developed with Claude Code*
-
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -263,8 +258,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 
 ## [Unreleased / Build r2248+]
 
-*Co-developed with Claude Code*
-
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -299,8 +292,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 
 ## [v13.6.0.r2239]
 
-*Co-developed with Claude Code*
-
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -310,8 +301,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 - **Fixed `newProcess()` dropping the entire boot environment when Magisk mocking is enabled** — `BOOTCLASSPATH`, `ANDROID_DATA`, `ANDROID_ROOT`, etc. were stripped from the child process env when the caller passed `null`, causing spawned `app_process` children to die instantly with `ANDROID_DATA environment variable unset`. ([#410](https://github.com/thejaustin/ShizukuPlus/issues/410))
 
 ## [v13.6.0.r2222]
-
-*Co-developed with Claude Code*
 
 ### 🐛 Bug Fixes
 
