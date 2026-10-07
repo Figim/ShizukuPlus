@@ -445,9 +445,12 @@ class AdbStartWorker(
                     .setConstraints(constraints)
                     .build()
 
+            // Use KEEP while a key offer is waiting for a dialog response — REPLACE would cancel
+            // the current connection and create another "Allow USB debugging?" dialog.
+            val policy = if (af.shizuku.manager.adb.AdbStarter.keyOfferInFlight) ExistingWorkPolicy.KEEP else ExistingWorkPolicy.REPLACE
             WorkManager.getInstance(context).enqueueUniqueWork(
                 "adb_start_worker",
-                ExistingWorkPolicy.REPLACE,
+                policy,
                 request,
             )
         }
