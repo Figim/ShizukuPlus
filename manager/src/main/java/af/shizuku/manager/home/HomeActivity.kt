@@ -648,6 +648,7 @@ open class HomeActivity :
         onBackPressedDispatcher.addCallback(this, backCallback)
 
         HomeEditMode.onChanged = {
+            if (HomeEditMode.isActive) HapticUtils.gestureStart(recyclerView) else HapticUtils.gestureEnd(recyclerView)
             lifecycleScope.launch {
                 delay(150)
                 isEditMode = HomeEditMode.isActive

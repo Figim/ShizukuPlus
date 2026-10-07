@@ -37,7 +37,13 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Root card adapts for Samsung SystemUID escalation mode** — when "Samsung System UID Escalation" is enabled and the device is not rooted, the root card now shows a Samsung-specific description instead of the generic Magisk/Sui text. The conditional check is in `onBind()` so it updates if the user toggles the setting without restarting the app.
 - **Compat hub card gains Uninstall button in installed state** — previously both action buttons (`button1`/`button2`) were hidden after the hub was installed, leaving the card as a dead-end with no actions. The uninstall button is now shown in the installed state, keeping the card actionable. Card title and descriptions also clarified: installed → "Compat Hub Active" with a list of compatible apps; not-installed → explains most apps use the standard Shizuku API and that the hub bridges compatibility.
 
+### 🌐 Localization
+- **Completed Simplified Chinese translations for all new strings** — 20 recently added strings (wireless ADB reconnect, Samsung root description, TCP port randomization, sync peer settings) now have accurate zh-CN translations, closing the gap introduced by recent feature additions. Incorporates and extends the community translation work from PR #404.
+
 ### 🎨 UI / Visual Polish
+
+#### Edit Mode
+- **Haptic feedback when entering and exiting card edit mode** — long-pressing any home card to enter drag-to-reorder mode now fires a `gestureStart` haptic; exiting edit mode (tap outside, back button, or done) fires `gestureEnd`. Previously entering edit mode was silent.
 
 #### Card Drag-to-Reorder
 - **Dramatically improved drag-to-reorder haptics, animations, and tactile feel** — the previous drag implementation used a subtle lift (1.04× scale, `DecelerateInterpolator`), a barely-noticeable spring-back on drop (`OvershootInterpolator(0.8f)`), and fired haptic on the wrong view (`target` instead of the dragged card). Replaced with:
