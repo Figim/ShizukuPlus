@@ -355,9 +355,13 @@ open class HomeActivity :
                             }
                         }
 
-                        if (EnvironmentUtils.isOneUi8()) {
-                            HapticUtils.success(view)
-                        }
+                        HapticUtils.success(view)
+                    }
+                } else if (!status.isRunning && previouslyRunning == true) {
+                    recyclerView.post {
+                        val view = recyclerView
+                        if (!view.isAttachedToWindow) return@post
+                        HapticUtils.error(view)
                     }
                 }
             }
