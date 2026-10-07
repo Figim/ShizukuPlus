@@ -58,6 +58,7 @@ object AdbStarter {
         context: Context,
         port: Int,
         log: ((String) -> Unit)? = null,
+        activityLogMessage: String? = null,
     ) {
         if (port !in 1..65535) {
             Timber.tag(TAG).w("startAdb called with invalid port $port — skipping")
@@ -121,7 +122,8 @@ object AdbStarter {
                         client.runCommand("shell:pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS")
                     }.onFailure { Timber.tag(TAG).w(it, "Failed to auto-elevate privileges on ADB start") }
                     ShizukuSettings.setLastPort(activePort)
-                    ActivityLogManager.log("Shizuku", context.packageName, "Service started via ADB on port $activePort")
+                    val msg = activityLogMessage ?: "Service started via ADB on port $activePort"
+                    ActivityLogManager.log("Shizuku", context.packageName, msg)
                     ShizukuStateMachine.update()
                     Timber.tag(TAG).i("Shizuku service started successfully via ADB on port %d", activePort)
                 }
