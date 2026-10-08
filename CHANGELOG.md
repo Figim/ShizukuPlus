@@ -42,6 +42,10 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ### 🎨 UI / Visual Polish
 
+#### Activity Log
+- **Redesigned activity log** — each entry now shows a colour-coded event type (start, stop, permission, app, watchdog, system) with a tonal app icon and accent bar. Shizuku now also logs when an app connects, requests permission, or binds a user service.
+- **Haptics and motion polish** — Start/ADB buttons give a tap, onboarding switches use proper on/off haptics, and the status-dot pulse now respects the expressive-animations setting.
+
 #### Edit Mode
 - **Haptic feedback when entering and exiting card edit mode** — long-pressing any home card to enter drag-to-reorder mode now fires a `gestureStart` haptic; exiting edit mode (tap outside, back button, or done) fires `gestureEnd`. Previously entering edit mode was silent.
 

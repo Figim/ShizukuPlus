@@ -79,8 +79,10 @@ class ServerStatusViewHolder(
                 },
             )
 
-        // Pulse animation for Starting/Running state — alpha + subtle scale for depth
-        if (state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING || ok) {
+        // Pulse animation for Starting/Running state — alpha + subtle scale for depth.
+        // Gated by expressive-animations preference to respect the user's motion settings.
+        val expressiveAnimations = af.shizuku.manager.ShizukuSettings.isExpressiveAnimationsEnabled()
+        if (expressiveAnimations && (state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING || ok)) {
             val dur = if (ok) 1500L else 600L
             val alphaPulse = android.animation.ObjectAnimator.ofFloat(statusIndicator, "alpha", 0.4f, 1.0f).apply {
                 duration = dur
