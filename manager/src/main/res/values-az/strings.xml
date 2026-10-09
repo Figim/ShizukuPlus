@@ -44,7 +44,7 @@
     <string name="settings_bold_typography">Qalın Şriftlər</string>
     <string name="settings_bold_typography_summary">Başlıqlar üçün daha qalın şrift çəkilərindən istifadə edin</string>
     <string name="settings_expanded_headers">Genişləndirilmiş Bölmə Başlıqları</string>
-    <string name="settings_expanded_headers_summary">Parametrlər ekranlarında hündür yığılan başlıqlardan istifadə edin</string>
+    <string name="settings_expanded_headers_summary">Tənzimləmələr ekranlarında hündür yığılan başlıqlardan istifadə edin</string>
 
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Künc Dairəviliyi</string>
@@ -83,7 +83,7 @@
         <item>Zen (Yarpaq/Damcı)</item>
         <item>Müasir (Material 3)</item>
         <item>Klassik (Material 2)</item>
-        <item>Üzvi (Skvörkl)</item>
+        <item>Üzvi (Skvirkli)</item>
         <item>Kəsilmiş (Bucaqlı)</item>
     </string-array>
     <string-array name="shape_styles_value">
@@ -264,10 +264,10 @@
     <string name="home_automation_description_device_restriction">Cihazınızda başlatma intentindən istifadə etmək üçün əvvəlcə Kompüterdən %1$s işlədərək TCP üzərindən ADB-ni aktivləşdirməlisiniz.</string>
     <string name="home_automation_button_view_intents">Intentlərə bax</string>
     <string name="home_automation_bottom_sheet_intents">Intentlər</string>
-    <string name="home_automation_bottom_sheet_label_action">Əməliyyat (Action)</string>
-    <string name="home_automation_bottom_sheet_label_package">Paket (Package)</string>
-    <string name="home_automation_bottom_sheet_label_target">Hədəf (Target)</string>
-    <string name="home_automation_bottom_sheet_label_extras">Əlavələr (Extras)</string>
+    <string name="home_automation_bottom_sheet_label_action">Əməliyyat</string>
+    <string name="home_automation_bottom_sheet_label_package">Paket</string>
+    <string name="home_automation_bottom_sheet_label_target">Hədəf</string>
+    <string name="home_automation_bottom_sheet_label_extras">Əlavələr</string>
     <string name="home_automation_regenerate_token">Token yenidən yaradılsın?</string>
     <string name="home_automation_regenerate_token_message">Intentlərinizi yeni tokenlə yenidən konfiqurasiya etməli olacaqsınız.</string>
     <string name="home_automation_token_encrypt_failed">Token-i təhlükəsizləşdirmək mümkün olmadı — yenidən cəhd edin</string>
@@ -278,7 +278,7 @@
 
     <!-- Home - Adb permissions limited -->
     <string name="home_adb_is_limited_title">Əlavə bir addım atmalısınız</string>
-    <string name="home_adb_is_limited_description">Cihaz istehsalçınız adb icazələrini məhdudlaşdırıb və Shizuku-dan istifadə edən tətbiqlər düzgün işləməyəcək.\n\nAdətən, bu məhdudiyyət \"Tərtibatçı seçimləri\"ndə bəzi parametrləri tənzimləməklə aradan qaldırıla bilər. Bunun necə ediləcəyi haqqında ətraflı məlumat üçün köməkliyə baxın.\n\nƏməliyyatın qüvvəyə minməsi üçün Shizuku-nu yenidən başlatmağınız lazım ola bilər.</string>
+    <string name="home_adb_is_limited_description">Cihaz istehsalçınız adb icazələrini məhdudlaşdırıb və Shizuku-dan istifadə edən tətbiqlər düzgün işləməyəcək.\n\nAdətən, bu məhdudiyyət \"Tərtibatçı seçimləri\"ndə bəzi tənzimləmələri tənzimləməklə aradan qaldırıla bilər. Bunun necə ediləcəyi haqqında ətraflı məlumat üçün köməkliyə baxın.\n\nƏməliyyatın qüvvəyə minməsi üçün Shizuku-nu yenidən başlatmağınız lazım ola bilər.</string>
 
     <!-- Application management - context menu -->
     <string name="app_management_context_open_app">Tətbiqi aç</string>
@@ -286,7 +286,7 @@
     <string name="app_management_context_grant">İcazə ver</string>
     <string name="app_management_context_revoke">İcazəni ləğv et</string>
     <string name="app_management_context_hide">Siyahıdan gizlət</string>
-    <string name="app_management_no_launcher">Bu tətbiqin başlanğıc ekranı (launcher) yoxdur</string>
+    <string name="app_management_no_launcher">Bu tətbiqin başlanğıc ekranı yoxdur</string>
     <string name="app_management_package_copied">Paket adı kopyalandı</string>
     <string name="app_management_log_permission_toggle">İcazəni dəyiş: %s</string>
     <string name="app_management_log_hide">Siyahıdan gizlət</string>
@@ -381,15 +381,15 @@
     <string name="swipe_hint_dismiss">Bağlamaq üçün istənilən yerə toxunun</string>
 
     <!-- Settings -->
-    <string name="settings_title">Parametrlər</string>
+    <string name="settings_title">Tənzimləmələr</string>
     <string name="settings_behavior">Davranış</string>
     <string name="settings_start_on_boot">Yüklənmədə başlat</string>
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb edir</string>
     <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni yadda saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olacaqsınız.</string>
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
-    <string name="settings_watchdog">Gözətçi (Watchdog)</string>
-    <string name="settings_watchdog_summary">Qəza (crash) və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
-    <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması (Keepalive)</string>
+    <string name="settings_watchdog">Gözətçi</string>
+    <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
+    <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən azad edin, WRITE_SECURE_SETTINGS-ə avtomatik icazə verin və başlanğıc binar fayllarını sinxronlaşdırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
     <string name="device_hardening_applied">Cihaz təhlükəsizliyi və Doze optimizasiyaları tətbiq edildi</string>
@@ -416,7 +416,7 @@
     <string name="settings_translation_contributors">Tərcüməçilər</string>
     <string name="settings_translation">Tərcümədə iştirak et</string>
     <string name="settings_translation_summary">%s dilini öz dilinizə tərcümə etməyə kömək edin</string>
-    <string name="settings_user_interface">Gۆرünüş</string>
+    <string name="settings_user_interface">Görünüş</string>
     <string name="settings_black_night_theme">Qara gecə teması</string>
     <string name="settings_black_night_theme_summary">Gecə rejimi aktivdirsə, təmiz qara temadan istifadə edin</string>
     <string name="settings_amoled_plus">AMOLED+</string>
@@ -475,7 +475,7 @@
     <string name="settings_avf_manager_summary">Təcrid olunmuş Microdroid və ya Linux VM-ləri işlədin. Virtual mühitləri idarə etmək üçün Hyperbox və Termux-VM ilə birlikdə istifadə olunur.</string>
     <string name="settings_storage_proxy">Yaddaş Körpüsü (Storage Bridge)</string>
     <string name="settings_storage_proxy_summary">/data/data/ və məhdud yollara birbaşa daxil olun. Tətbiq məlumatlarını idarə etmək üçün Neo Backup və SD Maid tərəfindən istifadə olunur.</string>
-    <string name="settings_continuity_bridge">Çox-Cihaz Davamlılığı (Continuity Bridge)</string>
+    <string name="settings_continuity_bridge">Çox-Cihaz Davamlılığı</string>
     <string name="settings_continuity_bridge_summary">Eyni şəbəkədəki Shizuku+ cihazları arasında tapşırıq vəziyyətlərini sinxronlaşdırın və imtiyazlı əməliyyatları ötürün. Telefonunuzla planşetiniz arasında avtomatlaşdırma tapşırıqlarının qüsursuz keçidini təmin edir.</string>
     <string name="settings_ai_core_plus_summary">Prioritetləşdirilmiş NPU və ekran kontekst API-ləri. Ekran məlumatlılığı ilə Gemini və yerli LLM-ləri təkmilləşdirir.</string>
     <string name="settings_window_manager_plus_summary">Pəncərələşdirmə və Balon Panellərini idarə edin. Sərbəst pəncərələri və sistem örtüklərini idarə etmək üçün Taskbar və MacroDroid tərəfindən istifadə olunur.</string>
@@ -501,9 +501,9 @@
     <string name="settings_dhizuku_suspended_packages_summary">Dondurmaq və işləməsini tamamilə bloklamaq üçün tətbiqlər seçin</string>
 
     <!-- Backup / Restore settings -->
-    <string name="settings_backup_settings">Parametrləri Ehtiyat nüsxələ</string>
+    <string name="settings_backup_settings">Tənzimləmələri Ehtiyat nüsxələ</string>
     <string name="settings_backup_settings_summary">Biometrik şifrələmədən istifadə edərək konfiqurasiyalarınızı və təkmilləşdirmələrinizi təhlükəsiz şəkildə ixrac edin.</string>
-    <string name="settings_restore_settings">Parametrləri Bərpa et</string>
+    <string name="settings_restore_settings">Tənzimləmələri Bərpa et</string>
     <string name="settings_restore_settings_summary">Konfiqurasiyalarınızı şifrələnmiş ehtiyat nüsxədən bərpa edin.</string>
 
     <!-- Experimental Plus settings (developer section) -->
@@ -531,11 +531,11 @@
     <string name="settings_plus_feature_help_close">Bağla</string>
     <string name="diagnostics_dismiss">Rədd et</string>
     <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Rejimi aktivdir, lakin Cihaz Sahibinin komponenti aktiv deyil. Həll etmək üçün toxunun.</string>
-    <string name="diagnostics_warning_shadow_binder_no_apps">Kölgə Bağlayıcısı (Shadow Binder) aktivdir, lakin gizlədiləcək heç bir tətbiq seçilməyib. Seçmək üçün toxunun.</string>
+    <string name="diagnostics_warning_shadow_binder_no_apps">Kölgə Bağlayıcısı aktivdir, lakin gizlədiləcək heç bir tətbiq seçilməyib. Seçmək üçün toxunun.</string>
     <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırıla bilər. İstisna etmək üçün toxunun.</string>
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
     <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladılabilmədi</string>
-    <string name="diagnostics_battery_settings_open_failed">Batareya parametrlərini açmaq mümkün olmadı</string>
+    <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
     <string name="diagnostics_shadow_binder_navigate_hint">Tətbiqləri seçmək üçün Xüsusiyyət Mərkəzi → Təhlükəsizlik və Giriş → Kölgə Bağlayıcısı bölməsinə keçin</string>
     <string name="diagnostics_device_owner_setup_title">Cihaz Sahibini Quraşdır</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Rejimi bu tətbiqin Cihaz Sahibi olmasını tələb edir.\n\nBu əmri PC-nizdən işə salın (USB sazlama aktiv olmalıdır):\n\n%1$s</string>
@@ -580,7 +580,7 @@
     <string name="help_activity_manager_plus_detail">Dərin Proses Nəzarəti serverə standart tətbiq-hibernasiyası və gözləmə məhdudiyyətlərindən yan keçməyə imkan verir. O, aqressiv batareya qənaət alətləri üçün vacib olan tətbiqləri RESTRICTED gözləmə səviyyəsinə məcbur edə bilər və ya əsl dərin məcburi dayandırma (deepForceStop - bütün xidmətləri və fon tapşırıqlarını dayandırmaq) həyata keçirə bilər.</string>
 
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_framework">Çərçivə (Framework)</string>
+    <string name="settings_plus_category_framework">Çərçivə</string>
     <string name="settings_plus_category_performance">Performans və Proses Nəzarəti</string>
     <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Tematika</string>
@@ -592,7 +592,7 @@
     <string name="settings_root_magisk_mocking_summary">Root-u aşkar edən tətbiqləri aldatmaq üçün Magisk binar fayllarını, xüsusiyyətlərini və daxili qovluqlarını saxtalaşdırır.</string>
     <string name="settings_root_auto_grant">Avtomatik Təsdiq Körpüsü</string>
     <string name="settings_root_auto_grant_summary">WRITE_SECURE_SETTINGS kimi həssas icazələr üçün \'pm grant\' sorğularını avtomatik təsdiqləyir.</string>
-    <string name="settings_root_file_interceptor">Ağıllı Fayl Tutucusu (Interceptor)</string>
+    <string name="settings_root_file_interceptor">Ağıllı Fayl Tutucusu</string>
     <string name="settings_root_file_interceptor_summary">Həssas sistem yollarını hədəf alan fayl əməliyyatlarına icazə qorunması bayraqlarını avtomatik əlavə edir.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulyasiyası</string>
     <string name="settings_root_busybox_mocking_summary">Köhnə skрыпt tələblərini ödəmək üçün \'busybox\' əmri üçün saxta versiya sətri qaytarır.</string>
@@ -709,7 +709,7 @@
     <string name="manual_report_copied_dialog_share">Faylı Paylaş</string>
     <string name="crash_detected_dialog_message">Shizuku+ son sessiyanızdan bir qəza aşkar etdi. Onu düzəltməyimizə kömək etmək üçün hesabat yaratmaq istəyirsinizmi?</string>
     <string name="crash_detected_dialog_short_message">Hesabat kopyalandı. Yapışdırmaq üçün GitHub-ı açın və ya əvəzinə hesabatı fayl kimi paylaşın?</string>
-    <string name="crash_detected_dialog_ignore">İqnor et</string>
+    <string name="crash_detected_dialog_ignore">Məhəl qoyma</string>
     <string name="shortcut_open_terminal">Terminalı Aç</string>
 
     <string name="watchdog_shizuku_crashed_action_report_manually">Əl ilə Məlumat Ver</string>
@@ -727,12 +727,12 @@
     <string name="bug_report_dialog_button_email">E-poçt</string>
 
     <!-- Service Doctor -->
-    <string name="home_service_doctor_title">Xidmət Həkimi (Service Doctor)</string>
+    <string name="home_service_doctor_title">Xidmət Həkimi</string>
     <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çvirirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
     <string name="doctor_check_battery">Batareya optimizasiyası</string>
     <string name="doctor_check_adb">Simsiz sazlama</string>
     <string name="doctor_check_root">Root girişi</string>
-    <string name="doctor_check_secure_settings">Təhlükəsiz Parametrlər (Secure Settings)</string>
+    <string name="doctor_check_secure_settings">Təhlükəsiz Tənzimləmələr</string>
     <string name="doctor_check_server">Shizuku+ serveri</string>
     <string name="doctor_check_background">Fon limitləri</string>
     <string name="doctor_status_ok">Olduğu kimi (OK)</string>
@@ -816,7 +816,7 @@
     <string name="backup_plain_exported">Adi ehtiyat nüsxə ixrac edildi. Bu faylı məxfi saxlayın — o, şifrələnməyib.</string>
     <string name="backup_exported_success">Ehtiyat nüsxə uğurla ixrac edildi</string>
     <string name="backup_restored_success">Ehtiyat nüsxə uğurla bərpa edildi</string>
-    <string name="backup_restored_restart_hint">Parametrlər bərpa edildi. Tema/dil dəyişikliklərini tətbiq etmək üçün yenidən başladın.</string>
+    <string name="backup_restored_restart_hint">Tənzimləmələr bərpa edildi. Tema/dil dəyişikliklərini tətbiq etmək üçün yenidən başladın.</string>
     <string name="backup_restored_restart_now">Yenidən başlat</string>
     <string name="backup_menu_search">Tətbiqləri axtar</string>
     <string name="backup_menu_backup_all">Bütün tətbiqlərin ehtiyat nüsxəsini çıxar</string>
@@ -1007,7 +1007,7 @@
     <string name="accessibility_icon_close">Bağla</string>
     <string name="accessibility_icon_info">Məlumat</string>
     <string name="accessibility_icon_play">Oynat</string>
-    <string name="accessibility_icon_settings">Parametrlər</string>
+    <string name="accessibility_icon_settings">Tənzimləmələr</string>
     <string name="accessibility_icon_code">Kod</string>
     <string name="accessibility_icon_open_in_new">Yeni pəncərədə aç</string>
     <string name="accessibility_icon_link">Keçid</string>
@@ -1022,7 +1022,7 @@
     <string name="accessibility_button_view_intents">Intentlərə bax düyməsi</string>
     <string name="accessibility_button_pairing">Cütləşmə düyməsi</string>
     <string name="accessibility_button_developer_options">Tərtibatçı seçimləri düyməsi</string>
-    <string name="accessibility_button_notification_settings">Bildiriş parametrləri düyməsi</string>
+    <string name="accessibility_button_notification_settings">Bildiriş icazəsi tənzimləmələri düyməsi</string>
     <string name="accessibility_button_export_files">Faylları ixrac et düyməsi</string>
     <string name="accessibility_button_activity_log">Fəaliyyət jurnalı düyməsi</string>
     <string name="accessibility_swipe_right">Sürətli əməliyyat üçün sağa sürüşdürün</string>
@@ -1030,7 +1030,7 @@
     <string name="accessibility_action_grant_permission">Shizuku icazəsi ver</string>
     <string name="accessibility_action_revoke_permission">Shizuku icazəsini ləğv et</string>
     <string name="accessibility_action_open_app">Tətbiqi aç</string>
-    <string name="accessibility_action_app_info">Tətbiq məlumatı parametrlərini aç</string>
+    <string name="accessibility_action_app_info">Tətbiq məlumatı tənzimləmələrini aç</string>
     <string name="accessibility_action_hide_app">Siyahıdan gizlət</string>
     <string name="accessibility_action_unhide_app">Siyahıdan göstər</string>
     <string name="accessibility_action_toggle_selection">Seçimi dəyiş</string>
@@ -1067,7 +1067,7 @@
     <string name="empty_state_description_hidden_apps">İdarəetmə siyahısından gizlətdiyiniz tətbiqlər burada görünəcək.</string>
 
     <!-- Settings diagnostics preference (settings_advanced.xml) -->
-    <string name="settings_diagnostics_enabled">Parametrlər Diaqnostikası</string>
+    <string name="settings_diagnostics_enabled">Tənzimləmələr Diaqnostikası</string>
     <string name="settings_diagnostics_enabled_summary">Konfiqurasiyalarda ziddiyyətləri və anomaliyaları qabaqcadan skan edin</string>
 
     <!-- Verified install preferences (settings_app_management.xml) -->
@@ -1139,7 +1139,7 @@
     <string name="settings_root_partition_ghosting">Partisiya Fləş Ghosting-i</string>
     <string name="settings_root_partition_ghosting_summary">[Tərtibatçı] /dev/block/ ünvanını hədəfləyən \'dd\' əməliyyatlarını tutun və saxtalaşdırın. ROM fləş edənlərin heç nə etmədən qəzaya uğramasının qarşısını alır.</string>
     <string name="settings_root_power_ghosting">Enerji Vəziyyəti Ghosting-i</string>
-    <string name="settings_root_power_ghosting_summary">[Tərtibatçı] Yenidən başlatma (reboot), bərpa (recovery) və yumşaq yenidən başlatma (soft-reboot) əmrlərini tutun və istənilməyən cihaz yenidən başlamalarının qarşısını almaq üçün onları səssizcə nəzərə almayın.</string>
+    <string name="settings_root_power_ghosting_summary">[Tərtibatçı] Yenidən başlatma (reboot), bərpa və yumşaq yenidən başlatma əmrlərini tutun və istənilməyən cihaz yenidən başlamalarının qarşısını almaq üçün onları səssizcə nəzərə almayın.</string>
 
     <!-- Bootloader Integration settings -->
     <string name="settings_bootloader_flash_ota">Systemless OTA Fləşlənməsi</string>
@@ -1147,7 +1147,7 @@
     <string name="settings_bootloader_fastbootd">FastbootD Keçidi</string>
     <string name="settings_bootloader_fastbootd_summary">Shizuku qabığından birbaşa fastbootd istifadəçi sahəsinə yenidən başladın</string>
 
-    <string name="settings_developer_category_debug">Səhvlərin Aradan Qaldırılması (Debug) və Diaqnostika</string>
+    <string name="settings_developer_category_debug">Səhvlərin Aradan Qaldırılması və Diaqnostika</string>
     <string name="settings_plus_category_device_owner_tools">Cihaz Sahibi Alətləri</string>
     <string name="settings_update_title">Yeniləmələr</string>
     <string name="settings_update_summary">Tətbiq yeniləmələrini yoxlayın və avtomatik yeniləməni konfiqurasiya edin</string>
@@ -1161,12 +1161,12 @@
     <string name="settings_auto_update_summary">Tətbiq işə düşərkən avtomatik olaraq yeni versiyaları yoxlayın</string>
     <string name="settings_auto_install_title">Yeniləmələri avtomatik quraşdır</string>
     <string name="settings_auto_install_summary">Yeniləmələri avtomatik yükləyin və quraşdırmağı təklif edin (icazə tələb olunur)</string>
-    <string name="settings_update_channel_category">Buraxılış Kanalı (Release Channel)</string>
+    <string name="settings_update_channel_category">Buraxılış Kanalı</string>
     <string name="settings_update_channel_title">Yeniləmə kanalı</string>
     <string name="update_channel_stable">Stabil (Stable)</string>
-    <string name="update_channel_dev">Tərtibatçı / Ön-buraxılış (Dev)</string>
+    <string name="update_channel_dev">Tərtibatçı / Ön-buraxılış</string>
     <string name="update_channel_dev_warning_title">Dev kanalına keçilsin?</string>
-    <string name="update_channel_dev_warning_message">Dev buraxılışları ən son commit-lərdən qurulur və səhvlər, qəzalar və ya işləməyən dəyişikliklər ehtiva edə bilər. Bunu yalnız yeni xüsusiyyətləri erkən sınaqdan keçirmək istəyirsinizsə istifadə edin.\n\nİstənilən vaxt Stabil (Stable) kanalına qayıda bilərsiniz.</string>
+    <string name="update_channel_dev_warning_message">Dev buraxılışları ən son commit-lərdən qurulur və səhvlər, qəzalar və ya işləməyən dəyişikliklər ehtiva edə bilər. Bunu yalnız yeni xüsusiyyətləri erkən sınaqdan keçirmək istəyirsinizsə istifadə edin.\n\nİstənilən vaxt Stabil kanalına qayıda bilərsiniz.</string>
 
     <string name="settings_check_for_update_title">Yeniləməni yoxla</string>
     <string name="settings_check_for_update_summary">Yeni versiyanın olub olmadığını əl ilə yoxlayın</string>
@@ -1193,13 +1193,13 @@
 <string name="migration_dialog_title">Vacib: Yenidən Quraşdırma Tələb Olunur</string>
     <string name="migration_dialog_message">Shizuku+ paket ID-sini moe.shizuku.privileged.api-dən af.shizuku.plus.api olaraq dəyişdi. Köhnə versiyanız və bu versiya ayrı tətbiqlər kimi qəbul edilir, ona görə də birbaşa yeniləmə mümkün olmadı.\n\nParametrlərinizi köhnə versiyadan köçürə və sonra onu silə bilərsiniz.</string>
     <string name="migration_dialog_message_root">Shizuku+ paket ID-sini moe.shizuku.privileged.api-dən af.shizuku.plus.api olaraq dəyişdi. Köhnə versiyanız və bu versiya ayrı tətbiqlər kimi qəbul edilir, ona görə də birbaşa yeniləmə mümkün olmadı.\n\nRoot girişi mövcuddur — parametrlərinizi köhnə versiyadan kopyalamaq üçün Parametrləri Köçür seçiminə toxunun, sonra onu silin.</string>
-    <string name="migration_migrate_settings">Parametrləri Köçür</string>
+    <string name="migration_migrate_settings">Tənzimləmələri Köçür</string>
     <string name="migration_uninstall_old">Köhnə Versiyanı Sil</string>
     <string name="migration_dismiss">Rədd et</string>
-    <string name="migration_success_title">Parametrlər Köçürüldü</string>
-    <string name="migration_success_message">Parametrləriniz köhnə versiyadan kopyalandı. İndi moe.shizuku.privileged.api tətbiqini təhlükəsiz şəkildə silə bilərsiniz.</string>
+    <string name="migration_success_title">Tənzimləmələr Köçürüldü</string>
+    <string name="migration_success_message">Tənzimləmələriniz köhnə versiyadan kopyalandı. İndi moe.shizuku.privileged.api tətbiqini təhlükəsiz şəkildə silə bilərsiniz.</string>
     <string name="migration_failure_title">Köçürmə Uğursuz Oldu</string>
-    <string name="migration_failure_message">Köhnə versiyadan parametrləri oxumaq mümkün olmadı. Tərcihlərinizi əl ilə yenidən konfiqurasiya etməli ola bilərsiniz.\n\nKöhnə versiyanı yenə də təhlükəsiz şəkildə silə bilərsiniz.</string>
+    <string name="migration_failure_message">Köhnə versiyadan tənzimləmələri oxumaq olmadı. Seçimlərinizi əl ilə yenidən konfiqurasiya etməli ola bilərsiniz.\n\nKöhnə versiyanı yenə də təhlükəsiz şəkildə silə bilərsiniz.</string>
     <string name="migration_no_root_message">Root girişi mövcud deyil, ona görə də parametrlər avtomatik köçürülə bilməz. Tərcihlərinizi əl ilə yenidən konfiqurasiya etməli olacaqsınız.\n\nHazır olanda köhnə versiyanı silə bilərsiniz.</string>
 
     <!-- Update Dialogs -->
@@ -1227,13 +1227,13 @@
 
     <!-- Settings backup/restore -->
     <string name="settings_backup_category">Ehtiyat Nüsxə və Bərpa</string>
-    <string name="settings_export_title">Parametrləri İxrac Et</string>
+    <string name="settings_export_title">Tənzimləmələri İxrac Et</string>
     <string name="settings_export_summary">Bütün Shizuku+ parametrlərini JSON faylına saxlayın</string>
-    <string name="settings_import_title">Parametrləri İdxal Et</string>
-    <string name="settings_import_summary">Parametrləri əvvəllər ixrac edilmiş JSON faylından bərpa edin</string>
-    <string name="settings_export_success">Parametrlər uğurla ixrac edildi</string>
+    <string name="settings_import_title">Tənzimləmələri İdxal Et</string>
+    <string name="settings_import_summary">Tənzimləmələri əvvəllər ixrac edilmiş JSON faylından bərpa edin</string>
+    <string name="settings_export_success">Tənzimləmələr uğurla ixrac edildi</string>
     <string name="settings_export_failed">İxrac uğursuz oldu</string>
-    <string name="settings_import_success">Parametrlər idxal edildi — bütün dəyişiklikləri tətbiq etmək üçün tətbiqi yenidən başladın</string>
+    <string name="settings_import_success">Tənzimləmələr idxal edildi — bütün dəyişiklikləri tətbiq etmək üçün tətbiqi yenidən başladın</string>
     <string name="settings_import_failed">İdxal uğursuz oldu: etibarsız və ya uyğun gəlməyən fayl</string>
     <string name="adb_native_unavailable">ADB cütləşməsi bu cihazda əlçatan deyil</string>
     <string name="shizuku_not_available">Shizuku xidməti əlçatan deyil</string>
@@ -1249,7 +1249,7 @@
     <string name="changelog_tag_new">Yeni</string>
 
     <string name="aicore_plus_label">AICore+ Avtomatlaşdırma Körpüsü</string>
-    <string name="aicore_plus_description">Shizuku+ AICore+ xüsusiyyətləri üçün tələb olunur. Süni intellekt tərəfindən idarə olunan avtomatlaşdırma üçün imtiyazlı UI hiyerarxiyası daxil edilməsini (dumping) və fiziki giriş simulyasiyasını təmin edir. Parolları və ya şəxsi məlumatları izləmir.</string>
+    <string name="aicore_plus_description">Shizuku+ AICore+ xüsusiyyətləri üçün tələb olunur. Süni intellekt tərəfindən idarə olunan avtomatlaşdırma üçün imtiyazlı UI hiyerarxiyası daxil edilməsini və fiziki giriş simulyasiyasını təmin edir. Parolları və ya şəxsi məlumatları izləmir.</string>
 
     <!-- Common action labels -->
     <string name="action_clear_all">Hamısını Təmizlə</string>
@@ -1301,11 +1301,11 @@
     <string name="remote_db_sync_channel_name">Tətbiq Verilənlər Bazası Yeniləmələri</string>
 
     <!-- Binder Enhancements (Issue #199) -->
-    <string name="settings_binder_firewall">Bağlayıcı Firewall (Binder Firewall)</string>
+    <string name="settings_binder_firewall">Bağlayıcı Firewall</string>
     <string name="settings_binder_firewall_summary">İcazəsiz tətbiqlərdən gələn həssas sistem əməliyyatlarını yoxlayın və bloklayın</string>
     <string name="settings_binder_logging">AIDL Tranzaksiya Jurnalı</string>
     <string name="settings_binder_logging_summary">Səhvlərin aradan qaldırılması üçün bütün proksi edilmiş Binder tranzaksiyalarını sistem jurnalına (Logcat) yazın</string>
-    <string name="settings_shadow_binder">Kölgə Bağlayıcısı (Shadow Binder)</string>
+    <string name="settings_shadow_binder">Kölgə Bağlayıcısı</string>
     <string name="settings_shadow_binder_summary">Cihaz məlumatını və ya tətbiq vəziyyətini gizlətmək üçün sistem xidməti çağırışlarını tutun və saxtalaşdırın</string>
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketlər</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Digər tətbiqlərdən gizlətmək üçün paket adlarının vergüllə ayrılmış siyahısı. Həm OG Shizuku, həm də Shizuku+ quraşdırılıbsa, ziddiyyətlərin qarşısını almaq üçün hər ikisini əlavə edin (moe.shizuku.privileged.api, af.shizuku.manager).</string>
@@ -1322,10 +1322,10 @@
     </plurals>
 
     <!-- Companion Mode -->
-    <string name="settings_category_companion">Köməkçi Rejimi (Companion Mode)</string>
+    <string name="settings_category_companion">Köməkçi Rejimi</string>
     <string name="settings_companion_mode">Köməkçi Kartını Göstər</string>
     <string name="settings_companion_mode_summary">Orijinal Shizuku-nu tez açmaq üçün kart göstərin. Qeyd: eyni vaxtda yalnız bir Shizuku xidməti işləyə bilər, onlar arasında keçid etmək üçün bundan istifadə edin.</string>
-    <string name="settings_companion_fallback">Qəza Ehtiyat Nüsxəsi (Fallback)</string>
+    <string name="settings_companion_fallback">Qəza Ehtiyat Nüsxəsi</string>
     <string name="settings_companion_fallback_summary">Ardıcıl 3 qəzadan sonra qəza bildirişində orijinal Shizuku-nu açmaq seçimi göstərin</string>
     <string name="home_companion_title">Orijinal Shizuku</string>
     <string name="home_companion_description">Orijinal Shizuku quraşdırılıb. Eyni vaxtda yalnız bir xidmət işləyə bilər — tələb edən tətbiqlər üçün orijinal Shizuku-ya keçmək üçün toxunun.</string>
@@ -1359,8 +1359,8 @@
     <string name="root_hub_device_identity_spoofed">Saxtalaşdırılmış: %s</string>
 
     <!-- Home Automation dialog labels -->
-    <string name="home_automation_dialog_label_action">Əməliyyat</string>
-    <string name="home_automation_dialog_label_class">Sinif (Class)</string>
+    <string name="home_automation_dialog_label_action">Fəaliyyət</string>
+    <string name="home_automation_dialog_label_class">Sinif</string>
     <string name="home_automation_dialog_label_package">Paket</string>
     <string name="home_automation_dialog_label_target">Hədəf</string>
 
@@ -1382,7 +1382,7 @@
     <string name="verify_get_api_key">API Açarını Əldə Et</string>
 
     <!-- Scripting & Snippets (#11) -->
-    <string name="scripting_title">Skriptlər (Scripting)</string>
+    <string name="scripting_title">Skriptlər</string>
     <string name="scripting_summary">İmtiyazlı qabıq skriptlərini yadda saxlayın, paylaşın və işlədin</string>
     <string name="scripting_empty_title">Hələ heç bir skript yoxdur</string>
     <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək üçün imtiyazlı qabıq skriptini yadda saxlayın.</string>
@@ -1405,7 +1405,7 @@
 
     <!-- Tasker/Locale automation plugin (#6) -->
     <string name="automation_plugin_action_label">Shizuku+ Xidməti</string>
-    <string name="automation_plugin_action_edit_title">Əməliyyat seç</string>
+    <string name="automation_plugin_action_edit_title">Fəaliyyət seç</string>
     <string name="automation_plugin_action_start">Shizuku+ xidmətini başlat</string>
     <string name="automation_plugin_action_stop">Shizuku+ xidmətini dayandır</string>
     <string name="automation_plugin_blurb_start">Shizuku+ xidmətini başlat</string>
@@ -1418,8 +1418,8 @@
     <string name="cd_navigate_back">Geri</string>
     <string name="cd_settings_search">Axtar</string>
     <string name="cd_settings_search_clear">Təmizlə</string>
-    <string name="settings_search_hint">Parametrləri axtar…</string>
-    <string name="settings_search_empty_state">Heç bir parametr tapılmadı</string>
+    <string name="settings_search_hint">Tənzimləmələri axtar…</string>
+    <string name="settings_search_empty_state">Heç bir tənzimləmə tapılmadı</string>
 
     <!-- Network Firewall automation trusted networks -->
     <string name="settings_binder_firewall_trusted_networks">Etibarlı Şəbəkələr</string>
@@ -1436,10 +1436,10 @@
 
     <!-- Biometric lock -->
     <string name="biometric_prompt_title">Shizuku+-ın kilidini aç</string>
-    <string name="biometric_prompt_subtitle">Həssas parametrlərə daxil olmaq üçün autentifikasiya edin</string>
+    <string name="biometric_prompt_subtitle">Həssas tənzimləmələrə daxil olmaq üçün təsdiqləyin</string>
 
     <!-- Stealth mode -->
-    <string name="stealth_mode_enable_title">Gizli Rejim (Stealth Mode) Aktivləşdirilsin?</string>
+    <string name="stealth_mode_enable_title">Gizli Rejim Aktivləşdirilsin?</string>
     <string name="stealth_mode_enable_message">Tətbiq ikonu başlatıcınızdan silinəcək.\n\nSiz hələ də Shizuku bildirişindən tətbiqi aça bilərsiniz. İkonu bərpa etmək üçün ADB vasitəsilə gizli rejimi söndürün:\n\nadb shell pm enable %1$s/af.shizuku.manager.LauncherAlias</string>
     <string name="stealth_mode_enable_button">Aktivləşdir</string>
 
@@ -1471,19 +1471,19 @@
 
     <!-- Peer Settings Sharing / Drop-In Sync -->
     <string name="settings_sync_peer_title">%1$s ilə Sinxronlaşdır</string>
-    <string name="settings_sync_peer_summary_installed">%1$s quraşdırılıb • Parametrləri sinxronlaşdırmaq üçün toxunun</string>
+    <string name="settings_sync_peer_summary_installed">%1$s quraşdırılıb • Tənzimləmələri sinxronlaşdırmaq üçün toxunun</string>
     <string name="settings_sync_peer_summary_not_installed">%1$s bu cihazda quraşdırılmayıb</string>
     <string name="settings_sync_peer_not_installed_dialog">%1$s hazırda quraşdırılmayıb. Sınaq məqsədi ilə və ya əvəzedici kimi %1$s quraşdırdığınız zaman hər iki tətbiq arasında parametrləri qüsursuz şəkildə idxal edə və sinxronlaşdıra bilərsiniz.</string>
-    <string name="settings_sync_peer_import">Parametrləri %1$s-dən idxal et</string>
-    <string name="settings_sync_peer_export">Parametrləri %1$s-ə ixrac et</string>
-    <string name="settings_sync_peer_import_success">Parametrlər %1$s-dən uğurla idxal edildi</string>
-    <string name="settings_sync_peer_export_success">Parametrlər %1$s-ə uğurla ixrac edildi</string>
+    <string name="settings_sync_peer_import">Tənzimləmələri %1$s-dən idxal et</string>
+    <string name="settings_sync_peer_export">Tənzimləmələri %1$s-ə ixrac et</string>
+    <string name="settings_sync_peer_import_success">Tənzimləmələr %1$s-dən uğurla idxal edildi</string>
+    <string name="settings_sync_peer_export_success">Tənzimləmələr %1$s-ə uğurla ixrac edildi</string>
     <string name="settings_sync_peer_failed">Parametrləri %1$s ilə sinxronlaşdırmaq mümkün olmadı. Hər iki tətbiqin quraşdırıldığından və ən son versiyada olduğundan əmin olun.</string>
     <string name="settings_auto_sync_peer_title">%1$s ilə Avtomatik Sinxronlaşdır</string>
-    <string name="settings_auto_sync_peer_summary">Tətbiqlər arasında keçid edərkən tərcihləri və konfiqurasiyaları avtomatik sinxronlaşdırın</string>
+    <string name="settings_auto_sync_peer_summary">Tətbiqlər arasında keçid edərkən seçimləri və konfiqurasiyaları avtomatik sinxronlaşdırın</string>
 
     <!-- Samsung ADB dialog -->
-    <string name="adb_dialog_popup_settings">Pop-up Parametrləri</string>
+    <string name="adb_dialog_popup_settings">Açılan Pəncərə Tənzimləmələri</string>
 
     <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
     <string name="tile_subtitle_active">Aktiv</string>
@@ -1552,7 +1552,7 @@
 
     <!-- Hide backup settings (#461) -->
     <string name="settings_hide_backup_settings">Ehtiyat Nüsxə və Bərpanı Gizlət</string>
-    <string name="settings_hide_backup_settings_summary">Haqqında parametrlər ekranından Ehtiyat Nüsxə və Bərpa bölməsini silin</string>
+    <string name="settings_hide_backup_settings_summary">Haqqında tənzimləmələri ekranından Ehtiyat Nüsxə və Bərpa bölməsini silin</string>
 
     <!-- Package identity / MDM bypass UI (#469) -->
     <string name="settings_package_identity_category">Paket Kimliyi</string>
