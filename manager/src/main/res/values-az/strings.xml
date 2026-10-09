@@ -596,7 +596,7 @@
     <string name="settings_root_file_interceptor_summary">Həssas sistem yollarını hədəf alan fayl əməliyyatlarına icazə qorunması bayraqlarını avtomatik əlavə edir.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulyasiyası</string>
     <string name="settings_root_busybox_mocking_summary">Köhnə skрыпt tələblərini ödəmək üçün \'busybox\' əmri üçün saxta versiya sətri qaytarır.</string>
-    <string name="help_root_magisk_title">Magisk Saxtalaşdırma Haqqında</string>
+    <string name="help_root_magisk_title">Magisk Mocking Haqqında</string>
     <string name="help_root_magisk_detail">Bir çox tətbiq Magisk-ə məxsus xüsusiyyətləri və ya /sbin/.magisk qovluğunu yoxlamaqla root-u yoxlayır. Bu modul bu elementləri simulyasiya edərək Magisk mühiti aşkar edilmədən işləməkdən imtina edən tətbiqlərdə yalnız root xüsusiyyətlərindən istifadə etməyə imkan verir.</string>
 
     <string name="help_root_auto_grant_title">Avtomatik Təsdiq Haqqında</string>
