@@ -87,7 +87,7 @@
     <string name="dialog_adb_pairing_paring_code">Qoşalaşdırma kodu</string>
     <string name="paring_code_is_wrong">Qoşalaşdırma kodu yanlışdır.</string>
     <string name="cannot_connect_port">Simsiz sazlama xidmətinə qoşulmaq mümkün olmadı.\n\nXahiş edirik Shizuku-nun şəbəkə keçidini məhdudlaşdıran bütün fayrvol, reklam blokerləri, VPN və ya bənzər tətbiqlərdə istisna siyahısına əlavə olunduğundan əmin olun.</string>
-    <string name="dialog_wireless_adb_not_enabled">Simsiz sazlama aktiv deyil.\nQeyd: Android 11-dən əvvəlki versiyalarda naqilsiz xətaların kənarlaşdırılmasını aktiv etmək üçün kompüterə qoşulmaq mütləqdir.</string>
+    <string name="dialog_wireless_adb_not_enabled">Simsiz sazlama aktiv deyil.\nQeyd: Android 11-dən əvvəlki versiyalarda simsiz sazlamanı aktiv etmək üçün kompüterə qoşulmaq mütləqdir.</string>
     <string name="dialog_usb_debugging_not_enabled">USB sazlama aktiv deyil.\nXahiş edirik onu "Tərtibatçı seçimləri" bölməsindən aktivləşdirin.</string>
     <string name="dialog_adb_pairing_message">Xahiş edirik aşağıdakı addımları yerinə yetirərək qoşalaşdırmanı başladın:\n- "Tərtibatçı seçimləri" bölməsinə keçin\n- "USB sazlaması" və "Simsiz sazlama" funksiyalarını aktivləşdirin\n- "Simsiz Sazlama" mətni üzərinə toxunun\n- "Cihazı qoşalaşdırma kodu ilə birləşdir" seçimini edin\n- Bildiriş bölməsində qoşalaşdırma kodunu daxil edin</string>
     <string name="dialog_adb_pairing_accessibility_permission">Android 14-də Shizuku-nu Paket Quraşdırıcı ilə quraşdırdıqda/yenilədikdə cütləşdirmə üçün xüsusi imkanlar xidmətini aktivləşdirməyə kömək edən %1$s icazəsi ləğv edilir.\n\nİcazə vermək üçün aşağıdakı ADB əmrini icra edin:\n\n%2$s\n\nƏmri icra etdikdən sonra cütləşdirmə prosesinə davam edə bilərsiniz.\n\nQeyd: Shizuku-nu ADB vasitəsilə quraşdıraraq/yeniləyərək bu addımdan yan keçə bilərsiniz.</string>
@@ -127,10 +127,10 @@
     <!-- App Management -->
     <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Xahiş edirik cütləşdirmə prosesini başlatmaq üçün xüsusi imkanlar xidmətini aktivləşdirin. Bu, Shizuku-ya cütləşdirmə kodunu aşkar etməyə imkan verir.\n\nEnerjiyə qənaət etmək üçün kod tapıldıqdan sonra və ya 1 dəqiqə ərzində xüsusi imkanlar xidməti avtomatik söndürüləcək.</string>
-    <string name="dialog_adb_pairing_accessibility_navigate">Xahiş edirik aşağıdakı addımları yerinə yetirərək cütləşdirməni başladın:\n- "Tərtibatçı seçimləri" bölməsinə keçin\n- "USB xətaların kənarlaşdırılması" və "Naqilsiz xətaların kənarlaşdırılması" funksiyalarını aktivləşdirin\n- "Naqilsiz xətaların kənarlaşdırılması" mətni üzərinə toxunun\n- "Cihazı cütləşdirmə kodu ilə cütləşdir" seçimini edin. Shizuku cütləşdirmə kodunu avtomatik aşkar edəcək.</string>
+    <string name="dialog_adb_pairing_accessibility_navigate">Xahiş edirik aşağıdakı addımları yerinə yetirərək cütləşdirməni başladın:\n- "Tərtibatçı seçimləri" bölməsinə keçin\n- "USB sazlaması" və "Simsiz sazlama" funksiyalarını aktivləşdirin\n- "Simsiz sazlama" mətni üzərinə toxunun\n- "Cihazı cütləşdirmə kodu ilə cütləşdir" seçimini edin. Shizuku cütləşdirmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Xahiş edirik əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə keçin.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşdirmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinə imkan verən yeganə üsuldur.</string>
-    <string name="adb_error_key_store">Naqilsiz xətaların kənarlaşdırılması üçün açar yaratmaq mümkün olmadı.\nBu, cihazın KeyStore mexanizminin zədələnməsi səbəbindən ola bilər.</string>
+    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaratmaq olmadı.\nBu, cihazın KeyStore mexanizminin zədələnməsi səbəbindən ola bilər.</string>
     <string name="adb_stopping_tcp">TCP portu bağlanır</string>
     <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
     <string name="adb_pair_required">Xahiş edirik əvvəlcə cütləşdirmə addımını yerinə yetirin.</string>
@@ -278,7 +278,7 @@
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb olunur</string>
     <string name="settings_start_on_boot_bug">Android 11-12 versiyalarındakı xəta səbəbindən simsiz sazlama icazə verilmiş şəbəkələri yadda saxlamır.\n\nHər dəfə sistem yenidən başladıqda icazə dialoqu göründükdə "İcazə ver" toxunaraq şəbəkəni yenidən təsdiqləməlisiniz.</string>
     <string name="settings_use_system_color">Sistem mövzu rəngindən istifadə et</string>
-    <string name="settings_watchdog">Gözətçi (Watchdog)</string>
+    <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Shizuku sıradan çıxdıqda onu avtomatik yenidən başlat</string>
     <string name="settings_tcp_mode">TCP rejimi</string>
     <string name="settings_tcp_mode_summary">"Shizuku-ya Wi-Fi olmadan yenidən başlamağa icazə verir. (Shizuku sistem açılandan sonra ən azı bir dəfə başlamış olmalıdır)"</string>
@@ -516,11 +516,11 @@
     <string name="bug_report_dialog_method_2">Əks halda, e-poçt göndərə bilərsiniz.</string>
     <string name="bug_report_dialog_button_email">E-poçt</string>
     <!-- Service Doctor -->
-    <string name="home_service_doctor_title">Xidmət Həkimi (Doctor)</string>
+    <string name="home_service_doctor_title">Xidmət Həkimi</string>
     <string name="home_service_doctor_summary">Shizuku-nu başlatmaqda çətinlik çəkirsiniz? Diaqnostik yoxlama aparmaq üçün toxunun.</string>
     <string name="doctor_dialog_title">Sistem Diaqnostikası</string>
     <string name="doctor_check_battery">Batareya optimallaşdırılması: %1$s</string>
-    <string name="doctor_check_adb">Naqilsiz xətaların kənarlaşdırılması: %1$s</string>
+    <string name="doctor_check_adb">Simsiz sazlama: %1$s</string>
     <string name="doctor_check_root">Root girişi: %1$s</string>
     <string name="doctor_check_secure_settings">Təhlükəsiz Tənzimləmələr: %1$s</string>
     <string name="doctor_check_permission">ADB icazəsi: %1$s</string>
@@ -535,11 +535,11 @@
     <string name="doctor_status_optimized">Optimallaşdırılıb (Xidməti dayandıra bilər)</string>
     <string name="doctor_status_unlocked">Kilid açıldı</string>
     <string name="doctor_status_restricted_bg">Məhdudlaşdırılmış arxa fon icrası</string>
-    <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Tərtibatçı Seçimlərində "USB xətaların kənarlaşdırılması (Təhlükəsizlik tənzimləmələri)" funksiyasını aktivləşdirin.</string>
+    <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Tərtibatçı Seçimlərində "USB Sazlaması (Təhlükəsizlik tənzimləmələri)" funksiyasını aktivləşdirin.</string>
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Arxa fon xidmətinin dayandırılmasının qarşısını almaq üçün Tərtibatçı Seçimlərində "İcazələrin Monitorinqi"ni söndürün.</string>
     <string name="doctor_tip_tcl_background">TCL: Tənzimləmələrdə Shizuku+-ın "Avto-başlama" və "Yüksək arxa fon enerji sərfiyyatı" ağ siyahılarına əlavə olunduğundan əmin olun.</string>
     <string name="doctor_tip_battery">Arxa fonda baglanmasının qarşısını almaq üçün Shizuku+ üçün batareya optimallaşdırılmasını söndürün.</string>
-    <string name="doctor_tip_adb">Sistem yenidən başladıqdan sonra Shizuku-nun root olmayan rejimdə başlaması üçün Naqilsiz xətaların kənarlaşdırılması aktiv olmalıdır.</string>
+    <string name="doctor_tip_adb">Sistem yenidən başladıqdan sonra Shizuku-nun root olmayan rejimdə başlaması üçün Simsiz sazlama aktiv olmalıdır.</string>
     <string name="doctor_button_fix">Düzəlt</string>
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Port 1 və 65535 arasında olmalıdır</string>
@@ -832,7 +832,7 @@
     <string name="settings_binder_firewall">Binder Fayrvolu</string>
     <string name="settings_binder_firewall_summary">Səlahiyyətsiz tətbiqlərdən həssas sistem əməliyyatlarını audit edin və bloklayın</string>
     <string name="settings_binder_logging">AIDL Tranzaksiya Jurnalı</string>
-    <string name="settings_binder_logging_summary">Xətaların kənarlaşdırılması üçün proksilənmiş bütün Binder tranzaksiyalarını sistem jurnalına (Logcat) yazın</string>
+    <string name="settings_binder_logging_summary">USB sazlaması üçün proksilənmiş bütün Binder tranzaksiyalarını sistem jurnalına yazın</string>
     <string name="settings_shadow_binder">Kölgə Binder</string>
     <string name="settings_shadow_binder_summary">Cihaz məlumatlarını və ya tətbiq vəziyyətini gizlətmək üçün sistem xidməti çağırışlarını tutun və simulyasiya edin</string>
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketlər</string>
