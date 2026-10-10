@@ -31,7 +31,7 @@
         <item>Zen (Bədii)</item>
         <item>Müasir (Material 3)</item>
         <item>Klassik (Material 2)</item>
-        <item>Üzvi (Skvirkli)</item>
+        <item>Üzvi (Dairəvi)</item>
     </string-array>
     <string-array name="shape_styles_value">
         <item>zen</item>
@@ -165,10 +165,10 @@
     <string name="home_automation_description_device_restriction">Cihazınızda başlatma intent-indən istifadə etmək üçün əvvəlcə kompüterdən %1$s əmrini icra edərək TCP üzərindən ADB-ni aktivləşdirməlisiniz.</string>
     <string name="home_automation_button_view_intents">İntent-lərə bax</string>
     <string name="home_automation_bottom_sheet_intents">İntent-lər</string>
-    <string name="home_automation_bottom_sheet_label_action">Əməl (Action)</string>
+    <string name="home_automation_bottom_sheet_label_action">Fəaliyyət</string>
     <string name="home_automation_bottom_sheet_label_package">Paket</string>
     <string name="home_automation_bottom_sheet_label_target">Hədəf</string>
-    <string name="home_automation_bottom_sheet_label_extras">Əlavələr (Extras)</string>
+    <string name="home_automation_bottom_sheet_label_extras">Əlavələr</string>
     <string name="home_automation_regenerate_token">Token yenidən yaradılsın?</string>
     <string name="home_automation_regenerate_token_message">İntent-lərinizi yeni token ilə yenidən tənzimləməli olacaqsınız.</string>
     <!-- Home - Learn more -->
@@ -331,7 +331,7 @@
     <!-- Shizuku+ Features -->
     <string name="settings_shizuku_plus_features">Shizuku+ Özəllikləri</string>
     <string name="settings_dhizuku_mode">Dhizuku Rejimi</string>
-    <string name="settings_dhizuku_mode_summary">Cihaz Sahibi (DevicePolicyManager) hüquqlarını Dhizuku-nu dəstəkləyən tətbiqlərə həvalə edin.</string>
+    <string name="settings_dhizuku_mode_summary">Cihaz Sahibi hüquqlarını Dhizuku-nu dəstəkləyən tətbiqlərə həvalə edin.</string>
     <string name="dhizuku_device_owner_label">Shizuku+ (Dhizuku Rejimi)</string>
     <string name="dhizuku_device_owner_desc">Dhizuku Rejiminin Cihaz Sahibi hüquqlarını icazəli tətbiqlərlə bölüşməsi üçün tələb olunur.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Cihaz Sahibi Aktivdir</string>
@@ -363,7 +363,7 @@
     <string name="help_general_plus_summary">Shizuku+ əsas Shizuku strukturunu güclü sistem səviyyəli körpülərlə genişləndirir. Bu xüsusiyyətlər MacroDroid və Tasker kimi üçüncü tərəf avtomatlaşdırma alətlərinə, həmçinin Hex Installer kimi mövzu mühərriklərinə təhlükəsiz şəkildə imtiyazlı əməliyyatlar icra etməyə imkan verir. Hər bir funksiya sevimli tətbiqləriniz üçün yüksək məhsuldarlıq və dərin sistem inteqrasiyasını təmin edərək root tələb edən imkanlar ilə standart Android API arasında körpü yaratmaq üçün nəzərdə tutulub.</string>
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">Dhizuku Rejimi haqqında</string>
-    <string name="help_dhizuku_detail">Dhizuku Shizuku-ya Cihaz Sahibi (DevicePolicyManager) hüquqlarını üçüncü tərəf tətbiqləri ilə bölüşməyə imkan verir. Bu, təkbaşına Cihaz Sahibi olmadan sistem siyasətlərini idarə etməli olan Dhizuku Manager kimi tətbiqlər və ya müəyyən köşk (kiosk) rejimi alətləri üçün vacibdir.</string>
+    <string name="help_dhizuku_detail">Dhizuku Shizuku-ya Cihaz Sahibi hüquqlarını üçüncü tərəf tətbiqləri ilə bölüşməyə imkan verir. Bu, təkbaşına Cihaz Sahibi olmadan sistem siyasətlərini idarə etməli olan Dhizuku Manager kimi tətbiqlər və ya müəyyən köşk (kiosk) rejimi alətləri üçün vacibdir.</string>
     <string name="help_shell_interceptor_title">Shell Sürətləndiricisi haqqında</string>
     <string name="help_shell_interceptor_detail">Shell Sürətləndiricisi standart shell əmrlərini (am, pm, settings) tutur və onları birbaşa Shizuku server API çağırışlarına çevirir. Bu, hər əmr üçün yeni bir /system/bin/sh prosesinin yaradılmasının yüksək yükünün qarşısını alır, MacroDroid və ya Tasker-də avtomatlaşdırmanı əhəmiyyətli dərəcədə sürətli və batareyaya qənaətcil edir.</string>
     <string name="help_avf_manager_title">AVF Meneceri haqqında</string>
@@ -383,7 +383,7 @@
     <string name="help_activity_manager_plus_title">Dərin Proses İdarəetməsi haqqında</string>
     <string name="help_activity_manager_plus_detail">Dərin Proses İdarəetməsi serverə standart tətbiq yuxusu və gözləmə rejimi məhdudiyyətlərindən yan keçməyə imkan verir. Tətbiqləri RESTRICTED gözləmə rejiminə keçirə və ya batareyaya aqressiv qənaət alətləri üçün vacib olan həqiqi deepForceStop (bütün xidmətləri və arxa fon tapşırıqlarını dayandırmaq) əməliyyatını icra edə bilər.</string>
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_framework">Struktur (Framework)</string>
+    <string name="settings_plus_category_framework">Struktur</string>
     <string name="settings_plus_category_performance">Məhsuldarlıq və Proses İdarəetməsi</string>
     <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Mövzular</string>
@@ -434,7 +434,7 @@
     <string name="settings_on_device_adb_tcp_summary">ADB TCP rejimini (port 5555) birbaşa cihazda aktivləşdirin. Root ilə Shizuku tələb olunur. Wi-Fi olmayan ADB alətləri üçün faydalıdır.</string>
     <string name="settings_force_start_wadb">WADB üçün Wi-Fi yoxlanışından yan keç</string>
     <string name="settings_force_start_wadb_summary">Wi-Fi kəsilsə belə, ADB TCP vasitəsilə Shizuku-nu başlatmağa çalışın. Yerli dövrə (loopback) və ya mobil data ADB üçün faydalıdır.</string>
-    <string name="settings_fake_su">SU Körpüsü (su wrapper)</string>
+    <string name="settings_fake_su">SU Körpüsü</string>
     <string name="settings_fake_su_summary">Fərdi yolları dəstəkləyən köhnə root tətbiqləri üçün Shizuku dəstəkli 'su' faylı təmin edin.</string>
     <string name="settings_root_integration_hub">Root İnteqrasiya Mərkəzi</string>
     <string name="settings_root_integration_hub_summary">Root tətbiqlərini Shizuku+ imtiyazları ilə işləmək üçün tənzimləyin və idarə edin.</string>
@@ -832,7 +832,7 @@
     <string name="settings_binder_firewall_summary">Səlahiyyətsiz tətbiqlərdən həssas sistem əməliyyatlarını audit edin və bloklayın</string>
     <string name="settings_binder_logging">AIDL Tranzaksiya Jurnalı</string>
     <string name="settings_binder_logging_summary">Xətaların kənarlaşdırılması üçün proksilənmiş bütün Binder tranzaksiyalarını sistem jurnalına (Logcat) yazın</string>
-    <string name="settings_shadow_binder">Kölgə Binder (Shadow Binder)</string>
+    <string name="settings_shadow_binder">Kölgə Binder</string>
     <string name="settings_shadow_binder_summary">Cihaz məlumatlarını və ya tətbiq vəziyyətini gizlətmək üçün sistem xidməti çağırışlarını tutun və simulyasiya edin</string>
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketlər</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Başqa tətbiqlərdən gizlədiləcək paket adlarının vergüllə ayrılmış siyahısı</string>
@@ -841,7 +841,7 @@
         <item quantity="other">%d tətbiq seçildi</item>
     </plurals>
     <!-- Companion Mode -->
-    <string name="settings_category_companion">Müşayiətçi Rejimi (Companion)</string>
+    <string name="settings_category_companion">Müşayiətçi Rejimi</string>
     <string name="settings_companion_mode">Müşayiətçi Kartını Göstər</string>
     <string name="settings_companion_mode_summary">Orijinal Shizuku-ya tez keçmək üçün əsas ekranda bir kart göstərin</string>
     <string name="settings_companion_fallback">Sıradan Çıxma Ehtiyatı</string>
@@ -874,8 +874,8 @@
     <string name="root_hub_device_identity_real">Həqiqi: %s</string>
     <string name="root_hub_device_identity_spoofed">Saxtalaşdırılmış: %s</string>
     <!-- Home Automation dialog labels -->
-    <string name="home_automation_dialog_label_action">Əməl (Action)</string>
-    <string name="home_automation_dialog_label_class">Sinif (Class)</string>
+    <string name="home_automation_dialog_label_action">Fəaliyyət</string>
+    <string name="home_automation_dialog_label_class">Sinif</string>
     <string name="home_automation_dialog_label_package">Paket</string>
     <string name="home_automation_dialog_label_target">Hədəf</string>
     <!-- Misc -->
