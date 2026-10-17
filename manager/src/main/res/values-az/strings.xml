@@ -687,9 +687,9 @@
     <string name="su_bridge_self_test_ok">Körpü qaydasındadır</string>
     <string name="su_bridge_self_test_fail">Körpü işləmir</string>
     <string name="su_bridge_self_test_copy">Nəticəni kopyala</string>
-    <string name="su_bridge_self_test_copied">Self-test nəticəsi kopyalandı</string>
+    <string name="su_bridge_self_test_copied">Özünü-yoxlama nəticəsi kopyalandı</string>
     <string name="su_bridge_terminal_profile_title">Terminal və mühit quraşdırması</string>
-    <string name="su_bridge_terminal_profile_desc">Termux və shell skriptləri üçün SU Bridge-i PATH-ın əvvəlinə əlavə edin və ya 'su' əmrinin root olmadan problemsiz işləməsi üçün ləqəb təyin edin.</string>
+    <string name="su_bridge_terminal_profile_desc">Termux və shell skriptləri üçün SU Bridge-i PATH-ın əvvəlinə əlavə edin və ya \'su\' əmrinin root olmadan problemsiz işləməsi üçün ləqəb təyin edin.</string>
     <string name="su_bridge_copy_termux_setup">Termux profil əmrini kopyala</string>
     <string name="su_bridge_termux_setup_copied">Termux əmri mübadilə buferinə kopyalandı</string>
     <string name="su_bridge_configure_dialog_title">%s konfiqurasiya et</string>
