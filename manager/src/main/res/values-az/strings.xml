@@ -673,7 +673,7 @@
     <string name="su_bridge_how_to_use">Necə istifadə etməli:</string>
     <string name="su_bridge_step_1">1. Shizuku fayllarını ixrac edin və ya SU bridge-i Əsas səhifədən /data/local/tmp qovluğuna yerləşdirin.</string>
     <string name="su_bridge_step_2">2. Xüsusi binar faylları dəstəkləyən tətbiqlərdə (məs. AdAway, Solid Explorer), onların \"SU Yolu\" tənzimləməsini bridge yoluna yönəldin.</string>
-    <string name="su_bridge_step_3">3. Terminallar üçün (məs. Termux), 'su' əmrini dərhal istifadə etmək üçün \'export PATH="/data/local/tmp:$PATH"\' əmrini işlədin.</string>
+    <string name="su_bridge_step_3">3. Terminallar üçün (məs. Termux), \'su\' əmrini dərhal istifadə etmək üçün \'export PATH="/data/local/tmp:$PATH"\' əmrini işlədin.</string>
     <string name="su_bridge_step_4">4. Xüsusi SU tənzimləməsi olmayan tətbiqlər üçün Shizuku Root olaraq işlədikdə \"Sehrli quraşdırma\" dəstəklənən tətbiqləri avtomatik konfiqurasiya edə bilər. Digər tətbiqlər üçün real sistem rootu (/system/bin/su) tələb olunur.</string>
     <string name="su_bridge_app_instruction">Parametrlərdə yolu təyin et > %s</string>
     <string name="su_bridge_path_label">İxrac edilmiş su yolu</string>
