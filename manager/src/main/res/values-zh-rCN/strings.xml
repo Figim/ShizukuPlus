@@ -1593,6 +1593,7 @@
     <string name="settings_sync_peer_failed">与 %1$s 同步设置失败。请确保两个应用均已安装且为最新版本。</string>
     <string name="settings_auto_sync_peer_title">自动与 %1$s 同步</string>
     <string name="settings_auto_sync_peer_summary">在切换应用时自动同步偏好设置和配置</string>
+<<<<<<< HEAD
 
     <!-- Reviewed machine-translated drafts, moved from strings_machine_translated.xml -->
     <string name="activity_log_sort_by_app">按应用</string>
@@ -1839,4 +1840,9 @@
     <string name="settings_tcp_add_network_dialog_title">添加受信任网络</string>
     <string name="settings_tcp_ssid_label">网络名称（SSID）</string>
     <string name="settings_tcp_remove_network">移除 %1$s</string>
+    <string name="settings_legacy_rish_keepalive">旧版 rish 兼容</string>
+    <string name="settings_legacy_rish_keepalive_summary">服务运行期间保持 Shizuku+ 管理端在后台存活，使 MT 管理器等旧版 rish 客户端能够请求 Shell 权限。会显示一条低优先级通知。</string>
+    <string name="legacy_rish_keepalive_channel_name">旧版 rish 兼容</string>
+    <string name="legacy_rish_keepalive_title">旧版 rish 兼容已生效</string>
+    <string name="legacy_rish_keepalive_text">正在后台保持 Shizuku+，以便旧版 rish 客户端请求 Shell 权限。</string>
 </resources>

@@ -1890,4 +1890,9 @@
     <string name="home_layout_sim_activity_logs">Activity Logs</string>
     <string name="home_layout_sim_developer_guide">Developer Guide</string>
     <string name="home_layout_sim_hint">Tap simulated blocks in the mockup device to instantly toggle their visibility on the main home screen.</string>
+    <string name="settings_legacy_rish_keepalive">Legacy rish compatibility</string>
+    <string name="settings_legacy_rish_keepalive_summary">Keep the Shizuku+ manager in the background while the server runs, so older rish clients such as MT Manager can request the shell binder. Shows a low-priority notification.</string>
+    <string name="legacy_rish_keepalive_channel_name">Legacy rish compatibility</string>
+    <string name="legacy_rish_keepalive_title">Legacy rish compatibility is active</string>
+    <string name="legacy_rish_keepalive_text">Keeping Shizuku+ in the background so legacy rish clients can request the shell binder.</string>
 </resources>
