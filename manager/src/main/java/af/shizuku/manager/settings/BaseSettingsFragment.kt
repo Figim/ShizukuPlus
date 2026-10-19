@@ -640,7 +640,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
             if (pos == 0) {
                 outRect.top = 0
-            } else if (isHeader(view)) {
+            } else if (isHeader(view) || !shouldDecorate(view) || startsGroup(parent, pos)) {
                 outRect.top = context.resources.getDimensionPixelSize(R.dimen.settings_section_top_offset)
             } else {
                 outRect.top = gap.toInt()
@@ -718,6 +718,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
 
         override fun isHeader(view: View): Boolean = view.tag == "category_header"
+
+        override fun shouldDecorate(view: View): Boolean =
+            view.tag != "standalone_card" &&
+                view !is com.google.android.material.card.MaterialCardView &&
+                view.findViewById<View>(R.id.card_update_container) == null
 
         /** True when no visible card row sits directly above [pos] (unknown/off-screen => mid-group). */
         private fun startsGroup(

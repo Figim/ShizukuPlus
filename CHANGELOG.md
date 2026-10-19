@@ -4,23 +4,16 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [v13.7.0 — Major Stable Release] - 2026-10-19
 
-### 🌟 Highlights & What's New for You (In Plain English)
-- **App Icon & Name Camouflage (Issue #615)** — Personalize your launcher presence! Choose between Shizuku+, Shizuku Classic, Android System, Dev Tools, Files & Storage, or Quick Notes from Settings → Personalization, fully coordinated with stealth mode.
-- **Interactive Multi-Card Onboarding & Feature Tour** — Fresh installs now welcome you with an 8-card interactive walkthrough highlighting M3 Expressive theming, gestures, Network Trust Shield, and layout controls. Existing users can launch the interactive tour anytime via What's New or Settings → About.
-- **Normalized Home Card Margins & Fluid Breathing Room** — Completely eradicated entrance scaling distortion that caused cards to display uneven margins on launch as if already held. The Server Status card now has proper top breathing room and an optional outline stroke.
-- **Fixed Settings Appearance Crash on Android 16 (Issue #616)** — Resolved a NullPointerException in Compose-backed preference views on Android 16 devices like OnePlus PMB110.
-- **Material 3 Expressive (M3E) Settings Consolidation** — Segmented control pill selectors for Icon Style, Icon Color Mode, and Animation Intensity. The Two-Tone icon color options are now placed directly beneath the Two-Tone icon selector in Shape & Style, appearing dynamically only when Two-Tone is active.
-- **Instant & Smarter Wireless ADB Reconnect** — Shizuku+ now connects to Wireless Debugging in a fraction of a second on boot and when switching Wi-Fi networks. It automatically discovers active loopback and network interface ports in parallel and never queues duplicate "Allow USB debugging?" popups.
-- **Rock-Solid Settings Stability** — Toggling themes, resizing system fonts, or changing languages no longer crashes the app. Every settings screen is thoroughly protected against Android 16 and 17 system layout changes and preference summary conflicts ([#587](https://github.com/thejaustin/ShizukuPlus/issues/587)).
-- **Dual-Stack Port & Network Guard Security** — Hardened `TcpNetworkGuard` to check and close Android 11+ `adb_wifi_enabled` alongside raw TCP sockets, preventing unauthorized remote execution when entering untrusted networks ([#518](https://github.com/thejaustin/ShizukuPlus/issues/518)).
-- **Experimental Floating Navigation Bar** — A sleek floating pill bar lets you jump effortlessly between Home, Apps, Feature Hub, and Settings with fluid slide animations that tuck away when you scroll down ([#498](https://github.com/thejaustin/ShizukuPlus/issues/498)). Off by default; toggle anytime in Settings → Personalization.
-- **Butter-Smooth Home Card Reordering** — Long-press to edit and reorder cards with natural spring physics, real-time sibling sliding, corner-radius morphing on pickup, and tactile haptic ticks on every move.
-- **One-Tap Service Doctor Fixes & Modern Diagnostic Dashboard** — Service Doctor features a containerized Material 3 diagnostic status card with dynamic system health overview ("All Systems Healthy" vs detected issues counter), 1-tap "Re-run Diagnostics" with haptic feedback, and containerized diagnostic check cards with tonal quick-fix buttons ([#476](https://github.com/thejaustin/ShizukuPlus/issues/476)).
-- **Persistent App Permissions** — When you grant or revoke permissions for apps, Shizuku+ writes them immediately to disk, guaranteeing that your configurations survive sudden stops, reboots, or crashes.
-- **Network-Aware Security Shield** — Automatically protects your active TCP debugging port when connected to open or untrusted public Wi-Fi networks according to your chosen policy ([#518](https://github.com/thejaustin/ShizukuPlus/issues/518)).
-- **Overwhelm-Free Notifications** — Background service restarts, download progress bars, and pairing prompts stay completely silent and never bombard your status bar with repetitive sounds, vibrations, or heads-up alerts. You can also turn off watchdog crash notifications anytime in Settings.
-- **Full Compatibility Restored** — Fixed transaction proxy regressions so third-party tools like Total Commander, Installer X Revived, and color customizers work seamlessly ([#566](https://github.com/thejaustin/ShizukuPlus/issues/566)).
-- **Consolidated Release Updates** — Consolidated incremental pre-releases and README updates into this unified, tested major stable release.
+### 🌟 Highlights & What's New
+
+- **App Icon & Name Camouflage** — Disguise Shizuku+ in your launcher as *Dev Tools*, *Files & Storage*, *Quick Notes*, or *Android System*—or pick between the modern Shizuku+ and Classic icon. It's fully integrated into Settings → Personalization.
+- **Streamlined About Screen & All-in-One Update Card** — The About screen is cleaner than ever without cluttered section headers. Version, Changelog, and What's New tour lead the way, followed by a brand-new Material 3 compound Update Card that puts update checks, channel toggles (Stable vs Dev), and auto-install settings all in one place.
+- **Interactive Multi-Card Onboarding Tour** — Whether you're setting up for the first time or checking out recent updates, an 8-card interactive walkthrough introduces you to gestures, theming, Network Trust Shield, and layout controls. You can revisit it anytime via What's New or Settings → About.
+- **Normalized Home Card Margins & Status Card Styling** — Eliminated launch animation glitches that made cards appear with uneven margins. The Server Status card now has proper breathing room at the top, along with optional outline borders matching the home cards.
+- **Instant & Smarter Wireless ADB** — Connects to Wireless Debugging in a fraction of a second on boot and network changes. Shizuku+ probes candidate ports in parallel and never stacks duplicate "Allow USB debugging?" prompts.
+- **Quiet & Respectful Notifications** — Background restarts, pairing prompts, and update downloads won't overwhelm your status bar with repetitive sounds, buzzes, or heads-up popups. Plus, there's a dedicated toggle to silence watchdog alerts entirely.
+- **Rock-Solid Stability on Android 16 & 17** — Fixed Compose-backed preference crashes on Android 16 devices (like OnePlus PMB110) and prevented app bar layout crashes when changing system font or display sizes.
+- **Persistent Permissions & Broad App Compatibility** — All permission grants are saved immediately so reboots and sudden restarts never wipe your preferences. Binder compatibility regressions have also been completely resolved for third-party utilities like Total Commander and Installer X Revived.
 
 ---
 

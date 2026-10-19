@@ -1262,6 +1262,7 @@
     <string name="update_channel_dev_warning_message">Dev releases are built from the latest commits and may contain bugs, crashes, or breaking changes. Only use this if you want to test new features early.\n\nYou can switch back to Stable at any time.</string>
 
     <string name="settings_check_for_update_title">Check for update</string>
+    <string name="update_check_now">Check</string>
     <string name="settings_check_for_update_summary">Manually check if a new version is available</string>
     <string name="settings_current_version_title">Current version</string>
     <string name="settings_last_check_title">Last checked</string>
