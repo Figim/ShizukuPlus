@@ -236,7 +236,6 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> 支援現代 Shizuku，但它正在要求舊版 Shizuku。這可能是因為 Shizuku 未在執行，請在 Shizuku 應用程式內檢查。<p>舊版 Shizuku 已於 2019 年 3 月被棄用。]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">開啟 Shizuku</string>
     <string name="wadb_notification_attempt_now">現在嘗試</string>
-<<<<<<< HEAD
     <!-- ===== zh-rTW completion (2026-10-18): previously missing keys (translated to Traditional Chinese / Taiwan usage) ===== -->
     <!-- 無障礙：首頁卡片操作 -->
     <string name="accessibility_card_hide">隱藏卡片</string>
