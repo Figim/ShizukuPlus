@@ -1009,7 +1009,7 @@
     <string name="dialog_legacy_not_support_title">%1$s müasir Shizuku-nu dəstəkləmir</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur. Həmçinin, köhnə Shizuku yeni Android sistemlərində işləmir.<p>Zəhmət olmasa <b>%1$s</b> tətbiqinin tərtibatçısından yeniləməsini xahiş edin.]]></string>
     <string name="dialog_requesting_legacy_title">%1$s köhnə Shizuku tələb edir</string>
-    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdır, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
+    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdir, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku-nu Aç</string>
     <string name="wadb_notification_attempt_now">İndi cəhd et</string>
     <string name="wadb_notification_ask_again">Yenidən soruş</string>
