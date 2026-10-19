@@ -494,9 +494,11 @@ class ShizukuApplication :
                 .distinctUntilChanged()
                 .collect { state ->
                     if (state == ShizukuStateMachine.State.RUNNING) {
-                        af.shizuku.manager.service.LegacyRishKeepAliveService.start(this@ShizukuApplication)
+                        af.shizuku.manager.service.LegacyRishKeepAliveService
+                            .start(this@ShizukuApplication)
                     } else {
-                        af.shizuku.manager.service.LegacyRishKeepAliveService.stop(this@ShizukuApplication)
+                        af.shizuku.manager.service.LegacyRishKeepAliveService
+                            .stop(this@ShizukuApplication)
                     }
                 }
         }

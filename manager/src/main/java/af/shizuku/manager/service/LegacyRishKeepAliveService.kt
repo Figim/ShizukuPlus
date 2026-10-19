@@ -62,7 +62,8 @@ class LegacyRishKeepAliveService : Service() {
         }
         stateJob =
             scope.launch {
-                ShizukuStateMachine.asFlow()
+                ShizukuStateMachine
+                    .asFlow()
                     .distinctUntilChanged()
                     .collectLatest { state ->
                         if (state != ShizukuStateMachine.State.RUNNING) {
@@ -117,7 +118,8 @@ class LegacyRishKeepAliveService : Service() {
                 Intent(this, MainActivity::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        return NotificationCompat
+            .Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_visibility_24)
             .setContentTitle(getString(R.string.legacy_rish_keepalive_title))
             .setContentText(getString(R.string.legacy_rish_keepalive_text))
