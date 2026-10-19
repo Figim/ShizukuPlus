@@ -69,7 +69,7 @@
     <string name="icon_style_filled">Dolu</string>
     <string name="icon_style_outlined">Konturlu</string>
     <string name="icon_style_twotone">İkirəngli</string>
-    <string name="home_edit_mode_banner">Əsas səhifə düzenini fərdiləşdirmək üçün kartları basıb saxlayın və sürükləyin</string>
+    <string name="home_edit_mode_banner">Əsas səhifə düzənini fərdiləşdirmək üçün kartları basıb saxlayın və sürükləyin</string>
 
     <string name="settings_icon_color_mode">İki Rəngli İkon Rəngləri</string>
     <string name="settings_icon_color_mode_summary">İki Rəngli ikon fonunun necə rəngləndiyi</string>
@@ -267,7 +267,7 @@
     <!-- Home - Automation -->
     <string name="home_automation_title">Shizuku+-ı avtomatlaşdırma tətbiqləri ilə idarə edin</string>
     <string name="home_automation_description">Tasker və MacroDroid kimi tətbiqlər Shizuku+-ı avtomatik olaraq başlatmaq/dayandırmaq üçün intentlər göndərə bilər.</string>
-    <string name="home_automation_description_device_restriction">Cihazınızda başlatma intentindən istifadə etmək üçün əvvəlcə Kompüterdən %1$s işlədərək TCP üzərindən ADB-ni aktivləşdirməlisiniz.</string>
+    <string name="home_automation_description_device_restriction">Cihazınızda başlatma intentindən istifadə etmək üçün əvvəlcə Kompüterdən %1$s işlədək TCP üzərindən ADB-ni aktivləşdirməlisiniz.</string>
     <string name="home_automation_button_view_intents">Intentlərə bax</string>
     <string name="home_automation_bottom_sheet_intents">Intentlər</string>
     <string name="home_automation_bottom_sheet_label_action">Əməliyyat</string>
@@ -275,7 +275,7 @@
     <string name="home_automation_bottom_sheet_label_target">Hədəf</string>
     <string name="home_automation_bottom_sheet_label_extras">Əlavələr</string>
     <string name="home_automation_regenerate_token">Token yenidən yaradılsın?</string>
-    <string name="home_automation_regenerate_token_message">Intentlərinizi yeni tokenlə yenidən konfiqurasiya etməli olaçaqsınız.</string>
+    <string name="home_automation_regenerate_token_message">Intentlərinizi yeni tokenlə yenidən konfiqurasiya etməli olacaqsınız.</string>
     <string name="home_automation_token_encrypt_failed">Token-i təhlükəsizləşdirmək mümkün olmadı — yenidən cəhd edin</string>
 
     <!-- Home - Learn more -->
@@ -396,11 +396,11 @@
     <string name="onboarding_security_doctor_desc">Avtomatik ikili girov mühafizəsi etibarsız Wi-Fi şəbəkələrində aktiv sazlama portunuzu qoruyur, Xidmət Həkimi isə arxa fon sağlamlığına nəzarət edir.</string>
     <string name="onboarding_network_guard_title">Şəbəkə Etibar Qalxanı</string>
     <string name="onboarding_network_guard_desc">Açıq və ya etibarsız şəbəkələrdə TCP işəsalmalarını bloklayın</string>
-    <string name="onboarding_watchdog_title">Qözətçi Arxa Fon Canlı Tutma</string>
+    <string name="onboarding_watchdog_title">Gözətçi Arxa Fon Canlı Tutma</string>
     <string name="onboarding_watchdog_desc">Server dayandırılarsa, onu avtomatik bərpa edin və yenidən başladın</string>
     <string name="onboarding_tour_title">Yeniliklər Turu</string>
     <string name="onboarding_take_tour">Xüsusiyyət Turu</string>
-    <string name="onboarding_take_tour_summary">Yeni M3 Expressive görünüşünü, əsas səhifə düzenini və şəbəkə etibar qalxanını kəşf edin</string>
+    <string name="onboarding_take_tour_summary">Yeni M3 Expressive görünüşünü, əsas səhifə düzənini və şəbəkə etibar qalxanını kəşf edin</string>
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Sürüşdürmə jestləri</string>
@@ -424,7 +424,7 @@
     <string name="settings_behavior">Davranış</string>
     <string name="settings_start_on_boot">Yüklənmədə başlat</string>
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb edir</string>
-    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni yadda saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olaçaqsınız.</string>
+    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni yadda saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olacaqsınız.</string>
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
     <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
@@ -629,7 +629,7 @@
     <string name="settings_plus_category_core">Nüvə</string>
     <string name="settings_plus_category_framework">Çərçivə</string>
     <string name="settings_plus_category_performance">Performans və Proses Nəzarəti</string>
-    <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
+    <string name="settings_plus_category_files">Fayllər və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Tematika</string>
     <string name="settings_plus_category_network">Şəbəkə və Məxfilik</string>
     <string name="settings_plus_category_intelligence">İntellekt və Davamlılıq</string>
@@ -1009,7 +1009,7 @@
     <string name="dialog_legacy_not_support_title">%1$s müasir Shizuku-nu dəstəkləmir</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur. Həmçinin, köhnə Shizuku yeni Android sistemlərində işləmir.<p>Zəhmət olmasa <b>%1$s</b> tətbiqinin tərtibatçısından yeniləməsini xahiş edin.]]></string>
     <string name="dialog_requesting_legacy_title">%1$s köhnə Shizuku tələb edir</string>
-    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdir, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
+    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdır, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku-nu Aç</string>
     <string name="wadb_notification_attempt_now">İndi cəhd et</string>
     <string name="wadb_notification_ask_again">Yenidən soruş</string>
@@ -1164,7 +1164,7 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiğın imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə metadverilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
