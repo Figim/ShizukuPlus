@@ -89,10 +89,10 @@ class TimelineChangelogController(
         filterGroup.removeAllViews()
         val present = ChangeKind.values().filter { k -> releases.any { it.count(k) > 0 } }
         if (present.size < 2) {
-            (filterGroup.parent as View).visibility = View.GONE
+            (filterGroup.parent as? View)?.visibility = View.GONE
             return
         }
-        (filterGroup.parent as View).visibility = View.VISIBLE
+        (filterGroup.parent as? View)?.visibility = View.VISIBLE
         val all =
             Chip(ctx).apply {
                 setText(R.string.changelog_filter_all)
