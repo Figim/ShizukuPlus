@@ -460,6 +460,12 @@ fun HomeScreen(
                             }
                         },
                         update = { view -> recyclerViewProvider(view.context, adjustedPadding) },
+                        onRelease = { rv ->
+                            (rv.getTag(R.id.tag_home_scroll_listener) as? RecyclerView.OnScrollListener)?.let {
+                                rv.removeOnScrollListener(it)
+                                rv.setTag(R.id.tag_home_scroll_listener, null)
+                            }
+                        },
                         modifier = Modifier.fillMaxSize(),
                     )
                     // Bottom nav scrim: fades the card list into the navigation bar zone.

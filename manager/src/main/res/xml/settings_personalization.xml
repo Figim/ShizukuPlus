@@ -67,7 +67,7 @@
             android:defaultValue="default"
             android:entries="@array/app_icon_alias_entries"
             android:entryValues="@array/app_icon_alias_values"
-            android:icon="@drawable/ic_launcher" />
+            android:icon="@drawable/ic_launcher_foreground" />
 
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="icon_style"

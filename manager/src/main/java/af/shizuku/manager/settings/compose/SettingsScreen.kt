@@ -2,7 +2,9 @@ package af.shizuku.manager.settings.compose
 
 import af.shizuku.manager.R
 import af.shizuku.manager.settings.SettingsSearchEngine
+import android.content.res.ColorStateList
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -29,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -42,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -480,14 +484,10 @@ fun SearchResultItem(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (item.iconResId != 0) {
-                Icon(
-                    painter = painterResource(item.iconResId),
-                    contentDescription = null,
+                SafePreferenceIcon(
+                    iconResId = item.iconResId,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier =
-                        Modifier
-                            .size(24.dp)
-                            .padding(end = 0.dp),
+                    modifier = Modifier.size(24.dp),
                 )
                 Spacer(modifier = Modifier.width(16.dp))
             }
@@ -515,4 +515,36 @@ fun SearchResultItem(
             }
         }
     }
+}
+
+/**
+ * Safely renders an arbitrary Android drawable resource ID (vector, bitmap, XML layer-list,
+ * adaptive icon) inside Compose without triggering IllegalArgumentException from painterResource.
+ */
+@Composable
+fun SafePreferenceIcon(
+    iconResId: Int,
+    modifier: Modifier = Modifier,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+) {
+    if (iconResId == 0) return
+    val tintArgb = tint.toArgb()
+
+    AndroidView(
+        factory = { ctx ->
+            ImageView(ctx).apply {
+                scaleType = ImageView.ScaleType.FIT_CENTER
+            }
+        },
+        update = { imageView ->
+            try {
+                imageView.setImageResource(iconResId)
+                imageView.imageTintList = ColorStateList.valueOf(tintArgb)
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to load preference icon resource: %d", iconResId)
+                imageView.setImageDrawable(null)
+            }
+        },
+        modifier = modifier,
+    )
 }
