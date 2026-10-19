@@ -3014,7 +3014,6 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IAICorePlus getAICorePlus() {
         enforceCallingPermission("getAICorePlus");
-        if (!isFeatureEnabled("ai_core_plus")) return null;
         return aiCorePlus;
     }
 

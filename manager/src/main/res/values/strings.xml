@@ -1850,6 +1850,20 @@
     <string name="activity_log_copied">Copied %1$s to clipboard</string>
     <string name="activity_log_clear_confirm_title">Clear activity logs?</string>
     <string name="activity_log_clear_confirm_message">All recorded activity log events will be permanently deleted.</string>
+    <string name="activity_log_group_by_date">Group by date</string>
+    <string name="activity_log_search_hint">Search logs…</string>
+    <string name="activity_log_export">Export logs</string>
+    <string name="activity_log_export_copied">Copied %d logs to clipboard</string>
+    <string name="activity_log_date_today">Today</string>
+    <string name="activity_log_date_yesterday">Yesterday</string>
+    <string name="activity_log_date_earlier_week">Earlier this week</string>
+    <string name="activity_log_date_older">Older</string>
+    <string name="server_metrics_server_not_running">Shizuku is not running</string>
+    <string name="server_metrics_server_not_running_summary">Start Shizuku to view live server uptime, memory usage, and active connections.</string>
+    <string name="server_metrics_stock_server">Connected to stock Shizuku server</string>
+    <string name="server_metrics_stock_server_summary">Server metrics and advanced diagnostic capabilities require the Shizuku+ server.</string>
+    <string name="server_metrics_server_running">Shizuku+ Server Active</string>
+    <string name="server_metrics_patch_label">Patch v%d</string>
 
     <!-- Adaptive settings & tiered complexity -->
     <string name="settings_main_category_preferences">Preferences</string>
