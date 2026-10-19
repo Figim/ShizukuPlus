@@ -267,7 +267,7 @@
     <!-- Home - Automation -->
     <string name="home_automation_title">Shizuku+-ı avtomatlaşdırma tətbiqləri ilə idarə edin</string>
     <string name="home_automation_description">Tasker və MacroDroid kimi tətbiqlər Shizuku+-ı avtomatik olaraq başlatmaq/dayandırmaq üçün intentlər göndərə bilər.</string>
-    <string name="home_automation_description_device_restriction">Cihazınızda başlatma intentindən istifadə etmək üçün əvvəlcə Kompüterdən %1$s işlədək TCP üzərindən ADB-ni aktivləşdirməlisiniz.</string>
+    <string name="home_automation_description_device_restriction">Cihazınızda başlatma intentindən istifadə etmək üçün əvvəlcə Kompüterdən %1$s işlədərək TCP üzərindən ADB-ni aktivləşdirməlisiniz.</string>
     <string name="home_automation_button_view_intents">Intentlərə bax</string>
     <string name="home_automation_bottom_sheet_intents">Intentlər</string>
     <string name="home_automation_bottom_sheet_label_action">Əməliyyat</string>
@@ -415,7 +415,7 @@
     <string name="app_name_files">Fayllar</string>
     <string name="app_name_notes">Qeydlər</string>
     <string name="settings_app_icon_name_title">Tətbiq İkonu &amp; Adı</string>
-    <string name="settings_app_icon_name_summary">Başlatıcı ikonunu və tətbiq adını fərdiləşdirin</string>
+    <string name="settings_app_icon_name_summary">Başladıcı ikonunu və tətbiq adını fərdiləşdirin</string>
     <string name="settings_show_home_cards_outline">Əsas səhifə kart haşiyələri</string>
     <string name="settings_show_home_cards_outline_summary">Əsas ekran kartlarının ətrafında incə kontur xətti göstər</string>
 
@@ -629,7 +629,7 @@
     <string name="settings_plus_category_core">Nüvə</string>
     <string name="settings_plus_category_framework">Çərçivə</string>
     <string name="settings_plus_category_performance">Performans və Proses Nəzarəti</string>
-    <string name="settings_plus_category_files">Fayllər və Virtual Maşınlar</string>
+    <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Tematika</string>
     <string name="settings_plus_category_network">Şəbəkə və Məxfilik</string>
     <string name="settings_plus_category_intelligence">İntellekt və Davamlılıq</string>
@@ -906,7 +906,7 @@
     <string name="settings_about_category_app_info">Tətbiq məlumatı</string>
     <string name="settings_about_category_updates">Yeniləmələr</string>
     <string name="settings_about_category_version_updates">Versiya &amp; yeniləmələr</string>
-    <string name="settings_about_category_project">Layihə məlumatı</string>
+    <string name="settings_about_category_project">Layihə &amp; hüquqi məlumat</string>
     <string name="action_about">Haqqında</string>
     <string name="about_dialog_button_close">Bağla</string>
     <string name="about_view_source_code_title">Mənbə kodu</string>
@@ -1164,7 +1164,7 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiğın imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqın imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə metadverilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
@@ -1229,7 +1229,7 @@
     <string name="settings_root_kernel_ghosting">Kernel Drayver Ghosting-i</string>
     <string name="settings_root_kernel_ghosting_summary">[Tərtibatçı] Kernel modullarını yükləmədən insmod/rmmod kernel əmrləri üçün uğuru səssizcə simulyasiya edin.</string>
     <string name="settings_root_partition_ghosting">Partisiya Fləş Ghosting-i</string>
-    <string name="settings_root_partition_ghosting_summary">[Tərtibatçı] /dev/block/ ünvanını hədəfləyən \'dd\' əməliyyatlarını tutun və saxtalaşdırın. ROM fləş edənlərin heç nə etmədən qəzaya uğramasından qarşısını alır.</string>
+    <string name="settings_root_partition_ghosting_summary">[Tərtibatçı] /dev/block/ ünvanını hədəfləyən \'dd\' əməliyyatlarını tutun və saxtalaşdırın. ROM fləş edənlərin heç nə etmədən qəzaya uğramasının qarşısını alır.</string>
     <string name="settings_root_power_ghosting">Enerji Vəziyyəti Ghosting-i</string>
     <string name="settings_root_power_ghosting_summary">[Tərtibatçı] Yenidən başlatma, bərpa və yumşaq yenidən başlatma əmrlərini tutun və istənilməyən cihaz yenidən başlamalarının qarşısını almaq üçün onları səssizcə nəzərə almayın.</string>
 
