@@ -66,6 +66,11 @@
         <item>iki rəngli</item>
     </string-array>
 
+    <string name="icon_style_filled">Dolu</string>
+    <string name="icon_style_outlined">Konturlu</string>
+    <string name="icon_style_twotone">İkirəngli</string>
+    <string name="home_edit_mode_banner">Əsas səhifə düzenini fərdiləşdirmək üçün kartları basıb saxlayın və sürükləyin</string>
+
     <string name="settings_icon_color_mode">İki Rəngli İkon Rəngləri</string>
     <string name="settings_icon_color_mode_summary">İki Rəngli ikon fonunun necə rəngləndiyi</string>
     <string-array name="icon_color_modes">
@@ -374,12 +379,45 @@
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
     <string name="onboarding_setup_root_desc">Cihazınız root-ludur. Shizuku-nu root giriş ilə başladın.</string>
     <string name="onboarding_setup_adb_desc">İstənilən cihaz. Başlamaq üçün kompüterdən bir ADB əmri icra edin.</string>
+    <string name="onboarding_m3e_title">İfadəli Görünüş &amp; Hissiyyat</string>
+    <string name="onboarding_m3e_desc">Adaptiv ikon üslubları, AMOLED+ kontrastı və axıcı hərəkətlərlə təcrübənizi fərdiləşdirin.</string>
+    <string name="onboarding_icon_style_title">İkon Üslubu</string>
+    <string name="onboarding_amoled_title">AMOLED+ Xalis Qara</string>
+    <string name="onboarding_amoled_desc">Tünd rejimdə təmiz qara arxa fonlar</string>
+    <string name="onboarding_animations_title">İfadəli Animasiyalar</string>
+    <string name="onboarding_animations_desc">Axıcı yay fizikası və toxunma hərəkəti</string>
+    <string name="onboarding_layout_nav_title">Əsas Səhifə &amp; Naviqasiya</string>
+    <string name="onboarding_layout_nav_desc">Gündəlik iş sahənizi uyğunlaşdırın. Əsas səhifədə kartların sırasını dəyişmək üçün sürükləyin və ya üzən kapsul naviqasiya panelindən istifadə edin.</string>
+    <string name="onboarding_floating_nav_title">Üzən Naviqasiya Paneli</string>
+    <string name="onboarding_floating_nav_desc">Sürüşdürərkən gizlənən kapsul üslublu aşağı panel</string>
+    <string name="onboarding_activity_log_title">Əsas Ekran Tarixçəsi</string>
+    <string name="onboarding_activity_log_desc">Son işə salınmalara və tətbiq aktivasiyalarına bir baxışda baxın</string>
+    <string name="onboarding_security_doctor_title">Şəbəkə Qalxanı &amp; Həkim</string>
+    <string name="onboarding_security_doctor_desc">Avtomatik ikili girov mühafizəsi etibarsız Wi-Fi şəbəkələrində aktiv sazlama portunuzu qoruyur, Xidmət Həkimi isə arxa fon sağlamlığına nəzarət edir.</string>
+    <string name="onboarding_network_guard_title">Şəbəkə Etibar Qalxanı</string>
+    <string name="onboarding_network_guard_desc">Açıq və ya etibarsız şəbəkələrdə TCP işəsalmalarını bloklayın</string>
+    <string name="onboarding_watchdog_title">Qözətçi Arxa Fon Canlı Tutma</string>
+    <string name="onboarding_watchdog_desc">Server dayandırılarsa, onu avtomatik bərpa edin və yenidən başladın</string>
+    <string name="onboarding_tour_title">Yeniliklər Turu</string>
+    <string name="onboarding_take_tour">Xüsusiyyət Turu</string>
+    <string name="onboarding_take_tour_summary">Yeni M3 Expressive görünüşünü, əsas səhifə düzenini və şəbəkə etibar qalxanını kəşf edin</string>
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Sürüşdürmə jestləri</string>
     <string name="swipe_hint_right">Sürətli əməliyyat üçün sağa sürüşdürün</string>
     <string name="swipe_hint_left">Sürətli əməliyyat üçün sola sürüşdürün</string>
     <string name="swipe_hint_dismiss">Bağlamaq üçün istənilən yerə toxunun</string>
+
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
+    <string name="app_name_classic">Shizuku</string>
+    <string name="app_name_system">Sistem Xidməti</string>
+    <string name="app_name_tools">Alətlər</string>
+    <string name="app_name_files">Fayllar</string>
+    <string name="app_name_notes">Qeydlər</string>
+    <string name="settings_app_icon_name_title">Tətbiq İkonu &amp; Adı</string>
+    <string name="settings_app_icon_name_summary">Başladıcı ikonunu və tətbiq adını fərdiləşdirin</string>
+    <string name="settings_show_home_cards_outline">Əsas səhifə kart haşiyələri</string>
+    <string name="settings_show_home_cards_outline_summary">Əsas ekran kartlarının ətrafında incə kontur xətti göstər</string>
 
     <!-- Settings -->
     <string name="settings_title">Tənzimləmələr</string>
@@ -861,6 +899,11 @@
 
     <!-- About -->
     <string name="settings_about">Haqqında</string>
+    <string name="settings_about_category_app_info">Tətbiq məlumatı</string>
+    <string name="settings_about_category_updates">Yeniləmələr</string>
+    <string name="settings_about_category_version_updates">Versiya &amp; yeniləmələr</string>
+    <string name="settings_about_category_project">Layihə &amp; hüquqi məlumat</string>
+    <string name="settings_about_category_project">Layihə məlumatı</string>
     <string name="action_about">Haqqında</string>
     <string name="about_dialog_button_close">Bağla</string>
     <string name="about_view_source_code_title">Mənbə kodu</string>
