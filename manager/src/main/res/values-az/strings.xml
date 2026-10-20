@@ -30,7 +30,7 @@
     <!-- UI Settings - Display -->
     <string name="settings_display_category">Ekran</string>
     <string name="settings_edge_to_edge">Kənardan-kənara tərtibat</string>
-    <string name="settings_edge_to_edge_summary">Məzmunu sistem panellərinin arxasına uzatın. Sistem panelləri vacib idarəetmə elementlərini örtürsə, söndürün</string>
+    <string name="settings_edge_to_edge_summary">Məzmunu sistem panellərinin arxasına uzadın. Sistem panelləri vacib idarəetmə elementlərini örtürsə, söndürün</string>
     <string name="settings_blur_ui">Buzlu Şüşə Effekti</string>
     <string name="settings_blur_ui_summary">Dialoq pəncərələrinə və yuxarı panelə bulanıqlıq və şəffaflıq tətbiq edin. Ən yaxşı Android 12+ üzərində işləyir</string>
 
@@ -51,7 +51,7 @@
 
     <!-- UI Settings - System-following -->
     <string name="settings_follow_system_animations">Sistem Animasiyalarını İzlə</string>
-    <string name="settings_follow_system_animations_summary">Tərtibatçı Seçimlərindən cihazınızın animasiya sürəti tənzimləməsinə hörmətlə yanaşın</string>
+    <string name="settings_follow_system_animations_summary">Tərtibatçı Seçimlərindən cihazınızın animasiya sürəti tənzimləməsinə uyğun yanaşın</string>
     <string name="settings_follow_system_haptics">Sistem Haptiklərini İzlə</string>
     <string name="settings_follow_system_haptics_summary">Sistem haptik əks-əlaqəsi söndürüldükdə tətbiqdaxili haptikləri söndürün</string>
 
@@ -1167,7 +1167,7 @@
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
     <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
-    <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə metadverilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
+    <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə meta verilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
     <string name="settings_verify_apk_virustotal_summary">Quraşdırmadan əvvəl APK heşlərini VirusTotal-a qarşı skan edin. API açarı tələb olunur.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Təhlükə Kəşfiyyatı</string>
