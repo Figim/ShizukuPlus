@@ -180,8 +180,10 @@ class TimelineChangelogController(
     }
 
     private fun summaryRow(): TimelineRow.Summary? {
-        val newOnes = releases.filter { it.isNew }
-        val latest = releases.firstOrNull() ?: return null
+        // README-only releases are hidden from the list, so don't headline them either.
+        val meaningful = releases.filter { it.sections.isNotEmpty() || it.isInstalled }
+        val newOnes = meaningful.filter { it.isNew }
+        val latest = meaningful.firstOrNull() ?: releases.firstOrNull() ?: return null
         val pool = newOnes.ifEmpty { listOf(latest) }
         val features = pool.sumOf { it.count(ChangeKind.FEATURE) }
         val fixes = pool.sumOf { it.count(ChangeKind.FIX) }
@@ -193,7 +195,10 @@ class TimelineChangelogController(
                 ui to ChangeKind.UI,
             ).filter { it.first > 0 }
                 .joinToString(" · ") { "${it.first} ${ctx.getString(it.second.label)}" }
-                .ifBlank { ctx.resources.getQuantityString(R.plurals.changelog_change_count, pool.sumOf { it.changeCount }, pool.sumOf { it.changeCount }) }
+                .ifBlank {
+                    val total = pool.sumOf { it.changeCount }
+                    if (total == 0) "" else ctx.resources.getQuantityString(R.plurals.changelog_change_count, total, total)
+                }
         val headline =
             if (newOnes.isNotEmpty()) ctx.getString(R.string.changelog_summary_new_releases, newOnes.size) else ctx.getString(R.string.changelog_summary_up_to_date)
         // A local/dev build can be ahead of the newest release; that is not an upgrade path.

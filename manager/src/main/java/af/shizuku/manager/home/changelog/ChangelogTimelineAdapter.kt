@@ -144,6 +144,7 @@ class ChangelogTimelineAdapter(
             to.background = pill(to, primary, onPrimary)
             headline.text = row.headline
             tally.text = row.tally
+            tally.visibility = if (row.tally.isBlank()) View.GONE else View.VISIBLE
         }
 
         private fun View.isVisible(v: Boolean) {
