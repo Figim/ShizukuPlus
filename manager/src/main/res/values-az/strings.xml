@@ -1803,7 +1803,6 @@
     <string name="settings_tcp_trusted_networks_none">Saxlanılan yoxdur - cari şəbəkəni əlavə etmək üçün toxunun</string>
     <string name="settings_tcp_protection_auto_close">Portu avtomatik bağla</string>
     <string name="settings_tcp_protection_auto_close_summary">Etibarsız şəbəkəyə qoşulduqda soruşmadan sazlama demonunu yenidən başladır</string>
-    <string name="settings_tcp_auto_close_open">Açıq şəbəkələrdə avtomatik bağla</string>
     <string name="tcp_trusted_add_current">Cari şəbəkəyə etibar et</string>
     <string name="tcp_trusted_not_on_wifi">Əvvəlcə Wi-Fi şəbəkəsinə qoşulun.</string>
     <string name="tcp_trusted_ssid_hidden">Android bu şəbəkənin adını paylaşmadı. Android-in Wi-Fi adlarını oxumaq üçün tələb etdiyi məkan icazəsini verin və yenidən cəhd edin.</string>
