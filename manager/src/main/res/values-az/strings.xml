@@ -135,7 +135,7 @@
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Kompüterə qoşulmaqla başlayın]]></string>
-    <string name="home_adb_description"><![CDATA[Root-u olmayan cihazlar için Shizuku-nu işə salmaq için adb-dən istifadə etməlisiniz (kompüterə qoşulma tələb olunur). Bu proses cihaz hər dəfə yenidən başladıldıqda təkrar olunmalıdır. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
+    <string name="home_adb_description"><![CDATA[Root-u olmayan cihazlar üçün Shizuku-nu işə salmaq üçün adb-dən istifadə etməlisiniz (kompüterə qoşulma tələb olunur). Bu proses cihaz hər dəfə yenidən başladıldıqda təkrar olunmalıdır. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
     <string name="home_adb_button_view_help">Köməyə bax</string>
     <string name="home_adb_button_view_command">Əmrə bax</string>
     <string name="home_adb_description_active"><![CDATA[Shizuku+ kompüter ADB vasitəsilə aktivdir. Cihaz yenidən başladıqdan sonra yenidən qoşulmaq üçün əmri yenidən icra edin. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
@@ -229,7 +229,7 @@
     <string name="dialog_adb_pairing_accessibility_navigate">Zəhmət olmasa, aşağıdakı addımları yerinə yetirərək cütləşməni başladın:\n- \"Tərtibatçı Seçimləri\"nə keçin\n- \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin\n- \"Simsiz sazlama\"nın sol tərəfinə toxunun\n- \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Shizuku cütləşmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinin yeganə yoludur.</string>
-    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizмініn zədələnməsi ola bilər.</string>
+    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizminin zədələnməsi ola bilər.</string>
     <string name="adb_stopping_tcp">TCP portu bağlanır</string>
     <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
     <string name="adb_pair_required">Zəhmət olmasa, əvvəlcə cütləşmə addımını tamamlayın.</string>
@@ -292,7 +292,7 @@
     <string name="app_management_context_grant">İcazə ver</string>
     <string name="app_management_context_revoke">İcazəni ləğv et</string>
     <string name="app_management_context_hide">Siyahıdan gizlət</string>
-    <string name="app_management_no_launcher">Bu tətbiqin başlanğıc ekranı yoxdur</string>
+    <string name="app_management_no_launcher">Bu tətbiqin başladıcı ekranı yoxdur</string>
     <string name="app_management_package_copied">Paket adı kopyalandı</string>
     <string name="app_management_log_permission_toggle">İcazəni dəyiş: %s</string>
     <string name="app_management_log_hide">Siyahıdan gizlət</string>
@@ -432,7 +432,7 @@
     <string name="settings_watchdog_crash_alerts_summary">Gözətçi xətadan sonra xidməti yenidən başlatdıqda səssiz bildiriş göstər</string>
     <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
-    <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, starter binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
+    <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, başladıcı binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
     <string name="device_hardening_applied">Cihaz təhlükəsizliyi və Doze optimizasiyaları tətbiq edildi</string>
     <string name="settings_tcp_mode">TCP rejimi</string>
@@ -630,7 +630,7 @@
     <string name="settings_plus_category_core">Nüvə</string>
     <string name="settings_plus_category_framework">Çərçivə</string>
     <string name="settings_plus_category_performance">Performans və Proses Nəzarəti</string>
-    <string name="settings_plus_category_files">Faylllar və Virtual Maşınlar</string>
+    <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Tematika</string>
     <string name="settings_plus_category_network">Şəbəkə və Məxfilik</string>
     <string name="settings_plus_category_intelligence">İntellekt və Davamlılıq</string>
@@ -708,7 +708,7 @@
     <string name="su_bridge_magic_setup_all_no_apps">Avtomatlaşdırma üçün dəstəklənən root tətbiqi tapılmadı.</string>
     <string name="su_bridge_copy_open">Yolu kopyala və aç</string>
     <string name="su_bridge_no_export">SU yolu təyin edilməyib. Əvvəlcə Əsas ekrandan Shizuku fayllarını ixrac edin.</string>
-    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri birbaşa körpüyə yönəltmək üçün isə \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
+    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri birbaşa körpüyə yönəltmək үшін isə \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
     <string name="su_bridge_magic_setup_root_required">Sehrli Quraşdırma Root rejimində Shizuku tələb edir.</string>
     <string name="su_bridge_no_custom_path_support">Bu tətbiqin xüsusi yol parametri yoxdur. Real root tələb edir.</string>
     <string name="su_bridge_manual_setup_required">ADB rejimində əl ilə quraşdırma tələb olunur</string>
@@ -1020,7 +1020,7 @@
     <string name="wadb_notification_ask_again_used">Bu, %1$s vaxtında başa çatan gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_ask_again_used_untimed">Bu, bu gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_wait_ends">Bu gözləmə %1$s vaxtında başa çatır</string>
-    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək için İndi cəhd et düyməsinə toxunun</string>
+    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək üçün İndi cəhd et düyməsinə toxunun</string>
 
     <string name="settings_category_general">Ümumi</string>
     <string name="settings_category_dark_mode">Qaranlıq Tema</string>
@@ -1165,7 +1165,7 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqın imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə metadverilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
@@ -1498,9 +1498,9 @@
 
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Açarı</string>
-    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək için API açarı tələb olunur</string>
+    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək üçün API açarı tələb olunur</string>
     <string name="verify_pithus_key_title">Pithus API Açarı (Könüllü)</string>
-    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək için heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
+    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
     <string name="verify_pithus_default_summary">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın.</string>
     <string name="verify_api_key_hint">API açarını daxil etmək üçün toxunun</string>
     <string name="verify_api_key_configured">API açarı yadda saxlanıldı · yeniləmək üçün toxunun</string>
@@ -1510,7 +1510,7 @@
     <string name="scripting_title">Skriptlər</string>
     <string name="scripting_summary">İmtiyazlı shell skriptlərini yadda saxlayın, paylaşın və işlədin</string>
     <string name="scripting_empty_title">Hələ heç bir skript yoxdur</string>
-    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək için imtiyazlı shell skriptini yadda saxlayın.</string>
+    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək üçün imtiyazlı shell skriptini yadda saxlayın.</string>
     <string name="scripting_add">Skript əlavə et</string>
     <string name="scripting_edit">Skripti redaktə et</string>
     <string name="scripting_run">İşlət</string>
@@ -1741,7 +1741,7 @@
     <string name="settings_stealth_mode">Gizli Rejim</string>
     <string name="settings_stealth_mode_summary">Təhlükəsizlik SDK-larının onları aşkar edə bilməməsi üçün ShizukuPlus və Shizuku-nu tətbiq paket sorğularından gizlədin</string>
     <string name="help_stealth_mode_title">Gizli Rejim</string>
-    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android parametrlərini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
+    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytayır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android parametrlərini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="settings_home_card_shape">Əsas Ekran Kartının Küncləri</string>
@@ -1766,7 +1766,7 @@
     <string name="permission_manager_no_permissions">Heç bir işləmə müddəti və ya imtiyazlı icazə bəyan edilməyib</string>
     <string name="permission_manager_section_privileged">İmtiyazlı İcazələr (shell ilə verilə bilən)</string>
     <string name="permission_manager_section_runtime">İşləmə Müddəti İcazələri</string>
-    <string name="permission_manager_privileged_note">Bu icazələr adətən sistem və ya root tətbiqləri ilə məhdudlaşdırılır, lakin ADB shell prosesi tərəfındən verilə bilər. DUMP, READ_LOGS və ya oxşar giriş tələb edən ehtiyat nüsxə tətbiqləri (Neo Backup, Swift Backup) üçün faydalıdır.</string>
+    <string name="permission_manager_privileged_note">Bu icazələr adətən sistem və ya root tətbiqləri ilə məhdudlaşdırılır, lakin ADB shell prosesi tərəfindən verilə bilər. DUMP, READ_LOGS və ya oxşar giriş tələb edən ehtiyat nüsxə tətbiqləri (Neo Backup, Swift Backup) üçün faydalıdır.</string>
 
     <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
     <string name="accessibility_sim_toggle_adb">ADB start kartının görünürlüyünü dəyiş</string>
