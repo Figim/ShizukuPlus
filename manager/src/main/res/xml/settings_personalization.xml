@@ -35,12 +35,12 @@
             android:title="@string/settings_high_contrast_title"
             android:summary="@string/settings_high_contrast_summary"
             android:defaultValue="false"
-            android:icon="@drawable/ic_visibility_24" />
+            android:icon="@drawable/ic_contrast_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="use_system_color"
             android:title="@string/settings_use_system_color"
-            android:icon="@drawable/ic_palette_24" />
+            android:icon="@drawable/ic_wallpaper_24" />
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="custom_accent"
@@ -48,7 +48,7 @@
             android:defaultValue="DEFAULT"
             android:entries="@array/custom_accents"
             android:entryValues="@array/custom_accents_values"
-            android:icon="@drawable/ic_palette_24" />
+            android:icon="@drawable/ic_colorize_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="bold_typography"
@@ -62,7 +62,7 @@
             android:title="@string/settings_oneui_theme"
             android:summary="@string/settings_oneui_theme_summary"
             android:defaultValue="false"
-            android:icon="@drawable/ic_palette_24"
+            android:icon="@drawable/ic_space_dashboard_24"
             app:badgeType="oneui" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
@@ -113,7 +113,7 @@
             android:defaultValue="twotone"
             android:entries="@array/icon_styles"
             android:entryValues="@array/icon_styles_value"
-            android:icon="@drawable/ic_palette_24" />
+            android:icon="@drawable/ic_category_24" />
 
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="icon_color_mode"
@@ -123,14 +123,14 @@
             android:entries="@array/icon_color_modes"
             android:entryValues="@array/icon_color_modes_value"
             android:dependency="icon_style"
-            android:icon="@drawable/ic_palette_24" />
+            android:icon="@drawable/ic_invert_colors_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="expressive_shapes"
             android:title="@string/settings_expressive_shapes"
             android:summary="@string/settings_expressive_shapes_summary"
             android:defaultValue="true"
-            android:icon="@drawable/ic_palette_24" />
+            android:icon="@drawable/ic_interests_24" />
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="shape_style"
@@ -146,7 +146,7 @@
             android:title="@string/settings_rounded_edges"
             android:summary="@string/settings_rounded_edges_summary"
             android:defaultValue="true"
-            android:icon="@drawable/ic_window_24" />
+            android:icon="@drawable/ic_rounded_corner_24" />
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="corner_rounding_override"
@@ -154,7 +154,7 @@
             android:defaultValue="default"
             android:entries="@array/corner_rounding_entries"
             android:entryValues="@array/corner_rounding_values"
-            android:icon="@drawable/ic_window_24" />
+            android:icon="@drawable/ic_rounded_corner_24" />
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="home_card_corner_style"
@@ -186,7 +186,7 @@
             android:title="@string/settings_expressive_animations"
             android:summary="@string/settings_expressive_animations_summary"
             android:defaultValue="true"
-            android:icon="@drawable/ic_outline_play_arrow_24" />
+            android:icon="@drawable/ic_animation_24" />
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="animation_intensity"
@@ -194,7 +194,7 @@
             android:defaultValue="2"
             android:entries="@array/animation_intensities"
             android:entryValues="@array/animation_intensities_value"
-            android:icon="@drawable/ic_outline_play_arrow_24" />
+            android:icon="@drawable/ic_speed_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="follow_system_animations"
@@ -244,7 +244,7 @@
             android:entries="@array/floating_nav_label_modes"
             android:entryValues="@array/floating_nav_label_modes_value"
             android:dependency="floating_nav_enabled"
-            android:icon="@drawable/ic_article_24" />
+            android:icon="@drawable/ic_label_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="floating_nav_autohide"
@@ -252,7 +252,7 @@
             android:summary="@string/settings_floating_nav_autohide_summary"
             android:defaultValue="true"
             android:dependency="floating_nav_enabled"
-            android:icon="@drawable/ic_window_24" />
+            android:icon="@drawable/ic_vertical_align_bottom_24" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="one_handed_mode"
@@ -274,14 +274,14 @@
             android:title="@string/settings_edge_to_edge"
             android:summary="@string/settings_edge_to_edge_summary"
             android:defaultValue="true"
-            android:icon="@drawable/ic_window_24" />
+            android:icon="@drawable/ic_fullscreen_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="blur_ui_enabled"
             android:title="@string/settings_blur_ui"
             android:summary="@string/settings_blur_ui_summary"
             android:defaultValue="false"
-            android:icon="@drawable/ic_palette_24" />
+            android:icon="@drawable/ic_opacity_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -302,7 +302,7 @@
             android:key="show_status_card_outline"
             android:title="@string/settings_show_status_card_outline"
             android:summary="@string/settings_show_status_card_outline_summary"
-            android:icon="@drawable/ic_palette_24"
+            android:icon="@drawable/ic_border_style_24"
             android:defaultValue="true" />
 
         <af.shizuku.manager.settings.SegmentedControlPreference
@@ -318,7 +318,7 @@
             android:key="show_home_cards_outline"
             android:title="@string/settings_show_home_cards_outline"
             android:summary="@string/settings_show_home_cards_outline_summary"
-            android:icon="@drawable/ic_window_24"
+            android:icon="@drawable/ic_border_style_24"
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference

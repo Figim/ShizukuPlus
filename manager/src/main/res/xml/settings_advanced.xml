@@ -145,7 +145,7 @@
         <Preference
             android:key="report_bug"
             android:title="@string/settings_report_bug"
-            android:icon="@drawable/ic_warning_24" />
+            android:icon="@drawable/ic_bug_report_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
