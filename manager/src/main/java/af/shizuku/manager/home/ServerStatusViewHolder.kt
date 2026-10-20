@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import rikka.core.content.asActivity
 import rikka.html.text.HtmlCompat
 import rikka.html.text.toHtml
@@ -38,6 +39,11 @@ class ServerStatusViewHolder(
 
     init {
         cardView.applySpringTouch()
+        binding.btnActivityLog.applySpringTouch()
+        binding.btnDiagnostics.applySpringTouch()
+        binding.btnQuickStart.applySpringTouch()
+        binding.btnQuickDoctor.applySpringTouch()
+        binding.btnQuickTools.applySpringTouch()
     }
 
     private inline val textView get() = binding.text1
@@ -45,6 +51,9 @@ class ServerStatusViewHolder(
     private inline val iconView get() = binding.icon
     private inline val logChip get() = binding.btnActivityLog
     private inline val diagnosticsChip get() = binding.btnDiagnostics
+    private inline val quickStartChip get() = binding.btnQuickStart
+    private inline val quickDoctorChip get() = binding.btnQuickDoctor
+    private inline val quickToolsChip get() = binding.btnQuickTools
 
     override fun onBind() {
         val context = itemView.context
@@ -107,27 +116,72 @@ class ServerStatusViewHolder(
             )
         }
 
-        if (ok) {
+        val isRooted =
+            af.shizuku.manager.utils.EnvironmentUtils
+                .isRooted()
+        val isWadbSupported =
+            android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R ||
+                af.shizuku.manager.utils.EnvironmentUtils
+                    .getAdbTcpPort() > 0
+
+        if (!ok) {
+            // Adaptive 1-tap start
+            if (isRooted) {
+                quickStartChip.visibility = View.VISIBLE
+                quickStartChip.text = context.getString(R.string.home_status_quick_start_root)
+                quickStartChip.setChipIconResource(R.drawable.ic_root_24)
+                quickStartChip.setOnClickListener {
+                    context.startActivity(
+                        android.content.Intent(context, af.shizuku.manager.starter.StarterActivity::class.java).apply {
+                            putExtra(af.shizuku.manager.starter.StarterActivity.EXTRA_IS_ROOT, true)
+                        },
+                    )
+                }
+            } else if (isWadbSupported) {
+                quickStartChip.visibility = View.VISIBLE
+                quickStartChip.text = context.getString(R.string.home_status_quick_start_wadb)
+                quickStartChip.setChipIconResource(R.drawable.ic_wadb_24)
+                quickStartChip.setOnClickListener {
+                    (context.asActivity<androidx.fragment.app.FragmentActivity>())?.let { act ->
+                        StartWirelessAdbViewHolder.start(act, act.lifecycleScope)
+                    }
+                }
+            } else {
+                quickStartChip.visibility = View.GONE
+            }
+
+            // Quick Service Doctor
+            quickDoctorChip.visibility = View.VISIBLE
+            quickDoctorChip.text = context.getString(R.string.home_status_quick_doctor)
+            quickDoctorChip.setChipIconResource(R.drawable.ic_shield_24)
+            quickDoctorChip.setOnClickListener {
+                context.startActivity(android.content.Intent(context, af.shizuku.manager.settings.ServiceDoctorActivity::class.java))
+            }
+
+            diagnosticsChip.visibility = View.GONE
+        } else {
+            quickStartChip.visibility = View.GONE
+
+            // Health check
+            quickDoctorChip.visibility = View.VISIBLE
+            quickDoctorChip.text = context.getString(R.string.home_status_quick_health)
+            quickDoctorChip.setChipIconResource(R.drawable.ic_shield_24)
+            quickDoctorChip.setOnClickListener {
+                context.startActivity(android.content.Intent(context, af.shizuku.manager.settings.ServiceDoctorActivity::class.java))
+            }
+
             diagnosticsChip.visibility = View.VISIBLE
-            diagnosticsChip.text = context.getString(R.string.settings_diagnostics_category)
+            diagnosticsChip.text = context.getString(R.string.home_status_quick_system_hub)
             diagnosticsChip.setChipIconResource(R.drawable.ic_server_ok_24)
             diagnosticsChip.setOnClickListener {
-                val activity = context.asActivity<android.app.Activity>() ?: return@setOnClickListener
-                activity.startActivity(android.content.Intent(activity, SystemHubActivity::class.java))
+                context.startActivity(android.content.Intent(context, SystemHubActivity::class.java))
             }
-        } else if (af.shizuku.manager.ShizukuSettings
-                .isDiagnosticsEnabled()
-        ) {
-            diagnosticsChip.visibility = View.VISIBLE
-            diagnosticsChip.text = context.getString(R.string.home_status_diagnostics_tips)
-            diagnosticsChip.setChipIconResource(R.drawable.ic_settings_suggest_24)
-            diagnosticsChip.setOnClickListener {
-                af.shizuku.manager.utils.DeactivationAdvisor.showStabilityTipsDialog(context) {
-                    onBind()
-                }
-            }
-        } else {
-            diagnosticsChip.visibility = View.GONE
+        }
+
+        // Quick Controls
+        quickToolsChip.visibility = View.VISIBLE
+        quickToolsChip.setOnClickListener {
+            (context as? HomeActivity)?.openQuickControls()
         }
 
         val okColorAttr = if (ok) com.google.android.material.R.attr.colorPrimaryContainer else com.google.android.material.R.attr.colorErrorContainer
@@ -216,6 +270,18 @@ class ServerStatusViewHolder(
                 .valueOf(textColor)
         diagnosticsChip.setTextColor(textColor)
         diagnosticsChip.chipIconTint =
+            android.content.res.ColorStateList
+                .valueOf(textColor)
+        quickStartChip.setTextColor(textColor)
+        quickStartChip.chipIconTint =
+            android.content.res.ColorStateList
+                .valueOf(textColor)
+        quickDoctorChip.setTextColor(textColor)
+        quickDoctorChip.chipIconTint =
+            android.content.res.ColorStateList
+                .valueOf(textColor)
+        quickToolsChip.setTextColor(textColor)
+        quickToolsChip.chipIconTint =
             android.content.res.ColorStateList
                 .valueOf(textColor)
 

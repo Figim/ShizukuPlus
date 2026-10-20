@@ -105,6 +105,11 @@ open class HomeActivity :
     private var isOneUi by mutableStateOf(ShizukuSettings.isOneUiThemeEnabled())
     private var isRoundedEdges by mutableStateOf(ShizukuSettings.isRoundedEdgesEnabled())
     private var isAmoledPlus by mutableStateOf(ShizukuSettings.isAmoledPlusEnabled())
+    var showQuickControls by mutableStateOf(false)
+
+    fun openQuickControls() {
+        showQuickControls = true
+    }
 
     // Strong reference required — SharedPreferences holds listeners weakly, so an inline lambda
     // would be eligible for GC immediately after registerOnSharedPreferenceChangeListener returns.
@@ -249,6 +254,11 @@ open class HomeActivity :
                     isOneHanded = isOneHanded,
                     showEmptyState = showEmptyState,
                     isOneUi = isOneUi,
+                    showQuickControlsExternal = showQuickControls,
+                    onDismissQuickControls = { showQuickControls = false },
+                    onQuickControlsStateChanged = {
+                        adapter.updateData()
+                    },
                     onStopClick = {
                         if (ShizukuStateMachine.isRunning()) {
                             MaterialAlertDialogBuilder(this)

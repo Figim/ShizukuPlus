@@ -53,6 +53,9 @@ fun HomeScreen(
     isOneHanded: Boolean,
     showEmptyState: Boolean,
     isOneUi: Boolean = ShizukuSettings.isOneUiThemeEnabled(),
+    showQuickControlsExternal: Boolean = false,
+    onDismissQuickControls: () -> Unit = {},
+    onQuickControlsStateChanged: () -> Unit = {},
     onStopClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
@@ -67,6 +70,13 @@ fun HomeScreen(
     val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
     val motionDur = ShizukuSettings.scaledAnimationDuration(220).toInt()
     val motionEasing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+
+    var showQuickControls by remember { mutableStateOf(false) }
+    LaunchedEffect(showQuickControlsExternal) {
+        if (showQuickControlsExternal) {
+            showQuickControls = true
+        }
+    }
 
     // Status bar height — must be included in the Surface height so content sits below it,
     // not behind it. The inner Box gets windowInsetsPadding(statusBars) to push all content
@@ -246,6 +256,12 @@ fun HomeScreen(
                                         contentDescription = stringResource(id = R.string.action_stop),
                                     )
                                 }
+                                IconButton(onClick = { showQuickControls = true }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_sparkle_24),
+                                        contentDescription = stringResource(id = R.string.home_quick_tools),
+                                    )
+                                }
                                 IconButton(onClick = onSettingsClick) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_settings_outline_24),
@@ -267,7 +283,7 @@ fun HomeScreen(
                     val horizontalBias = -curvedFraction
                     val startPadding = lerp(start = 24.dp, stop = 20.dp, fraction = curvedFraction)
                     val endPaddingStop by animateDpAsState(
-                        targetValue = if (isEditMode) 120.dp else 196.dp,
+                        targetValue = if (isEditMode) 120.dp else 244.dp,
                         animationSpec = tween(motionDur, easing = motionEasing),
                         label = "titleEndPaddingStop",
                     )
@@ -496,6 +512,16 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showQuickControls) {
+        QuickControlsSheet(
+            onDismiss = {
+                showQuickControls = false
+                onDismissQuickControls()
+            },
+            onStateChanged = onQuickControlsStateChanged,
+        )
     }
 }
 
