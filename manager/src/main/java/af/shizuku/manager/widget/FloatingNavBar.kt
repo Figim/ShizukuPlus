@@ -271,60 +271,38 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             }
 
             val isNight = ResourceUtils.isNightMode(activity.resources.configuration)
-            val isAmoled = ShizukuSettings.isAmoledPlusEnabled() && isNight
             val isBlur = ShizukuSettings.isBlurUiEnabled()
+            val primary = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
 
-            if (isAmoled) {
-                card.setCardBackgroundColor(Color.BLACK)
-                card.strokeColor =
-                    MaterialColors.getColor(
-                        activity,
-                        com.google.android.material.R.attr.colorOutlineVariant,
-                        Color.DKGRAY,
-                    )
-                card.strokeWidth = (1.2f * density).toInt()
-                card.cardElevation = 0f
-            } else if (isBlur) {
-                // High-fidelity frosted glass: translucent high container with specular outline & soft shadow
-                val surfaceColor =
-                    MaterialColors.getColor(
-                        activity,
-                        com.google.android.material.R.attr.colorSurfaceContainerHighest,
-                        0xFF333038.toInt(),
-                    )
-                val bg = ColorUtils.setAlphaComponent(surfaceColor, (255 * 0.70f).toInt())
-                card.setCardBackgroundColor(bg)
-                // Specular glass rim: bright luminous edge reflection
-                val glassRim =
-                    if (isNight) {
-                        Color.argb(85, 255, 255, 255)
-                    } else {
-                        Color.argb(120, 255, 255, 255)
-                    }
-                card.strokeColor = glassRim
-                card.strokeWidth = (1.2f * density).toInt()
-                card.cardElevation = 10f * density
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                    card.outlineAmbientShadowColor = Color.argb(45, 0, 0, 0)
-                    card.outlineSpotShadowColor = Color.argb(70, 0, 0, 0)
+            // NEVER use opaque pitch black for the floating nav bar. A floating dock must look
+            // like an elevated, frosted glass surface that floats cleanly above the content below.
+            val baseSurface =
+                if (isNight) {
+                    // Refined dark glass: deep slate-charcoal subtly harmonized with the accent
+                    ColorUtils.blendARGB(0xFF202227.toInt(), primary, 0.12f)
+                } else {
+                    // Refined light glass: luminous off-white subtly harmonized with the accent
+                    ColorUtils.blendARGB(0xFFF6F7F9.toInt(), primary, 0.08f)
                 }
-            } else {
-                val surfaceColor =
-                    MaterialColors.getColor(
-                        activity,
-                        com.google.android.material.R.attr.colorSurfaceContainerHigh,
-                        0xFF2B2930.toInt(),
-                    )
-                val bg = ColorUtils.setAlphaComponent(surfaceColor, (255 * 0.94f).toInt())
-                card.setCardBackgroundColor(bg)
-                card.strokeColor =
-                    MaterialColors.getColor(
-                        activity,
-                        com.google.android.material.R.attr.colorOutlineVariant,
-                        Color.TRANSPARENT,
-                    )
-                card.strokeWidth = (0.8f * density).toInt()
-                card.cardElevation = 6f * density
+
+            val alphaFraction = if (isBlur) 0.72f else 0.88f
+            val cardBg = ColorUtils.setAlphaComponent(baseSurface, (255 * alphaFraction).toInt())
+            card.setCardBackgroundColor(cardBg)
+
+            // Specular luminous glass rim
+            val glassRim =
+                if (isNight) {
+                    Color.argb(85, 255, 255, 255)
+                } else {
+                    Color.argb(140, 255, 255, 255)
+                }
+            card.strokeColor = glassRim
+            card.strokeWidth = (1.2f * density).toInt()
+            card.cardElevation = 10f * density
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                card.outlineAmbientShadowColor = Color.argb(35, 0, 0, 0)
+                card.outlineSpotShadowColor = Color.argb(60, 0, 0, 0)
             }
         }
 
@@ -337,14 +315,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     "unlabeled" -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
                     else -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
                 }
+
+            val primary = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
             val indicatorColor =
-                MaterialColors.getColor(
-                    activity,
-                    com.google.android.material.R.attr.colorSecondaryContainer,
-                    0xFFE8DEF8.toInt(),
-                )
+                if (ResourceUtils.isNightMode(activity.resources.configuration)) {
+                    ColorUtils.setAlphaComponent(primary, (255 * 0.35f).toInt())
+                } else {
+                    ColorUtils.setAlphaComponent(primary, (255 * 0.22f).toInt())
+                }
             nav.itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
-            nav.itemRippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(indicatorColor, 60))
+            nav.itemRippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(primary, 40))
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
