@@ -135,7 +135,7 @@
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Kompüterə qoşulmaqla başlayın]]></string>
-    <string name="home_adb_description"><![CDATA[Root-u olmayan cihazlar üçün Shizuku-nu işə salmaq üçün adb-dən istifadə etməlisiniz (kompüterə qoşulma tələb olunur). Bu proses cihaz hər dəfə yenidən başladıldıqda təkrar olunmalıdır. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
+    <string name="home_adb_description"><![CDATA[Root-u olmayan cihazlar için Shizuku-nu işə salmaq için adb-dən istifadə etməlisiniz (kompüterə qoşulma tələb olunur). Bu proses cihaz hər dəfə yenidən başladıldıqda təkrar olunmalıdır. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
     <string name="home_adb_button_view_help">Köməyə bax</string>
     <string name="home_adb_button_view_command">Əmrə bax</string>
     <string name="home_adb_description_active"><![CDATA[Shizuku+ kompüter ADB vasitəsilə aktivdir. Cihaz yenidən başladıqdan sonra yenidən qoşulmaq üçün əmri yenidən icra edin. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
@@ -229,7 +229,7 @@
     <string name="dialog_adb_pairing_accessibility_navigate">Zəhmət olmasa, aşağıdakı addımları yerinə yetirərək cütləşməni başladın:\n- \"Tərtibatçı Seçimləri\"nə keçin\n- \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin\n- \"Simsiz sazlama\"nın sol tərəfinə toxunun\n- \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Shizuku cütləşmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinin yeganə yoludur.</string>
-    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizminin zədələnməsi ola bilər.</string>
+    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizмініn zədələnməsi ola bilər.</string>
     <string name="adb_stopping_tcp">TCP portu bağlanır</string>
     <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
     <string name="adb_pair_required">Zəhmət olmasa, əvvəlcə cütləşmə addımını tamamlayın.</string>
@@ -415,7 +415,7 @@
     <string name="app_name_files">Fayllar</string>
     <string name="app_name_notes">Qeydlər</string>
     <string name="settings_app_icon_name_title">Tətbiq İkonu &amp; Adı</string>
-    <string name="settings_app_icon_name_summary">Başladıcı ikonunu və tətbiq adını fərdiləşdirin</string>
+    <string name="settings_app_icon_name_summary">Başlatıcı ikonunu və tətbiq adını fərdiləşdirin</string>
     <string name="settings_show_home_cards_outline">Əsas səhifə kart haşiyələri</string>
     <string name="settings_show_home_cards_outline_summary">Əsas ekran kartlarının ətrafında incə kontur xətti göstər</string>
 
@@ -430,6 +430,7 @@
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
     <string name="settings_watchdog_crash_alerts">Xəta bildirişləri</string>
     <string name="settings_watchdog_crash_alerts_summary">Gözətçi xətadan sonra xidməti yenidən başlatdıqda səssiz bildiriş göstər</string>
+    <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, starter binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
@@ -629,7 +630,7 @@
     <string name="settings_plus_category_core">Nüvə</string>
     <string name="settings_plus_category_framework">Çərçivə</string>
     <string name="settings_plus_category_performance">Performans və Proses Nəzarəti</string>
-    <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
+    <string name="settings_plus_category_files">Faylllar və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Tematika</string>
     <string name="settings_plus_category_network">Şəbəkə və Məxfilik</string>
     <string name="settings_plus_category_intelligence">İntellekt və Davamlılıq</string>
@@ -811,7 +812,7 @@
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Fondakı xidmətin dayandırılmasının qarşısını almaq üçün Tərtibatçı Seçimlərində "İcazə Nəzarəti"ni söndürün.</string>
     <string name="doctor_check_oppo_battery">ColorOS/OxygenOS Avtomatik İşə Salma</string>
     <string name="doctor_status_oppo_battery_unknown">Xidməti canlı saxlamaq üçün Avtomatik İşə Salmanı aktivləşdirin</string>
-    <string name="doctor_tip_oppo_battery"><b>ColorOS Avtomatik İşə Salma</b>: Batareya parametrlərini açmaq üçün Düzəlt düyməsinə toxunun. ColorOS-un fon xidmətini dayandırmasının qarşısını almaq üçün <b>Avtomatik İşə Salma</b>-nı aktivləşdirin və Shizuku+-ı <b>Heç bir məhdudiyyət yoxdur</b> olaraq təyin edin.</string>
+    <string name="doctor_tip_oppo_battery"><b>ColorOS Avtomatik İşə Salma</b>: Batareya parametrlərini açmaq üçün Düzəlt düyməsinə toxunun. ColorOS-un fondakı xidməti dayandırmasının qarşısını almaq üçün <b>Avtomatik İşə Salma</b>-nı aktivləşdirin və Shizuku+-ı <b>Heç bir məhdudiyyət yoxdur</b> olaraq təyin edin.</string>
     <string name="doctor_check_tcl_autostart">TCL Avtomatik Başlatma</string>
     <string name="doctor_status_tcl_autostart_unknown">Avtomatik Başlatma ağ siyahısına əlavə edin</string>
     <string name="doctor_tip_tcl_background">TCL: Parametrlərdə Shizuku+-ın "Avtomatik başlatma" və "Yüksək fon enerji sərfiyyatı" ağ siyahılarına əlavə olunduğundan əmin olun.</string>
@@ -989,9 +990,9 @@
     <string name="watchdog_shizuku_crashed_text">Gözətçi xidməti yenidən başladı. Gələcək qəzaların qarşısını almaq üçün potensial düzəlişlər haqqında öyrənmək üçün toxunun.</string>
     <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Xəbərdarlıqları Söndür</string>
     <string name="battery_exemption_channel_name">Batareya optimizasiyası</string>
-    <string name="battery_exemption_notification_title">Shizuku+-un arxa fonda işləməsinə icazə verin</string>
+    <string name="battery_exemption_notification_title">Shizuku+-ın arxa fonda işləməsinə icazə verin</string>
     <string name="battery_exemption_notification_text">Gözətçi avtomatik işə salındı. Xidmət dayandıqda onun yenidən başladılması üçün Shizuku+ batareya optimizasiyasından istisna edin.</string>
-    <string name="vendor_battery_notification_title">Shizuku+-un arxa fonda dayandırıla bilər</string>
+    <string name="vendor_battery_notification_title">Shizuku+-ın arxa fonda dayandırıla bilər</string>
     <string name="vendor_battery_notification_text">Gözətçi %1$s tərəfindən dayandırıla bilər. Shizuku+ işləməyə davam etməsinə imkan verən parametri açmaq üçün toxunun.</string>
     <string name="vendor_battery_restriction_background_activity">arxa fon fəaliyyətinin məhdudlaşdırılması</string>
     <string name="vendor_battery_restriction_standby_bucket">Az istifadə olunan tətbiqlər üçün Android məhdudiyyətləri</string>
@@ -1019,7 +1020,7 @@
     <string name="wadb_notification_ask_again_used">Bu, %1$s vaxtında başa çatan gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_ask_again_used_untimed">Bu, bu gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_wait_ends">Bu gözləmə %1$s vaxtında başa çatır</string>
-    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək üçün İndi cəhd et düyməsinə toxunun</string>
+    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək için İndi cəhd et düyməsinə toxunun</string>
 
     <string name="settings_category_general">Ümumi</string>
     <string name="settings_category_dark_mode">Qaranlıq Tema</string>
@@ -1229,7 +1230,7 @@
     <string name="settings_root_kernel_ghosting">Kernel Drayver Ghosting-i</string>
     <string name="settings_root_kernel_ghosting_summary">[Tərtibatçı] Kernel modullarını yükləmədən insmod/rmmod kernel əmrləri üçün uğuru səssizcə simulyasiya edin.</string>
     <string name="settings_root_partition_ghosting">Partisiya Fləş Ghosting-i</string>
-    <string name="settings_root_partition_ghosting_summary">[Tərtibatçı] /dev/block/ ünvanını hədəfləyən \'dd\' əməliyyatlarını tutun və saxtalaşdırın. ROM fləş edənlərin heç nə etmədən qəzaya uğramasının qarşısını alır.</string>
+    <string name="settings_root_partition_ghosting_summary">[Tərtibatçı] /dev/block/ ünvanını hədəfləyən \'dd\' əməliyyatlarını tutun və saxtalaşdırın. ROM fləş edənlərin heç nə etmədən qəzaya uğramasından qarşısını alır.</string>
     <string name="settings_root_power_ghosting">Enerji Vəziyyəti Ghosting-i</string>
     <string name="settings_root_power_ghosting_summary">[Tərtibatçı] Yenidən başlatma, bərpa və yumşaq yenidən başlatma əmrlərini tutun və istənilməyən cihaz yenidən başlamalarının qarşısını almaq üçün onları səssizcə nəzərə almayın.</string>
 
@@ -1410,7 +1411,7 @@
     <string name="dhizuku_clear_owner_title">Cihaz Sahibi Silinsin?</string>
     <string name="dhizuku_clear_owner_message">Bu, Shizuku+-ı Cihaz Sahibi kimi siləcək. Dhizuku Rejimi söndürüləcək və səlahiyyətli Cihaz Sahibi imtiyazlarına etibar edən tətbiqlər girişini itirəcək.\n\nQuraşdırma dialoqunda göstərilən ADB əmrini işlətməklə istənilən vaxt Cihaz Sahibini yenidən aktivləşdirə bilərsiniz.</string>
     <string name="dhizuku_clear_owner_confirm">Sil</string>
-    <string name="dhizuku_clear_owner_success">Cihaz Sahibi statusu silindi. İndi Shizuku+-ı silə və ya versiyasını aşağı sala bilərsiniz.</string>
+    <string name="dhizuku_clear_owner_success">Cihaz Sahibi statusu silindi. İndi Shizuku+-ı silə bilərsiniz və ya versiyasını aşağı sala bilərsiniz.</string>
     <string name="dhizuku_clear_owner_failure">Cihaz Sahibi statusunu silmək mümkün olmadı. Əvvəlcə xidmət işlək vəziyyətdə ola bilər.</string>
 
     <!-- Pairing fallback (Issue #204) -->
@@ -1497,9 +1498,9 @@
 
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Açarı</string>
-    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək üçün API açarı tələb olunur</string>
+    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək için API açarı tələb olunur</string>
     <string name="verify_pithus_key_title">Pithus API Açarı (Könüllü)</string>
-    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
+    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək için heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
     <string name="verify_pithus_default_summary">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın.</string>
     <string name="verify_api_key_hint">API açarını daxil etmək üçün toxunun</string>
     <string name="verify_api_key_configured">API açarı yadda saxlanıldı · yeniləmək üçün toxunun</string>
@@ -1509,7 +1510,7 @@
     <string name="scripting_title">Skriptlər</string>
     <string name="scripting_summary">İmtiyazlı shell skriptlərini yadda saxlayın, paylaşın və işlədin</string>
     <string name="scripting_empty_title">Hələ heç bir skript yoxdur</string>
-    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək üçün imtiyazlı shell skriptini yadda saxlayın.</string>
+    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək için imtiyazlı shell skriptini yadda saxlayın.</string>
     <string name="scripting_add">Skript əlavə et</string>
     <string name="scripting_edit">Skripti redaktə et</string>
     <string name="scripting_run">İşlət</string>
@@ -1789,6 +1790,9 @@
     <string name="settings_tcp_protection_trusted">Yalnız etibarlılar</string>
     <string name="settings_tcp_trusted_networks_label">Etibarlı Wi-Fi şəbəkələri</string>
     <string name="settings_tcp_add_network">+ Şəbəkə əlavə et</string>
+    <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
+    <string name="settings_tcp_add_network_dialog_title">Etibarlı şəbəkə əlavə et</string>
+    <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s şəbəkəsini sil</string>
     <string name="settings_tcp_protection">Paylaşılan şəbəkələrdə TCP-ni qoru</string>
     <string name="tcp_protection_off">Söndürülüb</string>
@@ -1799,6 +1803,7 @@
     <string name="settings_tcp_trusted_networks_none">Saxlanılan yoxdur - cari şəbəkəni əlavə etmək üçün toxunun</string>
     <string name="settings_tcp_protection_auto_close">Portu avtomatik bağla</string>
     <string name="settings_tcp_protection_auto_close_summary">Etibarsız şəbəkəyə qoşulduqda soruşmadan sazlama demonunu yenidən başladır</string>
+    <string name="settings_tcp_auto_close_open">Açıq şəbəkələrdə avtomatik bağla</string>
     <string name="tcp_trusted_add_current">Cari şəbəkəyə etibar et</string>
     <string name="tcp_trusted_not_on_wifi">Əvvəlcə Wi-Fi şəbəkəsinə qoşulun.</string>
     <string name="tcp_trusted_ssid_hidden">Android bu şəbəkənin adını paylaşmadı. Android-in Wi-Fi adlarını oxumaq üçün tələb etdiyi məkan icazəsini verin və yenidən cəhd edin.</string>
