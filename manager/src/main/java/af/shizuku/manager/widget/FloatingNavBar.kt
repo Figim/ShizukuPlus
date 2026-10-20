@@ -205,7 +205,9 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                                         .setDuration(ShizukuSettings.scaledAnimationDuration(120))
                                         .start()
                                 }.start()
-                        } else if (canScrollDown && atBottom) {
+                        } else if (canScrollDown && atBottom && dy < -12) {
+                            // Re-arm only on a real scroll back up: canScrollVertically() flickers
+                            // at the end of a fling and would replay the bounce + haptic tick.
                             atBottom = false
                         }
 
@@ -246,7 +248,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                                     .setDuration(ShizukuSettings.scaledAnimationDuration(120))
                                     .start()
                             }.start()
-                    } else if (canScrollDown && atBottom) {
+                    } else if (canScrollDown && atBottom && dy < -12) {
                         atBottom = false
                     }
 

@@ -2,7 +2,6 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.home.HomeActivity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -116,7 +115,7 @@ class CustomIconStudioBottomSheet : BottomSheetDialogFragment() {
 
             if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
                 val intent =
-                    Intent(context, HomeActivity::class.java).apply {
+                    Intent(context, af.shizuku.manager.MainActivity::class.java).apply {
                         action = Intent.ACTION_MAIN
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     }
