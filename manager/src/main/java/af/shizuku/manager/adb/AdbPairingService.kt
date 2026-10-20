@@ -230,21 +230,9 @@ class AdbPairingService : Service() {
             text = getString(R.string.notification_adb_pairing_succeed_text)
 
             stopSearch()
-
-            try {
-                val startAppIntent =
-                    Intent(this, MainActivity::class.java).apply {
-                        addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK or
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                                Intent.FLAG_ACTIVITY_SINGLE_TOP,
-                        )
-                        putExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, true)
-                    }
-                startActivity(startAppIntent)
-            } catch (e: Exception) {
-                Timber.tag(tag).w(e, "failed to launch MainActivity on pairing success")
-            }
+            // No auto-launch here: CLEAR_TOP on MainActivity would tear down onboarding / the
+            // pairing tutorial, and a background activity start is blocked on Android 10+ anyway.
+            // The success notification below carries the Start action.
         } else {
             title = getString(R.string.notification_adb_pairing_failed_title)
 

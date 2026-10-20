@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -82,7 +83,7 @@ private fun queryLiveServerPatchVersion(): Int {
 }
 
 @Composable
-fun ServerMetricsScreen() {
+fun ServerMetricsScreen(bottomInset: Dp = 0.dp) {
     val context = LocalContext.current
     var isServerRunning by remember { mutableStateOf<Boolean?>(null) }
     var isStockServer by remember { mutableStateOf(false) }
@@ -190,7 +191,8 @@ fun ServerMetricsScreen() {
             Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(16.dp)
+                .padding(bottom = bottomInset),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         if (oneHandedTop > 0.dp) {
@@ -467,6 +469,7 @@ private data class LogGroup(
 fun ActivityLogScreen(
     showTopBar: Boolean = false,
     onBackClick: (() -> Unit)? = null,
+    bottomInset: Dp = 0.dp,
 ) {
     val context = LocalContext.current
     val view = LocalView.current
@@ -920,7 +923,7 @@ fun ActivityLogScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
+                    contentPadding = PaddingValues(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 32.dp + bottomInset),
                 ) {
                     groupedSections.forEach { (sectionTitle, sectionGroups) ->
                         if (currentGrouping != ActivityLogGrouping.NONE && sectionTitle.isNotEmpty()) {

@@ -136,7 +136,7 @@ class ShizukuCompanionViewHolder(
                 showProgress(v.context.getString(R.string.compat_hub_installing), 20)
                 scope.launch {
                     withContext(Dispatchers.Main) {
-                        updateProgress("Extracting compatibility payload...", 35)
+                        updateProgress(v.context.getString(R.string.compat_hub_progress_preparing), 35)
                     }
                     // Read APK bytes from assets into memory — avoids writing to any app-owned
                     // storage path before invoking the privileged process. On Android 11+, scoped
@@ -164,7 +164,7 @@ class ShizukuCompanionViewHolder(
                     }
 
                     withContext(Dispatchers.Main) {
-                        updateProgress("Dispatching payload to privileged shell...", 60)
+                        updateProgress(v.context.getString(R.string.compat_hub_progress_preparing), 60)
                     }
 
                     // rm -f first: a previous failed install may have left a chmod 000 file that
@@ -175,7 +175,7 @@ class ShizukuCompanionViewHolder(
                         withContext(Dispatchers.IO) {
                             if (Shizuku.pingBinder()) {
                                 withContext(Dispatchers.Main) {
-                                    updateProgress("Installing package via Package Manager...", 85)
+                                    updateProgress(v.context.getString(R.string.compat_hub_installing), 85)
                                 }
                                 // Pipe APK bytes directly to the shell's stdin — cat writes to
                                 // /data/local/tmp (world-accessible by shell UID 2000) without
@@ -212,7 +212,7 @@ class ShizukuCompanionViewHolder(
                                 }
                             } else if (MigrationHelper.isRootAvailable()) {
                                 withContext(Dispatchers.Main) {
-                                    updateProgress("Installing package via Root Shell...", 85)
+                                    updateProgress(v.context.getString(R.string.compat_hub_installing), 85)
                                 }
                                 // Root can read internal storage — extract there and install directly.
                                 val tmpApk = java.io.File(v.context.cacheDir, "compat.apk")
@@ -263,7 +263,7 @@ class ShizukuCompanionViewHolder(
                         Timber.tag("ShizukuCompanion").e("compat hub install failed: %s", installOutput.take(1000))
                     }
                     withContext(Dispatchers.Main) {
-                        updateProgress(if (success) "Installation successful!" else "Finalizing...", 100)
+                        updateProgress(v.context.getString(if (success) R.string.compat_hub_install_success else R.string.compat_hub_progress_finishing), 100)
                         kotlinx.coroutines.delay(350)
                         hideProgress()
                         when {
@@ -320,14 +320,14 @@ class ShizukuCompanionViewHolder(
         binding.button2.setOnClickListener { v ->
             af.shizuku.manager.utils.HapticUtils
                 .tap(v)
-            showProgress("Uninstalling package...", 30)
+            showProgress(v.context.getString(R.string.compat_hub_progress_uninstalling), 30)
             scope.launch {
                 withContext(Dispatchers.Main) {
-                    updateProgress("Executing pm uninstall...", 70)
+                    updateProgress(v.context.getString(R.string.compat_hub_progress_uninstalling), 70)
                 }
                 val privilegedSuccess = runPrivilegedCommand("pm uninstall ${StockShizukuCompat.PACKAGE}")
                 withContext(Dispatchers.Main) {
-                    updateProgress("Uninstallation complete", 100)
+                    updateProgress(v.context.getString(if (privilegedSuccess) R.string.compat_hub_uninstall_success else R.string.compat_hub_progress_finishing), 100)
                     kotlinx.coroutines.delay(350)
                     hideProgress()
                     if (privilegedSuccess) {

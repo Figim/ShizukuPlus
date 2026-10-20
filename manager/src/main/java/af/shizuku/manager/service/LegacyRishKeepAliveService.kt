@@ -120,7 +120,7 @@ class LegacyRishKeepAliveService : Service() {
             )
         return NotificationCompat
             .Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_visibility_24)
+            .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle(getString(R.string.legacy_rish_keepalive_title))
             .setContentText(getString(R.string.legacy_rish_keepalive_text))
             .setContentIntent(pi)

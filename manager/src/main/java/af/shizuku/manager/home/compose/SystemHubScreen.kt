@@ -53,10 +53,7 @@ fun SystemHubScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(
-                        top = innerPadding.calculateTopPadding(),
-                        bottom = innerPadding.calculateBottomPadding() + navClearance,
-                    ),
+                    .padding(top = innerPadding.calculateTopPadding()),
         ) {
             TabRow(selectedTabIndex = pagerState.currentPage) {
                 Tab(
@@ -76,8 +73,11 @@ fun SystemHubScreen(
                 modifier = Modifier.fillMaxSize(),
             ) { page ->
                 when (page) {
-                    0 -> ServerMetricsScreen()
-                    1 -> ActivityLogScreen()
+                    // Bottom clearance goes inside each page's scroll content, not on this
+                    // Column: padding here leaves an empty band that shows the bare window
+                    // background (a black bar in AMOLED) and stops content short of the nav bar.
+                    0 -> ServerMetricsScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance)
+                    1 -> ActivityLogScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance)
                 }
             }
         }

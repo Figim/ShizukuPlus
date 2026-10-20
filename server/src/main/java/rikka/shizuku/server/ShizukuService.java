@@ -3014,6 +3014,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IAICorePlus getAICorePlus() {
         enforceCallingPermission("getAICorePlus");
+        // The manager always gets it (System Hub reads getServerStats() through it); third-party
+        // clients only while the user has AICore+ enabled.
+        if (!isFeatureEnabled("ai_core_plus")
+                && !checkCallerManagerPermission("getAICorePlus", Binder.getCallingUid(), Binder.getCallingPid())) {
+            return null;
+        }
         return aiCorePlus;
     }
 

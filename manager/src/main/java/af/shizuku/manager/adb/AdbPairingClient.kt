@@ -258,7 +258,7 @@ class AdbPairingClient(
         for (candidate in candidates) {
             val s = Socket()
             try {
-                s.connect(java.net.InetSocketAddress(candidate, port), 1000)
+                s.connect(java.net.InetSocketAddress(candidate, port), 3000)
                 s.tcpNoDelay = true
                 s.soTimeout = 15000 // 15 seconds read timeout to prevent infinite hangs during pairing
                 s.keepAlive = true

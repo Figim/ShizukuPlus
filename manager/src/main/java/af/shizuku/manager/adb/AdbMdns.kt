@@ -1,5 +1,6 @@
 package af.shizuku.manager.adb
 
+import af.shizuku.manager.ShizukuSettings
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
@@ -151,6 +152,32 @@ class AdbMdns(
             serviceName = resolvedService.serviceName
             resolvedHost = if (isLocal || cleanHostAddress == null) "127.0.0.1" else cleanHostAddress
             observer.onChanged(resolvedService.port)
+        } else if (running &&
+            isKnownInterface &&
+            ShizukuSettings.isAutoReconnectMdnsEnabled() &&
+            attempts < 5 &&
+            !restartScheduled
+        ) {
+            // Our own adbd advertised the service but the port isn't bound yet (it often lags the
+            // mDNS announcement). Restart discovery with a short backoff so it gets re-resolved.
+            // Services from other hosts on the LAN never get here, so they can't trigger restarts.
+            attempts++
+            restartScheduled = true
+            val delayMs = attempts * 1000L
+            restartJob =
+                mdnsScope.launch {
+                    delay(delayMs)
+                    if (registered) {
+                        try {
+                            nsdManager.stopServiceDiscovery(listener)
+                        } catch (e: IllegalArgumentException) {
+                            Timber.tag(TAG).e(e, "listener not registered when restarting service discovery")
+                        }
+                    }
+                    delay(100L)
+                    if (!registered) nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, listener)
+                    restartScheduled = false
+                }
         }
     }
 
