@@ -269,12 +269,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 supportsChangeAnimations = false
             }
 
-        val oneHandedTopPx =
-            if (ShizukuSettings.isOneHandedModeEnabled()) {
-                (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
-            } else {
-                0
-            }
+        val headerTopPx = (activity as? SettingsActivity)?.getExpandedHeaderHeightPx() ?: 0
         val isOled =
             (
                 af.shizuku.manager.app.ThemeHelper
@@ -298,7 +293,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             isOled,
             pageBgColor,
         )
-        recyclerView.setPadding(cardMarginPx, oneHandedTopPx, cardMarginPx, 0)
+        recyclerView.setPadding(cardMarginPx, headerTopPx, cardMarginPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
 
@@ -310,15 +305,10 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 } else {
                     (16 * context.resources.displayMetrics.density).toInt()
                 }
-            val currentOneHandedTop =
-                if (ShizukuSettings.isOneHandedModeEnabled()) {
-                    (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
-                } else {
-                    0
-                }
+            val currentHeaderTop = (activity as? SettingsActivity)?.getExpandedHeaderHeightPx() ?: 0
             recyclerView.setPadding(
                 cardMarginPx + systemBarsInsets.left,
-                currentOneHandedTop,
+                currentHeaderTop + systemBarsInsets.top,
                 cardMarginPx + systemBarsInsets.right,
                 systemBarsInsets.bottom + navBarClearancePx,
             )
@@ -333,7 +323,8 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     dx: Int,
                     dy: Int,
                 ) {
-                    (activity as? SettingsActivity)?.onPreferenceListScrolled(dy)
+                    val canScrollUp = rv.canScrollVertically(-1)
+                    (activity as? SettingsActivity)?.onPreferenceListScrolled(dy, canScrollUp)
                 }
 
                 override fun onScrollStateChanged(

@@ -244,6 +244,7 @@ open class HomeActivity :
                         .isBlackNightTheme(context),
                 isAmoledPlus = isAmoledPlus,
                 isOneUi = isOneUi,
+                isBoldTypography = ShizukuSettings.isBoldTypographyEnabled(),
                 isRoundedEdges = isRoundedEdges,
             ) {
                 HomeScreen(

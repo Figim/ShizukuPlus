@@ -22,12 +22,37 @@ class SettingsActivity :
     private var preferenceScrollState: TopAppBarState? = null
     private var _isScrollIdle by mutableStateOf(true)
 
-    fun onPreferenceListScrolled(dy: Int) {
+    fun getExpandedHeaderHeightPx(): Int {
+        val isOneUi =
+            af.shizuku.manager.ShizukuSettings
+                .isOneUiThemeEnabled()
+        val isOneHanded =
+            af.shizuku.manager.ShizukuSettings
+                .isOneHandedModeEnabled()
+        val isExpanded =
+            isOneUi ||
+                isOneHanded ||
+                af.shizuku.manager.ShizukuSettings
+                    .isExpandedHeadersEnabled()
+        val screenHeightDp = resources.configuration.screenHeightDp
+        val dp =
+            if (isExpanded) {
+                (screenHeightDp * 0.38f).coerceIn(240f, 340f)
+            } else {
+                64f
+            }
+        return (dp * resources.displayMetrics.density).toInt()
+    }
+
+    fun onPreferenceListScrolled(
+        dy: Int,
+        canScrollUp: Boolean = true,
+    ) {
         val state = preferenceScrollState ?: return
         val limit = state.heightOffsetLimit
         when {
             dy > 0 -> state.heightOffset = (state.heightOffset - dy).coerceAtLeast(limit)
-            dy < 0 -> state.heightOffset = (state.heightOffset - dy).coerceAtMost(0f)
+            dy < 0 && !canScrollUp -> state.heightOffset = (state.heightOffset - dy).coerceAtMost(0f)
         }
         state.contentOffset -= dy
         _isScrollIdle = false
@@ -64,6 +89,9 @@ class SettingsActivity :
                 isOneUi =
                     af.shizuku.manager.ShizukuSettings
                         .isOneUiThemeEnabled(),
+                isBoldTypography =
+                    af.shizuku.manager.ShizukuSettings
+                        .isBoldTypographyEnabled(),
                 isRoundedEdges =
                     af.shizuku.manager.ShizukuSettings
                         .isRoundedEdgesEnabled(),

@@ -181,18 +181,21 @@ fun ServerMetricsScreen() {
     }
 
     val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+    val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
-    val oneHandedTop = if (isOneHanded) (screenHeightDp * 0.16f).dp else 0.dp
+    val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.22f).dp else 0.dp
 
     Column(
         modifier =
             Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-                .padding(top = oneHandedTop),
+                .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        if (oneHandedTop > 0.dp) {
+            Spacer(modifier = Modifier.height(oneHandedTop))
+        }
         // Server State Banner
         when {
             isServerRunning == false -> {
@@ -625,8 +628,9 @@ fun ActivityLogScreen(
         }
 
     val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+    val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
-    val oneHandedTop = if (isOneHanded) (screenHeightDp * 0.16f).dp else 0.dp
+    val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.18f).dp else 0.dp
 
     if (showClearDialog) {
         AlertDialog(

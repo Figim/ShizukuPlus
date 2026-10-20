@@ -230,6 +230,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         if (card != null) {
             if (!ShizukuSettings.isRoundedEdgesEnabled()) {
                 card.radius = 0f
+            } else if (ShizukuSettings.isOneUiThemeEnabled()) {
+                card.radius = 36f * density
             } else {
                 val cornerOverride =
                     ShizukuSettings
@@ -259,6 +261,30 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     )
                 card.strokeWidth = (1.2f * density).toInt()
                 card.cardElevation = 0f
+            } else if (isBlur) {
+                // High-fidelity frosted glass: translucent high container with specular outline & soft shadow
+                val surfaceColor =
+                    MaterialColors.getColor(
+                        activity,
+                        com.google.android.material.R.attr.colorSurfaceContainerHighest,
+                        0xFF333038.toInt(),
+                    )
+                val bg = ColorUtils.setAlphaComponent(surfaceColor, (255 * 0.70f).toInt())
+                card.setCardBackgroundColor(bg)
+                // Specular glass rim: bright luminous edge reflection
+                val glassRim =
+                    if (isNight) {
+                        Color.argb(85, 255, 255, 255)
+                    } else {
+                        Color.argb(120, 255, 255, 255)
+                    }
+                card.strokeColor = glassRim
+                card.strokeWidth = (1.2f * density).toInt()
+                card.cardElevation = 10f * density
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    card.outlineAmbientShadowColor = Color.argb(45, 0, 0, 0)
+                    card.outlineSpotShadowColor = Color.argb(70, 0, 0, 0)
+                }
             } else {
                 val surfaceColor =
                     MaterialColors.getColor(
@@ -266,8 +292,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         com.google.android.material.R.attr.colorSurfaceContainerHigh,
                         0xFF2B2930.toInt(),
                     )
-                val alpha = if (isBlur) 0.80f else 0.92f
-                val bg = ColorUtils.setAlphaComponent(surfaceColor, (255 * alpha).toInt())
+                val bg = ColorUtils.setAlphaComponent(surfaceColor, (255 * 0.94f).toInt())
                 card.setCardBackgroundColor(bg)
                 card.strokeColor =
                     MaterialColors.getColor(
@@ -289,6 +314,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     0xFFE8DEF8.toInt(),
                 )
             nav.itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
+            nav.itemRippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(indicatorColor, 60))
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->

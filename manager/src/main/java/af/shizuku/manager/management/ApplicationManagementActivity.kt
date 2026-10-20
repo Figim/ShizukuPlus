@@ -27,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
@@ -111,13 +112,34 @@ open class ApplicationManagementActivity :
                     if (adapter.isSelectionMode) {
                         adapter.isSelectionMode = false
                         invalidateOptionsMenu()
-                        supportActionBar?.title = getString(R.string.home_app_management_title)
+                        val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+                        val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                        supportActionBar?.title = if (isOneUi || isOneHanded) "" else getString(R.string.home_app_management_title)
                         this.isEnabled = false
                     }
                 }
             }
         backCallback?.let {
             onBackPressedDispatcher.addCallback(this, it)
+        }
+
+        // One UI & One-Handed mode: spacious header with live authorized app count
+        val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+        val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+        val oneUiHeader = rootView.findViewById<View>(R.id.oneui_header_container)
+        val oneUiSubtitle = rootView.findViewById<TextView>(R.id.oneui_header_subtitle)
+
+        if (isOneUi || isOneHanded) {
+            oneUiHeader?.visibility = View.VISIBLE
+            val screenHeight = resources.displayMetrics.heightPixels
+            val minHeaderHeight = if (isOneHanded) (screenHeight * 0.16f).toInt() else 0
+            oneUiHeader?.minimumHeight = minHeaderHeight
+            supportActionBar?.title = ""
+
+            viewModel.grantedCount.observe(this) { res ->
+                val count = res?.data ?: 0
+                oneUiSubtitle?.text = resources.getQuantityString(R.plurals.home_app_management_authorized_apps_count, count, count)
+            }
         }
 
         // Search bar: M3 Expressive shape morphing (28dp capsule pill -> 16dp active squircle)
@@ -227,13 +249,7 @@ open class ApplicationManagementActivity :
                             .displayCutout(),
                 )
             val extraBottomPadding = (72 * resources.displayMetrics.density).toInt()
-            val oneHandedTopPadding =
-                if (ShizukuSettings.isOneHandedModeEnabled()) {
-                    (resources.displayMetrics.heightPixels * 0.16f).toInt()
-                } else {
-                    0
-                }
-            v.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom + extraBottomPadding)
+            v.setPadding(bars.left, 0, bars.right, bars.bottom + extraBottomPadding)
             insets
         }
 

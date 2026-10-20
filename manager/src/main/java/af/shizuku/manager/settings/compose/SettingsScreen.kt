@@ -8,9 +8,8 @@ import android.widget.ImageView
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -25,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -86,6 +86,7 @@ fun SettingsScreen(
             .isOneHandedModeEnabled()
     val isExpandedHeaders =
         isOneUi ||
+            isOneHanded ||
             af.shizuku.manager.ShizukuSettings
                 .isExpandedHeadersEnabled()
     val context = LocalContext.current
@@ -118,18 +119,31 @@ fun SettingsScreen(
             MaterialTheme.colorScheme.surfaceContainer
         }
 
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
-    // Re-coerce heightOffset whenever LargeTopAppBar remeasures and updates heightOffsetLimit
-    // (e.g. font-scale change, display-size change, rotation). The LargeTopAppBar sets
-    // heightOffsetLimit during its layout pass, AFTER composition; until the next frame the
-    // stale heightOffset can sit below the new limit, making Scaffold report a negative top
-    // padding and throwing "Padding must be non-negative" (#569, same root cause as HomeScreen's
-    // SideEffect re-coerce on line 87 of HomeScreen.kt). heightOffset's setter enforces
-    // [heightOffsetLimit, 0f], so reassigning it to itself is sufficient.
-    LaunchedEffect(scrollBehavior.state.heightOffsetLimit) {
-        scrollBehavior.state.heightOffset = scrollBehavior.state.heightOffset
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val statusBarPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding()
+    val expandedHeight =
+        if (isExpandedHeaders) {
+            (screenHeightDp * 0.38f).dp.coerceIn(240.dp, 340.dp)
+        } else {
+            64.dp
+        }
+    val collapsedHeight = 64.dp
+
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val expandedHeightPx = with(density) { (expandedHeight + statusBarPadding).toPx() }
+    val collapsedHeightPx = with(density) { (collapsedHeight + statusBarPadding).toPx() }
+    val heightOffsetLimit = -(expandedHeightPx - collapsedHeightPx)
+
+    val topAppBarState = rememberTopAppBarState()
+    SideEffect {
+        if (topAppBarState.heightOffsetLimit != heightOffsetLimit) {
+            topAppBarState.heightOffsetLimit = heightOffsetLimit
+            topAppBarState.heightOffset = topAppBarState.heightOffset
+        }
     }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
+    LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
+
     LaunchedEffect(isScrollIdle) {
         if (isScrollIdle) {
             val state = scrollBehavior.state
@@ -143,6 +157,9 @@ fun SettingsScreen(
             }
         }
     }
+
+    val fraction = if (isExpandedHeaders) scrollBehavior.state.collapsedFraction else 1f
+    val curvedFraction = FastOutSlowInEasing.transform(fraction)
 
     Scaffold(
         containerColor = pageBackground,
@@ -207,68 +224,131 @@ fun SettingsScreen(
                 )
             } else {
                 if (isExpandedHeaders) {
-                    Box {
-                        LargeTopAppBar(
-                            title = {
-                                val fraction = scrollBehavior.state.collapsedFraction
-                                val currentFontSize =
-                                    lerp(
-                                        start = 28.sp,
-                                        stop = 20.sp,
-                                        fraction = fraction,
-                                    )
-                                val currentFontWeight = if (fraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
-                                val currentLetterSpacing = lerp((-0.5).sp, (-0.2).sp, fraction)
-                                Text(
-                                    text = title,
-                                    style =
-                                        MaterialTheme.typography.headlineLarge.copy(
-                                            fontWeight = currentFontWeight,
-                                            fontSize = currentFontSize,
-                                            letterSpacing = currentLetterSpacing,
-                                        ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                    Surface(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(
+                                    (expandedHeight + statusBarPadding + with(density) { scrollBehavior.state.heightOffset.toDp() })
+                                        .coerceAtLeast(collapsedHeight + statusBarPadding),
+                                ),
+                        color =
+                            run {
+                                val barAlpha = ((fraction - 0.65f) / 0.35f).coerceIn(0f, 1f)
+                                if (af.shizuku.manager.ShizukuSettings
+                                        .isBlurUiEnabled()
+                                ) {
+                                    barScrolledColor.copy(alpha = 0.85f * barAlpha)
+                                } else {
+                                    barScrolledColor.copy(alpha = barAlpha)
+                                }
                             },
-                            navigationIcon = {
+                    ) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(top = statusBarPadding),
+                        ) {
+                            // Navigation and Action buttons in the pinned 64dp collapsed zone
+                            Row(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(collapsedHeight)
+                                        .padding(horizontal = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
                                 IconButton(onClick = { onNavigateUp() }) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_back_24),
                                         contentDescription = stringResource(R.string.cd_navigate_back),
                                     )
                                 }
-                            },
-                            actions = {
                                 IconButton(onClick = { isSearchActive = true }) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_search_24),
                                         contentDescription = stringResource(R.string.cd_settings_search),
                                     )
                                 }
-                            },
-                            colors =
-                                TopAppBarDefaults.topAppBarColors(
-                                    containerColor = Color.Transparent,
-                                    scrolledContainerColor = barScrolledColor,
-                                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                ),
-                            scrollBehavior = scrollBehavior,
-                        )
-                        // Hairline divider fades in subtly as the large bar fully collapses
-                        val dividerAlpha = ((scrollBehavior.state.collapsedFraction - 0.75f) / 0.25f).coerceIn(0f, 1f)
-                        Box(
-                            modifier =
-                                Modifier
-                                    .align(Alignment.BottomStart)
-                                    .fillMaxWidth()
-                                    .height(0.8.dp)
-                                    .graphicsLayer { alpha = dividerAlpha }
-                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
-                        )
-                    } // end Box
+                            }
+
+                            // Title and One UI subtitle
+                            val titleStartPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
+                            val titleFontSize = lerp(start = if (isOneUi) 36.sp else 30.sp, stop = 20.sp, fraction = curvedFraction)
+                            val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
+                            val titleLetterSpacing = lerp((-0.5).sp, (-0.2).sp, curvedFraction)
+
+                            val horizontalBias = -1f // One UI aligns titles to the start
+                            val verticalBias =
+                                androidx.compose.ui.util
+                                    .lerp(0.65f, -0.7f, curvedFraction)
+
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .padding(
+                                            start = titleStartPadding,
+                                            end = 56.dp,
+                                            top = lerp(start = 32.dp, stop = 0.dp, fraction = curvedFraction),
+                                            bottom = lerp(start = 16.dp, stop = 0.dp, fraction = curvedFraction),
+                                        ),
+                                contentAlignment = BiasAlignment(horizontalBias, verticalBias),
+                            ) {
+                                Column {
+                                    Text(
+                                        text = title,
+                                        style =
+                                            MaterialTheme.typography.headlineLarge.copy(
+                                                fontWeight = titleFontWeight,
+                                                fontSize = titleFontSize,
+                                                letterSpacing = titleLetterSpacing,
+                                            ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    if (isOneUi) {
+                                        val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
+                                        if (subtitleAlpha > 0f) {
+                                            Spacer(modifier = Modifier.height(4.dp))
+                                            Text(
+                                                text =
+                                                    if (title == stringResource(R.string.settings_title)) {
+                                                        stringResource(R.string.settings_oneui_theme_summary).take(38) + "…"
+                                                    } else {
+                                                        stringResource(R.string.settings_category_appearance)
+                                                    },
+                                                style =
+                                                    MaterialTheme.typography.bodyMedium.copy(
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        fontWeight = FontWeight.Normal,
+                                                    ),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Hairline divider when collapsed
+                            if (curvedFraction > 0.5f) {
+                                val dividerAlpha = ((curvedFraction - 0.5f) / 0.5f).coerceIn(0f, 1f)
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .align(Alignment.BottomStart)
+                                            .fillMaxWidth()
+                                            .height(0.8.dp)
+                                            .graphicsLayer { alpha = dividerAlpha }
+                                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
+                                )
+                            }
+                        }
+                    }
                 } else {
                     Box {
                         TopAppBar(
@@ -314,57 +394,8 @@ fun SettingsScreen(
             }
         },
     ) { innerPadding ->
-        val screenHeightDp = LocalConfiguration.current.screenHeightDp
-        val targetThumbTop = (screenHeightDp * 0.38f).dp
-        val extraOneHanded = (targetThumbTop - innerPadding.calculateTopPadding()).coerceAtLeast(0.dp)
-        val oneHandedOffset by animateDpAsState(
-            targetValue = if (isOneHanded) extraOneHanded else 0.dp,
-            animationSpec =
-                if (!af.shizuku.manager.ShizukuSettings
-                        .isExpressiveAnimationsEnabled()
-                ) {
-                    snap()
-                } else {
-                    spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness =
-                            Spring.StiffnessMedium /
-                                af.shizuku.manager.ShizukuSettings
-                                    .getAnimationDurationScale()
-                                    .coerceAtLeast(0.1f),
-                    )
-                },
-            label = "settingsOneHandedOffset",
-        )
-
         Box(modifier = Modifier.fillMaxSize()) {
-            if (isOneHanded && oneHandedOffset > 16.dp) {
-                val handleAlpha = (1f - (scrollBehavior.state.collapsedFraction * 2.5f)).coerceIn(0f, 1f)
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height((oneHandedOffset + innerPadding.calculateTopPadding()).coerceAtLeast(0.dp))
-                            .padding(top = (innerPadding.calculateTopPadding() + 8.dp).coerceAtLeast(0.dp))
-                            .graphicsLayer { alpha = handleAlpha },
-                    contentAlignment = Alignment.TopCenter,
-                ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .width(36.dp)
-                                .height(4.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
-                                    shape =
-                                        androidx.compose.foundation.shape
-                                            .RoundedCornerShape(2.dp),
-                                ),
-                    )
-                }
-            }
-
-            // Fragment container — hidden while search is active
+            // Fragment container — always full screen with stable bounds
             AndroidView(
                 factory = { context ->
                     FrameLayout(context).apply {
@@ -376,14 +407,34 @@ fun SettingsScreen(
                 update = { view ->
                     view.visibility = if (isSearchActive) android.view.View.GONE else android.view.View.VISIBLE
                 },
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(
-                            top = innerPadding.calculateTopPadding().coerceAtLeast(0.dp),
-                            bottom = innerPadding.calculateBottomPadding().coerceAtLeast(0.dp),
-                        ),
+                modifier = Modifier.fillMaxSize(),
             )
+
+            // One-handed reach handle indicator when expanded
+            if (isOneHanded && fraction < 0.25f) {
+                val handleAlpha = (1f - (fraction * 4f)).coerceIn(0f, 1f)
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = statusBarPadding + collapsedHeight + 8.dp)
+                            .graphicsLayer { alpha = handleAlpha },
+                    contentAlignment = Alignment.TopCenter,
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .width(36.dp)
+                                .height(4.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
+                                    shape =
+                                        androidx.compose.foundation.shape
+                                            .RoundedCornerShape(2.dp),
+                                ),
+                    )
+                }
+            }
 
             // Inline search results — appears below the search TopAppBar
             val searchFadeMs =

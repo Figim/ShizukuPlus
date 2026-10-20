@@ -417,6 +417,18 @@
     <string name="settings_app_icon_name_summary">Customize launcher icon and application label</string>
     <string name="settings_show_home_cards_outline">Home card borders</string>
     <string name="settings_show_home_cards_outline_summary">Show subtle outline stroke around home screen cards</string>
+    <string name="settings_custom_icon_studio_title">Custom Icon Studio</string>
+    <string name="settings_custom_icon_studio_summary">Upload your own image, customize shape, padding &amp; background, and pin it as a launcher icon</string>
+    <string name="custom_icon_studio_shape">Shape</string>
+    <string name="custom_icon_studio_scale">Padding &amp; Scale</string>
+    <string name="custom_icon_studio_bg">Background</string>
+    <string name="custom_icon_studio_pin_shortcut">Pin to Home Screen</string>
+    <string name="custom_icon_studio_pinned_success">Custom icon pinned to your Home Screen!</string>
+    <string name="custom_icon_studio_pinned_error">Failed to pin icon shortcut</string>
+    <string name="custom_icon_studio_shape_circle">Circle</string>
+    <string name="custom_icon_studio_shape_squircle">Squircle</string>
+    <string name="custom_icon_studio_shape_rounded">Rounded</string>
+    <string name="custom_icon_studio_shape_oneui">One UI</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

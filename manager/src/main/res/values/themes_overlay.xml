@@ -481,6 +481,17 @@
         <item name="textAppearanceHeadlineLarge">@style/TextAppearance.OneUI.HeadlineLarge</item>
         <item name="textAppearanceTitleLarge">@style/TextAppearance.OneUI.TitleLarge</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.OneUI.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Bold.TitleSmall</item>
+        <item name="android:textAppearanceListItem">@style/TextAppearance.Bold.ListItem</item>
+        <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.OneUI.CategoryTitle</item>
+    </style>
+
+    <style name="TextAppearance.Bold.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Bold.ListItem" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <!--

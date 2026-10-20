@@ -21,6 +21,18 @@ import rikka.material.app.LocaleDelegate
 import java.util.Locale
 
 class PersonalizationSettingsFragment : BaseSettingsFragment() {
+    private val iconPickerLauncher =
+        registerForActivityResult(
+            androidx.activity.result.contract.ActivityResultContracts
+                .GetContent(),
+        ) { uri ->
+            if (uri != null) {
+                CustomIconStudioBottomSheet
+                    .newInstance(uri)
+                    .show(childFragmentManager, "CustomIconStudio")
+            }
+        }
+
     private fun applyTheme(requiresRecreate: Boolean = false) {
         if (requiresRecreate) {
             (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition()
@@ -279,6 +291,15 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 }
                 true
             }
+        }
+
+        findPreference<Preference>("custom_icon_studio")?.setOnPreferenceClickListener {
+            try {
+                iconPickerLauncher.launch("image/*")
+            } catch (e: Exception) {
+                timber.log.Timber.w(e, "Failed to launch image picker")
+            }
+            true
         }
 
         val simulatorPref = findPreference<HomeLayoutSimulatorPreference>("home_layout_simulator")

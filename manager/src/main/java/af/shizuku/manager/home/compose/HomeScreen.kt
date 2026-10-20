@@ -20,6 +20,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -76,11 +77,11 @@ fun HomeScreen(
     // statusBars as 0 still give us the correct top offset and the icons remain clickable.
     val statusBarPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding()
 
-    // When one-handed or One UI: expanded viewing area occupies ~36% of screen height,
+    // When one-handed or One UI: expanded viewing area occupies ~38% of screen height,
     // letting the thumb reach the interaction zone below. Otherwise stay at a flat 64dp bar.
     val expandedHeight =
         if (isOneHanded || isOneUi) {
-            (screenHeightDp * 0.36f).coerceIn(220.dp, 300.dp)
+            (screenHeightDp * 0.38f).coerceIn(240.dp, 360.dp)
         } else {
             64.dp
         }
@@ -276,7 +277,7 @@ fun HomeScreen(
                     val endPadding = lerp(start = 24.dp, stop = endPaddingStop, fraction = curvedFraction)
                     val titleFontSize =
                         lerp(
-                            start = if (isOneUi) 32.sp else 28.sp,
+                            start = if (isOneUi) 36.sp else 28.sp,
                             stop = 20.sp,
                             fraction = curvedFraction,
                         )
@@ -300,36 +301,21 @@ fun HomeScreen(
                                 .padding(
                                     start = startPadding,
                                     end = endPadding,
-                                    top = lerp(start = 24.dp, stop = 0.dp, fraction = curvedFraction),
+                                    top = lerp(start = if (isOneUi) 32.dp else 24.dp, stop = 0.dp, fraction = curvedFraction),
                                 ),
                         contentAlignment = BiasAlignment(horizontalBias, 0f),
                     ) {
-                        Crossfade(
-                            targetState = isEditMode,
-                            animationSpec = if (animationsEnabled) tween(motionDur, easing = motionEasing) else tween(0),
-                            label = "titleContent",
-                        ) { editMode ->
-                            if (editMode) {
-                                Text(
-                                    text = stringResource(R.string.home_edit_mode_title),
-                                    style =
-                                        MaterialTheme.typography.headlineLarge.copy(
-                                            fontWeight = titleFontWeight,
-                                            fontSize = titleFontSize,
-                                            letterSpacing = titleLetterSpacing,
-                                        ),
-                                    textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            } else if (isDropIn) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = if (curvedFraction > 0.5f) Arrangement.Start else Arrangement.Center,
-                                ) {
+                        Column(
+                            horizontalAlignment = if (curvedFraction > 0.5f) Alignment.Start else Alignment.CenterHorizontally,
+                        ) {
+                            Crossfade(
+                                targetState = isEditMode,
+                                animationSpec = if (animationsEnabled) tween(motionDur, easing = motionEasing) else tween(0),
+                                label = "titleContent",
+                            ) { editMode ->
+                                if (editMode) {
                                     Text(
-                                        text = stringResource(R.string.brand_shizuku_plus),
-                                        modifier = Modifier.weight(1f, fill = false),
+                                        text = stringResource(R.string.home_edit_mode_title),
                                         style =
                                             MaterialTheme.typography.headlineLarge.copy(
                                                 fontWeight = titleFontWeight,
@@ -340,45 +326,105 @@ fun HomeScreen(
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                     )
-                                    Spacer(modifier = Modifier.width(lerp(8.dp, 6.dp, curvedFraction)))
-                                    Surface(
-                                        shape = RoundedCornerShape(100),
-                                        color = MaterialTheme.colorScheme.secondaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                        tonalElevation = 1.dp,
+                                } else if (isDropIn) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = if (curvedFraction > 0.5f) Arrangement.Start else Arrangement.Center,
                                     ) {
                                         Text(
-                                            text = stringResource(R.string.brand_drop_in),
+                                            text = stringResource(R.string.brand_shizuku_plus),
+                                            modifier = Modifier.weight(1f, fill = false),
                                             style =
-                                                MaterialTheme.typography.labelSmall.copy(
-                                                    fontWeight = FontWeight.Bold,
-                                                    letterSpacing = 0.4.sp,
-                                                    fontSize = lerp(11.sp, 9.5.sp, curvedFraction),
+                                                MaterialTheme.typography.headlineLarge.copy(
+                                                    fontWeight = titleFontWeight,
+                                                    fontSize = titleFontSize,
+                                                    letterSpacing = titleLetterSpacing,
                                                 ),
+                                            textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Spacer(modifier = Modifier.width(lerp(8.dp, 6.dp, curvedFraction)))
+                                        Surface(
+                                            shape = RoundedCornerShape(100),
+                                            color = MaterialTheme.colorScheme.secondaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                            tonalElevation = 1.dp,
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.brand_drop_in),
+                                                style =
+                                                    MaterialTheme.typography.labelSmall.copy(
+                                                        fontWeight = FontWeight.Bold,
+                                                        letterSpacing = 0.4.sp,
+                                                        fontSize = lerp(11.sp, 9.5.sp, curvedFraction),
+                                                    ),
+                                                modifier =
+                                                    Modifier.padding(
+                                                        horizontal = lerp(8.dp, 6.dp, curvedFraction),
+                                                        vertical = lerp(3.dp, 2.dp, curvedFraction),
+                                                    ),
+                                                maxLines = 1,
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Text(
+                                        text = stringResource(R.string.app_name),
+                                        style =
+                                            MaterialTheme.typography.headlineLarge.copy(
+                                                fontWeight = titleFontWeight,
+                                                fontSize = titleFontSize,
+                                                letterSpacing = titleLetterSpacing,
+                                            ),
+                                        textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                }
+                            } // end Crossfade
+
+                            if (isOneUi && !isEditMode) {
+                                val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
+                                if (subtitleAlpha > 0f) {
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
+                                    ) {
+                                        Box(
                                             modifier =
-                                                Modifier.padding(
-                                                    horizontal = lerp(8.dp, 6.dp, curvedFraction),
-                                                    vertical = lerp(3.dp, 2.dp, curvedFraction),
+                                                Modifier
+                                                    .size(8.dp)
+                                                    .background(
+                                                        color =
+                                                            if (isServerRunning) {
+                                                                MaterialTheme.colorScheme.primary
+                                                            } else {
+                                                                MaterialTheme.colorScheme.error
+                                                            },
+                                                        shape = CircleShape,
+                                                    ),
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text =
+                                                if (isServerRunning) {
+                                                    stringResource(R.string.onboarding_setup_running)
+                                                } else {
+                                                    stringResource(R.string.server_metrics_server_not_running)
+                                                },
+                                            style =
+                                                MaterialTheme.typography.bodyMedium.copy(
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 ),
                                             maxLines = 1,
                                         )
                                     }
                                 }
-                            } else {
-                                Text(
-                                    text = stringResource(R.string.app_name),
-                                    style =
-                                        MaterialTheme.typography.headlineLarge.copy(
-                                            fontWeight = titleFontWeight,
-                                            fontSize = titleFontSize,
-                                            letterSpacing = titleLetterSpacing,
-                                        ),
-                                    textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
                             }
-                        } // end Crossfade
+                        }
                     }
 
                     // Hairline divider fades in as the bar collapses

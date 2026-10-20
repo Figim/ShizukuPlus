@@ -134,7 +134,7 @@ private val OneUiShapes = Shapes(
 private val OneUiTypography = Typography(
     headlineLarge = Typography().headlineLarge.copy(
         fontWeight = FontWeight.ExtraBold,
-        fontSize = 32.sp,
+        fontSize = 34.sp,
         letterSpacing = (-0.5).sp
     ),
     headlineMedium = Typography().headlineMedium.copy(
@@ -160,25 +160,69 @@ private val OneUiTypography = Typography(
         fontSize = 14.sp
     ),
     labelLarge = Typography().labelLarge.copy(
-        fontWeight = FontWeight.SemiBold
+        fontWeight = FontWeight.Bold
     ),
     labelMedium = Typography().labelMedium.copy(
-        fontWeight = FontWeight.SemiBold
+        fontWeight = FontWeight.Bold
     ),
     labelSmall = Typography().labelSmall.copy(
         fontWeight = FontWeight.Medium
     ),
     bodyLarge = Typography().bodyLarge.copy(
+        fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         letterSpacing = 0.sp
     ),
     bodyMedium = Typography().bodyMedium.copy(
+        fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         letterSpacing = 0.sp
     ),
     bodySmall = Typography().bodySmall.copy(
         fontSize = 12.sp,
         letterSpacing = 0.sp
+    )
+)
+
+private val BoldTypography = Typography(
+    headlineLarge = Typography().headlineLarge.copy(
+        fontWeight = FontWeight.ExtraBold,
+        letterSpacing = (-0.5).sp
+    ),
+    headlineMedium = Typography().headlineMedium.copy(
+        fontWeight = FontWeight.Bold,
+        letterSpacing = (-0.25).sp
+    ),
+    headlineSmall = Typography().headlineSmall.copy(
+        fontWeight = FontWeight.Bold
+    ),
+    titleLarge = Typography().titleLarge.copy(
+        fontWeight = FontWeight.Bold,
+        letterSpacing = (-0.15).sp
+    ),
+    titleMedium = Typography().titleMedium.copy(
+        fontWeight = FontWeight.Bold
+    ),
+    titleSmall = Typography().titleSmall.copy(
+        fontWeight = FontWeight.Bold
+    ),
+    labelLarge = Typography().labelLarge.copy(
+        fontWeight = FontWeight.Bold
+    ),
+    labelMedium = Typography().labelMedium.copy(
+        fontWeight = FontWeight.Bold
+    ),
+    labelSmall = Typography().labelSmall.copy(
+        fontWeight = FontWeight.SemiBold
+    ),
+    bodyLarge = Typography().bodyLarge.copy(
+        fontWeight = FontWeight.Medium
+    ),
+    bodyMedium = Typography().bodyMedium.copy(
+        fontWeight = FontWeight.Medium
+    ),
+    bodySmall = Typography().bodySmall.copy(
+        fontWeight = FontWeight.Normal
     )
 )
 
@@ -196,6 +240,7 @@ fun AppTheme(
     isBlackNightTheme: Boolean = false,
     isAmoledPlus: Boolean = false,
     isOneUi: Boolean = false,
+    isBoldTypography: Boolean = false,
     isRoundedEdges: Boolean = true,
     themeVersion: Int = 0,
     content: @Composable () -> Unit
@@ -231,7 +276,11 @@ fun AppTheme(
         isOneUi -> OneUiShapes
         else -> Shapes()
     }
-    val typography = if (isOneUi) OneUiTypography else Typography()
+    val typography = when {
+        isOneUi -> OneUiTypography
+        isBoldTypography -> BoldTypography
+        else -> Typography()
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,

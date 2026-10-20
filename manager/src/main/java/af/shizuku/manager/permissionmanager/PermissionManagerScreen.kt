@@ -1,6 +1,7 @@
 package af.shizuku.manager.permissionmanager
 
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -247,7 +249,15 @@ private fun AppListPane(
                 )
             }
         } else {
+            val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+            val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+            val screenHeightDp = LocalConfiguration.current.screenHeightDp
+            val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.16f).dp else 0.dp
+
             LazyColumn(modifier = Modifier.fillMaxSize()) {
+                if (oneHandedTop > 0.dp) {
+                    item { Spacer(Modifier.height(oneHandedTop)) }
+                }
                 items(apps, key = { it.packageName }) { app ->
                     AppRow(app = app, onClick = { onAppClick(app) })
                     HorizontalDivider(modifier = Modifier.padding(start = 72.dp))
@@ -357,12 +367,20 @@ private fun PermissionDetailPane(
         return
     }
 
+    val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+    val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.16f).dp else 0.dp
+
     LazyColumn(
         modifier =
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
     ) {
+        if (oneHandedTop > 0.dp) {
+            item { Spacer(Modifier.height(oneHandedTop)) }
+        }
         if (privileged.isNotEmpty()) {
             item {
                 PermSectionHeader(stringResource(R.string.permission_manager_section_privileged))

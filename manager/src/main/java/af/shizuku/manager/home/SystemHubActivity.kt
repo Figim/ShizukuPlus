@@ -23,6 +23,7 @@ class SystemHubActivity : AppActivity() {
                 isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
                 isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),
                 isOneUi = ShizukuSettings.isOneUiThemeEnabled(),
+                isBoldTypography = ShizukuSettings.isBoldTypographyEnabled(),
                 isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled(),
             ) {
                 SystemHubScreen(
