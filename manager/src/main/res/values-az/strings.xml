@@ -565,7 +565,7 @@
     <string name="settings_keystore_fallback">Proqram təminatı KeyStore Ehtiyat Nüsxəsi</string>
     <string name="settings_keystore_fallback_summary">Aparat KeyStore xəta verdikdə proqram təminatı AES açarı ilə şifrələnmiş ADB RSA açarını keşləyin (məsələn, Samsung Knox). Cütləşmə sorğularını azaldır, lakin təhlükəsizliyi aşağı salır.</string>
     <string name="settings_samsung_uid_escalation">Samsung Sistem UID Eskalasiyası</string>
-    <string name="settings_samsung_uid_escalation_summary">Yamaqlanmamış Samsung cihazlarına xüsusi zəiflikdən (pascua28 tərəfindən) istifadə edərək UID 1000 (sistem) səviyyəsinə yüksəlməyə cəhd edin. Root tələb olunmur. Qeyd: Samsung bunu müasir One UI (Android 12+) versiyalarında yamaqlayıb.</string>
+    <string name="settings_samsung_uid_escalation_summary">Yamaqlanmamış Samsung cihazlarına xüsusi zəiflikdən (pascua28 tərəfindən) istifadə edərək UID 1000 (sistem) səviyyəsinə yüksəlməyə cəhd edin. Root tələb olunmur. Qeyd: Samsung bunu müasir One UI (Android 12+) versiylarında yamaqlayıb.</string>
     <string name="settings_display_tuner_plus_title">Ekran Tənzimləyicisi</string>
     <string name="settings_device_control_home_title">Cihaz Nəzarəti Əsas Ekran Kartı</string>
     <string name="settings_device_control_home_summary">Əsas ekranda Cihaz Nəzarəti kartını göstərin. Wi-Fi, Bluetooth, Mobil İnternet, ekran, səs və enerjiyə imtiyazlı nəzarətə imkan verir. Eksperimental — bəzi cihazlarda gözlənilməz davranışa səbəb ola bilər.</string>
@@ -1010,17 +1010,17 @@
     <string name="dialog_legacy_not_support_title">%1$s müasir Shizuku-nu dəstəkləmir</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur. Həmçinin, köhnə Shizuku yeni Android sistemlərində işləmir.<p>Zəhmət olmasa <b>%1$s</b> tətbiqinin tərtibatçısından yeniləməsini xahiş edin.]]></string>
     <string name="dialog_requesting_legacy_title">%1$s köhnə Shizuku tələb edir</string>
-    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdir, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
+    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdır, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku-nu Aç</string>
     <string name="wadb_notification_attempt_now">İndi cəhd et</string>
     <string name="wadb_notification_ask_again">Yenidən soruş</string>
     <string name="wadb_notification_awaiting_auth">Bu telefonda \"USB sazlamasına icazə verilsin\" sorğusunu qəbul etməyiniz gözlənilir</string>
-    <string name="wadb_notification_ask_again_from">Əgər İmtina et düyməsinə toxunmusunuzsa, Yenidən soruş %1$s dən sorğunu bir daha göstərər</string>
+    <string name="wadb_notification_ask_again_from">Əgər İmtina et düyməsinə toxunmusunuzsa, Yenidən soruş %1$s dən sorğunu bir daha göstərəcək</string>
     <string name="wadb_notification_ask_again_ready">Əgər İmtina et düyməsinə toxunmusunuzsa, sorğunu bir daha göstərmək üçün Yenidən soruş düyməsinə toxunun</string>
     <string name="wadb_notification_ask_again_used">Bu, %1$s vaxtında başa çatan gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_ask_again_used_untimed">Bu, bu gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_wait_ends">Bu gözləmə %1$s vaxtında başa çatır</string>
-    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək için İndi cəhd et düyməsinə toxunun</string>
+    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək üçün İndi cəhd et düyməsinə toxunun</string>
 
     <string name="settings_category_general">Ümumi</string>
     <string name="settings_category_dark_mode">Qaranlıq Tema</string>
@@ -1314,7 +1314,7 @@
     <string name="ok">Oldu</string>
     <string name="no_file_picker">Bu cihazda heç bir fayl seçici tətbiqi tapılmadı</string>
     <string name="wadb_notification_discovery_timeout">ADB portunun aşkarlanması vaxtı bitdi — yenidən cəhd edilir…</string>
-    <string name="shell_export_success">Fayllar uğurla ixrac edildi</string>
+    <string name="shell_export_success">Faylllar uğurla ixrac edildi</string>
     <string name="shell_export_failed">İxrac uğursuz oldu — heç bir fayl yazıla bilmədi</string>
     <string name="shell_export_partial">%2$d fayldan %1$d-i ixrac edildi (bəziləri uğursuz oldu)</string>
 
@@ -1498,9 +1498,9 @@
 
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Açarı</string>
-    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək için API açarı tələb olunur</string>
+    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək üçün API açarı tələb olunur</string>
     <string name="verify_pithus_key_title">Pithus API Açarı (Könüllü)</string>
-    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək için heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
+    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
     <string name="verify_pithus_default_summary">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın.</string>
     <string name="verify_api_key_hint">API açarını daxil etmək üçün toxunun</string>
     <string name="verify_api_key_configured">API açarı yadda saxlanıldı · yeniləmək üçün toxunun</string>
@@ -1510,7 +1510,7 @@
     <string name="scripting_title">Skriptlər</string>
     <string name="scripting_summary">İmtiyazlı shell skriptlərini yadda saxlayın, paylaşın və işlədin</string>
     <string name="scripting_empty_title">Hələ heç bir skript yoxdur</string>
-    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək için imtiyazlı shell skriptini yadda saxlayın.</string>
+    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək üçün imtiyazlı shell skriptini yadda saxlayın.</string>
     <string name="scripting_add">Skript əlavə et</string>
     <string name="scripting_edit">Skripti redaktə et</string>
     <string name="scripting_run">İşlət</string>
