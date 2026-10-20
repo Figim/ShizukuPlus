@@ -8,6 +8,7 @@
         android:icon="@drawable/ic_palette_24"
         android:defaultValue="true">
 
+
         <af.shizuku.manager.settings.IntegerSegmentedControlPreference
             android:entries="@array/night_mode"
             android:entryValues="@array/night_mode_value"
@@ -49,6 +50,13 @@
             android:entryValues="@array/custom_accents_values"
             android:icon="@drawable/ic_palette_24" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="bold_typography"
+            android:title="@string/settings_bold_typography"
+            android:summary="@string/settings_bold_typography_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_format_bold_24" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="oneui_theme_enabled"
             android:title="@string/settings_oneui_theme"
@@ -60,10 +68,17 @@
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_shape_style"
-        android:title="@string/settings_personalization_category_shape_style"
-        android:icon="@drawable/ic_window_24"
-        android:defaultValue="true">
+        android:key="category_app_identity"
+        android:title="@string/settings_personalization_category_app_identity"
+        android:icon="@drawable/ic_sparkle_24"
+        android:defaultValue="false">
+
+
+        <Preference
+            android:key="custom_icon_studio"
+            android:title="@string/settings_custom_icon_studio_title"
+            android:summary="@string/settings_custom_icon_studio_summary"
+            android:icon="@drawable/ic_sparkle_24" />
 
         <rikka.preference.SimpleMenuPreference
             android:key="app_icon_alias"
@@ -83,11 +98,14 @@
             app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_edit_24" />
 
-        <Preference
-            android:key="custom_icon_studio"
-            android:title="@string/settings_custom_icon_studio_title"
-            android:summary="@string/settings_custom_icon_studio_summary"
-            android:icon="@drawable/ic_sparkle_24" />
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_shape_style"
+        android:title="@string/settings_personalization_category_shape_style"
+        android:icon="@drawable/ic_window_24"
+        android:defaultValue="true">
+
 
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="icon_style"
@@ -158,16 +176,10 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_motion_display"
-        android:title="@string/settings_personalization_category_motion_display"
-        android:icon="@drawable/ic_outline_play_arrow_24"
+        android:title="@string/settings_personalization_category_motion_haptics"
+        android:icon="@drawable/ic_vibration_24"
         android:defaultValue="false">
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="follow_system_animations"
-            android:title="@string/settings_follow_system_animations"
-            android:summary="@string/settings_follow_system_animations_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_settings_suggest_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="expressive_animations"
@@ -185,6 +197,13 @@
             android:icon="@drawable/ic_outline_play_arrow_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="follow_system_animations"
+            android:title="@string/settings_follow_system_animations"
+            android:summary="@string/settings_follow_system_animations_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_settings_suggest_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="haptic_feedback"
             android:title="@string/settings_haptic_feedback"
             android:summary="@string/settings_haptic_feedback_summary"
@@ -198,42 +217,14 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_vibration_24" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="edge_to_edge_enabled"
-            android:title="@string/settings_edge_to_edge"
-            android:summary="@string/settings_edge_to_edge_summary"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_window_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="blur_ui_enabled"
-            android:title="@string/settings_blur_ui"
-            android:summary="@string/settings_blur_ui_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_palette_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="bold_typography"
-            android:title="@string/settings_bold_typography"
-            android:summary="@string/settings_bold_typography_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_format_bold_24" />
-
-        <af.shizuku.manager.settings.SegmentedControlPreference
-            android:key="changelog_style"
-            android:title="@string/settings_changelog_style"
-            android:defaultValue="timeline"
-            android:entries="@array/changelog_styles"
-            android:entryValues="@array/changelog_styles_value"
-            android:icon="@drawable/ic_article_24" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_home_screen"
-        android:title="@string/settings_personalization_category_home_screen"
+        android:key="category_layout_nav"
+        android:title="@string/settings_personalization_category_layout_nav"
         android:icon="@drawable/ic_smartphone_24"
-        android:defaultValue="true">
+        android:defaultValue="false">
+
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="floating_nav_enabled"
@@ -279,6 +270,29 @@
             android:icon="@drawable/ic_outline_expand_more_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="edge_to_edge_enabled"
+            android:title="@string/settings_edge_to_edge"
+            android:summary="@string/settings_edge_to_edge_summary"
+            android:defaultValue="true"
+            android:icon="@drawable/ic_window_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="blur_ui_enabled"
+            android:title="@string/settings_blur_ui"
+            android:summary="@string/settings_blur_ui_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_palette_24" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_home_screen"
+        android:title="@string/settings_personalization_category_home_screen"
+        android:icon="@drawable/ic_nav_home_24"
+        android:defaultValue="true">
+
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_activity_log_home"
             android:title="@string/settings_show_activity_log_home"
             android:icon="@drawable/ic_article_24"
@@ -291,13 +305,6 @@
             android:icon="@drawable/ic_palette_24"
             android:defaultValue="true" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_home_cards_outline"
-            android:title="@string/settings_show_home_cards_outline"
-            android:summary="@string/settings_show_home_cards_outline_summary"
-            android:icon="@drawable/ic_window_24"
-            android:defaultValue="false" />
-
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="status_card_outline_style"
             android:title="@string/settings_status_card_outline_style"
@@ -308,11 +315,26 @@
             android:icon="@drawable/ic_palette_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_home_cards_outline"
+            android:title="@string/settings_show_home_cards_outline"
+            android:summary="@string/settings_show_home_cards_outline_summary"
+            android:icon="@drawable/ic_window_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"
             android:title="@string/settings_companion_mode"
             android:summary="@string/settings_companion_mode_summary"
             android:icon="@drawable/ic_baseline_link_24"
             android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="changelog_style"
+            android:title="@string/settings_changelog_style"
+            android:defaultValue="timeline"
+            android:entries="@array/changelog_styles"
+            android:entryValues="@array/changelog_styles_value"
+            android:icon="@drawable/ic_article_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -321,6 +343,7 @@
         android:title="@string/settings_personalization_category_language"
         android:icon="@drawable/ic_outline_translate_24"
         android:defaultValue="true">
+
 
         <rikka.preference.SimpleMenuPreference
             android:defaultValue="SYSTEM"

@@ -54,11 +54,19 @@ class CollapsiblePreferenceCategory
             // way back to them.
             expanded = if (collapsible) defaultExpanded else true
             isSelectable = collapsible
+            if (!collapsible) layoutResource = R.layout.preference_section_label
         }
 
         override fun onBindViewHolder(holder: PreferenceViewHolder) {
             super.onBindViewHolder(holder)
 
+            if (!collapsible) {
+                // Plain section label: nothing to toggle, count or decorate.
+                holder.itemView.tag = "section_label"
+                holder.isDividerAllowedAbove = false
+                holder.isDividerAllowedBelow = false
+                return
+            }
             holder.itemView.tag = "category_header"
 
             val cornerStyle = ShizukuSettings.getPreferences().getString("settings_card_corner_style", "global") ?: "global"
@@ -165,7 +173,12 @@ class CollapsiblePreferenceCategory
                     summaryView.background = chipBg
                     summaryView.setPadding(padH, padV, padH, padV)
                     summaryView.setTextColor(chipTextColor)
-                    summaryView.text = if (totalSwitches > 1) "$activeCount / $totalSwitches on" else "$activeCount on"
+                    summaryView.text =
+                        if (totalSwitches > 1) {
+                            ctx.getString(R.string.settings_category_active_count, activeCount, totalSwitches)
+                        } else {
+                            ctx.getString(R.string.settings_category_active_single, activeCount)
+                        }
                     summaryView.visibility = android.view.View.VISIBLE
                 }
             }

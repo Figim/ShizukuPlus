@@ -124,7 +124,9 @@ fun SettingsScreen(
     val statusBarPadding = WindowInsets.safeDrawing.asPaddingValues().calculateTopPadding()
     val expandedHeight =
         if (isExpandedHeaders) {
-            (screenHeightDp * 0.38f).dp.coerceIn(240.dp, 340.dp)
+            af.shizuku.manager.settings
+                .expandedHeaderHeightDp(screenHeightDp)
+                .dp
         } else {
             64.dp
         }

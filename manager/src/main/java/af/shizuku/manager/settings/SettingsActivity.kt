@@ -34,13 +34,7 @@ class SettingsActivity :
                 isOneHanded ||
                 af.shizuku.manager.ShizukuSettings
                     .isExpandedHeadersEnabled()
-        val screenHeightDp = resources.configuration.screenHeightDp
-        val dp =
-            if (isExpanded) {
-                (screenHeightDp * 0.38f).coerceIn(240f, 340f)
-            } else {
-                64f
-            }
+        val dp = if (isExpanded) expandedHeaderHeightDp(resources.configuration.screenHeightDp) else 64f
         return (dp * resources.displayMetrics.density).toInt()
     }
 
@@ -80,6 +74,9 @@ class SettingsActivity :
         setContent {
             val tv = themeVersion
             af.shizuku.core.ui.compose.AppTheme(
+                isExpressiveMotion =
+                    af.shizuku.manager.ShizukuSettings
+                        .isExpressiveAnimationsEnabled(),
                 isBlackNightTheme =
                     af.shizuku.manager.app.ThemeHelper
                         .isBlackNightTheme(this),
@@ -192,5 +189,23 @@ class SettingsActivity :
             return true
         }
         return super.onSupportNavigateUp()
+    }
+}
+
+/**
+ * Expanded settings header height, shared by the Compose header and the preference list's top
+ * padding so the two can never drift apart. One UI / one-handed keep a tall reach-friendly header;
+ * plain "expanded headers" use the M3 large top app bar range instead of a third of the screen.
+ */
+internal fun expandedHeaderHeightDp(screenHeightDp: Int): Float {
+    val reachMode =
+        af.shizuku.manager.ShizukuSettings
+            .isOneUiThemeEnabled() ||
+            af.shizuku.manager.ShizukuSettings
+                .isOneHandedModeEnabled()
+    return if (reachMode) {
+        (screenHeightDp * 0.30f).coerceIn(200f, 290f)
+    } else {
+        (screenHeightDp * 0.22f).coerceIn(152f, 200f)
     }
 }

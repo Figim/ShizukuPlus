@@ -1270,6 +1270,9 @@
     <string name="settings_personalization_category_motion_display">Motion &amp; display</string>
     <string name="settings_personalization_category_home_screen">Home screen</string>
     <string name="settings_personalization_category_language">Language</string>
+    <string name="settings_personalization_category_app_identity">App icon &amp; name</string>
+    <string name="settings_personalization_category_motion_haptics">Motion &amp; haptics</string>
+    <string name="settings_personalization_category_layout_nav">Layout &amp; navigation</string>
     <string name="settings_plus_category_connectivity">Networking &amp; connectivity</string>
     <string name="settings_plus_category_system_performance">System &amp; performance</string>
     <string name="settings_plus_category_security_access">Security &amp; access</string>
@@ -1885,6 +1888,8 @@
     <string name="nav_home">Home</string>
     <string name="nav_apps">Apps</string>
     <string name="nav_hub">Hub</string>
+    <string name="settings_category_active_count">%1$d / %2$d on</string>
+    <string name="settings_category_active_single">%1$d on</string>
     <string name="system_hub_title">System Hub</string>
     <string name="system_hub_tab_metrics">Metrics</string>
     <string name="nav_settings">Settings</string>
