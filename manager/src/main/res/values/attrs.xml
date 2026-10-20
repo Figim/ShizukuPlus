@@ -21,6 +21,11 @@
         <attr name="android:entryValues" />
     </declare-styleable>
 
+    <declare-styleable name="SliderPreference">
+        <attr name="android:entries" />
+        <attr name="android:entryValues" />
+    </declare-styleable>
+
     <declare-styleable name="FilterChipPreference">
         <attr name="android:entries" />
         <attr name="android:entryValues" />

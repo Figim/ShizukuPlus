@@ -43,7 +43,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private lateinit var iconStylePreference: SegmentedControlPreference
     private lateinit var iconColorModePreference: SegmentedControlPreference
     private lateinit var shapeStylePreference: ListPreference
-    private lateinit var animationIntensityPreference: SegmentedControlPreference
+    private lateinit var animationIntensityPreference: SliderPreference
     private lateinit var edgeToEdgePreference: TwoStatePreference
     private lateinit var blurUiPreference: TwoStatePreference
     private lateinit var oneUiThemePreference: TwoStatePreference
@@ -170,8 +170,13 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // Only meaningful for the Two-Tone icon style — updated dynamically below so the
         // color-mode row appears/disappears without requiring a fragment recreate.
         setChildAvailable(iconColorModePreference, iconStylePreference.value == "twotone")
+        setChildAvailable(shapeStylePreference, expressiveShapesPreference.isChecked)
+        setChildAvailable(animationIntensityPreference, expressiveAnimationsPreference.isChecked)
 
-        expressiveShapesPreference.setOnPreferenceChangeListener { _, _ ->
+        expressiveShapesPreference.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                setChildAvailable(shapeStylePreference, newValue)
+            }
             applyTheme(requiresRecreate = false)
             refreshIconStyles()
             true
@@ -197,17 +202,37 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<Preference>("home_card_corner_style")?.setOnPreferenceChangeListener { _, _ ->
+        val roundedEdgesPreference = findPreference<TwoStatePreference>("rounded_edges_enabled")
+        val cornerRoundingPreference = findPreference<Preference>("corner_rounding_override")
+        val homeCardCornerPreference = findPreference<Preference>("home_card_corner_style")
+        val settingsCardCornerPreference = findPreference<Preference>("settings_card_corner_style")
+
+        fun syncCornerRoundingAvailability(enabled: Boolean) {
+            cornerRoundingPreference?.let { setChildAvailable(it, enabled) }
+            homeCardCornerPreference?.let { setChildAvailable(it, enabled) }
+            settingsCardCornerPreference?.let { setChildAvailable(it, enabled) }
+        }
+        syncCornerRoundingAvailability(roundedEdgesPreference?.isChecked ?: true)
+
+        roundedEdgesPreference?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                syncCornerRoundingAvailability(newValue)
+            }
             applyTheme(requiresRecreate = false)
             true
         }
 
-        findPreference<Preference>("settings_card_corner_style")?.setOnPreferenceChangeListener { _, _ ->
+        homeCardCornerPreference?.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
         }
 
-        findPreference<Preference>("corner_rounding_override")?.setOnPreferenceChangeListener { _, _ ->
+        settingsCardCornerPreference?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
+
+        cornerRoundingPreference?.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
         }
@@ -217,7 +242,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        expressiveAnimationsPreference.setOnPreferenceChangeListener { _, _ ->
+        expressiveAnimationsPreference.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                setChildAvailable(animationIntensityPreference, newValue)
+            }
             applyTheme(requiresRecreate = false)
             true
         }
@@ -226,6 +254,20 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             applyTheme(requiresRecreate = false)
             true
         }
+
+        val hapticPreference = findPreference<TwoStatePreference>("haptic_feedback")
+        val followSystemHapticsPreference = findPreference<Preference>("follow_system_haptics")
+        followSystemHapticsPreference?.let { setChildAvailable(it, hapticPreference?.isChecked ?: true) }
+        hapticPreference?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                followSystemHapticsPreference?.let { setChildAvailable(it, newValue) }
+            }
+            true
+        }
+
+        val showStatusOutlinePreference = findPreference<TwoStatePreference>("show_status_card_outline")
+        val statusOutlineStylePreference = findPreference<Preference>("status_card_outline_style")
+        statusOutlineStylePreference?.let { setChildAvailable(it, showStatusOutlinePreference?.isChecked ?: true) }
 
         findPreference<ListPreference>("app_icon_alias")?.apply {
             value = ShizukuSettings.getAppIconAlias()
@@ -247,6 +289,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         for (prefKey in switchKeys) {
             findPreference<TwoStatePreference>(prefKey)?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
+                    if (prefKey == "show_status_card_outline") {
+                        statusOutlineStylePreference?.let { setChildAvailable(it, newValue) }
+                    }
                     preferenceManager.sharedPreferences
                         ?.edit()
                         ?.putBoolean(prefKey, newValue)

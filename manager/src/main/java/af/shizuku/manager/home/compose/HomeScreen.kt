@@ -53,6 +53,7 @@ fun HomeScreen(
     isOneHanded: Boolean,
     showEmptyState: Boolean,
     isOneUi: Boolean = ShizukuSettings.isOneUiThemeEnabled(),
+    isServerRunning: Boolean = false,
     onStopClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
@@ -234,28 +235,29 @@ fun HomeScreen(
                                     )
                                 }
                             } else {
-                                IconButton(onClick = onRestoreHomeCards) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_restore_24),
-                                        contentDescription = stringResource(id = R.string.home_restore_default),
-                                    )
-                                }
-                                IconButton(onClick = onStopClick) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_close_24),
-                                        contentDescription = stringResource(id = R.string.action_stop),
-                                    )
+                                // Top corner icons adapt contextually:
+                                // Stop is only shown when the service is actively running.
+                                // Help / Learn More is shown when stopped.
+                                // Settings is always available.
+                                if (isServerRunning) {
+                                    IconButton(onClick = onStopClick) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_close_24),
+                                            contentDescription = stringResource(id = R.string.action_stop),
+                                        )
+                                    }
+                                } else {
+                                    IconButton(onClick = onHelpClick) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_help_outline_24),
+                                            contentDescription = stringResource(id = R.string.settings_plus_learn_more),
+                                        )
+                                    }
                                 }
                                 IconButton(onClick = onSettingsClick) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_settings_outline_24),
                                         contentDescription = stringResource(id = R.string.settings_title),
-                                    )
-                                }
-                                IconButton(onClick = onHelpClick) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_help_outline_24),
-                                        contentDescription = stringResource(id = R.string.settings_plus_learn_more),
                                     )
                                 }
                             }
@@ -267,7 +269,7 @@ fun HomeScreen(
                     val horizontalBias = -curvedFraction
                     val startPadding = lerp(start = 24.dp, stop = 20.dp, fraction = curvedFraction)
                     val endPaddingStop by animateDpAsState(
-                        targetValue = if (isEditMode) 120.dp else 196.dp,
+                        targetValue = if (isEditMode) 120.dp else 96.dp,
                         animationSpec = tween(motionDur, easing = motionEasing),
                         label = "titleEndPaddingStop",
                     )

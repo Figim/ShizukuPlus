@@ -105,6 +105,7 @@ open class HomeActivity :
     private var isOneUi by mutableStateOf(ShizukuSettings.isOneUiThemeEnabled())
     private var isRoundedEdges by mutableStateOf(ShizukuSettings.isRoundedEdgesEnabled())
     private var isAmoledPlus by mutableStateOf(ShizukuSettings.isAmoledPlusEnabled())
+    private var isServerRunning by mutableStateOf(ShizukuStateMachine.isRunning())
 
     // Strong reference required — SharedPreferences holds listeners weakly, so an inline lambda
     // would be eligible for GC immediately after registerOnSharedPreferenceChangeListener returns.
@@ -143,6 +144,7 @@ open class HomeActivity :
         }
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        isServerRunning = ShizukuStateMachine.isRunning()
         when (state) {
             ShizukuStateMachine.State.RUNNING -> {
                 // Shizuku started - refresh everything
@@ -249,6 +251,7 @@ open class HomeActivity :
                     isOneHanded = isOneHanded,
                     showEmptyState = showEmptyState,
                     isOneUi = isOneUi,
+                    isServerRunning = isServerRunning,
                     onStopClick = {
                         if (ShizukuStateMachine.isRunning()) {
                             MaterialAlertDialogBuilder(this)
@@ -801,10 +804,11 @@ open class HomeActivity :
 
     override fun onResume() {
         super.onResume()
-        // Sync one-handed mode and OneUI theme compose state in case it changed while in settings.
+        // Sync one-handed mode, server running state, and OneUI theme compose state in case it changed while in settings.
         isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
         isOneUi = ShizukuSettings.isOneUiThemeEnabled()
         isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+        isServerRunning = ShizukuStateMachine.isRunning()
         // Synchronously rebind all visible cards so appearance-setting changes (icon style, shape
         // style, etc.) are visible immediately when returning from SettingsActivity. The async
         // checkServerStatus() / homeModel.reload() path updates service-status content but involves

@@ -87,18 +87,18 @@
     </string-array>
 
     <string-array name="corner_rounding_entries">
-        <item>Enhanced — 32dp (Default)</item>
         <item>Gentle — 20dp</item>
-        <item>Standard M3 — 28dp</item>
+        <item>Standard — 28dp</item>
+        <item>Enhanced — 32dp (Default)</item>
         <item>Large — 36dp</item>
         <item>Maximum — 44dp</item>
         <item>System Default</item>
     </string-array>
 
     <string-array name="corner_rounding_values">
-        <item>default</item>
         <item>gentle</item>
         <item>standard</item>
+        <item>default</item>
         <item>large</item>
         <item>maximum</item>
         <item>system</item>
