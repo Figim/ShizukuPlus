@@ -688,7 +688,7 @@ fun ActivityLogScreen(
                             IconButton(onClick = { searchQuery = "" }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_close_24),
-                                    contentDescription = "Clear",
+                                    contentDescription = stringResource(R.string.cd_settings_search_clear),
                                     modifier = Modifier.size(18.dp),
                                 )
                             }
@@ -970,7 +970,7 @@ fun ActivityLogScreen(
                     navigationIcon = {
                         if (onBackClick != null) {
                             IconButton(onClick = onBackClick) {
-                                Icon(painterResource(R.drawable.ic_back_24), contentDescription = "Back")
+                                Icon(painterResource(R.drawable.ic_back_24), contentDescription = stringResource(R.string.cd_navigate_back))
                             }
                         }
                     },
@@ -1354,7 +1354,7 @@ private fun ActivityLogTimelineRow(
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_copy),
-                                    contentDescription = "Copy",
+                                    contentDescription = stringResource(R.string.home_adb_dialog_view_command_copy_button),
                                     modifier = Modifier.size(16.dp),
                                     tint = MaterialTheme.colorScheme.primary,
                                 )
@@ -1413,23 +1413,15 @@ private fun ActivityLogTimelineRow(
     }
 }
 
-private fun formatRelativeTime(timestamp: Long): String {
-    val now = System.currentTimeMillis()
-    val diff = (now - timestamp).coerceAtLeast(0L)
-    val seconds = diff / 1000
-    val minutes = seconds / 60
-    val hours = minutes / 60
-    val days = hours / 24
-
-    return when {
-        minutes < 1 -> "Just now"
-        minutes < 60 -> "${minutes}m ago"
-        hours < 24 -> "${hours}h ago"
-        days == 1L -> "Yesterday"
-        days < 7 -> "${days}d ago"
-        else -> SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(timestamp))
-    }
-}
+private fun formatRelativeTime(timestamp: Long): String =
+    // Platform-localized ("5 min. ago", "Yesterday", …) instead of hardcoded English.
+    android.text.format.DateUtils
+        .getRelativeTimeSpanString(
+            timestamp,
+            System.currentTimeMillis(),
+            android.text.format.DateUtils.MINUTE_IN_MILLIS,
+            android.text.format.DateUtils.FORMAT_ABBREV_RELATIVE,
+        ).toString()
 
 private fun getDateSectionTitle(
     context: Context,

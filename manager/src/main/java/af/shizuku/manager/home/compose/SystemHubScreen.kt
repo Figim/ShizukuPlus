@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -32,10 +33,10 @@ fun SystemHubScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("System Hub") },
+                title = { Text(stringResource(R.string.system_hub_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = "Back")
+                        Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = stringResource(R.string.cd_navigate_back))
                     }
                 },
             )
@@ -59,12 +60,12 @@ fun SystemHubScreen(
                 Tab(
                     selected = pagerState.currentPage == 0,
                     onClick = { coroutineScope.launch { pagerState.animateScrollToPage(0) } },
-                    text = { Text("Metrics") },
+                    text = { Text(stringResource(R.string.system_hub_tab_metrics)) },
                 )
                 Tab(
                     selected = pagerState.currentPage == 1,
                     onClick = { coroutineScope.launch { pagerState.animateScrollToPage(1) } },
-                    text = { Text("Activity Log") },
+                    text = { Text(stringResource(R.string.settings_category_activity_log)) },
                 )
             }
 

@@ -447,6 +447,9 @@
     <string name="settings_high_contrast_summary">Sharpen card borders and container separation for enhanced visual definition</string>
     <string name="custom_icon_studio_save_png">Save PNG to Storage</string>
     <string name="custom_icon_studio_saved_success">Icon saved to Downloads/ShizukuPlus/Icons</string>
+    <string name="custom_icon_studio_save_png_short">Save PNG</string>
+    <string name="custom_icon_studio_saved_to">Icon saved to %1$s</string>
+    <string name="custom_icon_studio_saved_error">Couldn\'t save the icon</string>
     <string name="custom_icon_studio_border">Border Stroke</string>
     <string name="custom_icon_studio_border_width">Border Width</string>
     <string name="custom_icon_studio_border_color">Border Color</string>
@@ -1851,6 +1854,8 @@
     <string name="nav_home">Home</string>
     <string name="nav_apps">Apps</string>
     <string name="nav_hub">Hub</string>
+    <string name="system_hub_title">System Hub</string>
+    <string name="system_hub_tab_metrics">Metrics</string>
     <string name="nav_settings">Settings</string>
     <string name="settings_floating_nav">Floating navigation bar</string>
     <string name="settings_floating_nav_summary">Jump between Home, Apps, Hub and Settings from a bar that floats above the content</string>

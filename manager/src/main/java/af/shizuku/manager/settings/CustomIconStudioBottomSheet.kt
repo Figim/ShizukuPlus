@@ -19,6 +19,7 @@ import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
@@ -144,18 +145,54 @@ class CustomIconStudioBottomSheet : BottomSheetDialogFragment() {
         appName: String,
     ) {
         val context = requireContext()
-        val safeName = appName.replace(Regex("[^a-zA-Z0-9_-]"), "_").lowercase()
+        val safeName =
+            appName
+                .trim()
+                .replace("+", "_plus")
+                .replace(Regex("[^a-zA-Z0-9_-]"), "_")
+                .lowercase()
+                .ifBlank { "shizukuplus" }
+        val fileName = "${safeName}_icon.png"
         try {
-            val downloadDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "ShizukuPlus/Icons")
-            if (!downloadDir.exists()) downloadDir.mkdirs()
-            val file = File(downloadDir, "${safeName}_icon.png")
-            FileOutputStream(file).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Scoped storage: MediaStore is the supported way to write into Downloads.
+                val resolver = context.contentResolver
+                val values =
+                    android.content.ContentValues().apply {
+                        put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                        put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "image/png")
+                        put(
+                            android.provider.MediaStore.MediaColumns.RELATIVE_PATH,
+                            Environment.DIRECTORY_DOWNLOADS + "/ShizukuPlus/Icons",
+                        )
+                    }
+                val uri =
+                    resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                        ?: throw java.io.IOException("MediaStore insert returned null")
+                try {
+                    val written =
+                        resolver.openOutputStream(uri)?.use { out ->
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        } ?: false
+                    if (!written) throw java.io.IOException("PNG compress failed")
+                } catch (e: Exception) {
+                    resolver.delete(uri, null, null)
+                    throw e
+                }
+                Toast.makeText(context, R.string.custom_icon_studio_saved_success, Toast.LENGTH_LONG).show()
+            } else {
+                // No storage permission on older releases: keep it in the app's own external
+                // folder (visible over USB / in file managers under Android/data).
+                val dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: throw java.io.IOException("no external files dir")
+                val file = File(dir, fileName)
+                FileOutputStream(file).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                Toast.makeText(context, getString(R.string.custom_icon_studio_saved_to, file.absolutePath), Toast.LENGTH_LONG).show()
             }
-            Toast.makeText(context, "${getString(R.string.custom_icon_studio_saved_success)}: ${file.name}", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            timber.log.Timber.w(e, "Failed to save PNG to downloads")
-            Toast.makeText(context, "Saved to app internal storage", Toast.LENGTH_SHORT).show()
+            timber.log.Timber.w(e, "Failed to save icon PNG")
+            Toast.makeText(context, R.string.custom_icon_studio_saved_error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -615,7 +652,7 @@ private fun StudioContent(
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Save PNG", fontSize = 12.sp)
+                Text(stringResource(R.string.custom_icon_studio_save_png_short), fontSize = 12.sp)
             }
             Button(
                 onClick = {
