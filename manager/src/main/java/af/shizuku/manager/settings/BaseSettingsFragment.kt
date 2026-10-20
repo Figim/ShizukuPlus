@@ -69,7 +69,28 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             captureOriginalIcons(it)
             IconStyleHelper.applyToTree(requireContext(), it)
             fixDeprecatedListPreferenceSummaries(it)
+            addSectionJumpBar(it)
         }
+    }
+
+    /** Long screens (4+ collapsible sections) get a chip row that jumps to and expands a section. */
+    private fun addSectionJumpBar(screen: androidx.preference.PreferenceScreen) {
+        if (screen.findPreference<androidx.preference.Preference>(SectionJumpPreference.KEY) != null) return
+        val sections =
+            (0 until screen.preferenceCount)
+                .map { screen.getPreference(it) }
+                .filterIsInstance<CollapsiblePreferenceCategory>()
+                .filter { it.isCollapsible && it.isVisible && it.key != null && !it.title.isNullOrBlank() }
+                .map { it.key to it.title!! }
+        if (sections.size < SectionJumpPreference.MIN_SECTIONS) return
+        screen.addPreference(
+            SectionJumpPreference(requireContext(), sections) { key ->
+                val category = findPreference<CollapsiblePreferenceCategory>(key) ?: return@SectionJumpPreference
+                category.expand()
+                // Let the expanded children bind before scrolling so the header lands at the top.
+                listView?.post { scrollToPreference(category) }
+            },
+        )
     }
 
     private fun getPrefIconCacheKey(

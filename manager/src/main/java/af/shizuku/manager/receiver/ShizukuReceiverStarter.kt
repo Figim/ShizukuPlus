@@ -74,7 +74,8 @@ object ShizukuReceiverStarter {
         context: Context,
         forceStart: Boolean = false,
     ) {
-        if (!forceStart && (
+        if (!forceStart &&
+            (
                 UserHandleCompat.myUserId() > 0 ||
                     ShizukuStateMachine.isRunning() ||
                     ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING

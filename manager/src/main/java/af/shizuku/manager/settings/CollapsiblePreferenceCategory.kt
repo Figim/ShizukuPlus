@@ -24,6 +24,7 @@ class CollapsiblePreferenceCategory
 
         private var defaultExpanded = false
         private var collapsible = true
+        val isCollapsible: Boolean get() = collapsible
 
         // Keys of children that are conditionally unavailable (e.g. hidden by an OWNER fragment
         // based on OS version or another setting). Such children must stay hidden even when the
