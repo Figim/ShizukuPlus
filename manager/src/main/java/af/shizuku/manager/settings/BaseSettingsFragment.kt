@@ -301,9 +301,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
             val navBarClearancePx =
                 if (ShizukuSettings.isFloatingNavBarEnabled()) {
-                    (72 * context.resources.displayMetrics.density).toInt()
+                    (96 * context.resources.displayMetrics.density).toInt()
                 } else {
-                    (16 * context.resources.displayMetrics.density).toInt()
+                    (20 * context.resources.displayMetrics.density).toInt()
                 }
             val currentHeaderTop = (activity as? SettingsActivity)?.getExpandedHeaderHeightPx() ?: 0
             recyclerView.setPadding(

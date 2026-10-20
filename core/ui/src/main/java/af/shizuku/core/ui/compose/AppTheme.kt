@@ -241,6 +241,7 @@ fun AppTheme(
     isAmoledPlus: Boolean = false,
     isOneUi: Boolean = false,
     isBoldTypography: Boolean = false,
+    isHighContrast: Boolean = false,
     isRoundedEdges: Boolean = true,
     themeVersion: Int = 0,
     content: @Composable () -> Unit
@@ -268,6 +269,15 @@ fun AppTheme(
             outlineVariant = if (isAmoledPlus) Color(0xFF1C1C1C) else Color(0xFF262626),
             outline = if (isAmoledPlus) Color(0xFF333333) else Color(0xFF4A4A4A),
             scrim = Color.Black,
+        )
+    }
+
+    if (isHighContrast) {
+        val highContrastOutline = if (darkTheme) Color(0xFF9E9E9E) else Color(0xFF424242)
+        val highContrastVariant = if (darkTheme) Color(0xFF616161) else Color(0xFF757575)
+        colorScheme = colorScheme.copy(
+            outline = highContrastOutline,
+            outlineVariant = highContrastVariant,
         )
     }
 

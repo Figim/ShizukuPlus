@@ -36,6 +36,12 @@
         <item name="colorOutlineVariant">#1C1C1C</item>
     </style>
 
+    <!-- High Contrast overlay — enhances outline visibility and border clarity -->
+    <style name="ThemeOverlay.HighContrast" parent="">
+        <item name="colorOutline">#8E8E93</item>
+        <item name="colorOutlineVariant">#545458</item>
+    </style>
+
     <style name="ThemeOverlay.DynamicColors.Light" parent="ThemeOverlay.Material3.DynamicColors.Light.Shizuku"/>
 
     <style name="ThemeOverlay.DynamicColors.Dark" parent="ThemeOverlay.Material3.DynamicColors.Dark.Shizuku"/>

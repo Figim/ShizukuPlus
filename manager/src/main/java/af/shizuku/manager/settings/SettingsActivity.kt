@@ -92,6 +92,9 @@ class SettingsActivity :
                 isBoldTypography =
                     af.shizuku.manager.ShizukuSettings
                         .isBoldTypographyEnabled(),
+                isHighContrast =
+                    af.shizuku.manager.ShizukuSettings
+                        .isHighContrastEnabled(),
                 isRoundedEdges =
                     af.shizuku.manager.ShizukuSettings
                         .isRoundedEdgesEnabled(),

@@ -401,12 +401,15 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         padComposeRoot: Boolean,
     ) {
         if (bar.height == 0) return
-        val needed = bar.height + (bar.layoutParams as FrameLayout.LayoutParams).bottomMargin
+        val needed =
+            bar.height +
+                (bar.layoutParams as FrameLayout.LayoutParams).bottomMargin +
+                (24 * bar.resources.displayMetrics.density).toInt()
 
         fun visit(view: View) {
             if (view === bar) return
             val scrollable = view is RecyclerView || view is NestedScrollView || view is ScrollView || view is AbsListView
-            val composeRoot = padComposeRoot && view is androidx.compose.ui.platform.AbstractComposeView
+            val composeRoot = view is androidx.compose.ui.platform.AbstractComposeView
             if ((scrollable || composeRoot) && view.paddingBottom < needed) {
                 view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, needed)
                 if (view is ViewGroup) view.clipToPadding = false

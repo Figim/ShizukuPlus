@@ -443,6 +443,17 @@
     <string name="settings_floating_nav_label_mode_summary">Configure when text labels appear beneath navigation bar icons</string>
     <string name="settings_floating_nav_autohide">Auto-hide on scroll</string>
     <string name="settings_floating_nav_autohide_summary">Fluidly retract the floating bar when scrolling down and restore on scroll up</string>
+    <string name="settings_high_contrast_title">High contrast mode</string>
+    <string name="settings_high_contrast_summary">Sharpen card borders and container separation for enhanced visual definition</string>
+    <string name="custom_icon_studio_save_png">Save PNG to Storage</string>
+    <string name="custom_icon_studio_saved_success">Icon saved to Downloads/ShizukuPlus/Icons</string>
+    <string name="custom_icon_studio_border">Border Stroke</string>
+    <string name="custom_icon_studio_border_width">Border Width</string>
+    <string name="custom_icon_studio_border_color">Border Color</string>
+    <string name="custom_icon_studio_nudge_x">Horizontal Position</string>
+    <string name="custom_icon_studio_nudge_y">Vertical Position</string>
+    <string name="custom_icon_studio_gradient">Gradient Background</string>
+    <string name="custom_icon_studio_preview_mockup">Wallpaper Mockup</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

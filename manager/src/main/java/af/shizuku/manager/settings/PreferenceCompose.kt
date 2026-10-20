@@ -34,6 +34,7 @@ internal fun PreferenceComposeTheme(content: @Composable () -> Unit) {
         isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),
         isOneUi = ShizukuSettings.isOneUiThemeEnabled(),
         isBoldTypography = ShizukuSettings.isBoldTypographyEnabled(),
+        isHighContrast = ShizukuSettings.isHighContrastEnabled(),
         isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled(),
         content = content,
     )

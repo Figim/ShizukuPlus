@@ -248,7 +248,14 @@ open class ApplicationManagementActivity :
                         androidx.core.view.WindowInsetsCompat.Type
                             .displayCutout(),
                 )
-            val extraBottomPadding = (72 * resources.displayMetrics.density).toInt()
+            val extraBottomPadding =
+                if (af.shizuku.manager.ShizukuSettings
+                        .isFloatingNavBarEnabled()
+                ) {
+                    (96 * resources.displayMetrics.density).toInt()
+                } else {
+                    (24 * resources.displayMetrics.density).toInt()
+                }
             v.setPadding(bars.left, 0, bars.right, bars.bottom + extraBottomPadding)
             insets
         }

@@ -179,6 +179,7 @@ public class ShizukuSettings {
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
+        public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
 
         // Migration (Shizuku+ additions)
         public static final String KEY_MIGRATION_OFFERED = "migration_offered";
@@ -1898,5 +1899,15 @@ public class ShizukuSettings {
     public static void setFloatingNavAutohideEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_FLOATING_NAV_AUTOHIDE, enabled).apply();
+    }
+
+    public static boolean isHighContrastEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_HIGH_CONTRAST, false);
+    }
+
+    public static void setHighContrastEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_HIGH_CONTRAST, enabled).apply();
     }
 }

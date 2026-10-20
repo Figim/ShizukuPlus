@@ -17,7 +17,8 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.getIconStyle() + ShizukuSettings.getIconColorMode() +
             ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled() +
             ShizukuSettings.isBoldTypographyEnabled() + ShizukuSettings.isExpandedHeadersEnabled() +
-            ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled()
+            ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled() +
+            ShizukuSettings.isHighContrastEnabled()
     }
 
     override fun isUsingSystemColor(): Boolean = ThemeHelper.isUsingSystemColor()
@@ -100,6 +101,10 @@ class ThemeDelegateImpl : ThemeDelegate {
             }
         if (cornerOverlayRes != 0) {
             theme.applyStyle(cornerOverlayRes, true)
+        }
+
+        if (ShizukuSettings.isHighContrastEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_HighContrast, true)
         }
 
         theme.applyStyle(ThemeHelper.getThemeStyleRes(context), true)

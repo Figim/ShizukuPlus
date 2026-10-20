@@ -30,6 +30,13 @@
             android:icon="@drawable/ic_bedtime_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="high_contrast_mode"
+            android:title="@string/settings_high_contrast_title"
+            android:summary="@string/settings_high_contrast_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_visibility_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="use_system_color"
             android:title="@string/settings_use_system_color"
             android:icon="@drawable/ic_palette_24" />

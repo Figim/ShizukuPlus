@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
@@ -16,8 +17,10 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
+import android.graphics.Shader
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +40,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
@@ -47,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -80,6 +87,9 @@ class CustomIconStudioBottomSheet : BottomSheetDialogFragment() {
                         onPinShortcut = { bitmap, appName ->
                             pinShortcut(bitmap, appName)
                             dismiss()
+                        },
+                        onSavePng = { bitmap, appName ->
+                            savePngToStorage(bitmap, appName)
                         },
                         onCancel = { dismiss() },
                     )
@@ -129,6 +139,26 @@ class CustomIconStudioBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private fun savePngToStorage(
+        bitmap: Bitmap,
+        appName: String,
+    ) {
+        val context = requireContext()
+        val safeName = appName.replace(Regex("[^a-zA-Z0-9_-]"), "_").lowercase()
+        try {
+            val downloadDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "ShizukuPlus/Icons")
+            if (!downloadDir.exists()) downloadDir.mkdirs()
+            val file = File(downloadDir, "${safeName}_icon.png")
+            FileOutputStream(file).use { out ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+            Toast.makeText(context, "${getString(R.string.custom_icon_studio_saved_success)}: ${file.name}", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            timber.log.Timber.w(e, "Failed to save PNG to downloads")
+            Toast.makeText(context, "Saved to app internal storage", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     companion object {
         private const val ARG_URI = "arg_image_uri"
 
@@ -148,6 +178,7 @@ class CustomIconStudioBottomSheet : BottomSheetDialogFragment() {
 private fun StudioContent(
     initialUri: Uri?,
     onPinShortcut: (Bitmap, String) -> Unit,
+    onSavePng: (Bitmap, String) -> Unit,
     onCancel: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -159,6 +190,7 @@ private fun StudioContent(
     var selectedPreset by remember { mutableStateOf<String?>("modern") }
     var customImageUri by remember { mutableStateOf(initialUri) }
     var sourceBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var isMockupPreview by remember { mutableStateOf(false) }
 
     val galleryLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -186,6 +218,8 @@ private fun StudioContent(
                     "shield" -> R.drawable.ic_shield_24
                     "bolt" -> R.drawable.ic_bolt_24
                     "sparkle" -> R.drawable.ic_sparkle_24
+                    "settings" -> R.drawable.ic_settings_suggest_24
+                    "science" -> R.drawable.ic_science_24
                     else -> R.drawable.ic_launcher_foreground
                 }
             sourceBitmap = drawableToBitmap(context, resId)
@@ -195,7 +229,11 @@ private fun StudioContent(
     var selectedShape by remember { mutableStateOf("squircle") }
     var selectedBg by remember { mutableStateOf("accent") }
     var paddingPercent by remember { mutableFloatStateOf(10f) }
+    var nudgeX by remember { mutableFloatStateOf(0f) }
+    var nudgeY by remember { mutableFloatStateOf(0f) }
     var rotationDegrees by remember { mutableFloatStateOf(0f) }
+    var borderWidthDp by remember { mutableFloatStateOf(0f) }
+    var selectedBorderColor by remember { mutableStateOf("none") }
     var monochromeTint by remember { mutableStateOf(false) }
 
     val primaryColor = MaterialTheme.colorScheme.primary.toArgb()
@@ -207,7 +245,11 @@ private fun StudioContent(
             selectedShape,
             selectedBg,
             paddingPercent,
+            nudgeX,
+            nudgeY,
             rotationDegrees,
+            borderWidthDp,
+            selectedBorderColor,
             monochromeTint,
             primaryColor,
         ) {
@@ -217,7 +259,11 @@ private fun StudioContent(
                 shape = selectedShape,
                 bgType = selectedBg,
                 paddingPercent = paddingPercent,
+                nudgeX = nudgeX,
+                nudgeY = nudgeY,
                 rotationDegrees = rotationDegrees,
+                borderWidthDp = borderWidthDp,
+                borderColorKey = selectedBorderColor,
                 monochromeTint = monochromeTint,
                 primaryColor = primaryColor,
                 surfaceColor = surfaceColor,
@@ -243,34 +289,89 @@ private fun StudioContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = stringResource(R.string.settings_custom_icon_studio_title),
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-        )
-
-        Spacer(modifier = Modifier.height(18.dp))
-
-        // Live Icon Preview Card with glow outline
-        Box(
-            modifier =
-                Modifier
-                    .size(136.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh, RoundedCornerShape(32.dp))
-                    .border(1.2.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(32.dp)),
-            contentAlignment = Alignment.Center,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (renderedBitmap != null) {
-                Image(
-                    bitmap = renderedBitmap.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.size(104.dp),
+            Text(
+                text = stringResource(R.string.settings_custom_icon_studio_title),
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            )
+            FilledTonalIconToggleButton(
+                checked = isMockupPreview,
+                onCheckedChange = { isMockupPreview = it },
+                modifier = Modifier.size(36.dp),
+            ) {
+                Icon(
+                    painter = painterResource(if (isMockupPreview) R.drawable.ic_smartphone_24 else R.drawable.ic_window_24),
+                    contentDescription = stringResource(R.string.custom_icon_studio_preview_mockup),
+                    modifier = Modifier.size(18.dp),
                 )
-            } else {
-                CircularProgressIndicator(modifier = Modifier.size(32.dp))
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Live Icon Preview Canvas
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .clip(RoundedCornerShape(32.dp))
+                    .then(
+                        if (isMockupPreview) {
+                            Modifier.background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color(0xFF1A237E),
+                                        Color(0xFF004D40),
+                                        Color(0xFF0D1B2A),
+                                    ),
+                                ),
+                            )
+                        } else {
+                            Modifier
+                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .border(1.2.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(32.dp))
+                        },
+                    ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                if (renderedBitmap != null) {
+                    Image(
+                        bitmap = renderedBitmap.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier.size(92.dp),
+                    )
+                    if (isMockupPreview) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = customAppName.ifBlank { "Shizuku+" },
+                            style =
+                                MaterialTheme.typography.labelSmall.copy(
+                                    color = Color.White,
+                                    fontWeight = FontWeight.SemiBold,
+                                    shadow =
+                                        androidx.compose.ui.graphics
+                                            .Shadow(Color.Black, blurRadius = 6f),
+                                ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.size(32.dp))
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(18.dp))
 
         // App Name Customization Field
         OutlinedTextField(
@@ -286,12 +387,12 @@ private fun StudioContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Quick App Name Suggestions
+        // Quick Suggestions
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            val suggestions = listOf("Shizuku+", "Shizuku", "S+", "Root Bridge")
+            val suggestions = listOf("Shizuku+", "Shizuku", "S+", "Terminal", "Bridge")
             for (suggestion in suggestions) {
                 SuggestionChip(
                     onClick = { customAppName = suggestion },
@@ -302,7 +403,7 @@ private fun StudioContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Preset / Gallery Pickers
+        // Presets & Image Picker
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -323,7 +424,7 @@ private fun StudioContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -331,11 +432,13 @@ private fun StudioContent(
         ) {
             val presets =
                 listOf(
-                    "modern" to "Modern",
+                    "modern" to "Plus",
                     "classic" to "Cat",
-                    "terminal" to "Terminal",
+                    "terminal" to "CLI",
                     "adb" to "Adb",
                     "shield" to "Shield",
+                    "bolt" to "Bolt",
+                    "sparkle" to "AI",
                 )
             for ((key, label) in presets) {
                 FilterChip(
@@ -366,8 +469,8 @@ private fun StudioContent(
                 listOf(
                     "squircle" to stringResource(R.string.custom_icon_studio_shape_squircle),
                     "circle" to stringResource(R.string.custom_icon_studio_shape_circle),
-                    "rounded" to stringResource(R.string.custom_icon_studio_shape_rounded),
                     "oneui" to stringResource(R.string.custom_icon_studio_shape_oneui),
+                    "rounded" to stringResource(R.string.custom_icon_studio_shape_rounded),
                     "hexagon" to stringResource(R.string.custom_icon_studio_shape_hexagon),
                 )
             for ((key, label) in shapes) {
@@ -381,7 +484,7 @@ private fun StudioContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Background Color Selection
+        // Background Style
         Text(
             text = stringResource(R.string.custom_icon_studio_bg),
             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
@@ -394,12 +497,12 @@ private fun StudioContent(
         ) {
             val backgrounds =
                 listOf(
-                    "transparent" to "Clear",
                     "accent" to "Accent",
                     "black" to "AMOLED",
                     "white" to "White",
-                    "cyan" to "Cyan",
-                    "neon" to "Neon",
+                    "cyber" to "Cyber",
+                    "sunset" to "Sunset",
+                    "transparent" to "Clear",
                 )
             for ((key, label) in backgrounds) {
                 FilterChip(
@@ -412,7 +515,45 @@ private fun StudioContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Padding & Scale Slider
+        // Border & Accent Stroke
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.custom_icon_studio_border),
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                val borders = listOf("none" to "Off", "gold" to "Gold", "cyan" to "Cyan", "neon" to "Neon", "white" to "White")
+                for ((bKey, bLabel) in borders) {
+                    FilterChip(
+                        selected = selectedBorderColor == bKey,
+                        onClick = {
+                            selectedBorderColor = bKey
+                            if (bKey != "none" && borderWidthDp == 0f) borderWidthDp = 4f
+                            if (bKey == "none") borderWidthDp = 0f
+                        },
+                        label = { Text(bLabel, fontSize = 10.sp) },
+                    )
+                }
+            }
+        }
+
+        if (selectedBorderColor != "none") {
+            Spacer(modifier = Modifier.height(8.dp))
+            Slider(
+                value = borderWidthDp,
+                onValueChange = { borderWidthDp = it },
+                valueRange = 2f..12f,
+                steps = 4,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Fine Positioning (Padding & Scale, Nudge X/Y, Rotation)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -434,9 +575,8 @@ private fun StudioContent(
             steps = 5,
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Rotation Slider
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -460,31 +600,37 @@ private fun StudioContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Action Buttons
+        // Action Buttons: Save PNG & Pin to Home Screen
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             OutlinedButton(
-                onClick = onCancel,
+                onClick = { renderedBitmap?.let { onSavePng(it, customAppName) } },
                 modifier = Modifier.weight(1f),
             ) {
-                Text(stringResource(android.R.string.cancel))
+                Icon(
+                    painter = painterResource(R.drawable.ic_install_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Save PNG", fontSize = 12.sp)
             }
             Button(
                 onClick = {
                     renderedBitmap?.let { onPinShortcut(it, customAppName) }
                 },
                 enabled = renderedBitmap != null,
-                modifier = Modifier.weight(1.6f),
+                modifier = Modifier.weight(1.5f),
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_install_24),
+                    painter = painterResource(R.drawable.ic_sparkle_24),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(6.dp))
-                Text(stringResource(R.string.custom_icon_studio_pin_shortcut))
+                Text(stringResource(R.string.custom_icon_studio_pin_shortcut), fontSize = 12.sp)
             }
         }
     }
@@ -508,7 +654,11 @@ private fun createModifiedIcon(
     shape: String,
     bgType: String,
     paddingPercent: Float,
+    nudgeX: Float,
+    nudgeY: Float,
     rotationDegrees: Float,
+    borderWidthDp: Float,
+    borderColorKey: String,
     monochromeTint: Boolean,
     primaryColor: Int,
     surfaceColor: Int,
@@ -520,27 +670,64 @@ private fun createModifiedIcon(
 
     val rect = RectF(0f, 0f, size.toFloat(), size.toFloat())
 
-    // 1. Draw shape background
+    // 1. Draw shape background (solid or vibrant linear gradient)
     when (bgType) {
         "accent" -> {
+            paint.shader = null
             paint.color = primaryColor
             drawShapedPath(canvas, rect, shape, paint)
         }
         "black" -> {
+            paint.shader = null
             paint.color = AndroidColor.BLACK
             drawShapedPath(canvas, rect, shape, paint)
         }
         "white" -> {
+            paint.shader = null
             paint.color = AndroidColor.WHITE
             drawShapedPath(canvas, rect, shape, paint)
         }
-        "cyan" -> {
-            paint.color = 0xFF00E5FF.toInt()
+        "cyber" -> {
+            paint.shader =
+                LinearGradient(
+                    0f,
+                    0f,
+                    size.toFloat(),
+                    size.toFloat(),
+                    intArrayOf(0xFF00E5FF.toInt(), 0xFF3F51B5.toInt()),
+                    null,
+                    Shader.TileMode.CLAMP,
+                )
             drawShapedPath(canvas, rect, shape, paint)
+            paint.shader = null
         }
-        "neon" -> {
-            paint.color = 0xFFB388FF.toInt()
+        "sunset" -> {
+            paint.shader =
+                LinearGradient(
+                    0f,
+                    0f,
+                    size.toFloat(),
+                    size.toFloat(),
+                    intArrayOf(0xFFFF4081.toInt(), 0xFFFF9800.toInt()),
+                    null,
+                    Shader.TileMode.CLAMP,
+                )
             drawShapedPath(canvas, rect, shape, paint)
+            paint.shader = null
+        }
+        "aurora" -> {
+            paint.shader =
+                LinearGradient(
+                    0f,
+                    0f,
+                    size.toFloat(),
+                    size.toFloat(),
+                    intArrayOf(0xFF00BFA5.toInt(), 0xFF7C4DFF.toInt()),
+                    null,
+                    Shader.TileMode.CLAMP,
+                )
+            drawShapedPath(canvas, rect, shape, paint)
+            paint.shader = null
         }
     }
 
@@ -550,9 +737,11 @@ private fun createModifiedIcon(
     val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = AndroidColor.WHITE }
     drawShapedPath(maskCanvas, rect, shape, maskPaint)
 
-    // 3. Draw scaled & rotated icon content
+    // 3. Draw scaled, positioned, and rotated icon content
     val inset = (size * (paddingPercent / 100f)).toInt()
-    val destRect = Rect(inset, inset, size - inset, size - inset)
+    val offsetX = (size * (nudgeX / 100f)).toInt()
+    val offsetY = (size * (nudgeY / 100f)).toInt()
+    val destRect = Rect(inset + offsetX, inset + offsetY, (size - inset) + offsetX, (size - inset) + offsetY)
 
     val contentBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
     val contentCanvas = Canvas(contentBitmap)
@@ -577,6 +766,27 @@ private fun createModifiedIcon(
     }
 
     canvas.drawBitmap(contentBitmap, 0f, 0f, null)
+
+    // 5. Draw decorative border stroke if requested
+    if (borderColorKey != "none" && borderWidthDp > 0f) {
+        val strokePaint =
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.STROKE
+                strokeWidth = borderWidthDp * (size / 100f)
+                color =
+                    when (borderColorKey) {
+                        "gold" -> 0xFFFFD700.toInt()
+                        "cyan" -> 0xFF00E5FF.toInt()
+                        "neon" -> 0xFFB388FF.toInt()
+                        "white" -> AndroidColor.WHITE
+                        else -> primaryColor
+                    }
+            }
+        val strokeInset = strokePaint.strokeWidth / 2f
+        val strokeRect = RectF(strokeInset, strokeInset, size - strokeInset, size - strokeInset)
+        drawShapedPath(canvas, strokeRect, shape, strokePaint)
+    }
+
     return output
 }
 

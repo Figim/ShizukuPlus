@@ -245,6 +245,7 @@ open class HomeActivity :
                 isAmoledPlus = isAmoledPlus,
                 isOneUi = isOneUi,
                 isBoldTypography = ShizukuSettings.isBoldTypographyEnabled(),
+                isHighContrast = ShizukuSettings.isHighContrastEnabled(),
                 isRoundedEdges = isRoundedEdges,
             ) {
                 HomeScreen(
@@ -507,11 +508,19 @@ open class HomeActivity :
                         androidx.core.view.WindowInsetsCompat.Type
                             .displayCutout(),
                 )
+            val navClearance =
+                if (af.shizuku.manager.ShizukuSettings
+                        .isFloatingNavBarEnabled()
+                ) {
+                    (96 * resources.displayMetrics.density).toInt()
+                } else {
+                    (16 * resources.displayMetrics.density).toInt()
+                }
             v.setPadding(
                 systemBars.left + dexPadding,
                 v.paddingTop,
                 systemBars.right + dexPadding,
-                v.paddingBottom,
+                systemBars.bottom + navClearance,
             )
             insets
         }
