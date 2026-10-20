@@ -97,8 +97,17 @@ class SettingsActivity :
                         .isRoundedEdgesEnabled(),
                 themeVersion = tv,
             ) {
+                val customName =
+                    af.shizuku.manager.ShizukuSettings
+                        .getCustomAppName(this)
+                val displayTitle =
+                    if (currentTitle == getString(R.string.settings_title) && customName != getString(R.string.app_name)) {
+                        "$customName Settings"
+                    } else {
+                        currentTitle
+                    }
                 SettingsScreen(
-                    title = currentTitle,
+                    title = displayTitle,
                     onNavigateUp = {
                         if (!onSupportNavigateUp()) {
                             finish()

@@ -176,6 +176,9 @@ public class ShizukuSettings {
         public static final String KEY_APP_ICON_ALIAS = "app_icon_alias";
         public static final String KEY_SHOW_HOME_CARDS_OUTLINE = "show_home_cards_outline";
         public static final String KEY_DEV_OPTIONS_UNLOCKED = "dev_options_unlocked";
+        public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
+        public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
+        public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
 
         // Migration (Shizuku+ additions)
         public static final String KEY_MIGRATION_OFFERED = "migration_offered";
@@ -1858,5 +1861,42 @@ public class ShizukuSettings {
     public static void setFloatingNavBarEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_FLOATING_NAV_BAR_ENABLED, enabled).apply();
+    }
+
+    @NonNull
+    public static String getCustomAppName(Context context) {
+        SharedPreferences p = getPreferences();
+        String custom = p != null ? p.getString(Keys.KEY_CUSTOM_APP_NAME, "") : "";
+        if (custom != null && !custom.trim().isEmpty()) {
+            return custom.trim();
+        }
+        return context != null ? context.getString(R.string.app_name) : "Shizuku+";
+    }
+
+    public static void setCustomAppName(String name) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_CUSTOM_APP_NAME, name != null ? name.trim() : "").apply();
+    }
+
+    @NonNull
+    public static String getFloatingNavLabelMode() {
+        SharedPreferences p = getPreferences();
+        String mode = p != null ? p.getString(Keys.KEY_FLOATING_NAV_LABEL_MODE, "selected") : "selected";
+        return mode != null ? mode : "selected";
+    }
+
+    public static void setFloatingNavLabelMode(String mode) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_FLOATING_NAV_LABEL_MODE, mode).apply();
+    }
+
+    public static boolean isFloatingNavAutohideEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_FLOATING_NAV_AUTOHIDE, true);
+    }
+
+    public static void setFloatingNavAutohideEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_FLOATING_NAV_AUTOHIDE, enabled).apply();
     }
 }

@@ -46,6 +46,8 @@ class ThemeDelegateImpl : ThemeDelegate {
                         "AMBER" -> if (isNight) R.style.ThemeOverlay_Accent_Amber_Dark else R.style.ThemeOverlay_Accent_Amber
                         "ROSE" -> if (isNight) R.style.ThemeOverlay_Accent_Rose_Dark else R.style.ThemeOverlay_Accent_Rose
                         "SLATE" -> if (isNight) R.style.ThemeOverlay_Accent_Slate_Dark else R.style.ThemeOverlay_Accent_Slate
+                        "CYAN" -> if (isNight) R.style.ThemeOverlay_Accent_Cyan_Dark else R.style.ThemeOverlay_Accent_Cyan
+                        "NEON" -> if (isNight) R.style.ThemeOverlay_Accent_Neon_Dark else R.style.ThemeOverlay_Accent_Neon
                         else -> 0
                     }
                 if (styleRes != 0) {

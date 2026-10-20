@@ -65,6 +65,7 @@ fun HomeScreen(
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
     val context = LocalContext.current
+    val appDisplayName = remember(context) { ShizukuSettings.getCustomAppName(context) }
     val isDropIn = remember(context) { EnvironmentUtils.isDropIn(context) }
     val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
     val motionDur = ShizukuSettings.scaledAnimationDuration(220).toInt()
@@ -332,7 +333,7 @@ fun HomeScreen(
                                         horizontalArrangement = if (curvedFraction > 0.5f) Arrangement.Start else Arrangement.Center,
                                     ) {
                                         Text(
-                                            text = stringResource(R.string.brand_shizuku_plus),
+                                            text = if (appDisplayName != stringResource(R.string.app_name)) appDisplayName else stringResource(R.string.brand_shizuku_plus),
                                             modifier = Modifier.weight(1f, fill = false),
                                             style =
                                                 MaterialTheme.typography.headlineLarge.copy(
@@ -370,7 +371,7 @@ fun HomeScreen(
                                     }
                                 } else {
                                     Text(
-                                        text = stringResource(R.string.app_name),
+                                        text = appDisplayName,
                                         style =
                                             MaterialTheme.typography.headlineLarge.copy(
                                                 fontWeight = titleFontWeight,

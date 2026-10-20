@@ -123,6 +123,8 @@
         <item>Amber Sunset</item>
         <item>Rose Petal</item>
         <item>Midnight Slate</item>
+        <item>Cyber Neon Cyan</item>
+        <item>Synthwave Neon</item>
     </string-array>
 
     <string-array name="custom_accents_values">
@@ -134,6 +136,20 @@
         <item>AMBER</item>
         <item>ROSE</item>
         <item>SLATE</item>
+        <item>CYAN</item>
+        <item>NEON</item>
+    </string-array>
+
+    <string-array name="floating_nav_label_modes">
+        <item>Selected Only</item>
+        <item>Always Show</item>
+        <item>Icons Only</item>
+    </string-array>
+
+    <string-array name="floating_nav_label_modes_value">
+        <item>selected</item>
+        <item>labeled</item>
+        <item>unlabeled</item>
     </string-array>
 
 

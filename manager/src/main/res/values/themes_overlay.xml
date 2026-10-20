@@ -250,6 +250,66 @@
         <item name="colorOnTertiaryContainer">#ECDCFF</item>
     </style>
 
+    <!-- Cyber Neon Cyan Overlay — electric modern cyan -->
+    <style name="ThemeOverlay.Accent.Cyan">
+        <item name="colorPrimary">#00838F</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#E0F7FA</item>
+        <item name="colorOnPrimaryContainer">#002024</item>
+        <item name="colorSecondary">#00695C</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#E0F2F1</item>
+        <item name="colorOnSecondaryContainer">#001F1A</item>
+        <item name="colorTertiary">#0277BD</item>
+        <item name="colorOnTertiary">#FFFFFF</item>
+        <item name="colorTertiaryContainer">#E1F5FE</item>
+        <item name="colorOnTertiaryContainer">#001D2E</item>
+    </style>
+    <style name="ThemeOverlay.Accent.Cyan.Dark">
+        <item name="colorPrimary">#00E5FF</item>
+        <item name="colorOnPrimary">#00363D</item>
+        <item name="colorPrimaryContainer">#004F58</item>
+        <item name="colorOnPrimaryContainer">#E0F7FA</item>
+        <item name="colorSecondary">#64FFDA</item>
+        <item name="colorOnSecondary">#003730</item>
+        <item name="colorSecondaryContainer">#004D40</item>
+        <item name="colorOnSecondaryContainer">#E0F2F1</item>
+        <item name="colorTertiary">#40C4FF</item>
+        <item name="colorOnTertiary">#00344F</item>
+        <item name="colorTertiaryContainer">#004C73</item>
+        <item name="colorOnTertiaryContainer">#E1F5FE</item>
+    </style>
+
+    <!-- Synthwave Neon Violet Overlay — vivid purple & hot pink -->
+    <style name="ThemeOverlay.Accent.Neon">
+        <item name="colorPrimary">#7C4DFF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryContainer">#EDE7F6</item>
+        <item name="colorOnPrimaryContainer">#311B92</item>
+        <item name="colorSecondary">#651FFF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#D1C4E9</item>
+        <item name="colorOnSecondaryContainer">#1A0059</item>
+        <item name="colorTertiary">#FF4081</item>
+        <item name="colorOnTertiary">#FFFFFF</item>
+        <item name="colorTertiaryContainer">#FCE4EC</item>
+        <item name="colorOnTertiaryContainer">#4A001F</item>
+    </style>
+    <style name="ThemeOverlay.Accent.Neon.Dark">
+        <item name="colorPrimary">#B388FF</item>
+        <item name="colorOnPrimary">#2A0080</item>
+        <item name="colorPrimaryContainer">#4527A0</item>
+        <item name="colorOnPrimaryContainer">#EDE7F6</item>
+        <item name="colorSecondary">#8C9EFF</item>
+        <item name="colorOnSecondary">#1A237E</item>
+        <item name="colorSecondaryContainer">#283593</item>
+        <item name="colorOnSecondaryContainer">#C5CAE9</item>
+        <item name="colorTertiary">#FF80AB</item>
+        <item name="colorOnTertiary">#5C0028</item>
+        <item name="colorTertiaryContainer">#880E4F</item>
+        <item name="colorOnTertiaryContainer">#FCE4EC</item>
+    </style>
+
     <!--
         Shape Style overlays (settings key "shape_style", gated on "expressive_shapes").
         "zen" (the default) applies neither - it keeps whatever corner scale the base

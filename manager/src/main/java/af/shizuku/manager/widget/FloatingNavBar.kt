@@ -58,7 +58,9 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     // Held strongly: SharedPreferences keeps listeners in a weak map.
     private val prefsListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == KEY_ENABLED) current?.let { sync(it) }
+            if (key == KEY_ENABLED || key == ShizukuSettings.Keys.KEY_FLOATING_NAV_LABEL_MODE || key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE) {
+                current?.let { sync(it) }
+            }
         }
 
     fun install(app: Application) {
@@ -162,11 +164,11 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         content: ViewGroup,
         bar: View,
     ) {
+        if (!ShizukuSettings.isFloatingNavAutohideEnabled()) return
         content.post {
+            var hidden = false
             findRecyclerView(content)?.addOnScrollListener(
                 object : RecyclerView.OnScrollListener() {
-                    private var hidden = false
-
                     override fun onScrolled(
                         rv: RecyclerView,
                         dx: Int,
@@ -182,6 +184,18 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     }
                 },
             )
+            findNestedScrollView(content)?.setOnScrollChangeListener(
+                NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+                    val dy = scrollY - oldScrollY
+                    if (dy > 12 && !hidden) {
+                        hidden = true
+                        slideBar(bar, hide = true)
+                    } else if (dy < -12 && hidden) {
+                        hidden = false
+                        slideBar(bar, hide = false)
+                    }
+                },
+            )
         }
     }
 
@@ -190,7 +204,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         hide: Boolean,
     ) {
         val distance = bar.height + (bar.layoutParams as FrameLayout.LayoutParams).bottomMargin
-        val duration = ShizukuSettings.scaledAnimationDuration(if (hide) 180 else 260)
+        val duration = ShizukuSettings.scaledAnimationDuration(if (hide) 200 else 280)
         val interpolator =
             if (hide) {
                 android.view.animation.PathInterpolator(0.3f, 0f, 0.8f, 0.15f)
@@ -200,6 +214,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         bar
             .animate()
             .translationY(if (hide) distance.toFloat() else 0f)
+            .alpha(if (hide) 0f else 1f)
             .setDuration(duration)
             .setInterpolator(interpolator)
             .start()
@@ -209,6 +224,14 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         if (view is RecyclerView) return view
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) findRecyclerView(view.getChildAt(i))?.let { return it }
+        }
+        return null
+    }
+
+    private fun findNestedScrollView(view: View): NestedScrollView? {
+        if (view is NestedScrollView) return view
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) findNestedScrollView(view.getChildAt(i))?.let { return it }
         }
         return null
     }
@@ -307,6 +330,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
         val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav)
         if (nav != null) {
+            val labelMode = ShizukuSettings.getFloatingNavLabelMode()
+            nav.labelVisibilityMode =
+                when (labelMode) {
+                    "labeled" -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_LABELED
+                    "unlabeled" -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
+                    else -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
+                }
             val indicatorColor =
                 MaterialColors.getColor(
                     activity,

@@ -133,8 +133,11 @@ class ShizukuCompanionViewHolder(
                 // Shizuku, already occupies moe.shizuku.privileged.api with a different cert.
                 Toast.makeText(v.context, R.string.compat_hub_install_signature_conflict, Toast.LENGTH_LONG).show()
             } else {
-                setBusy(v.context, R.string.compat_hub_installing)
+                showProgress(v.context.getString(R.string.compat_hub_installing), 20)
                 scope.launch {
+                    withContext(Dispatchers.Main) {
+                        updateProgress("Extracting compatibility payload...", 35)
+                    }
                     // Read APK bytes from assets into memory — avoids writing to any app-owned
                     // storage path before invoking the privileged process. On Android 11+, scoped
                     // storage blocks shell (UID 2000) from reading /sdcard/Android/data/<pkg>/,
@@ -153,10 +156,15 @@ class ShizukuCompanionViewHolder(
                         }
                     if (apkBytes == null) {
                         withContext(Dispatchers.Main) {
+                            hideProgress()
                             Toast.makeText(v.context, R.string.compat_hub_install_fail, Toast.LENGTH_SHORT).show()
                             homeModel.reload()
                         }
                         return@launch
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        updateProgress("Dispatching payload to privileged shell...", 60)
                     }
 
                     // rm -f first: a previous failed install may have left a chmod 000 file that
@@ -166,6 +174,9 @@ class ShizukuCompanionViewHolder(
                     val installOutput =
                         withContext(Dispatchers.IO) {
                             if (Shizuku.pingBinder()) {
+                                withContext(Dispatchers.Main) {
+                                    updateProgress("Installing package via Package Manager...", 85)
+                                }
                                 // Pipe APK bytes directly to the shell's stdin — cat writes to
                                 // /data/local/tmp (world-accessible by shell UID 2000) without
                                 // ever touching app-private storage the privileged process can't read.
@@ -200,6 +211,9 @@ class ShizukuCompanionViewHolder(
                                     "NEWPROCESS_NULL"
                                 }
                             } else if (MigrationHelper.isRootAvailable()) {
+                                withContext(Dispatchers.Main) {
+                                    updateProgress("Installing package via Root Shell...", 85)
+                                }
                                 // Root can read internal storage — extract there and install directly.
                                 val tmpApk = java.io.File(v.context.cacheDir, "compat.apk")
                                 try {
@@ -249,6 +263,9 @@ class ShizukuCompanionViewHolder(
                         Timber.tag("ShizukuCompanion").e("compat hub install failed: %s", installOutput.take(1000))
                     }
                     withContext(Dispatchers.Main) {
+                        updateProgress(if (success) "Installation successful!" else "Finalizing...", 100)
+                        kotlinx.coroutines.delay(350)
+                        hideProgress()
                         when {
                             success ->
                                 Toast.makeText(v.context, R.string.compat_hub_install_success, Toast.LENGTH_SHORT).show()
@@ -303,9 +320,16 @@ class ShizukuCompanionViewHolder(
         binding.button2.setOnClickListener { v ->
             af.shizuku.manager.utils.HapticUtils
                 .tap(v)
+            showProgress("Uninstalling package...", 30)
             scope.launch {
+                withContext(Dispatchers.Main) {
+                    updateProgress("Executing pm uninstall...", 70)
+                }
                 val privilegedSuccess = runPrivilegedCommand("pm uninstall ${StockShizukuCompat.PACKAGE}")
                 withContext(Dispatchers.Main) {
+                    updateProgress("Uninstallation complete", 100)
+                    kotlinx.coroutines.delay(350)
+                    hideProgress()
                     if (privilegedSuccess) {
                         Toast.makeText(v.context, R.string.compat_hub_uninstall_success, Toast.LENGTH_SHORT).show()
                         homeModel.reload()
@@ -326,6 +350,57 @@ class ShizukuCompanionViewHolder(
         }
     }
 
+    private fun showProgress(
+        status: String,
+        progress: Int? = null,
+    ) {
+        binding.buttonContainer.visibility = View.GONE
+        binding.progressContainer.visibility = View.VISIBLE
+        binding.progressContainer.alpha = 0f
+        binding.progressContainer
+            .animate()
+            .alpha(1f)
+            .setDuration(200)
+            .start()
+        binding.progressStatusText.text = status
+        if (progress != null) {
+            binding.progressIndicator.isIndeterminate = false
+            binding.progressIndicator.setProgressCompat(progress, true)
+        } else {
+            binding.progressIndicator.isIndeterminate = true
+        }
+    }
+
+    private fun updateProgress(
+        status: String,
+        progress: Int? = null,
+    ) {
+        binding.progressStatusText.text = status
+        if (progress != null) {
+            binding.progressIndicator.isIndeterminate = false
+            binding.progressIndicator.setProgressCompat(progress, true)
+        } else {
+            binding.progressIndicator.isIndeterminate = true
+        }
+    }
+
+    private fun hideProgress() {
+        binding.progressContainer
+            .animate()
+            .alpha(0f)
+            .setDuration(200)
+            .withEndAction {
+                binding.progressContainer.visibility = View.GONE
+                binding.buttonContainer.visibility = View.VISIBLE
+                binding.buttonContainer.alpha = 0f
+                binding.buttonContainer
+                    .animate()
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+            }.start()
+    }
+
     /** Disables the action button and shows a busy label so a slow pm call can't be double-tapped. */
     private fun setBusy(
         context: Context,
@@ -336,6 +411,9 @@ class ShizukuCompanionViewHolder(
     }
 
     override fun onBind() {
+        binding.progressContainer.visibility = View.GONE
+        binding.buttonContainer.visibility = View.VISIBLE
+        binding.buttonContainer.alpha = 1f
         val companionInstalled = data?.first ?: false
         val compatHubInstalled = data?.second ?: false
 

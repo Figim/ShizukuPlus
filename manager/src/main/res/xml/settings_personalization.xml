@@ -68,6 +68,14 @@
             android:entryValues="@array/app_icon_alias_values"
             android:icon="@drawable/ic_launcher_foreground" />
 
+        <EditTextPreference
+            android:key="custom_app_name"
+            android:title="@string/settings_custom_app_name_title"
+            android:summary="@string/settings_custom_app_name_summary"
+            android:dialogTitle="@string/settings_custom_app_name_dialog_title"
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_edit_24" />
+
         <Preference
             android:key="custom_icon_studio"
             android:title="@string/settings_custom_icon_studio_title"
@@ -229,6 +237,24 @@
             app:infoTitle="@string/settings_floating_nav"
             app:infoDetail="@string/settings_floating_nav_info"
             app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="floating_nav_label_mode"
+            android:title="@string/settings_floating_nav_label_mode"
+            android:summary="@string/settings_floating_nav_label_mode_summary"
+            android:defaultValue="selected"
+            android:entries="@array/floating_nav_label_modes"
+            android:entryValues="@array/floating_nav_label_modes_value"
+            android:dependency="floating_nav_enabled"
+            android:icon="@drawable/ic_article_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="floating_nav_autohide"
+            android:title="@string/settings_floating_nav_autohide"
+            android:summary="@string/settings_floating_nav_autohide_summary"
+            android:defaultValue="true"
+            android:dependency="floating_nav_enabled"
+            android:icon="@drawable/ic_window_24" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="one_handed_mode"

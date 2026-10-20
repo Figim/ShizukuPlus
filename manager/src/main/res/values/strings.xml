@@ -429,6 +429,20 @@
     <string name="custom_icon_studio_shape_squircle">Squircle</string>
     <string name="custom_icon_studio_shape_rounded">Rounded</string>
     <string name="custom_icon_studio_shape_oneui">One UI</string>
+    <string name="custom_icon_studio_shape_hexagon">Hexagon</string>
+    <string name="custom_icon_studio_shape_teardrop">Teardrop</string>
+    <string name="custom_icon_studio_app_label">App &amp; Shortcut Name</string>
+    <string name="custom_icon_studio_glyph_preset">Icon Preset</string>
+    <string name="custom_icon_studio_pick_gallery">Pick Custom Image</string>
+    <string name="custom_icon_studio_rotation">Rotation</string>
+    <string name="custom_icon_studio_monochrome_tint">Monochrome Tint</string>
+    <string name="settings_custom_app_name_title">App Display Name</string>
+    <string name="settings_custom_app_name_summary">Personalize the application header &amp; shortcut title (%s)</string>
+    <string name="settings_custom_app_name_dialog_title">App Display Name</string>
+    <string name="settings_floating_nav_label_mode">Nav bar label display</string>
+    <string name="settings_floating_nav_label_mode_summary">Configure when text labels appear beneath navigation bar icons</string>
+    <string name="settings_floating_nav_autohide">Auto-hide on scroll</string>
+    <string name="settings_floating_nav_autohide_summary">Fluidly retract the floating bar when scrolling down and restore on scroll up</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

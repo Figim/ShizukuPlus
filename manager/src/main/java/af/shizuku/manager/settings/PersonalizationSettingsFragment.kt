@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
@@ -293,11 +294,23 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        findPreference<EditTextPreference>("custom_app_name")?.apply {
+            text = ShizukuSettings.getCustomAppName(requireContext())
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is String) {
+                    ShizukuSettings.setCustomAppName(newValue)
+                }
+                true
+            }
+        }
+
         findPreference<Preference>("custom_icon_studio")?.setOnPreferenceClickListener {
             try {
-                iconPickerLauncher.launch("image/*")
+                CustomIconStudioBottomSheet
+                    .newInstance(null)
+                    .show(childFragmentManager, "custom_icon_studio")
             } catch (e: Exception) {
-                timber.log.Timber.w(e, "Failed to launch image picker")
+                timber.log.Timber.w(e, "Failed to launch custom icon studio")
             }
             true
         }
