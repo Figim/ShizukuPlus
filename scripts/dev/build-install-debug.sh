@@ -160,6 +160,14 @@ if [[ -n "$NEW_APK_DIR" ]]; then
             ${NEW_APK_DIR}/lib/arm64/libshizuku.so \
             --apk=${NEW_APK_DIR}/base.apk &
         sleep 3
+        # The app's own package-replaced receiver may have started a server at the same time;
+        # keep only the newest so two servers never fight over the binder.
+        set -- \$(pidof shizuku_plus_server)
+        if [ \$# -gt 1 ]; then
+            newest=\$(for p in \"\$@\"; do echo \"\$(stat -c %Y /proc/\$p) \$p\"; done | sort -n | tail -1 | cut -d' ' -f2)
+            for p in \"\$@\"; do [ \"\$p\" != \"\$newest\" ] && kill \$p; done
+            sleep 1
+        fi
         ps -A | grep shizuku_plus_server
     " 2>&1
 else
