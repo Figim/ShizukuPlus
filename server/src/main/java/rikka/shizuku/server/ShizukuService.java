@@ -2748,16 +2748,19 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             } catch (Throwable ignored) {
             }
 
+            // Only running apps get the binder now, so look up just those (tens of packages)
+            // instead of every installed package with its full permission list (1000+ on a
+            // typical phone) - this was most of the time between "starting server" and the
+            // first binder delivery. The manager is skipped: sendBinderToManager() covers it,
+            // with its own retry, and sending here too delivered it twice.
             Stream<PackageInfo> packages =
-                InstalledPackagesCompat.getInstalledPackagesNoThrow(
-                    PackageManager.GET_PERMISSIONS, userId
-                )
-                .stream()
+                runningPackages.stream()
+                .filter(name -> !MANAGER_APPLICATION_ID.equals(name))
+                .map(name -> Android17Compat.getPackageInfo(name, PackageManager.GET_PERMISSIONS, userId))
                 .filter(pi -> pi != null && pi.requestedPermissions != null)
-                .filter(pi -> ArraysKt.contains(pi.requestedPermissions, PERMISSION) || 
+                .filter(pi -> ArraysKt.contains(pi.requestedPermissions, PERMISSION) ||
                               ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_LEGACY) ||
-                              ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL))
-                .filter(pi -> runningPackages.contains(pi.packageName));
+                              ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL));
 
             // NOT sendBinderToUserAppWithRetry: the same force-stop hazard that caused the
             // PackageInstaller NPE on the live observer path (#386) applies here too — an app
