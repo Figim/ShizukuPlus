@@ -126,6 +126,7 @@ Things discussed or sketched that we never formally decided to build.
 - **Floating nav / System Hub**: bottom clearance moved from the Column `Modifier.padding` into Metrics/Activity Log scroll content. `FloatingNavBar.reserveSpace` skips Compose roots, so every Compose screen must add its own content padding — never pad the outer container (exposes bare window background = black bar in AMOLED).
 - **Server**: `getAICorePlus()` re-gated on `ai_core_plus` for third-party callers; manager exempt (System Hub metrics). Antigravity had dropped the gate entirely in `dc4f56ec`.
 - **Compat Hub**: progress text localized; uninstall no longer reports "complete" on failure.
+- **Follow-ups (same day)**: What's New sheet — GitHub button icon-only so Close fits; README bullets + README-only releases filtered (both classic `formatNotes` and timeline `ChangelogParser`). Icon Studio rebuilt: `IconStudioRenderer.kt` (state model, JSON persistence in pref `icon_studio_state_v2`, off-main-thread software renderer, superellipse/cookie shapes) + tabbed Compose sheet; picked photos copied/downsampled to `filesDir/icon_studio_source.png`. System Hub labels localized. Floating-nav bottom bounce re-arms only on real scroll-up.
 - **Needs on-device verification**: pairing (notification + onboarding), compat uninstall (`pm uninstall` with secondary user 150 present), black bar on Home/Settings, duplicate titles, OneUI subtext, settings scroll jitter, bold typography.
 
 ### 2026-10-18 — Antigravity (Advanced Multi-Agent Review & M3E UX Consolidation) [Stable Release Prep]
