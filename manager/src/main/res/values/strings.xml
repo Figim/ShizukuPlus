@@ -1912,18 +1912,4 @@
     <string name="legacy_rish_keepalive_channel_name">Legacy rish compatibility</string>
     <string name="legacy_rish_keepalive_title">Legacy rish compatibility is active</string>
     <string name="legacy_rish_keepalive_text">Keeping Shizuku+ in the background so legacy rish clients can request the shell binder.</string>
-
-    <!-- Quick Controls & Adaptive Actions (M3E) -->
-    <string name="home_quick_tools">Quick Controls</string>
-    <string name="quick_controls_title">Quick Controls</string>
-    <string name="quick_controls_desc">Adjust essential features, appearance, and stability without digging through settings.</string>
-    <string name="quick_controls_section_service">Service &amp; Health</string>
-    <string name="quick_controls_section_features">Features &amp; Security</string>
-    <string name="quick_controls_section_appearance">Appearance &amp; Nav</string>
-    <string name="quick_controls_btn_settings">Open Full Settings</string>
-    <string name="home_status_quick_start_root">Start (Root)</string>
-    <string name="home_status_quick_start_wadb">Start (Wireless)</string>
-    <string name="home_status_quick_doctor">Service Doctor</string>
-    <string name="home_status_quick_health">Health Check</string>
-    <string name="home_status_quick_system_hub">System Hub</string>
 </resources>
