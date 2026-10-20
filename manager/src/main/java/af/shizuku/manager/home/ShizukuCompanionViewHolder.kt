@@ -303,9 +303,26 @@ class ShizukuCompanionViewHolder(
         binding.button2.setOnClickListener { v ->
             af.shizuku.manager.utils.HapticUtils
                 .tap(v)
-            val intent = Intent(Intent.ACTION_DELETE)
-            intent.data = Uri.parse("package:${StockShizukuCompat.PACKAGE}")
-            v.context.startActivity(intent)
+            scope.launch {
+                val privilegedSuccess = runPrivilegedCommand("pm uninstall ${StockShizukuCompat.PACKAGE}")
+                withContext(Dispatchers.Main) {
+                    if (privilegedSuccess) {
+                        Toast.makeText(v.context, R.string.compat_hub_uninstall_success, Toast.LENGTH_SHORT).show()
+                        homeModel.reload()
+                    } else {
+                        try {
+                            val intent =
+                                Intent(Intent.ACTION_DELETE).apply {
+                                    data = Uri.parse("package:${StockShizukuCompat.PACKAGE}")
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            v.context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Timber.tag("ShizukuCompanion").e(e, "failed to start uninstall intent")
+                        }
+                    }
+                }
+            }
         }
     }
 

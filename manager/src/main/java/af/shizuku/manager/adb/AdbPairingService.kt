@@ -230,6 +230,21 @@ class AdbPairingService : Service() {
             text = getString(R.string.notification_adb_pairing_succeed_text)
 
             stopSearch()
+
+            try {
+                val startAppIntent =
+                    Intent(this, MainActivity::class.java).apply {
+                        addFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                                Intent.FLAG_ACTIVITY_SINGLE_TOP,
+                        )
+                        putExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, true)
+                    }
+                startActivity(startAppIntent)
+            } catch (e: Exception) {
+                Timber.tag(tag).w(e, "failed to launch MainActivity on pairing success")
+            }
         } else {
             title = getString(R.string.notification_adb_pairing_failed_title)
 
@@ -403,33 +418,59 @@ class AdbPairingService : Service() {
     }
 
     private val searchingNotification by unsafeLazy {
+        val manualIntent =
+            Intent(this, AdbPairingDialogActivity::class.java).apply {
+                putExtra(portKey, -1)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+        val manualPendingIntent =
+            PendingIntent.getActivity(
+                this,
+                dialogRequestId,
+                manualIntent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                } else {
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                },
+            )
+
         Notification
             .Builder(this, NOTIFICATION_CHANNEL)
             .setColor(getColor(R.color.notification))
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle(getString(R.string.notification_adb_pairing_searching_for_service_title))
+            .setContentText(getString(R.string.notification_adb_pairing_input_paring_code))
+            .setContentIntent(manualPendingIntent)
             .setOnlyAlertOnce(true)
-            .addAction(stopNotificationAction)
+            .addAction(
+                Notification.Action
+                    .Builder(
+                        null,
+                        getString(R.string.notification_adb_pairing_input_paring_code),
+                        manualPendingIntent,
+                    ).build(),
+            ).addAction(stopNotificationAction)
             .build()
     }
 
     private fun createInputNotification(port: Int): Notification {
+        val dialogIntent =
+            Intent(this, AdbPairingDialogActivity::class.java)
+                .putExtra(portKey, port)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val contentIntent =
+            PendingIntent.getActivity(
+                this,
+                dialogRequestId + port,
+                dialogIntent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                } else {
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                },
+            )
         if (ShizukuSettings.getLegacyPairing()) {
-            val dialogIntent =
-                Intent(this, AdbPairingDialogActivity::class.java)
-                    .putExtra(portKey, port)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val contentIntent =
-                PendingIntent.getActivity(
-                    this,
-                    dialogRequestId + port,
-                    dialogIntent,
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                    } else {
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    },
-                )
             return Notification
                 .Builder(this, NOTIFICATION_CHANNEL)
                 .setColor(getColor(R.color.notification))
@@ -445,7 +486,9 @@ class AdbPairingService : Service() {
             .Builder(this, NOTIFICATION_CHANNEL)
             .setColor(getColor(R.color.notification))
             .setContentTitle(getString(R.string.notification_adb_pairing_service_found_title))
+            .setContentText(getString(R.string.notification_adb_pairing_input_paring_code))
             .setSmallIcon(R.drawable.ic_notification_icon)
+            .setContentIntent(contentIntent)
             .setOnlyAlertOnce(true)
             .addAction(replyNotificationAction(port))
             .build()

@@ -14,7 +14,7 @@
     <dimen name="default_app_icon_size">40dp</dimen>
     <dimen name="home_icon_padding">16dp</dimen>
 
-    <dimen name="card_content_padding">16dp</dimen>
+    <dimen name="card_content_padding">20dp</dimen>
 
     <dimen name="m3e_spacing_small">8dp</dimen>
     <dimen name="m3e_spacing_medium">16dp</dimen>

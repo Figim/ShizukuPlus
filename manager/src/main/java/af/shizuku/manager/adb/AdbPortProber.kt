@@ -20,13 +20,20 @@ object AdbPortProber {
      * 3. Local network interface addresses (e.g. wlan0)
      */
     fun getCandidateHosts(preferredHost: String = "127.0.0.1"): List<String> {
-        val hosts = LinkedHashSet<String>()
+        val ipv4Hosts = LinkedHashSet<String>()
+        val ipv6Hosts = LinkedHashSet<String>()
+
         val cleanPreferred = preferredHost.substringBefore('%').trim()
         if (cleanPreferred.isNotBlank()) {
-            hosts.add(cleanPreferred)
+            if (cleanPreferred.contains(':')) {
+                ipv6Hosts.add(cleanPreferred)
+            } else {
+                ipv4Hosts.add(cleanPreferred)
+            }
         }
-        hosts.add("127.0.0.1")
-        hosts.add("::1")
+        ipv4Hosts.add("127.0.0.1")
+        ipv6Hosts.add("::1")
+
         runCatching {
             val interfaces = java.net.NetworkInterface.getNetworkInterfaces() ?: return@runCatching
             for (iface in interfaces) {
@@ -35,12 +42,16 @@ object AdbPortProber {
                     val raw = addr.hostAddress ?: continue
                     val clean = raw.substringBefore('%')
                     if (clean.isNotBlank()) {
-                        hosts.add(clean)
+                        if (clean.contains(':')) {
+                            ipv6Hosts.add(clean)
+                        } else {
+                            ipv4Hosts.add(clean)
+                        }
                     }
                 }
             }
         }
-        return hosts.toList()
+        return (ipv4Hosts + ipv6Hosts).toList()
     }
 
     /**

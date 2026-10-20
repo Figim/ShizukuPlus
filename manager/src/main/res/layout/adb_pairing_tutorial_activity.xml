@@ -294,6 +294,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/adb_pairing_tutorial_content_enter_pairing_code" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/manual_pairing"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/notification_adb_pairing_input_paring_code"
+                    app:icon="@drawable/ic_code_24"
+                    app:iconPadding="16dp" />
+
             </LinearLayout>
 
         </LinearLayout>

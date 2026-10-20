@@ -1,6 +1,5 @@
 package af.shizuku.manager.adb
 
-import af.shizuku.manager.ShizukuSettings
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
@@ -147,29 +146,11 @@ class AdbMdns(
 
         if (running &&
             isKnownInterface &&
-            isPortAvailable(rawHost, resolvedService.port)
+            (serviceType == TLS_PAIRING || isPortAvailable(rawHost, resolvedService.port))
         ) {
             serviceName = resolvedService.serviceName
             resolvedHost = if (isLocal || cleanHostAddress == null) "127.0.0.1" else cleanHostAddress
             observer.onChanged(resolvedService.port)
-        } else if (running && ShizukuSettings.isAutoReconnectMdnsEnabled() && attempts < 5 && !restartScheduled) {
-            attempts++
-            restartScheduled = true
-            val delayMs = attempts * 1000L
-            restartJob =
-                mdnsScope.launch {
-                    delay(delayMs)
-                    if (registered) {
-                        try {
-                            nsdManager.stopServiceDiscovery(listener)
-                        } catch (e: IllegalArgumentException) {
-                            Timber.tag(TAG).e(e, "listener not registered when restarting service discovery")
-                        }
-                    }
-                    delay(100L)
-                    if (!registered) nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, listener)
-                    restartScheduled = false
-                }
         }
     }
 

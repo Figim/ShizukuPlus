@@ -276,8 +276,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 0
             }
         val isOled =
-            af.shizuku.manager.app.ThemeHelper
-                .isBlackNightTheme(context) &&
+            (
+                af.shizuku.manager.app.ThemeHelper
+                    .isBlackNightTheme(context) ||
+                    af.shizuku.manager.ShizukuSettings
+                        .isAmoledPlusEnabled()
+            ) &&
                 rikka.core.util.ResourceUtils
                     .isNightMode(context.resources.configuration)
         val pageBgColor =

@@ -119,11 +119,12 @@
             android:id="@+id/card_preview_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:cardCornerRadius="16dp"
+            android:layout_marginTop="24dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
             app:strokeWidth="1dp"
             app:strokeColor="?colorOutlineVariant"
-            app:cardBackgroundColor="?colorSurfaceContainerLow">
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:id="@+id/btn_preview_drag"
@@ -131,23 +132,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="18dp"
+                android:background="?selectableItemBackground">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:src="@drawable/ic_drag_handle"
+                    android:background="@drawable/shape_edit_control_background"
+                    android:padding="8dp"
                     app:tint="?colorOnSurfaceVariant"
                     android:contentDescription="@null"
-                    android:layout_marginEnd="12dp" />
+                    android:layout_marginEnd="16dp" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/home_edit_mode_banner"
-                    android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSurface" />
+                    android:textAppearance="?textAppearanceTitleSmall"
+                    android:textColor="?colorOnSurface"
+                    android:lineSpacingMultiplier="1.2" />
 
             </LinearLayout>
 

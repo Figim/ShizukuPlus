@@ -29,7 +29,7 @@ public class ThemeHelper {
     }
 
     public static String getTheme(Context context) {
-        if (isBlackNightTheme(context)
+        if ((isBlackNightTheme(context) || ShizukuSettings.isAmoledPlusEnabled())
                 && ResourceUtils.isNightMode(context.getResources().getConfiguration())) {
             return ShizukuSettings.isAmoledPlusEnabled() ? THEME_BLACK_PLUS : THEME_BLACK;
         }

@@ -207,16 +207,22 @@ fun AppTheme(
     // onApplyUserThemeResource. AMOLED mode forces background + base surfaces to black with
     // subtle near-black elevated containers. AMOLED+ additionally collapses all containers to
     // pure black so cards blend completely with the panel.
-    if (darkTheme && isBlackNightTheme) {
+    val isNight = darkTheme || ((context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES)
+    if (isNight && (isBlackNightTheme || isAmoledPlus)) {
         colorScheme = colorScheme.copy(
             background = Color.Black,
             surface = Color.Black,
             surfaceDim = Color.Black,
+            surfaceBright = if (isAmoledPlus) Color.Black else Color(0xFF1A1A1A),
             surfaceContainerLowest = Color.Black,
             surfaceContainerLow = Color.Black,
             surfaceContainer = if (isAmoledPlus) Color.Black else Color(0xFF0B0B0B),
             surfaceContainerHigh = if (isAmoledPlus) Color.Black else Color(0xFF121212),
             surfaceContainerHighest = if (isAmoledPlus) Color.Black else Color(0xFF181818),
+            surfaceVariant = if (isAmoledPlus) Color(0xFF121212) else Color(0xFF1E1E1E),
+            outlineVariant = if (isAmoledPlus) Color(0xFF1C1C1C) else Color(0xFF262626),
+            outline = if (isAmoledPlus) Color(0xFF333333) else Color(0xFF4A4A4A),
+            scrim = Color.Black,
         )
     }
 

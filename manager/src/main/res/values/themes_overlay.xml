@@ -9,23 +9,31 @@
     <style name="ThemeOverlay.Black">
         <item name="android:colorPrimaryDark">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
         <item name="colorSurface">@android:color/black</item>
         <item name="colorSurfaceDim">@android:color/black</item>
+        <item name="colorSurfaceBright">#1A1A1A</item>
         <item name="colorSurfaceContainerLowest">@android:color/black</item>
         <item name="colorSurfaceContainerLow">@android:color/black</item>
         <item name="colorSurfaceContainer">#0B0B0B</item>
         <item name="colorSurfaceContainerHigh">#121212</item>
         <item name="colorSurfaceContainerHighest">#181818</item>
+        <item name="colorOutline">#4A4A4A</item>
+        <item name="colorOutlineVariant">#262626</item>
     </style>
 
     <!-- AMOLED+ overlay — extends AMOLED by also forcing all elevated surface container
          tokens to pure black so cards blend completely with the background. Enable via the
          "AMOLED+" toggle in Personalization; requires AMOLED Night mode to be active. -->
     <style name="ThemeOverlay.Black.Plus" parent="ThemeOverlay.Black">
+        <item name="colorSurfaceBright">@android:color/black</item>
         <item name="colorSurfaceContainerLow">@android:color/black</item>
         <item name="colorSurfaceContainer">@android:color/black</item>
         <item name="colorSurfaceContainerHigh">@android:color/black</item>
         <item name="colorSurfaceContainerHighest">@android:color/black</item>
+        <item name="colorOutline">#333333</item>
+        <item name="colorOutlineVariant">#1C1C1C</item>
     </style>
 
     <style name="ThemeOverlay.DynamicColors.Light" parent="ThemeOverlay.Material3.DynamicColors.Light.Shizuku"/>

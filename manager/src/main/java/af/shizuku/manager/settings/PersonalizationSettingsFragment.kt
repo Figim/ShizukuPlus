@@ -84,6 +84,14 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 setOnPreferenceChangeListener { _, newValue ->
                     if (newValue is Boolean) {
                         setChildAvailable(amoledPlusPreference, newValue)
+                        if (!newValue && amoledPlusPreference.isChecked) {
+                            amoledPlusPreference.isChecked = false
+                            ShizukuSettings
+                                .getPreferences()
+                                .edit()
+                                .putBoolean(KEY_AMOLED_PLUS, false)
+                                .apply()
+                        }
                     }
                     if (ResourceUtils.isNightMode(context.resources.configuration)) {
                         applyTheme(requiresRecreate = false)
@@ -99,7 +107,17 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         )
         amoledPlusPreference.apply {
             isChecked = ShizukuSettings.isAmoledPlusEnabled()
-            setOnPreferenceChangeListener { _, _ ->
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean && newValue) {
+                    if (!blackNightThemePreference.isChecked) {
+                        blackNightThemePreference.isChecked = true
+                        ShizukuSettings
+                            .getPreferences()
+                            .edit()
+                            .putBoolean(KEY_BLACK_NIGHT_THEME, true)
+                            .apply()
+                    }
+                }
                 if (ResourceUtils.isNightMode(context.resources.configuration)) {
                     applyTheme(requiresRecreate = false)
                 }

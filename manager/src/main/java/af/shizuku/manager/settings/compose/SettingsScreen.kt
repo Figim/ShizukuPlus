@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
@@ -95,6 +94,30 @@ fun SettingsScreen(
         isDarkTheme &&
             af.shizuku.manager.app.ThemeHelper
                 .isBlackNightTheme(context)
+    val isOled =
+        (
+            isBlackTheme ||
+                af.shizuku.manager.ShizukuSettings
+                    .isAmoledPlusEnabled()
+        ) &&
+            (isDarkTheme || ((context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES))
+    val pageBackground =
+        if (isOled) {
+            Color.Black
+        } else {
+            MaterialTheme.colorScheme.surfaceContainerLow
+        }
+    val barScrolledColor =
+        if (isOled) {
+            Color.Black
+        } else if (af.shizuku.manager.ShizukuSettings
+                .isBlurUiEnabled()
+        ) {
+            MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.85f)
+        } else {
+            MaterialTheme.colorScheme.surfaceContainer
+        }
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
     // Re-coerce heightOffset whenever LargeTopAppBar remeasures and updates heightOffsetLimit
@@ -122,6 +145,8 @@ fun SettingsScreen(
     }
 
     Scaffold(
+        containerColor = pageBackground,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         topBar = {
             if (isSearchActive) {
                 // Search mode: back button + inline text field + optional clear button
@@ -174,12 +199,10 @@ fun SettingsScreen(
                     },
                     colors =
                         TopAppBarDefaults.topAppBarColors(
-                            containerColor =
-                                if (isBlackTheme) {
-                                    Color.Black
-                                } else {
-                                    MaterialTheme.colorScheme.surface
-                                },
+                            containerColor = pageBackground,
+                            titleContentColor = MaterialTheme.colorScheme.onSurface,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                            actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                 )
             } else {
@@ -227,22 +250,15 @@ fun SettingsScreen(
                             colors =
                                 TopAppBarDefaults.topAppBarColors(
                                     containerColor = Color.Transparent,
-                                    scrolledContainerColor =
-                                        if (af.shizuku.manager.ShizukuSettings
-                                                .isBlurUiEnabled()
-                                        ) {
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0.85f)
-                                        } else {
-                                            MaterialTheme.colorScheme.surface
-                                        },
+                                    scrolledContainerColor = barScrolledColor,
                                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                                     navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
                                     actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 ),
                             scrollBehavior = scrollBehavior,
                         )
-                        // Hairline divider fades in as the large bar collapses
-                        val dividerAlpha = scrollBehavior.state.collapsedFraction
+                        // Hairline divider fades in subtly as the large bar fully collapses
+                        val dividerAlpha = ((scrollBehavior.state.collapsedFraction - 0.75f) / 0.25f).coerceIn(0f, 1f)
                         Box(
                             modifier =
                                 Modifier
@@ -250,7 +266,7 @@ fun SettingsScreen(
                                     .fillMaxWidth()
                                     .height(0.8.dp)
                                     .graphicsLayer { alpha = dividerAlpha }
-                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)),
+                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
                         )
                     } // end Box
                 } else {
@@ -278,14 +294,10 @@ fun SettingsScreen(
                             colors =
                                 TopAppBarDefaults.topAppBarColors(
                                     containerColor = Color.Transparent,
-                                    scrolledContainerColor =
-                                        if (af.shizuku.manager.ShizukuSettings
-                                                .isBlurUiEnabled()
-                                        ) {
-                                            MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
-                                        } else {
-                                            MaterialTheme.colorScheme.surface
-                                        },
+                                    scrolledContainerColor = barScrolledColor,
+                                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 ),
                         )
                         // Hairline divider always visible (bar is always in collapsed appearance)
@@ -295,7 +307,7 @@ fun SettingsScreen(
                                     .align(Alignment.BottomStart)
                                     .fillMaxWidth()
                                     .height(0.8.dp)
-                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)),
+                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
                         )
                     } // end Box
                 }
@@ -373,32 +385,6 @@ fun SettingsScreen(
                         ),
             )
 
-            // Gradient scrim — fades content into the top bar edge so the scroll transition
-            // from transparent to opaque surface doesn't produce a sharp boundary line.
-            val scrimBgColor = if (isBlackTheme) Color.Black else MaterialTheme.colorScheme.surface
-            val scrimHeight = innerPadding.calculateTopPadding() + 20.dp
-            // Skip scrim in blur mode — the frosted bar already provides visual separation,
-            // and an opaque surface gradient underneath it would negate the blur effect.
-            if (!isSearchActive &&
-                scrimHeight > 0.dp &&
-                !af.shizuku.manager.ShizukuSettings
-                    .isBlurUiEnabled()
-            ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(scrimHeight)
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(scrimBgColor, Color.Transparent),
-                                    startY = 0f,
-                                    endY = Float.POSITIVE_INFINITY,
-                                ),
-                            ),
-                )
-            }
-
             // Inline search results — appears below the search TopAppBar
             val searchFadeMs =
                 af.shizuku.manager.ShizukuSettings
@@ -413,12 +399,11 @@ fun SettingsScreen(
                         .fillMaxSize()
                         .padding(top = innerPadding.calculateTopPadding().coerceAtLeast(0.dp)),
             ) {
-                val bgColor = if (isBlackTheme) Color.Black else MaterialTheme.colorScheme.surface
                 Box(
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .background(bgColor),
+                            .background(pageBackground),
                 ) {
                     if (searchQuery.isBlank()) {
                         // Empty query: just show the background so the fragment is covered

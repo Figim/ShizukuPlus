@@ -4,6 +4,7 @@ import af.shizuku.core.ui.AppActivity
 import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.adb.AdbPairingTutorialActivity
 import af.shizuku.manager.databinding.ActivityOnboardingBinding
 import af.shizuku.manager.databinding.PageOnboardingGesturesBinding
 import af.shizuku.manager.databinding.PageOnboardingLayoutNavBinding
@@ -13,7 +14,6 @@ import af.shizuku.manager.databinding.PageOnboardingSecurityDoctorBinding
 import af.shizuku.manager.databinding.PageOnboardingSetupBinding
 import af.shizuku.manager.databinding.PageOnboardingSwipeBinding
 import af.shizuku.manager.databinding.PageOnboardingWelcomeBinding
-import af.shizuku.manager.home.AdbPairDialogFragment
 import af.shizuku.manager.home.StartWirelessAdbViewHolder
 import af.shizuku.manager.home.showAccessibilityDialog
 import af.shizuku.manager.ktx.themeColor
@@ -21,9 +21,12 @@ import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.starter.StarterActivity
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.ShizukuStateMachine
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
@@ -33,6 +36,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -88,6 +92,17 @@ class OnboardingActivity : AppActivity() {
     // Swipe page live refs
     private var swipeIconRight: ImageView? = null
     private var swipeIconLeft: ImageView? = null
+    private var pendingPairLaunch: Boolean = false
+
+    private val notifPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) { _ ->
+            if (pendingPairLaunch) {
+                pendingPairLaunch = false
+                startActivity(Intent(this, AdbPairingTutorialActivity::class.java))
+            }
+        }
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         if (!isFinishing && !isDestroyed) {
@@ -106,6 +121,12 @@ class OnboardingActivity : AppActivity() {
 
         setupDots()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
         binding.pager.registerOnPageChangeCallback(
             object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -118,6 +139,9 @@ class OnboardingActivity : AppActivity() {
                 }
             },
         )
+
+        binding.btnNext.applySpringTouch()
+        binding.btnSkip.applySpringTouch()
 
         binding.btnNext.setOnClickListener {
             val current = binding.pager.currentItem
@@ -337,6 +361,17 @@ class OnboardingActivity : AppActivity() {
                 showAdbCommandDialog()
             }
 
+            // Interactive touch springs
+            binding.cardWadb.applySpringTouch()
+            binding.btnWadbStart.applySpringTouch()
+            binding.btnWadbPair.applySpringTouch()
+            binding.btnWadbGuide.applySpringTouch()
+            binding.cardRoot.applySpringTouch()
+            binding.btnRootStart.applySpringTouch()
+            binding.cardAdb.applySpringTouch()
+            binding.btnAdbCommand.applySpringTouch()
+            binding.btnSetupLater.applySpringTouch()
+
             // Skip
             binding.btnSetupLater.setOnClickListener {
                 val setupIdx = pages.indexOf(PageType.SETUP)
@@ -377,11 +412,12 @@ class OnboardingActivity : AppActivity() {
                 isChecked = ShizukuSettings.isAmoledPlusEnabled()
                 setOnCheckedChangeListener { view, checked ->
                     if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_AMOLED_PLUS, checked)
-                        ?.apply()
+                    val editor = ShizukuSettings.getPreferences()?.edit()
+                    editor?.putBoolean(ShizukuSettings.Keys.KEY_AMOLED_PLUS, checked)
+                    if (checked) {
+                        editor?.putBoolean(ShizukuSettings.Keys.KEY_BLACK_NIGHT_THEME, true)
+                    }
+                    editor?.apply()
                 }
             }
 
@@ -423,6 +459,7 @@ class OnboardingActivity : AppActivity() {
                 }
             }
 
+            binding.cardPreviewHome.applySpringTouch()
             binding.btnPreviewDrag.setOnClickListener {
                 HapticUtils.gestureStart(it)
                 binding.cardPreviewHome
@@ -580,21 +617,15 @@ class OnboardingActivity : AppActivity() {
     private fun onPairClicked() {
         if (EnvironmentUtils.isTelevision()) {
             showAccessibilityDialog()
+            return
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingPairLaunch = true
+            notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
-            val serviceIntent =
-                af.shizuku.manager.adb.AdbPairingService
-                    .startIntent(this)
-            try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(serviceIntent)
-                } else {
-                    startService(serviceIntent)
-                }
-                af.shizuku.manager.utils.SettingsHelper
-                    .launchOrHighlightWirelessDebugging(this)
-            } catch (_: Exception) {
-                AdbPairDialogFragment().show(supportFragmentManager, null)
-            }
+            startActivity(Intent(this, AdbPairingTutorialActivity::class.java))
         }
     }
 

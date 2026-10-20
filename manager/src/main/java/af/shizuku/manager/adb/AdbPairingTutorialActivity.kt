@@ -33,7 +33,11 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
         ) { granted ->
-            if (!granted &&
+            notificationEnabled = isNotificationEnabled()
+            syncNotificationEnabled()
+            if (notificationEnabled || granted) {
+                startPairingService()
+            } else if (
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
             ) {
@@ -41,7 +45,6 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                 Toast.makeText(this, R.string.dialog_notif_permission_denied, Toast.LENGTH_LONG).show()
                 SettingsPage.Notifications.NotificationSettings.launch(this)
             }
-            // onResume() re-checks enabled state and starts service if now granted
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +79,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
         if (notificationEnabled) {
             startPairingService()
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
 
         binding.apply {
@@ -83,6 +90,8 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             notificationDisabled.applySpringTouch()
             network.applySpringTouch()
             miui.applySpringTouch()
+            developerOptions.applySpringTouch()
+            manualPairing.applySpringTouch()
             syncNotificationEnabled()
 
             if (DeviceCompatibility.isMiui()) {
@@ -91,6 +100,12 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
             developerOptions.setOnClickListener {
                 SettingsHelper.launchOrHighlightWirelessDebugging(context)
+            }
+
+            manualPairing.setOnClickListener {
+                af.shizuku.manager.home
+                    .AdbPairDialogFragment()
+                    .show(supportFragmentManager, null)
             }
 
             notificationOptions.setOnClickListener {
