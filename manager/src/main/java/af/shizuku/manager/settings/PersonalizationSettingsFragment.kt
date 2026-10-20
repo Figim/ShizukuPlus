@@ -31,7 +31,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_category_appearance)
 
-    private lateinit var nightModePreference: IntegerSimpleMenuPreference
+    private lateinit var nightModePreference: IntegerSegmentedControlPreference
     private lateinit var blackNightThemePreference: TwoStatePreference
     private lateinit var amoledPlusPreference: TwoStatePreference
     private lateinit var useSystemColorPreference: TwoStatePreference

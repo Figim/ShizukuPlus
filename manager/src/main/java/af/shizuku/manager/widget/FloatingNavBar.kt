@@ -6,22 +6,29 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.home.SystemHubActivity
 import af.shizuku.manager.management.ApplicationManagementActivity
 import af.shizuku.manager.settings.SettingsActivity
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.FrameLayout
 import android.widget.ScrollView
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
+import rikka.core.util.ResourceUtils
 import timber.log.Timber
 import kotlin.math.min
 
@@ -89,7 +96,11 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             return
         }
         val isNew = existing == null
-        val root = existing ?: activity.layoutInflater.inflate(R.layout.floating_nav_bar, content, false).also { content.addView(it) }
+        val root =
+            existing ?: activity.layoutInflater.inflate(R.layout.floating_nav_bar, content, false).also {
+                content.addView(it)
+                it.applySpringTouch(scale = 0.98f)
+            }
         val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav)
 
         // Arriving from another tab: start on that tab and slide the indicator across, so the bar
@@ -179,11 +190,18 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         hide: Boolean,
     ) {
         val distance = bar.height + (bar.layoutParams as FrameLayout.LayoutParams).bottomMargin
+        val duration = ShizukuSettings.scaledAnimationDuration(if (hide) 180 else 260)
+        val interpolator =
+            if (hide) {
+                android.view.animation.PathInterpolator(0.3f, 0f, 0.8f, 0.15f)
+            } else {
+                android.view.animation.PathInterpolator(0.05f, 0.7f, 0.1f, 1f)
+            }
         bar
             .animate()
             .translationY(if (hide) distance.toFloat() else 0f)
-            .setDuration(ShizukuSettings.scaledAnimationDuration(if (hide) 180 else 240))
-            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+            .setDuration(duration)
+            .setInterpolator(interpolator)
             .start()
     }
 
@@ -206,6 +224,72 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         lp.width = width
         lp.gravity = android.view.Gravity.BOTTOM or android.view.Gravity.CENTER_HORIZONTAL
         root.layoutParams = lp
+
+        // M3 Expressive card adaptation: Dynamic curvature and AMOLED+ true black
+        val card = root as? MaterialCardView
+        if (card != null) {
+            if (!ShizukuSettings.isRoundedEdgesEnabled()) {
+                card.radius = 0f
+            } else {
+                val cornerOverride =
+                    ShizukuSettings
+                        .getPreferences()
+                        .getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")
+                card.radius =
+                    when (cornerOverride) {
+                        "gentle" -> 20f * density
+                        "standard" -> 28f * density
+                        "large" -> 36f * density
+                        "maximum" -> 44f * density
+                        else -> 32f * density
+                    }
+            }
+
+            val isNight = ResourceUtils.isNightMode(activity.resources.configuration)
+            val isAmoled = ShizukuSettings.isAmoledPlusEnabled() && isNight
+            val isBlur = ShizukuSettings.isBlurUiEnabled()
+
+            if (isAmoled) {
+                card.setCardBackgroundColor(Color.BLACK)
+                card.strokeColor =
+                    MaterialColors.getColor(
+                        activity,
+                        com.google.android.material.R.attr.colorOutlineVariant,
+                        Color.DKGRAY,
+                    )
+                card.strokeWidth = (1.2f * density).toInt()
+                card.cardElevation = 0f
+            } else {
+                val surfaceColor =
+                    MaterialColors.getColor(
+                        activity,
+                        com.google.android.material.R.attr.colorSurfaceContainerHigh,
+                        0xFF2B2930.toInt(),
+                    )
+                val alpha = if (isBlur) 0.80f else 0.92f
+                val bg = ColorUtils.setAlphaComponent(surfaceColor, (255 * alpha).toInt())
+                card.setCardBackgroundColor(bg)
+                card.strokeColor =
+                    MaterialColors.getColor(
+                        activity,
+                        com.google.android.material.R.attr.colorOutlineVariant,
+                        Color.TRANSPARENT,
+                    )
+                card.strokeWidth = (0.8f * density).toInt()
+                card.cardElevation = 6f * density
+            }
+        }
+
+        val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav)
+        if (nav != null) {
+            val indicatorColor =
+                MaterialColors.getColor(
+                    activity,
+                    com.google.android.material.R.attr.colorSecondaryContainer,
+                    0xFFE8DEF8.toInt(),
+                )
+            nav.itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             // Read the root insets: a parent may already have consumed the ones dispatched to us.

@@ -91,8 +91,14 @@ class FilterChipPreference
             val labels = entries.map { it.toString() }
             val keys = entryValues.map { it.toString() }
             val enabled = isEnabled
+            val prefIcon = icon
             cv.setPreferenceContent {
-                ComposePreferenceRow(title = title, summary = summary, enabled = enabled) {
+                ComposePreferenceRow(
+                    title = title,
+                    summary = summary,
+                    enabled = enabled,
+                    icon = prefIcon,
+                ) {
                     FilterChipGroup(
                         labels = labels,
                         selected = keys.indices.filter { keys[it] in selected.value }.toSet(),

@@ -8,11 +8,10 @@
         android:icon="@drawable/ic_palette_24"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.IntegerSimpleMenuPreference
+        <af.shizuku.manager.settings.IntegerSegmentedControlPreference
             android:entries="@array/night_mode"
             android:entryValues="@array/night_mode_value"
             android:key="night_mode"
-            android:summary="%s"
             android:title="@string/dark_theme"
             android:icon="@drawable/ic_outline_dark_mode_24" />
 
@@ -35,7 +34,7 @@
             android:title="@string/settings_use_system_color"
             android:icon="@drawable/ic_palette_24" />
 
-        <rikka.preference.SimpleMenuPreference
+        <af.shizuku.manager.settings.SliderPreference
             android:key="custom_accent"
             android:title="@string/settings_custom_accent_title"
             android:defaultValue="DEFAULT"
