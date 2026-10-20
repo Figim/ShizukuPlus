@@ -163,7 +163,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     )
 
     override fun onPreferenceTreeClick(preference: androidx.preference.Preference): Boolean {
-        HapticUtils.tap(requireView())
+        // Switches play their own toggle-on/off haptic (GrayableIconSwitchPreference); a generic
+        // tap on top made every toggle a muddy double buzz.
+        if (preference !is androidx.preference.TwoStatePreference) HapticUtils.tap(requireView())
         return super.onPreferenceTreeClick(preference)
     }
 
@@ -635,6 +637,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
             if (pos == 0) {
                 outRect.top = 0
+            } else if (followsSectionLabel(parent, pos)) {
+                // Keep a section's cards tight under its label.
+                outRect.top = (4 * density).toInt()
             } else if (isHeader(view) || !shouldDecorate(view) || startsGroup(parent, pos)) {
                 outRect.top = context.resources.getDimensionPixelSize(R.dimen.settings_section_top_offset)
             } else {
@@ -718,6 +723,22 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             view.tag != "standalone_card" &&
                 view !is com.google.android.material.card.MaterialCardView &&
                 view.findViewById<View>(R.id.card_update_container) == null
+
+        private fun followsSectionLabel(
+            parent: RecyclerView,
+            pos: Int,
+        ): Boolean {
+            var p = pos - 1
+            while (p >= 0) {
+                val prev = parent.findViewHolderForAdapterPosition(p)?.itemView ?: return false
+                if (prev.visibility == View.GONE) {
+                    p--
+                    continue
+                }
+                return prev.tag == "section_label"
+            }
+            return false
+        }
 
         /** True when no visible card row sits directly above [pos] (unknown/off-screen => mid-group). */
         private fun startsGroup(

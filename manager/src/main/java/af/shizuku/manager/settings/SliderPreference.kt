@@ -5,6 +5,7 @@ import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -143,6 +144,7 @@ private fun SliderPreferenceRow(
     val currentIndex = values.indexOf(currentValue).coerceAtLeast(0)
 
     var sliderValue by remember(currentIndex) { mutableFloatStateOf(currentIndex.toFloat()) }
+    var dragging by remember { androidx.compose.runtime.mutableStateOf(false) }
     val displayIndex = sliderValue.roundToInt().coerceIn(0, labels.size - 1)
     val activeLabel = labels.getOrElse(displayIndex) { "" }
 
@@ -191,17 +193,41 @@ private fun SliderPreferenceRow(
                     },
                 modifier = Modifier.padding(start = 12.dp),
             ) {
-                Text(
-                    text = activeLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    color =
-                        if (enabled) {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = disabledAlpha)
-                        },
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                )
+                // The value rolls in the drag direction (odometer-style) and the badge resizes
+                // on a spring, so moving the slider reads as physically turning a dial.
+                androidx.compose.animation.AnimatedContent(
+                    targetState = displayIndex,
+                    transitionSpec = {
+                        val dir = if (targetState > initialState) 1 else -1
+                        (
+                            androidx.compose.animation.slideInVertically { h -> h * dir } +
+                                androidx.compose.animation.fadeIn()
+                        ).togetherWith(
+                            androidx.compose.animation.slideOutVertically { h -> -h * dir } +
+                                androidx.compose.animation.fadeOut(),
+                        ).using(
+                            androidx.compose.animation.SizeTransform(clip = true) { _, _ ->
+                                androidx.compose.animation.core.spring(
+                                    dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy,
+                                    stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow,
+                                )
+                            },
+                        )
+                    },
+                    label = "sliderValue",
+                ) { idx ->
+                    Text(
+                        text = labels.getOrElse(idx) { "" },
+                        style = MaterialTheme.typography.labelMedium,
+                        color =
+                            if (enabled) {
+                                MaterialTheme.colorScheme.onPrimaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = disabledAlpha)
+                            },
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    )
+                }
             }
         }
 
@@ -210,14 +236,25 @@ private fun SliderPreferenceRow(
         Slider(
             value = sliderValue,
             onValueChange = { newRaw ->
+                if (!dragging) {
+                    dragging = true
+                    HapticUtils.gestureStart(view)
+                }
                 val prevStep = sliderValue.roundToInt()
                 val nextStep = newRaw.roundToInt()
                 if (prevStep != nextStep) {
-                    HapticUtils.segmentTick(view)
+                    // Firmer detent at either end stop, light tick in between.
+                    if (nextStep == 0 || nextStep == labels.size - 1) {
+                        HapticUtils.gestureThreshold(view)
+                    } else {
+                        HapticUtils.segmentTick(view)
+                    }
                 }
                 sliderValue = newRaw
             },
             onValueChangeFinished = {
+                dragging = false
+                HapticUtils.gestureEnd(view)
                 val finalIndex = sliderValue.roundToInt().coerceIn(0, values.size - 1)
                 sliderValue = finalIndex.toFloat()
                 val newValue = values[finalIndex]
