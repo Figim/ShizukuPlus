@@ -245,7 +245,7 @@
     <string name="adb_pairing_tutorial_content_miui_2">Əks halda, bildirişdən cütləşmə kodunu daxil edə bilməyə bilərsiniz.</string>
     <string name="adb_pairing_tutorial_content_finish">Shizuku-ya qayıdın və Shizuku-nu başladın.</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku yerli şəbəkəyə daxil olmalıdır. O, şəbəkə icazəsi ilə idarə olunur.</string>
-    <string name="adb_pairing_tutorial_content_network_limation_not_foreground">Bəzi sistemlər (məsələn, MIUI) tətbiq ön planda xidmətdən istifadə etsə belə, görünmədikdə şəbəkəyə daxil olmağına icazə vermir. Belə sistemlərdə Shizuku üçün batareya optimizasiya xüsusiyyətlərini söndürün.</string>
+    <string name="adb_pairing_tutorial_content_network_limation_not_foreground">Bəzi sistemlər (məsələn, MIUI) tətbiq ön planda xidmətdən istifadə etsə belə, görünmədikdə şəbəkəyə daxil olmağa icazə vermir. Belə sistemlərdə Shizuku üçün batareya optimizasiya xüsusiyyətlərini söndürün.</string>
 
     <!-- Home - Root -->
     <string name="home_root_title"><![CDATA[Başlat (root edilmiş cihazlar üçün)]]></string>
@@ -569,6 +569,9 @@
     <string name="settings_display_tuner_plus_title">Ekran Tənzimləyicisi</string>
     <string name="settings_device_control_home_title">Cihaz Nəzarəti Əsas Ekran Kartı</string>
     <string name="settings_device_control_home_summary">Əsas ekranda Cihaz Nəzarəti kartını göstərin. Wi-Fi, Bluetooth, Mobil İnternet, ekran, səs və enerjiyə imtiyazlı nəzarətə imkan verir. Eksperimental — bəzi cihazlarda gözlənilməz davranışa səbəb ola bilər.</string>
+
+    <!-- Buraxılmış "settings_device_control_home" sətri burada əlavə edildi -->
+    <string name="settings_device_control_home">Cihaz Nəzarəti</string>
 
     <string name="settings_plus_app_found">İnteqrasiya edilmiş tətbiq aşkarlandı: %1$s. Quraşdırma üçün toxunun.</string>
     <string name="settings_plus_app_setup_title">İnteqrasiyanı Quraşdır</string>
