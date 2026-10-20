@@ -784,7 +784,7 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Xidmət Həkimi</string>
-    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çvirirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
+    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çəkirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
     <string name="doctor_tips_title">Məsləhətlər &amp; həllər</string>
     <string name="doctor_action_rerun">Yenidən icra et</string>
     <string name="doctor_summary_healthy_title">Bütün sistemlər qaydasındadır</string>
