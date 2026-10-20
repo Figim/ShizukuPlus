@@ -105,10 +105,17 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
                 }
             }
 
+        // README / docs-only bullets are repo housekeeping, not something users care about.
+        private val README_BULLET =
+            Regex("""^\s*[-*]\s+.*\breadme(\.md)?\b.*$""", RegexOption.IGNORE_CASE)
+
         fun formatNotes(rawNotes: String): String =
             rawNotes
                 .substringBefore("## 📦 Recent Releases")
                 .replace(COMMIT_HASH_SUFFIX, "")
+                .lines()
+                .filterNot { README_BULLET.matches(it) }
+                .joinToString("\n")
                 .let { stripConventionalPrefixes(it) }
                 .trim()
     }

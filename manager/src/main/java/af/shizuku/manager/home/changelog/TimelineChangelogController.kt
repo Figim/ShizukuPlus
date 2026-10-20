@@ -153,7 +153,10 @@ class TimelineChangelogController(
             sort
                 .apply(releases.map { it.copy(isLatest = it.tag == latestTag) })
                 .mapNotNull { r ->
-                    if (selectedKinds.isEmpty()) {
+                    if (r.sections.isEmpty() && !r.isInstalled) {
+                        // Nothing user-facing left (e.g. a README-only pre-release).
+                        null
+                    } else if (selectedKinds.isEmpty()) {
                         r
                     } else {
                         r.copy(sections = r.sections.filter { it.kind in selectedKinds }).takeIf { it.sections.isNotEmpty() }

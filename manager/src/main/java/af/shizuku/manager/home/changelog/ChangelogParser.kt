@@ -24,6 +24,8 @@ object ChangelogParser {
     private val FEATURE_WORDS = Regex("""^(add|added|adds|new|introduce[sd]?|support|supports|implement(ed)?|enable[sd]?|allow|auto|expand|unify|let|use|scope|improve[sd]?)\b|\bfeature\b|auto-""")
     private val DOCS_WORDS = Regex("""\b(readme|docs?|documentation|changelog|wiki|translat\w*|devlog|ai_devlog|i18n|locali[sz]\w*)\b""")
 
+    private val README_ONLY = Regex("""\breadme(\.md)?\b""", RegexOption.IGNORE_CASE)
+
     fun parse(body: String): List<ChangeSection> {
         val cleaned = body.substringBefore("## 📦 Recent Releases").lines()
         val classified = mutableListOf<Pair<ChangeKind, String>>()
@@ -45,6 +47,8 @@ object ChangelogParser {
             val headingKind = kindOfHeading(title)
             for (raw in items) {
                 for (piece in splitCommits(raw)) {
+                    // README edits are repo housekeeping, not user-facing changes.
+                    if (README_ONLY.containsMatchIn(piece)) continue
                     classified.add(classify(piece, headingKind) to clean(piece))
                 }
             }
