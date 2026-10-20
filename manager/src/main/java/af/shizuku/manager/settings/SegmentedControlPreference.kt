@@ -5,15 +5,13 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
@@ -110,8 +108,12 @@ class SegmentedControlPreference
         }
     }
 
-/** Reusable segmented single-choice row (shared by SegmentedControlPreference and compound cards). */
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Reusable single-choice row (shared by SegmentedControlPreference and compound cards), drawn as an
+ * M3 Expressive connected button group: the selected button morphs to a full pill and pressed
+ * buttons squish on the theme's expressive spring, with a segment-tick haptic on every change.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SegmentedChoiceRow(
     labels: List<String>,
@@ -120,15 +122,44 @@ fun SegmentedChoiceRow(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SingleChoiceSegmentedButtonRow(modifier = modifier.fillMaxWidth()) {
+    val view = androidx.compose.ui.platform.LocalView.current
+    androidx.compose.foundation.layout.Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement =
+            androidx.compose.foundation.layout.Arrangement.spacedBy(
+                androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween,
+            ),
+    ) {
         labels.forEachIndexed { index, label ->
-            SegmentedButton(
-                selected = index == selectedIndex,
-                onClick = { onSelect(index) },
-                shape = SegmentedButtonDefaults.itemShape(index = index, count = labels.size),
+            androidx.compose.material3.ToggleButton(
+                checked = index == selectedIndex,
+                onCheckedChange = {
+                    if (index != selectedIndex) {
+                        af.shizuku.manager.utils.HapticUtils
+                            .segmentTick(view)
+                        onSelect(index)
+                    }
+                },
                 enabled = enabled,
-                label = { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            )
+                shapes =
+                    when (index) {
+                        0 ->
+                            androidx.compose.material3.ButtonGroupDefaults
+                                .connectedLeadingButtonShapes()
+                        labels.lastIndex ->
+                            androidx.compose.material3.ButtonGroupDefaults
+                                .connectedTrailingButtonShapes()
+                        else ->
+                            androidx.compose.material3.ButtonGroupDefaults
+                                .connectedMiddleButtonShapes()
+                    },
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .semantics { role = androidx.compose.ui.semantics.Role.RadioButton },
+            ) {
+                Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
         }
     }
 }

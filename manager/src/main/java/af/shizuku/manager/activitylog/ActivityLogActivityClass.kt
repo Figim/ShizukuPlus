@@ -16,6 +16,9 @@ class ActivityLogActivity : AppActivity() {
         setContent {
             val context = LocalContext.current
             AppTheme(
+                isExpressiveMotion =
+                    af.shizuku.manager.ShizukuSettings
+                        .isExpressiveAnimationsEnabled(),
                 darkTheme = isSystemInDarkTheme(),
                 isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
                 isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),

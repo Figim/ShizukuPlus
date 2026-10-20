@@ -30,6 +30,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 internal fun PreferenceComposeTheme(content: @Composable () -> Unit) {
     val context = LocalContext.current
     AppTheme(
+        isExpressiveMotion =
+            af.shizuku.manager.ShizukuSettings
+                .isExpressiveAnimationsEnabled(),
         isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
         isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),
         isOneUi = ShizukuSettings.isOneUiThemeEnabled(),

@@ -1,7 +1,6 @@
 package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
-import af.shizuku.manager.utils.HapticUtils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
@@ -116,7 +115,6 @@ class IntegerSegmentedControlPreference
                         onSelect = { index ->
                             val newValue = values.getOrNull(index) ?: return@SegmentedChoiceRow
                             if (newValue != selected.intValue && callChangeListener(newValue)) {
-                                HapticUtils.segmentTick(view)
                                 value = newValue
                             }
                         },

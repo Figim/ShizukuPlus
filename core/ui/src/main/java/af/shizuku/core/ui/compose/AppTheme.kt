@@ -244,6 +244,7 @@ fun AppTheme(
     isHighContrast: Boolean = false,
     isRoundedEdges: Boolean = true,
     themeVersion: Int = 0,
+    isExpressiveMotion: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -292,8 +293,17 @@ fun AppTheme(
         else -> Typography()
     }
 
+    // M3 Expressive motion: springy, physics-based specs for every M3 component (switch thumbs,
+    // sliders, tabs, segmented buttons, sheets). Standard scheme when the user turned it off.
+    @OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
     MaterialTheme(
         colorScheme = colorScheme,
+        motionScheme =
+            if (isExpressiveMotion) {
+                androidx.compose.material3.MotionScheme.expressive()
+            } else {
+                androidx.compose.material3.MotionScheme.standard()
+            },
         shapes = shapes,
         typography = typography,
         content = content

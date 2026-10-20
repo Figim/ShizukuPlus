@@ -238,6 +238,9 @@ open class HomeActivity :
         setContent {
             val context = LocalContext.current
             af.shizuku.core.ui.compose.AppTheme(
+                isExpressiveMotion =
+                    af.shizuku.manager.ShizukuSettings
+                        .isExpressiveAnimationsEnabled(),
                 darkTheme = androidx.compose.foundation.isSystemInDarkTheme(),
                 isBlackNightTheme =
                     af.shizuku.manager.app.ThemeHelper
