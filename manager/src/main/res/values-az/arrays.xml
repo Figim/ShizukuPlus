@@ -22,11 +22,11 @@
     </string-array>
 
     <string-array name="swipe_actions_values">
-        <item>none</item>
-        <item>open_app</item>
-        <item>app_info</item>
-        <item>toggle_permission</item>
-        <item>hide_from_list</item>
+        <item>heç_biri</item>
+        <item>tətbiqi_aç</item>
+        <item>tətbiq_məlumatı</item>
+        <item>icazəni_dəyişdir</item>
+        <item>siyahıdan_gizlət</item>
     </string-array>
 
     <string-array name="spoof_targets">
@@ -49,7 +49,7 @@
     </string-array>
 
     <string-array name="spoof_targets_values">
-        <item>auto</item>
+        <item>avto</item>
         <item>pixel_10_pro_xl</item>
         <item>pixel_9_pro_xl</item>
         <item>pixel_8_pro</item>
@@ -77,12 +77,12 @@
     </string-array>
 
     <string-array name="corner_style_values">
-        <item>global</item>
-        <item>sharp</item>
-        <item>rounded</item>
-        <item>large</item>
-        <item>squircle</item>
-        <item>xlarge</item>
+        <item>ümumi</item>
+        <item>itilənmiş</item>
+        <item>yuvarlaqlaşdırılmış</item>
+        <item>böyük</item>
+        <item>skvırkl</item>
+        <item>çox_böyük</item>
     </string-array>
 
     <string-array name="corner_rounding_entries">
@@ -95,12 +95,12 @@
     </string-array>
 
     <string-array name="corner_rounding_values">
-        <item>default</item>
-        <item>gentle</item>
-        <item>standard</item>
-        <item>large</item>
-        <item>maximum</item>
-        <item>system</item>
+        <item>defolt</item>
+        <item>zərif</item>
+        <item>standart</item>
+        <item>böyük</item>
+        <item>maksimum</item>
+        <item>sistem</item>
     </string-array>
 
     <string-array name="update_channel_entries">
@@ -109,8 +109,8 @@
     </string-array>
 
     <string-array name="update_channel_values">
-        <item>stabil</item>
-        <item>erkən</item>
+        <item>sabit</item>
+        <item>tərtibatçı</item>
     </string-array>
 
     <string-array name="custom_accents">
@@ -125,14 +125,14 @@
     </string-array>
 
     <string-array name="custom_accents_values">
-        <item>DEFAULT</item>
-        <item>VIOLET</item>
-        <item>GREEN</item>
-        <item>CRIMSON</item>
-        <item>OCEAN</item>
-        <item>AMBER</item>
-        <item>ROSE</item>
-        <item>SLATE</item>
+        <item>DEFOLT</item>
+        <item>BƏNÖVŞƏYİ</item>
+        <item>YAŞIL</item>
+        <item>TÜND_QIRMIZI</item>
+        <item>OKEAN</item>
+        <item>KƏHRƏBA</item>
+        <item>QIZILGÜL</item>
+        <item>ŞİST</item>
     </string-array>
 
     <string-array name="changelog_styles">
@@ -142,7 +142,7 @@
 
     <string-array name="changelog_styles_value">
         <item>klassik</item>
-        <item>zaman cizgiləri</item>
+        <item>xronologiya</item>
     </string-array>
 
     <string-array name="tcp_network_protection_entries">
@@ -152,7 +152,7 @@
     </string-array>
 
     <string-array name="tcp_network_protection_values">
-        <item>qapalı</item>
+        <item>sönülü</item>
         <item>açıq</item>
         <item>etibarlı</item>
     </string-array>
@@ -167,7 +167,7 @@
     </string-array>
 
     <string-array name="app_icon_alias_values">
-        <item>ilkin</item>
+        <item>defolt</item>
         <item>klassik</item>
         <item>sistem</item>
         <item>alətlər</item>
