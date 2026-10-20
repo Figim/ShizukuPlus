@@ -371,9 +371,9 @@
     <string name="onboarding_longpress_desc">Tətbiqə uzun basdıqda hansı əməliyyatların görünəcəyini seçin və ya Dhizuku Rejimi kimi Shizuku+ eksklüziv xüsusiyyətlərini aktivləşdirin.</string>
     <string name="onboarding_next">Növbəti</string>
     <string name="onboarding_skip">Keç</string>
-    <string name="onboarding_get_started">Başlayaq</string>
+    <string name="onboarding_get_started">Başlat</string>
     <string name="onboarding_setup_title">Shizuku+-ı Başlat</string>
-    <string name="onboarding_setup_desc">Bu cihazda Shizuku+-ın necə başladılacağını seçin. Bunu sonradan əsas ekran edə bilərsiniz.</string>
+    <string name="onboarding_setup_desc">Bu cihazda Shizuku+-ın necə başladılacağını seçin. Bunu sonradan əsas ekranda edə bilərsiniz.</string>
     <string name="onboarding_setup_running">Shizuku+ işləyir</string>
     <string name="onboarding_setup_later">Bunu sonra edəcəyəm</string>
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
