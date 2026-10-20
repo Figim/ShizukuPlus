@@ -476,7 +476,8 @@ class AdbPairingService : Service() {
             .setContentTitle(getString(R.string.notification_adb_pairing_service_found_title))
             .setContentText(getString(R.string.notification_adb_pairing_input_paring_code))
             .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentIntent(contentIntent)
+            // No content intent: tapping the body would open an activity over Settings and can
+            // close the system pairing dialog (invalidating the code). Inline reply only.
             .setOnlyAlertOnce(true)
             .addAction(replyNotificationAction(port))
             .build()

@@ -120,6 +120,14 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-20 — Claude (Regression sweep after Antigravity Oct 11–20 sessions) [branch fix/antigravity-regressions]
+
+- **Pairing**: removed `AdbPairingService` auto-launch of `MainActivity` (CLEAR_TOP) on success — it tore down onboarding/tutorial and is BAL-blocked on 10+; success notification's Start action covers it. Default "service found" notification is inline-reply-only again (content intent opened an activity over Settings and could kill the pairing dialog). Restored `AdbMdns` rediscovery retry, scoped to this device's own adbd. Pairing connect timeout back to 3s.
+- **Floating nav / System Hub**: bottom clearance moved from the Column `Modifier.padding` into Metrics/Activity Log scroll content. `FloatingNavBar.reserveSpace` skips Compose roots, so every Compose screen must add its own content padding — never pad the outer container (exposes bare window background = black bar in AMOLED).
+- **Server**: `getAICorePlus()` re-gated on `ai_core_plus` for third-party callers; manager exempt (System Hub metrics). Antigravity had dropped the gate entirely in `dc4f56ec`.
+- **Compat Hub**: progress text localized; uninstall no longer reports "complete" on failure.
+- **Needs on-device verification**: pairing (notification + onboarding), compat uninstall (`pm uninstall` with secondary user 150 present), black bar on Home/Settings, duplicate titles, OneUI subtext, settings scroll jitter, bold typography.
+
 ### 2026-10-18 — Antigravity (Advanced Multi-Agent Review & M3E UX Consolidation) [Stable Release Prep]
 
 - **Multi-Agent Review & Final Stabilization Pass (v13.7.0.r2852)**:
