@@ -262,6 +262,7 @@ dependencies {
     implementation libs.material
 
     implementation libs.libsu.core
+    implementation libs.blurview
     
     implementation libs.aboutlibraries.core
     implementation libs.rikkax.appcompat

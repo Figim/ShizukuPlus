@@ -361,9 +361,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     ColorUtils.blendARGB(0xFFF6F7F9.toInt(), primary, 0.08f)
                 }
 
-            val alphaFraction = if (isBlur) 0.65f else 0.80f
+            val blurActive = isBlur && setupBlur(activity, root)
+            // With real blur behind it the tint can be lighter; without, keep it denser so labels
+            // stay legible over busy content.
+            val alphaFraction = if (blurActive) 0.55f else 0.85f
             val cardBg = ColorUtils.setAlphaComponent(baseSurface, (255 * alphaFraction).toInt())
             card.setCardBackgroundColor(cardBg)
+            card.clipToOutline = true
 
             // Specular luminous glass rim
             val glassRim =
@@ -374,7 +378,9 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 }
             card.strokeColor = glassRim
             card.strokeWidth = (1.0f * density).toInt()
-            card.cardElevation = 8f * density
+            // No elevation: the shadow of a translucent card renders *through* its fill as a
+            // dark band under the bar (the recurring "black bar"). The rim defines the edge.
+            card.cardElevation = 0f
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
                 card.outlineAmbientShadowColor = Color.argb(30, 0, 0, 0)
@@ -451,6 +457,61 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
      * Lets lists scroll their last row clear of the bar. Scrollables already padded at least that
      * much (the settings list reserves its own clearance) are left alone.
      */
+
+    /**
+     * Points the bar's BlurView at the screen's BlurTarget. Returns false (plain translucent card)
+     * below API 31 - the RenderScript path is deprecated and too slow for a always-visible bar - or
+     * when the screen wasn't wrapped (setting turned on after the screen was created).
+     */
+    private fun setupBlur(
+        activity: Activity,
+        root: View,
+    ): Boolean {
+        val blurView = root.findViewById<eightbitlab.com.blurview.BlurView>(R.id.floating_nav_blur) ?: return false
+        val target =
+            (activity.findViewById<ViewGroup>(android.R.id.content)?.getChildAt(0) as? eightbitlab.com.blurview.BlurTarget)
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S || target == null) {
+            blurView.setBlurEnabled(false)
+            return false
+        }
+        return runCatching {
+            blurView
+                .setupWith(target)
+                .setFrameClearDrawable(activity.window.decorView.background)
+                .setBlurRadius(24f)
+            blurView.setBlurEnabled(true)
+            true
+        }.getOrElse {
+            Timber.w(it, "floating nav blur unavailable")
+            blurView.setBlurEnabled(false)
+            false
+        }
+    }
+
+    /**
+     * Wraps the screen's content in a BlurTarget so the bar can blur what's behind it. Runs in
+     * onActivityPostCreated - after setContentView, before the window attaches - so no view
+     * (notably a ComposeView) is ever detached and loses its composition.
+     */
+    private fun wrapInBlurTarget(activity: Activity) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return
+        if (!isEnabled() || !ShizukuSettings.isBlurUiEnabled() || itemFor(activity) == null) return
+        val content = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
+        if (content.isAttachedToWindow || content.getChildAt(0) is eightbitlab.com.blurview.BlurTarget) return
+        val children = (0 until content.childCount).map { content.getChildAt(it) }
+        val target = eightbitlab.com.blurview.BlurTarget(activity)
+        children.forEach { child ->
+            val lp = child.layoutParams
+            content.removeView(child)
+            target.addView(child, lp)
+        }
+        content.addView(
+            target,
+            0,
+            FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT),
+        )
+    }
+
     private fun reserveSpace(
         content: ViewGroup,
         bar: View,
@@ -500,6 +561,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 sync(activity)
             }
         }
+    }
+
+    override fun onActivityPostCreated(
+        activity: Activity,
+        savedInstanceState: Bundle?,
+    ) {
+        runCatching { wrapInBlurTarget(activity) }.onFailure { Timber.w(it, "BlurTarget wrap failed") }
     }
 
     override fun onActivityStarted(activity: Activity) = Unit

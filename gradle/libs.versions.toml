@@ -25,6 +25,7 @@ rikkax-recyclerview = "1.3.2"
 rikkax-lifecycle = "1.0.1"
 sentry = "8.40.0"
 libsu = "6.0.0"
+blurview = "version-3.2.0"
 hiddenapibypass = "6.1"
 bouncycastle = "1.81"
 appiconloader = "1.5.0"
@@ -125,6 +126,8 @@ hidden-stub = { group = "dev.rikka.hidden", name = "stub", version.ref = "hidden
 refine-runtime = { group = "dev.rikka.tools.refine", name = "runtime", version.ref = "refine" }
 
 libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
+# Real-time frosted-glass blur behind the floating nav bar (Apache-2.0).
+blurview = { group = "com.github.Dimezis", name = "BlurView", version.ref = "blurview" }
 hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
 bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }
