@@ -221,13 +221,23 @@ object IconStyleHelper {
                     setColor(color)
                 }
             "cut" -> cutDrawable(context, color)
-            else ->
+            else -> {
+                // "modern" (default) - pill curvature adapts with the corner rounding override
+                val density = context.resources.displayMetrics.density
+                val baseRadius =
+                    when (ShizukuSettings.getPreferences().getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")) {
+                        "gentle" -> 8f * density
+                        "standard" -> 10f * density
+                        "large" -> 14f * density
+                        "maximum" -> 16f * density
+                        else -> 12f * density
+                    }
                 GradientDrawable().apply {
-                    // "modern" (default)
                     shape = GradientDrawable.RECTANGLE
-                    cornerRadius = 8 * context.resources.displayMetrics.density
+                    cornerRadius = baseRadius
                     setColor(color)
                 }
+            }
         }
     }
 

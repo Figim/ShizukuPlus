@@ -104,6 +104,7 @@ class SliderPreference
             val labels = entries.map { it.toString() }
             val values = entryValues.map { it.toString() }
             val enabled = isEnabled
+            val prefIcon = icon
 
             cv.setPreferenceContent {
                 SliderPreferenceRow(
@@ -113,6 +114,7 @@ class SliderPreference
                     values = values,
                     currentValue = selected.value,
                     enabled = enabled,
+                    icon = prefIcon,
                     onValueChanged = { newValue ->
                         if (newValue != selected.value && callChangeListener(newValue)) {
                             value = newValue
@@ -131,6 +133,7 @@ private fun SliderPreferenceRow(
     values: List<String>,
     currentValue: String?,
     enabled: Boolean,
+    icon: android.graphics.drawable.Drawable? = null,
     onValueChanged: (String) -> Unit,
 ) {
     if (labels.isEmpty() || values.isEmpty()) return
@@ -149,22 +152,33 @@ private fun SliderPreferenceRow(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
-        // Header row: Title + Live Value Chip
+        // Header row: Icon + Title + Live Value Chip
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (!title.isNullOrEmpty()) {
-                Text(
-                    text = title.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    color =
-                        MaterialTheme.colorScheme.onSurface.let {
-                            if (enabled) it else it.copy(alpha = disabledAlpha)
-                        },
-                    modifier = Modifier.weight(1f, fill = false),
-                )
+            Row(
+                modifier = Modifier.weight(1f, fill = false),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (icon != null) {
+                    PreferenceIconView(
+                        drawable = icon,
+                        enabled = enabled,
+                        modifier = Modifier.padding(end = 16.dp),
+                    )
+                }
+                if (!title.isNullOrEmpty()) {
+                    Text(
+                        text = title.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color =
+                            MaterialTheme.colorScheme.onSurface.let {
+                                if (enabled) it else it.copy(alpha = disabledAlpha)
+                            },
+                    )
+                }
             }
 
             Surface(

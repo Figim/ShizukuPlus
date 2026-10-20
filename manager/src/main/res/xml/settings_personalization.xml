@@ -74,7 +74,8 @@
             android:title="@string/settings_icon_style"
             android:defaultValue="twotone"
             android:entries="@array/icon_styles"
-            android:entryValues="@array/icon_styles_value" />
+            android:entryValues="@array/icon_styles_value"
+            android:icon="@drawable/ic_palette_24" />
 
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="icon_color_mode"
@@ -83,7 +84,8 @@
             android:defaultValue="uniform"
             android:entries="@array/icon_color_modes"
             android:entryValues="@array/icon_color_modes_value"
-            android:dependency="icon_style" />
+            android:dependency="icon_style"
+            android:icon="@drawable/ic_palette_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="expressive_shapes"
@@ -92,10 +94,9 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_palette_24" />
 
-        <rikka.preference.SimpleMenuPreference
+        <af.shizuku.manager.settings.SliderPreference
             android:key="shape_style"
             android:title="@string/settings_shape_style"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="modern"
             android:entries="@array/shape_styles"
             android:entryValues="@array/shape_styles_value"
@@ -114,21 +115,20 @@
             android:title="@string/settings_corner_rounding_override"
             android:defaultValue="default"
             android:entries="@array/corner_rounding_entries"
-            android:entryValues="@array/corner_rounding_values" />
+            android:entryValues="@array/corner_rounding_values"
+            android:icon="@drawable/ic_window_24" />
 
-        <rikka.preference.SimpleMenuPreference
+        <af.shizuku.manager.settings.SliderPreference
             android:key="home_card_corner_style"
             android:title="@string/settings_home_card_shape"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="global"
             android:entries="@array/corner_style_entries"
             android:entryValues="@array/corner_style_values"
             android:icon="@drawable/ic_window_24" />
 
-        <rikka.preference.SimpleMenuPreference
+        <af.shizuku.manager.settings.SliderPreference
             android:key="settings_card_corner_style"
             android:title="@string/settings_settings_card_shape"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="global"
             android:entries="@array/corner_style_entries"
             android:entryValues="@array/corner_style_values"
@@ -161,7 +161,8 @@
             android:title="@string/settings_animation_intensity"
             android:defaultValue="2"
             android:entries="@array/animation_intensities"
-            android:entryValues="@array/animation_intensities_value" />
+            android:entryValues="@array/animation_intensities_value"
+            android:icon="@drawable/ic_outline_play_arrow_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="haptic_feedback"
@@ -198,10 +199,9 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_format_bold_24" />
 
-        <rikka.preference.SimpleMenuPreference
+        <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="changelog_style"
             android:title="@string/settings_changelog_style"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="timeline"
             android:entries="@array/changelog_styles"
             android:entryValues="@array/changelog_styles_value"
@@ -260,10 +260,9 @@
             android:icon="@drawable/ic_window_24"
             android:defaultValue="false" />
 
-        <rikka.preference.SimpleMenuPreference
+        <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="status_card_outline_style"
             android:title="@string/settings_status_card_outline_style"
-            app:useSimpleSummaryProvider="true"
             android:defaultValue="material"
             android:entries="@array/status_card_outline_styles"
             android:entryValues="@array/status_card_outline_styles_value"

@@ -86,8 +86,14 @@ class SegmentedControlPreference
             val labels = entries.map { it.toString() }
             val values = entryValues.map { it.toString() }
             val enabled = isEnabled
+            val prefIcon = icon
             cv.setPreferenceContent {
-                ComposePreferenceRow(title = title, summary = summary, enabled = enabled) {
+                ComposePreferenceRow(
+                    title = title,
+                    summary = summary,
+                    enabled = enabled,
+                    icon = prefIcon,
+                ) {
                     SegmentedChoiceRow(
                         labels = labels,
                         selectedIndex = values.indexOf(selected.value),

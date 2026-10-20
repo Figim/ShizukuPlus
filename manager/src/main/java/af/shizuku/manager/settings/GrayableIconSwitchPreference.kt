@@ -20,7 +20,11 @@ open class GrayableIconSwitchPreference
             lastItemView = java.lang.ref.WeakReference(holder.itemView)
             holder.itemView
                 .findViewById<ImageView>(android.R.id.icon)
-                ?.alpha = if (isChecked) 1.0f else 0.38f
+                ?.apply {
+                    alpha = if (isChecked) 1.0f else 0.38f
+                    scaleX = if (isChecked) 1.0f else 0.90f
+                    scaleY = if (isChecked) 1.0f else 0.90f
+                }
         }
 
         override fun onClick() {
@@ -35,13 +39,15 @@ open class GrayableIconSwitchPreference
                         af.shizuku.manager.utils.HapticUtils
                             .toggleOff(v)
                     }
-                    // Smooth icon alpha transition on toggle instead of a snap rebind.
+                    // Smooth icon alpha and spring scale transition on toggle.
                     v
                         .findViewById<ImageView>(android.R.id.icon)
                         ?.animate()
                         ?.alpha(if (isChecked) 1.0f else 0.38f)
+                        ?.scaleX(if (isChecked) 1.0f else 0.90f)
+                        ?.scaleY(if (isChecked) 1.0f else 0.90f)
                         ?.setDuration(ShizukuSettings.scaledAnimationDuration(200))
-                        ?.setInterpolator(android.view.animation.AccelerateDecelerateInterpolator())
+                        ?.setInterpolator(android.view.animation.OvershootInterpolator(1.2f))
                         ?.start()
                 }
             }

@@ -3,16 +3,23 @@ package af.shizuku.manager.settings
 import af.shizuku.core.ui.compose.AppTheme
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.app.ThemeHelper
+import android.graphics.drawable.Drawable
+import android.widget.ImageView
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 
 /**
  * Theme wrapper for Compose content hosted inside a preference row. The preference RecyclerView
@@ -36,12 +43,40 @@ internal fun ComposeView.setPreferenceContent(content: @Composable () -> Unit) {
     setContent { PreferenceComposeTheme(content) }
 }
 
+/**
+ * Helper to display stylized drawables inside Compose preference rows matching
+ * standard Material 3 preference icon styling.
+ */
+@Composable
+internal fun PreferenceIconView(
+    drawable: Drawable?,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    if (drawable == null) return
+    val disabledAlpha = 0.38f
+    AndroidView(
+        factory = { ctx ->
+            ImageView(ctx).apply {
+                scaleType = ImageView.ScaleType.FIT_CENTER
+                setImageDrawable(drawable)
+            }
+        },
+        update = { iv ->
+            iv.setImageDrawable(drawable)
+            iv.alpha = if (enabled) 1.0f else disabledAlpha
+        },
+        modifier = modifier.size(36.dp),
+    )
+}
+
 /** Standard title/content/summary layout used by the Compose-backed preferences. */
 @Composable
 internal fun ComposePreferenceRow(
     title: CharSequence?,
     summary: CharSequence?,
     enabled: Boolean,
+    icon: Drawable? = null,
     content: @Composable () -> Unit,
 ) {
     val disabledAlpha = 0.38f
@@ -51,18 +86,34 @@ internal fun ComposePreferenceRow(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        if (!title.isNullOrEmpty()) {
-            Text(
-                text = title.toString(),
-                style = MaterialTheme.typography.titleMedium,
-                color =
-                    MaterialTheme.colorScheme.onSurface.let {
-                        if (enabled) it else it.copy(alpha = disabledAlpha)
-                    },
-                modifier = Modifier.padding(bottom = 8.dp),
-            )
+        if (!title.isNullOrEmpty() || icon != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (icon != null) {
+                    PreferenceIconView(
+                        drawable = icon,
+                        enabled = enabled,
+                        modifier = Modifier.padding(end = 16.dp),
+                    )
+                }
+                if (!title.isNullOrEmpty()) {
+                    Text(
+                        text = title.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color =
+                            MaterialTheme.colorScheme.onSurface.let {
+                                if (enabled) it else it.copy(alpha = disabledAlpha)
+                            },
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                }
+            }
         }
-        content()
+        Box(modifier = Modifier.fillMaxWidth()) {
+            content()
+        }
         if (!summary.isNullOrEmpty()) {
             Text(
                 text = summary.toString(),
