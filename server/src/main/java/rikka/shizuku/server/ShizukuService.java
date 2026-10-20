@@ -812,16 +812,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final java.util.Map<String, String> plusSettingsMap = new java.util.concurrent.ConcurrentHashMap<>();
 
     private boolean isFeatureEnabled(String key) {
-        if (featureEnabledMap.containsKey(key)) return featureEnabledMap.get(key);
+        // Hot path (several checks per transactRemote): one get per candidate key, no
+        // containsKey + get double lookups or unboxing a value that could race to null.
+        Boolean value = featureEnabledMap.get(key);
+        if (value != null) return value;
         // The manager and the server don't always agree on whether a feature key carries the
         // "_enabled" suffix. Normalize in BOTH directions so a caller checking "foo_enabled"
         // still resolves a value the manager synced as "foo" (and vice versa).
-        if (key.endsWith("_enabled")) {
-            String stripped = key.substring(0, key.length() - "_enabled".length());
-            if (featureEnabledMap.containsKey(stripped)) return featureEnabledMap.get(stripped);
-        } else if (featureEnabledMap.containsKey(key + "_enabled")) {
-            return featureEnabledMap.get(key + "_enabled");
-        }
+        value = key.endsWith("_enabled")
+                ? featureEnabledMap.get(key.substring(0, key.length() - "_enabled".length()))
+                : featureEnabledMap.get(key + "_enabled");
+        if (value != null) return value;
         // Core bridge, mocking, and diagnostic AI features default to true so standalone CLI / ADB runs work
         if (key.equals("su_bridge") || key.equals("shell_interceptor") || key.equals("root_magisk_mocking") || key.equals("ai_core_plus")) {
             return true;
@@ -964,7 +965,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     protected boolean handleShadowBinderTransaction(IBinder target, int code, Parcel data, Parcel reply, int flags) {
         try {
-            String descriptor = target.getInterfaceDescriptor();
+            // Cached: transactRemote already resolved it, so no second IPC round-trip here.
+            String descriptor = descriptorOf(target);
             // Shadowing IPackageManager to hide specific apps or spoof Magisk presence
             if ("android.content.pm.IPackageManager".equals(descriptor)) {
                 // Save position to restore if we don't handle it
@@ -2104,7 +2106,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         IBinder target = ServiceManager.getService(serviceName);
                         if (target != null) {
-                            String descriptor = target.getInterfaceDescriptor();
+                            String descriptor = descriptorOf(target);
                             if (descriptor != null) {
                                 // 1. Pass raw IPCs through Shizuku's Binder firewall
                                 if (isBinderCallBlocked(callingUid, descriptor, code)) {
