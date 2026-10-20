@@ -67,7 +67,8 @@
         <item>tcl_50_pro</item>
     </string-array>
 
-    <string-array name="corner_style_entries">
+  
+  <string-array name="corner_style_entries">
         <item>@string/corner_style_global</item>
         <item>@string/corner_style_sharp</item>
         <item>@string/corner_style_rounded</item>
@@ -135,7 +136,8 @@
         <item>ŞİST</item>
     </string-array>
 
-    <string-array name="changelog_styles">
+   
+  <string-array name="changelog_styles">
         <item>@string/changelog_style_classic</item>
         <item>@string/changelog_style_timeline</item>
     </string-array>
