@@ -41,6 +41,7 @@ private class NotRootedException : Exception()
 
 class StarterActivity : AppBarActivity() {
     private val viewModel: ViewModel by viewModels()
+    private lateinit var binding: StarterActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +49,7 @@ class StarterActivity : AppBarActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_24)
 
-        val binding = StarterActivityBinding.inflate(layoutInflater, rootView, true)
+        binding = StarterActivityBinding.inflate(layoutInflater, rootView, true)
 
         val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
         // ADB start connects to the wireless-debugging service over the local network / loopback,
@@ -137,6 +138,40 @@ class StarterActivity : AppBarActivity() {
                 userGesture,
             )
         }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
+        val targetTitle = getString(if (isRoot) R.string.home_root_title else R.string.home_adb_title)
+        supportActionBar?.title = ""
+        toolbar?.title = ""
+        binding.scrollView.setOnScrollChangeListener(
+            androidx.core.widget.NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+                val trigger = binding.header.root.bottom - (toolbar?.height ?: 0)
+                if (scrollY >= trigger) {
+                    if (supportActionBar?.title.isNullOrEmpty()) {
+                        supportActionBar?.title = targetTitle
+                        toolbar?.title = targetTitle
+                    }
+                } else {
+                    if (!supportActionBar?.title.isNullOrEmpty()) {
+                        supportActionBar?.title = ""
+                        toolbar?.title = ""
+                    }
+                }
+                val alpha =
+                    (
+                        1f - (
+                            scrollY.toFloat() / (
+                                binding.header.root.height
+                                    .coerceAtLeast(1) * 0.8f
+                            )
+                        )
+                    ).coerceIn(0f, 1f)
+                binding.header.root.alpha = alpha
+            },
+        )
     }
 
     companion object {

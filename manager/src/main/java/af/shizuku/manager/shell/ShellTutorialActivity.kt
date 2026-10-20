@@ -228,4 +228,37 @@ class ShellTutorialActivity : AppBarActivity() {
         val plusCmd = getString(R.string.terminal_tutorial_run_plus_command) + " (sh $plusPath)"
         binding.command3.text = "$rishCmd\n\n$plusCmd"
     }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val targetTitle = getString(R.string.home_terminal_title)
+        supportActionBar?.title = ""
+        toolbar?.title = ""
+        binding.scrollView.setOnScrollChangeListener(
+            androidx.core.widget.NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+                val trigger = binding.header.root.bottom - (toolbar?.height ?: 0)
+                if (scrollY >= trigger) {
+                    if (supportActionBar?.title.isNullOrEmpty()) {
+                        supportActionBar?.title = targetTitle
+                        toolbar?.title = targetTitle
+                    }
+                } else {
+                    if (!supportActionBar?.title.isNullOrEmpty()) {
+                        supportActionBar?.title = ""
+                        toolbar?.title = ""
+                    }
+                }
+                val alpha =
+                    (
+                        1f - (
+                            scrollY.toFloat() / (
+                                binding.header.root.height
+                                    .coerceAtLeast(1) * 0.8f
+                            )
+                        )
+                    ).coerceIn(0f, 1f)
+                binding.header.root.alpha = alpha
+            },
+        )
+    }
 }

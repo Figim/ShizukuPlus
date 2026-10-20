@@ -135,6 +135,7 @@ open class ApplicationManagementActivity :
             val minHeaderHeight = if (isOneHanded) (screenHeight * 0.16f).toInt() else 0
             oneUiHeader?.minimumHeight = minHeaderHeight
             supportActionBar?.title = ""
+            toolbar?.title = ""
 
             viewModel.grantedCount.observe(this) { res ->
                 val count = res?.data ?: 0
@@ -296,6 +297,46 @@ open class ApplicationManagementActivity :
         ShizukuStateMachine.addListener(stateListener)
     }
 
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+        val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+        if (isOneUi || isOneHanded) {
+            supportActionBar?.title = ""
+            toolbar?.title = ""
+            setupOneUiHeaderCollapse()
+        }
+    }
+
+    private fun setupOneUiHeaderCollapse() {
+        val appBar = toolbarContainer ?: return
+        val oneUiTitle = rootView.findViewById<TextView>(R.id.oneui_header_title)
+        val oneUiSubtitle = rootView.findViewById<TextView>(R.id.oneui_header_subtitle)
+
+        appBar.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
+            if (adapter.isSelectionMode) return@addOnOffsetChangedListener
+            val totalScrollRange = appBarLayout.totalScrollRange
+            if (totalScrollRange == 0) return@addOnOffsetChangedListener
+            val fraction = kotlin.math.abs(verticalOffset).toFloat() / totalScrollRange
+
+            if (fraction >= 0.75f) {
+                if (supportActionBar?.title.isNullOrEmpty()) {
+                    supportActionBar?.title = getString(R.string.home_app_management_title)
+                    toolbar?.title = getString(R.string.home_app_management_title)
+                }
+            } else {
+                if (!supportActionBar?.title.isNullOrEmpty()) {
+                    supportActionBar?.title = ""
+                    toolbar?.title = ""
+                }
+            }
+
+            val alpha = (1f - fraction * 1.8f).coerceIn(0f, 1f)
+            oneUiTitle?.alpha = alpha
+            oneUiSubtitle?.alpha = alpha
+        }
+    }
+
     // ----- Options menu: sort -----
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -368,7 +409,9 @@ open class ApplicationManagementActivity :
                     adapter.isSelectionMode = false
                     backCallback?.isEnabled = false
                     invalidateOptionsMenu()
-                    supportActionBar?.title = getString(R.string.home_app_management_title)
+                    val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+                    val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                    supportActionBar?.title = if (isOneUi || isOneHanded) "" else getString(R.string.home_app_management_title)
                 }
             }
             return true

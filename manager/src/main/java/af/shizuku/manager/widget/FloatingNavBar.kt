@@ -130,7 +130,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         root.bringToFront()
         ViewCompat.requestApplyInsets(root)
         root.post {
-            reserveSpace(content, root, activity is SystemHubActivity)
+            reserveSpace(content, root)
             af.shizuku.manager.app.SnackbarHelper
                 .updateAnchor(root)
         }
@@ -452,19 +452,24 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     private fun reserveSpace(
         content: ViewGroup,
         bar: View,
-        padComposeRoot: Boolean,
     ) {
         if (bar.height == 0) return
         val needed =
             bar.height +
                 (bar.layoutParams as FrameLayout.LayoutParams).bottomMargin +
-                (32 * bar.resources.displayMetrics.density).toInt()
+                (24 * bar.resources.displayMetrics.density).toInt()
 
         fun visit(view: View) {
             if (view === bar) return
+            if (view is androidx.compose.ui.platform.AbstractComposeView) {
+                // Do NOT pad Compose root views. Compose manages its own internal padding
+                // (e.g. contentPadding on LazyColumn) and clipping, allowing backgrounds and
+                // gradients to draw edge-to-edge behind the floating dock without exposing the
+                // solid windowBackground letterbox.
+                return
+            }
             val scrollable = view is RecyclerView || view is NestedScrollView || view is ScrollView || view is AbsListView
-            val composeRoot = view is androidx.compose.ui.platform.AbstractComposeView
-            if ((scrollable || composeRoot) && view.paddingBottom < needed) {
+            if (scrollable && view.paddingBottom < needed) {
                 view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, needed)
                 if (view is ViewGroup) view.clipToPadding = false
             }
