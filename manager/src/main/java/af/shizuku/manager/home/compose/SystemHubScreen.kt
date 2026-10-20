@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,11 +45,9 @@ fun SystemHubScreen(
             if (af.shizuku.manager.ShizukuSettings
                     .isFloatingNavBarEnabled()
             ) {
-                112
-                    .androidx.compose.ui.unit.dp
+                112.dp
             } else {
-                0
-                    .androidx.compose.ui.unit.dp
+                0.dp
             }
         Column(
             modifier =
