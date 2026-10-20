@@ -1881,9 +1881,4 @@
     <string name="settings_fake_su_consumer_summary">Standard yalnız-root tətbiqlərinin (AdAway və ya Franco Kernel kimi) telefonunuzu həmişəlik root etmədən Shizuku+ vasitəsilə işləməsinə icazə verin.</string>
     <string name="settings_root_file_interceptor_consumer_title">Fayl icazəsi və təhlükəsizlik etiketi qoruyucusu</string>
     <string name="settings_root_file_interceptor_consumer_summary">Tətbiq fayllarını kopyalayarkən ilkin mülkiyyət və sistem təhlükəsizlik qaydalarını qoruyun, çökmələrin və pozulmuş məlumatların qarşısını alın.</string>
-    <string name="settings_legacy_rish_keepalive">Köhnə rish uyğunluğu</string>
-    <string name="settings_legacy_rish_keepalive_summary">MT Manager kimi köhnə rish klientlərinin shell binder sorğusu göndərə bilməsi üçün server işləyərkən Shizuku+ menecerini arxa fonda saxlayın. Aşağı prioritetli bildiriş göstərir.</string>
-    <string name="legacy_rish_keepalive_channel_name">Köhnə rish uyğunluğu</string>
-    <string name="legacy_rish_keepalive_title">Köhnə rish uyğunluğu aktivdir</string>
-    <string name="legacy_rish_keepalive_text">Köhnə rish klientlərinin shell binder sorğusu göndərə bilməsi üçün Shizuku+ arxa fonda saxlanılır.</string>
 </resources>
