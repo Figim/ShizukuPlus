@@ -1851,6 +1851,9 @@
     <string name="activity_log_clear_confirm_title">Clear activity logs?</string>
     <string name="activity_log_clear_confirm_message">All recorded activity log events will be permanently deleted.</string>
     <string name="activity_log_group_by_date">Group by date</string>
+    <string name="activity_log_group_by_app">Group by app</string>
+    <string name="activity_log_group_by_type">Group by type</string>
+    <string name="activity_log_group_none">No grouping</string>
     <string name="activity_log_search_hint">Search logs…</string>
     <string name="activity_log_export">Export logs</string>
     <string name="activity_log_export_copied">Copied %d logs to clipboard</string>

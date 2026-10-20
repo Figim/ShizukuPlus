@@ -30,6 +30,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -58,6 +59,28 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+private fun queryLiveServerPatchVersion(): Int {
+    return try {
+        val binder = Shizuku.getBinder() ?: return -1
+        val data = android.os.Parcel.obtain()
+        val reply = android.os.Parcel.obtain()
+        try {
+            data.writeInterfaceToken("moe.shizuku.server.IShizukuService")
+            if (binder.transact(10004, data, reply, 0)) {
+                reply.readException()
+                reply.readInt()
+            } else {
+                -1
+            }
+        } finally {
+            reply.recycle()
+            data.recycle()
+        }
+    } catch (_: Throwable) {
+        -1
+    }
+}
+
 @Composable
 fun ServerMetricsScreen() {
     val context = LocalContext.current
@@ -79,7 +102,8 @@ fun ServerMetricsScreen() {
 
                 if (alive) {
                     serverUid = runCatching { Shizuku.getUid() }.getOrDefault(-1)
-                    serverPatchVersion = runCatching { Shizuku.getServerPatchVersion() }.getOrDefault(-1)
+                    val cachedPatch = runCatching { Shizuku.getServerPatchVersion() }.getOrDefault(-1)
+                    serverPatchVersion = if (cachedPatch >= 0) cachedPatch else queryLiveServerPatchVersion()
                     seContext = runCatching { Shizuku.getSELinuxContext() }.getOrNull()
 
                     val binder = Shizuku.getBinder()
@@ -89,7 +113,7 @@ fun ServerMetricsScreen() {
                                 .asInterface(binder)
 
                         var ai: af.shizuku.server.IAICorePlus? = runCatching { shizukuService.aiCorePlus }.getOrNull()
-                        if (ai == null) {
+                        if (ai == null && (serverPatchVersion > 0 || Shizuku.isCustomApiEnabled())) {
                             withContext(Dispatchers.IO) {
                                 runCatching {
                                     shizukuService.updatePlusFeatureEnabled("ai_core_plus", true)
@@ -99,55 +123,53 @@ fun ServerMetricsScreen() {
                             ai = runCatching { shizukuService.aiCorePlus }.getOrNull()
                         }
 
-                        if (ai == null) {
-                            isStockServer = true
-                        } else {
+                        val stats = runCatching { ai?.serverStats }.getOrNull()
+                        if (stats != null) {
                             isStockServer = false
-                            val stats = ai.serverStats
-                            if (stats != null) {
-                                val uptimeMs = stats.getLong("uptime_ms")
-                                val seconds = (uptimeMs / 1000) % 60
-                                val minutes = (uptimeMs / (1000 * 60)) % 60
-                                val hours = (uptimeMs / (1000 * 60 * 60)) % 24
-                                val days = (uptimeMs / (1000 * 60 * 60 * 24))
-                                uptimeText =
-                                    if (days > 0) {
-                                        String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
-                                    } else {
-                                        String.format("%02d:%02d:%02d", hours, minutes, seconds)
-                                    }
-
-                                clientCountText =
-                                    context.getString(R.string.server_clients_connected, stats.getInt("client_count"))
-
-                                val maxRaw = stats.getLong("mem_max")
-                                val total = stats.getLong("mem_total")
-                                val free = stats.getLong("mem_free")
-                                val used = (total - free).coerceAtLeast(0L)
-                                val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
-
-                                memoryProgress = if (max > 0) (used.toFloat() / max.toFloat()).coerceIn(0f, 1f) else 0f
-
-                                val formatSize = { bytes: Long ->
-                                    val kb = bytes / 1024
-                                    val mb = kb / 1024
-                                    val gb = mb / 1024
-                                    if (gb > 0) {
-                                        "$gb GB"
-                                    } else if (mb > 0) {
-                                        "$mb MB"
-                                    } else {
-                                        "$kb KB"
-                                    }
+                            val uptimeMs = stats.getLong("uptime_ms")
+                            val seconds = (uptimeMs / 1000) % 60
+                            val minutes = (uptimeMs / (1000 * 60)) % 60
+                            val hours = (uptimeMs / (1000 * 60 * 60)) % 24
+                            val days = (uptimeMs / (1000 * 60 * 60 * 24))
+                            uptimeText =
+                                if (days > 0) {
+                                    String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+                                } else {
+                                    String.format("%02d:%02d:%02d", hours, minutes, seconds)
                                 }
-                                val maxStr =
-                                    if (maxRaw == Long.MAX_VALUE) {
-                                        context.getString(R.string.server_memory_uncapped)
-                                    } else {
-                                        formatSize(max)
-                                    }
-                                memoryDetails = "${formatSize(used)} / $maxStr (Max Allowed)"
+
+                            clientCountText =
+                                context.getString(R.string.server_clients_connected, stats.getInt("client_count"))
+
+                            val maxRaw = stats.getLong("mem_max")
+                            val total = stats.getLong("mem_total")
+                            val free = stats.getLong("mem_free")
+                            val used = (total - free).coerceAtLeast(0L)
+                            val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
+
+                            memoryProgress = if (max > 0) (used.toFloat() / max.toFloat()).coerceIn(0f, 1f) else 0f
+
+                            val formatSize = { bytes: Long ->
+                                val kb = bytes / 1024
+                                val mb = kb / 1024
+                                val gb = mb / 1024
+                                if (gb > 0) {
+                                    "$gb GB"
+                                } else if (mb > 0) {
+                                    "$mb MB"
+                                } else {
+                                    "$kb KB"
+                                }
                             }
+                            val maxStr =
+                                if (maxRaw == Long.MAX_VALUE) {
+                                    context.getString(R.string.server_memory_uncapped)
+                                } else {
+                                    formatSize(max)
+                                }
+                            memoryDetails = "${formatSize(used)} / $maxStr (Max Allowed)"
+                        } else {
+                            isStockServer = (serverPatchVersion <= 0)
                         }
                     }
                 }
@@ -166,6 +188,7 @@ fun ServerMetricsScreen() {
         modifier =
             Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
                 .padding(top = oneHandedTop),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -204,43 +227,6 @@ fun ServerMetricsScreen() {
                                 text = stringResource(R.string.server_metrics_server_not_running_summary),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.85f),
-                            )
-                        }
-                    }
-                }
-            }
-            isStockServer -> {
-                Card(
-                    shape = RoundedCornerShape(24.dp),
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f),
-                        ),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Row(
-                        modifier = Modifier.padding(18.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_outline_info_24),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(36.dp),
-                        )
-                        Spacer(modifier = Modifier.width(14.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.server_metrics_stock_server),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = stringResource(R.string.server_metrics_stock_server_summary),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
                             )
                         }
                     }
@@ -297,56 +283,94 @@ fun ServerMetricsScreen() {
             }
         }
 
-        // Metrics Diagnostic Cards
-        MetricCard(
-            title = stringResource(R.string.server_uptime),
-            value = uptimeText,
-            iconRes = R.drawable.ic_history_24,
-        )
-
-        MetricCard(
-            title = stringResource(R.string.active_connections),
-            value = clientCountText,
-            iconRes = R.drawable.ic_server_24,
-        )
-
-        Card(
-            shape = RoundedCornerShape(24.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Column(modifier = Modifier.padding(20.dp)) {
+        if (isStockServer) {
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f),
+                    ),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.padding(18.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        stringResource(R.string.server_memory_usage),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    Icon(
+                        painter = painterResource(R.drawable.ic_outline_info_24),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(36.dp),
                     )
-                    Surface(
-                        shape = RoundedCornerShape(100.dp),
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                    ) {
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "${(memoryProgress * 100).toInt()}%",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                            text = stringResource(R.string.server_metrics_stock_server),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = stringResource(R.string.server_metrics_stock_server_summary),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                LinearProgressIndicator(
-                    progress = { memoryProgress },
-                    modifier = Modifier.fillMaxWidth().height(12.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(memoryDetails, style = MaterialTheme.typography.labelLarge)
+            }
+        } else if (isServerRunning == true) {
+            // Metrics Diagnostic Cards
+            MetricCard(
+                title = stringResource(R.string.server_uptime),
+                value = uptimeText,
+                iconRes = R.drawable.ic_history_24,
+            )
+
+            MetricCard(
+                title = stringResource(R.string.active_connections),
+                value = clientCountText,
+                iconRes = R.drawable.ic_server_24,
+            )
+
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            stringResource(R.string.server_memory_usage),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(100.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        ) {
+                            Text(
+                                text = "${(memoryProgress * 100).toInt()}%",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LinearProgressIndicator(
+                        progress = { memoryProgress },
+                        modifier = Modifier.fillMaxWidth().height(12.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(memoryDetails, style = MaterialTheme.typography.labelLarge)
+                }
             }
         }
     }
@@ -420,6 +444,15 @@ private enum class ActivityLogSort(
     MOST_ACTIVE(R.string.activity_log_sort_most_active),
 }
 
+private enum class ActivityLogGrouping(
+    val labelRes: Int,
+) {
+    DATE(R.string.activity_log_group_by_date),
+    APP(R.string.activity_log_group_by_app),
+    TYPE(R.string.activity_log_group_by_type),
+    NONE(R.string.activity_log_group_none),
+}
+
 private data class LogGroup(
     val key: String,
     val primaryRecord: ActivityLogRecord,
@@ -439,12 +472,13 @@ fun ActivityLogScreen(
 
     var selectedTypes by remember { mutableStateOf<Set<ActivityEventType>>(emptySet()) }
     var currentSort by remember { mutableStateOf(ActivityLogSort.NEWEST) }
+    var currentGrouping by remember { mutableStateOf(ActivityLogGrouping.DATE) }
     var stackRepetitive by remember { mutableStateOf(true) }
-    var groupByDate by remember { mutableStateOf(true) }
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
 
     var showSortMenu by remember { mutableStateOf(false) }
+    var showGroupingMenu by remember { mutableStateOf(false) }
     var showClearDialog by remember { mutableStateOf(false) }
     val expandedKeys = remember { mutableStateListOf<String>() }
 
@@ -544,6 +578,40 @@ fun ActivityLogScreen(
                             { -it.primaryRecord.timestamp },
                         ),
                     )
+            }
+        }
+
+    val groupedSections: Map<String, List<LogGroup>> =
+        remember(processedGroups, currentGrouping, appLabels) {
+            when (currentGrouping) {
+                ActivityLogGrouping.DATE -> {
+                    processedGroups.groupBy { getDateSectionTitle(context, it.primaryRecord.timestamp) }
+                }
+                ActivityLogGrouping.APP -> {
+                    processedGroups.groupBy {
+                        appLabels[it.primaryRecord.packageName]
+                            ?: it.primaryRecord.appName.ifEmpty { it.primaryRecord.packageName }
+                    }
+                }
+                ActivityLogGrouping.TYPE -> {
+                    processedGroups.groupBy {
+                        val labelRes =
+                            when (it.primaryRecord.eventType) {
+                                ActivityEventType.SERVICE_START -> R.string.activity_log_type_start
+                                ActivityEventType.SERVICE_STOP -> R.string.activity_log_type_stop
+                                ActivityEventType.CONNECTION -> R.string.activity_log_type_connection
+                                ActivityEventType.PERMISSION -> R.string.activity_log_type_permission
+                                ActivityEventType.APP_MANAGEMENT -> R.string.activity_log_type_app_mgmt
+                                ActivityEventType.WATCHDOG -> R.string.activity_log_type_watchdog
+                                ActivityEventType.SYSTEM -> R.string.activity_log_type_system
+                                ActivityEventType.OTHER -> R.string.activity_log_type_other
+                            }
+                        context.getString(labelRes)
+                    }
+                }
+                ActivityLogGrouping.NONE -> {
+                    mapOf("" to processedGroups)
+                }
             }
         }
 
@@ -654,6 +722,40 @@ fun ActivityLogScreen(
                     },
                 )
 
+                // Grouping Dropdown Chip
+                Box {
+                    FilterChip(
+                        selected = currentGrouping != ActivityLogGrouping.NONE,
+                        onClick = {
+                            HapticUtils.tap(view)
+                            showGroupingMenu = true
+                        },
+                        label = { Text(stringResource(currentGrouping.labelRes)) },
+                        trailingIcon = {
+                            Icon(
+                                painterResource(R.drawable.ic_outline_expand_more_24),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        },
+                    )
+                    DropdownMenu(
+                        expanded = showGroupingMenu,
+                        onDismissRequest = { showGroupingMenu = false },
+                    ) {
+                        ActivityLogGrouping.values().forEach { grouping ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(grouping.labelRes)) },
+                                onClick = {
+                                    HapticUtils.segmentTick(view)
+                                    currentGrouping = grouping
+                                    showGroupingMenu = false
+                                },
+                            )
+                        }
+                    }
+                }
+
                 // Sort Dropdown Chip
                 Box {
                     FilterChip(
@@ -698,14 +800,50 @@ fun ActivityLogScreen(
                     label = { Text(stringResource(R.string.activity_log_stack_activities)) },
                 )
 
-                // Group by Date Chip
+                // Export Logs Chip
                 FilterChip(
-                    selected = groupByDate,
+                    selected = false,
                     onClick = {
-                        HapticUtils.segmentTick(view)
-                        groupByDate = !groupByDate
+                        HapticUtils.tap(view)
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val text =
+                            rawLogs.joinToString("\n") { r ->
+                                "[${dateFormat.format(Date(r.timestamp))}] [${r.eventType}] ${r.appName} (${r.packageName}): ${r.action}"
+                            }
+                        clipboard.setPrimaryClip(ClipData.newPlainText("Activity Log", text))
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(R.string.activity_log_export_copied, rawLogs.size),
+                                Toast.LENGTH_SHORT,
+                            ).show()
                     },
-                    label = { Text(stringResource(R.string.activity_log_group_by_date)) },
+                    label = { Text(stringResource(R.string.activity_log_export)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_copy),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    },
+                )
+
+                // Clear Logs Chip
+                FilterChip(
+                    selected = false,
+                    onClick = {
+                        HapticUtils.tap(view)
+                        showClearDialog = true
+                    },
+                    label = { Text(stringResource(R.string.settings_activity_log_clear)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_delete_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.error,
+                        )
+                    },
                 )
 
                 // "All" Chip
@@ -780,37 +918,37 @@ fun ActivityLogScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 32.dp),
                 ) {
-                    var lastHeaderDate: String? = null
-
-                    itemsIndexed(
-                        items = processedGroups,
-                        key = { _, group -> group.key },
-                    ) { index, group ->
-                        // Optional Date grouping section header (Morphe style)
-                        if (groupByDate) {
-                            val sectionHeader = getDateSectionTitle(context, group.primaryRecord.timestamp)
-                            if (sectionHeader != lastHeaderDate) {
-                                lastHeaderDate = sectionHeader
-                                TimelineDateHeader(sectionHeader)
+                    groupedSections.forEach { (sectionTitle, sectionGroups) ->
+                        if (currentGrouping != ActivityLogGrouping.NONE && sectionTitle.isNotEmpty()) {
+                            val totalEvents = sectionGroups.sumOf { it.occurrences.size + 1 }
+                            item(key = "header_${currentGrouping.name}_$sectionTitle") {
+                                TimelineDateHeader(
+                                    title = "$sectionTitle ($totalEvents)",
+                                )
                             }
                         }
 
-                        val isExpanded = expandedKeys.contains(group.key)
-                        ActivityLogTimelineRow(
-                            group = group,
-                            dateFormat = dateFormat,
-                            isFirst = index == 0,
-                            isLast = index == processedGroups.lastIndex,
-                            isLatest = index == 0 && currentSort == ActivityLogSort.NEWEST,
-                            isExpanded = isExpanded,
-                            onToggleExpand = {
-                                if (isExpanded) {
-                                    expandedKeys.remove(group.key)
-                                } else {
-                                    expandedKeys.add(group.key)
-                                }
-                            },
-                        )
+                        itemsIndexed(
+                            items = sectionGroups,
+                            key = { _, group -> group.key },
+                        ) { index, group ->
+                            val isExpanded = expandedKeys.contains(group.key)
+                            ActivityLogTimelineRow(
+                                group = group,
+                                dateFormat = dateFormat,
+                                isFirst = index == 0,
+                                isLast = index == sectionGroups.lastIndex,
+                                isLatest = index == 0 && currentSort == ActivityLogSort.NEWEST && currentGrouping == ActivityLogGrouping.NONE,
+                                isExpanded = isExpanded,
+                                onToggleExpand = {
+                                    if (isExpanded) {
+                                        expandedKeys.remove(group.key)
+                                    } else {
+                                        expandedKeys.add(group.key)
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             }
