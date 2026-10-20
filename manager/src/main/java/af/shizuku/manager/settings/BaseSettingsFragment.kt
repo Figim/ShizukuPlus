@@ -301,7 +301,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
             val navBarClearancePx =
                 if (ShizukuSettings.isFloatingNavBarEnabled()) {
-                    (96 * context.resources.displayMetrics.density).toInt()
+                    (112 * context.resources.displayMetrics.density).toInt()
                 } else {
                     (20 * context.resources.displayMetrics.density).toInt()
                 }

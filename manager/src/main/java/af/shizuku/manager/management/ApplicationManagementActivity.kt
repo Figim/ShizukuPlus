@@ -252,7 +252,7 @@ open class ApplicationManagementActivity :
                 if (af.shizuku.manager.ShizukuSettings
                         .isFloatingNavBarEnabled()
                 ) {
-                    (96 * resources.displayMetrics.density).toInt()
+                    (112 * resources.displayMetrics.density).toInt()
                 } else {
                     (24 * resources.displayMetrics.density).toInt()
                 }

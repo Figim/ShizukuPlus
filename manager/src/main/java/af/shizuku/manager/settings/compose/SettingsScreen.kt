@@ -50,6 +50,7 @@ import timber.log.Timber
 @Composable
 fun SettingsScreen(
     title: String,
+    subtitle: String? = null,
     onNavigateUp: () -> Unit,
     onNavigateToSetting: (SettingsSearchEngine.SettingItem) -> Unit,
     searchResults: List<SettingsSearchEngine.SettingItem>,
@@ -309,17 +310,12 @@ fun SettingsScreen(
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                     )
-                                    if (isOneUi) {
+                                    if (isOneUi && !subtitle.isNullOrBlank()) {
                                         val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
                                         if (subtitleAlpha > 0f) {
                                             Spacer(modifier = Modifier.height(4.dp))
                                             Text(
-                                                text =
-                                                    if (title == stringResource(R.string.settings_title)) {
-                                                        stringResource(R.string.settings_oneui_theme_summary).take(38) + "…"
-                                                    } else {
-                                                        stringResource(R.string.settings_category_appearance)
-                                                    },
+                                                text = subtitle,
                                                 style =
                                                     MaterialTheme.typography.bodyMedium.copy(
                                                         color = MaterialTheme.colorScheme.onSurfaceVariant,

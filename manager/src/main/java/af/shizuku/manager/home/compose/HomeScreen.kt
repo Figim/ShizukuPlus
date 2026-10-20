@@ -458,10 +458,16 @@ fun HomeScreen(
             val t = innerPadding.calculateTopPadding()
             if (t > stableTop.value) stableTop.value = t
         }
+        val navClearance =
+            if (ShizukuSettings.isFloatingNavBarEnabled()) {
+                116.dp
+            } else {
+                72.dp
+            }
         val adjustedPadding =
             PaddingValues(
                 top = stableTop.value,
-                bottom = innerPadding.calculateBottomPadding() + 72.dp,
+                bottom = innerPadding.calculateBottomPadding() + navClearance,
             )
         AnimatedGradientBackground {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -517,31 +523,6 @@ fun HomeScreen(
                         },
                         modifier = Modifier.fillMaxSize(),
                     )
-                    // Bottom nav scrim: fades the card list into the navigation bar zone.
-                    // Skipped in blur mode — the blurred window already creates the boundary,
-                    // and an opaque band would show as a visible strip over the glass effect.
-                    if (!ShizukuSettings.isBlurUiEnabled()) {
-                        val scrimColor = MaterialTheme.colorScheme.surface
-                        val scrimHeight = innerPadding.calculateBottomPadding() + 24.dp
-                        if (scrimHeight > 0.dp) {
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .height(scrimHeight)
-                                        .align(Alignment.BottomCenter)
-                                        .background(
-                                            Brush.verticalGradient(
-                                                colors =
-                                                    listOf(
-                                                        androidx.compose.ui.graphics.Color.Transparent,
-                                                        scrimColor.copy(alpha = 0.85f),
-                                                    ),
-                                            ),
-                                        ),
-                            )
-                        }
-                    }
                 }
             }
         }

@@ -159,14 +159,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             .start()
     }
 
-    /** Hides the bar while a list scrolls down and brings it back on scroll up. */
+    /** Observes scrolling to settle the bar into place at the base of the page and handle autohide. */
     private fun watchScrolling(
         content: ViewGroup,
         bar: View,
     ) {
-        if (!ShizukuSettings.isFloatingNavAutohideEnabled()) return
         content.post {
             var hidden = false
+            var atBottom = false
+            val autohide = ShizukuSettings.isFloatingNavAutohideEnabled()
+
             findRecyclerView(content)?.addOnScrollListener(
                 object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(
@@ -174,25 +176,82 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         dx: Int,
                         dy: Int,
                     ) {
-                        if (dy > 12 && !hidden) {
+                        val canScrollDown = rv.canScrollVertically(1)
+                        if (!canScrollDown && !atBottom) {
+                            atBottom = true
+                            // Subtle haptic tick and settle into place at base
+                            af.shizuku.manager.utils.HapticUtils
+                                .segmentTick(bar)
+                            if (hidden) {
+                                hidden = false
+                                slideBar(bar, hide = false)
+                            }
+                            bar
+                                .animate()
+                                .scaleX(1.02f)
+                                .scaleY(1.02f)
+                                .setDuration(ShizukuSettings.scaledAnimationDuration(80))
+                                .withEndAction {
+                                    bar
+                                        .animate()
+                                        .scaleX(1.0f)
+                                        .scaleY(1.0f)
+                                        .setDuration(ShizukuSettings.scaledAnimationDuration(120))
+                                        .start()
+                                }.start()
+                        } else if (canScrollDown && atBottom) {
+                            atBottom = false
+                        }
+
+                        if (autohide) {
+                            if (dy > 12 && !hidden && canScrollDown) {
+                                hidden = true
+                                slideBar(bar, hide = true)
+                            } else if (dy < -12 && hidden) {
+                                hidden = false
+                                slideBar(bar, hide = false)
+                            }
+                        }
+                    }
+                },
+            )
+            findNestedScrollView(content)?.setOnScrollChangeListener(
+                NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, oldScrollY ->
+                    val dy = scrollY - oldScrollY
+                    val canScrollDown = v.canScrollVertically(1)
+                    if (!canScrollDown && !atBottom) {
+                        atBottom = true
+                        af.shizuku.manager.utils.HapticUtils
+                            .segmentTick(bar)
+                        if (hidden) {
+                            hidden = false
+                            slideBar(bar, hide = false)
+                        }
+                        bar
+                            .animate()
+                            .scaleX(1.02f)
+                            .scaleY(1.02f)
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(80))
+                            .withEndAction {
+                                bar
+                                    .animate()
+                                    .scaleX(1.0f)
+                                    .scaleY(1.0f)
+                                    .setDuration(ShizukuSettings.scaledAnimationDuration(120))
+                                    .start()
+                            }.start()
+                    } else if (canScrollDown && atBottom) {
+                        atBottom = false
+                    }
+
+                    if (autohide) {
+                        if (dy > 12 && !hidden && canScrollDown) {
                             hidden = true
                             slideBar(bar, hide = true)
                         } else if (dy < -12 && hidden) {
                             hidden = false
                             slideBar(bar, hide = false)
                         }
-                    }
-                },
-            )
-            findNestedScrollView(content)?.setOnScrollChangeListener(
-                NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
-                    val dy = scrollY - oldScrollY
-                    if (dy > 12 && !hidden) {
-                        hidden = true
-                        slideBar(bar, hide = true)
-                    } else if (dy < -12 && hidden) {
-                        hidden = false
-                        slideBar(bar, hide = false)
                     }
                 },
             )
@@ -285,24 +344,24 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     ColorUtils.blendARGB(0xFFF6F7F9.toInt(), primary, 0.08f)
                 }
 
-            val alphaFraction = if (isBlur) 0.72f else 0.88f
+            val alphaFraction = if (isBlur) 0.65f else 0.80f
             val cardBg = ColorUtils.setAlphaComponent(baseSurface, (255 * alphaFraction).toInt())
             card.setCardBackgroundColor(cardBg)
 
             // Specular luminous glass rim
             val glassRim =
                 if (isNight) {
-                    Color.argb(85, 255, 255, 255)
+                    Color.argb(70, 255, 255, 255)
                 } else {
-                    Color.argb(140, 255, 255, 255)
+                    Color.argb(120, 255, 255, 255)
                 }
             card.strokeColor = glassRim
-            card.strokeWidth = (1.2f * density).toInt()
-            card.cardElevation = 10f * density
+            card.strokeWidth = (1.0f * density).toInt()
+            card.cardElevation = 8f * density
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                card.outlineAmbientShadowColor = Color.argb(35, 0, 0, 0)
-                card.outlineSpotShadowColor = Color.argb(60, 0, 0, 0)
+                card.outlineAmbientShadowColor = Color.argb(30, 0, 0, 0)
+                card.outlineSpotShadowColor = Color.argb(50, 0, 0, 0)
             }
         }
 
@@ -384,7 +443,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         val needed =
             bar.height +
                 (bar.layoutParams as FrameLayout.LayoutParams).bottomMargin +
-                (24 * bar.resources.displayMetrics.density).toInt()
+                (32 * bar.resources.displayMetrics.density).toInt()
 
         fun visit(view: View) {
             if (view === bar) return

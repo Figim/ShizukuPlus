@@ -40,11 +40,24 @@ fun SystemHubScreen(
             )
         },
     ) { innerPadding ->
+        val navClearance =
+            if (af.shizuku.manager.ShizukuSettings
+                    .isFloatingNavBarEnabled()
+            ) {
+                112
+                    .androidx.compose.ui.unit.dp
+            } else {
+                0
+                    .androidx.compose.ui.unit.dp
+            }
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding() + navClearance,
+                    ),
         ) {
             TabRow(selectedTabIndex = pagerState.currentPage) {
                 Tab(
