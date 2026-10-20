@@ -708,7 +708,7 @@
     <string name="su_bridge_magic_setup_all_no_apps">Avtomatlaşdırma üçün dəstəklənən root tətbiqi tapılmadı.</string>
     <string name="su_bridge_copy_open">Yolu kopyala və aç</string>
     <string name="su_bridge_no_export">SU yolu təyin edilməyib. Əvvəlcə Əsas ekrandan Shizuku fayllarını ixrac edin.</string>
-    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri birbaşa körpüyə yönəltmək үшін isə \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
+    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri birbaşa körpüyə yönəltmək üçün isə \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
     <string name="su_bridge_magic_setup_root_required">Sehrli Quraşdırma Root rejimində Shizuku tələb edir.</string>
     <string name="su_bridge_no_custom_path_support">Bu tətbiqin xüsusi yol parametri yoxdur. Real root tələb edir.</string>
     <string name="su_bridge_manual_setup_required">ADB rejimində əl ilə quraşdırma tələb olunur</string>
@@ -1741,7 +1741,7 @@
     <string name="settings_stealth_mode">Gizli Rejim</string>
     <string name="settings_stealth_mode_summary">Təhlükəsizlik SDK-larının onları aşkar edə bilməməsi üçün ShizukuPlus və Shizuku-nu tətbiq paket sorğularından gizlədin</string>
     <string name="help_stealth_mode_title">Gizli Rejim</string>
-    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytayır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android parametrlərini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
+    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android parametrlərini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="settings_home_card_shape">Əsas Ekran Kartının Küncləri</string>
