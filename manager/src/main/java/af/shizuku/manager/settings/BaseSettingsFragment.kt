@@ -721,6 +721,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
         override fun shouldDecorate(view: View): Boolean =
             view.tag != "standalone_card" &&
+                view.tag != "section_label" &&
                 view !is com.google.android.material.card.MaterialCardView &&
                 view.findViewById<View>(R.id.card_update_container) == null
 

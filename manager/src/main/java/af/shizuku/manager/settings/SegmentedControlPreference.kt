@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 
@@ -153,12 +155,24 @@ fun SegmentedChoiceRow(
                             androidx.compose.material3.ButtonGroupDefaults
                                 .connectedMiddleButtonShapes()
                     },
+                // Tighter than the M3E default so 3-way rows like "Always light / Always dark /
+                // Follow system" fit; long labels wrap to two centred lines instead of "Follo…".
+                contentPadding =
+                    androidx.compose.foundation.layout
+                        .PaddingValues(horizontal = 8.dp, vertical = 8.dp),
                 modifier =
                     Modifier
                         .weight(1f)
+                        .heightIn(min = 48.dp)
                         .semantics { role = androidx.compose.ui.semantics.Role.RadioButton },
             ) {
-                Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    label,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                )
             }
         }
     }
