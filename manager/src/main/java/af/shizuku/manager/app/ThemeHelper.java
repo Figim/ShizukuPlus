@@ -51,12 +51,16 @@ public class ThemeHelper {
     }
 
     public static void applySnackbarTheme(Context context, Snackbar snackbar) {
-        snackbar.setBackgroundTint(resolveColor(context, R.attr.colorPrimaryContainer))
+        int container = resolveColor(context, com.google.android.material.R.attr.colorSurfaceContainerHigh);
+        if (container == 0 || container == android.graphics.Color.BLACK) {
+            container = resolveColor(context, R.attr.colorPrimaryContainer);
+        }
+        snackbar.setBackgroundTint(container)
             .setTextColor(resolveColor(context, R.attr.colorOnSurface))
             .setActionTextColor(resolveColor(context, R.attr.colorPrimary));
     }
 
-    private static int resolveColor(Context context, int color) {
+    public static int resolveColor(Context context, int color) {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(color, typedValue, true);
         return typedValue.data;

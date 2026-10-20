@@ -471,7 +471,10 @@ fun SettingsScreen(
                             contentPadding = PaddingValues(16.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(searchResults) { item ->
+                            items(
+                                items = searchResults,
+                                key = { item -> "${item.fragmentClass}_${item.key}_${item.title}_${item.iconResId}" },
+                            ) { item ->
                                 SearchResultItem(
                                     item = item,
                                     isBlackTheme = isBlackTheme,
@@ -564,16 +567,19 @@ fun SafePreferenceIcon(
 
     AndroidView(
         factory = { ctx ->
-            ImageView(ctx).apply {
+            androidx.appcompat.widget.AppCompatImageView(ctx).apply {
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }
         },
         update = { imageView ->
             try {
-                imageView.setImageResource(iconResId)
+                val drawable =
+                    androidx.appcompat.content.res.AppCompatResources
+                        .getDrawable(imageView.context, iconResId)
+                imageView.setImageDrawable(drawable)
                 imageView.imageTintList = ColorStateList.valueOf(tintArgb)
-            } catch (e: Exception) {
-                Timber.w(e, "Failed to load preference icon resource: %d", iconResId)
+            } catch (t: Throwable) {
+                Timber.w(t, "Failed to load preference icon resource: %d", iconResId)
                 imageView.setImageDrawable(null)
             }
         },

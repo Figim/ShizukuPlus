@@ -406,16 +406,26 @@ open class ApplicationManagementActivity :
     override fun onHideApp(packageName: String) {
         if (viewModel.filterState == FilterState.HIDDEN) {
             viewModel.unhidePackage(packageName)
-            Snackbar.make(rootView, R.string.app_management_undo, Snackbar.LENGTH_LONG).show()
+            af.shizuku.manager.app.SnackbarHelper.show(
+                context = this,
+                view = rootView,
+                msg = getString(R.string.app_management_undo),
+                duration = Snackbar.LENGTH_LONG,
+            )
             viewModel.load()
         } else {
             viewModel.hidePackage(packageName)
-            Snackbar
-                .make(rootView, R.string.app_management_hidden, Snackbar.LENGTH_LONG)
-                .setAction(R.string.app_management_undo) {
+            af.shizuku.manager.app.SnackbarHelper.show(
+                context = this,
+                view = rootView,
+                msg = getString(R.string.app_management_hidden),
+                duration = Snackbar.LENGTH_LONG,
+                actionText = getString(R.string.app_management_undo),
+                action = {
                     viewModel.unhidePackage(packageName)
                     viewModel.load()
-                }.show()
+                },
+            )
         }
     }
 

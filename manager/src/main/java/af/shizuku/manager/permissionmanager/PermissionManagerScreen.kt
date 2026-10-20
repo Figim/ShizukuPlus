@@ -297,7 +297,7 @@ private fun AppRow(
             )
         } else {
             Icon(
-                painter = painterResource(R.drawable.ic_default_app_icon),
+                painter = painterResource(R.drawable.ic_nav_apps_24),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.outline,

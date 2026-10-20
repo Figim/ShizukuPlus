@@ -95,6 +95,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         val selected = itemFor(activity)
         if (!isEnabled() || selected == null) {
             existing?.let { content.removeView(it) }
+            af.shizuku.manager.app.SnackbarHelper
+                .updateAnchor(null)
             return
         }
         val isNew = existing == null
@@ -127,7 +129,11 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         layoutBar(activity, root)
         root.bringToFront()
         ViewCompat.requestApplyInsets(root)
-        root.post { reserveSpace(content, root, activity is SystemHubActivity) }
+        root.post {
+            reserveSpace(content, root, activity is SystemHubActivity)
+            af.shizuku.manager.app.SnackbarHelper
+                .updateAnchor(root)
+        }
     }
 
     private fun attachSelectListener(
@@ -276,7 +282,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             .alpha(if (hide) 0f else 1f)
             .setDuration(duration)
             .setInterpolator(interpolator)
-            .start()
+            .withEndAction {
+                if (hide) {
+                    af.shizuku.manager.app.SnackbarHelper
+                        .updateAnchor(null)
+                }
+            }.start()
+        if (!hide) {
+            af.shizuku.manager.app.SnackbarHelper
+                .updateAnchor(bar)
+        }
     }
 
     private fun findRecyclerView(view: View): RecyclerView? {
@@ -472,7 +487,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(
         activity: Activity,
         savedInstanceState: Bundle?,
-    ) = Unit
+    ) {
+        activity.window?.decorView?.post {
+            if (!activity.isFinishing && !activity.isDestroyed) {
+                sync(activity)
+            }
+        }
+    }
 
     override fun onActivityStarted(activity: Activity) = Unit
 
