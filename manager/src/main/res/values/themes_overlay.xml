@@ -523,8 +523,10 @@
         <item name="android:listPreferredItemPaddingEnd">16dp</item>
     </style>
 
+    <!-- Samsung SESL: 34sp expanded title, 30sp when a subtitle sits under it (all our headers
+         have one). 38sp pushed long titles like "Application management" off the edge. -->
     <style name="TextAppearance.OneUI.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
-        <item name="android:textSize">38sp</item>
+        <item name="android:textSize">30sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.01</item>
     </style>

@@ -13,8 +13,8 @@
     <string name="settings_expressive_title">Expressive design (M3E)</string>
     <string name="settings_expressive_shapes">Expressive icon shapes</string>
     <string name="settings_expressive_shapes_summary">Use asymmetrical leaf and droplet shapes for icons</string>
-    <string name="settings_expressive_animations">Elastic animations</string>
-    <string name="settings_expressive_animations_summary">Enable M3 elastic predictive back and drag scaling</string>
+    <string name="settings_expressive_animations">Animations</string>
+    <string name="settings_expressive_animations_summary">Springy, expressive motion across the app. Turn off for no in-app animation</string>
     <string name="settings_haptic_feedback">Haptic feedback</string>
     <string name="settings_haptic_feedback_summary">Vibrate on taps and gestures</string>
     <string name="settings_icon_style">Icon style</string>
@@ -35,7 +35,7 @@
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI style</string>
-    <string name="settings_oneui_theme_summary">Match Samsung One UI\'s design language — large rounded corners and bold typography. Color is unaffected; use Material You or a custom accent above for that.</string>
+    <string name="settings_oneui_theme_summary">Samsung-style large titles, rounder corners and bolder type. Your colors stay as set above.</string>
     <string name="settings_one_handed_mode">One-handed mode</string>
     <string name="settings_one_handed_mode_summary">Shift interactive content toward the bottom of the screen for comfortable thumb reach</string>
 
@@ -99,7 +99,7 @@
     </string-array>
 
     <string-array name="animation_intensities">
-        <item>None</item>
+        <item>Reduced</item>
         <item>Subtle</item>
         <item>Standard</item>
         <item>Expressive</item>
@@ -1270,6 +1270,14 @@
     <string name="settings_personalization_category_motion_display">Motion &amp; display</string>
     <string name="settings_personalization_category_home_screen">Home screen</string>
     <string name="settings_personalization_category_language">Language</string>
+    <string name="settings_dark_style_title">Dark style</string>
+    <string name="settings_dark_style_standard">Standard</string>
+    <string name="settings_dark_style_black">Black</string>
+    <string name="settings_dark_style_amoled">AMOLED+</string>
+    <string name="settings_haptics_mode_title">Haptic feedback</string>
+    <string name="settings_haptics_off">Off</string>
+    <string name="settings_haptics_system">Follow system</string>
+    <string name="settings_haptics_always">Always on</string>
     <string name="settings_personalization_category_app_identity">App icon &amp; name</string>
     <string name="settings_personalization_category_motion_haptics">Motion &amp; haptics</string>
     <string name="settings_personalization_category_layout_nav">Layout &amp; navigation</string>

@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -112,10 +113,6 @@ fun SettingsScreen(
     val barScrolledColor =
         if (isOled) {
             Color.Black
-        } else if (af.shizuku.manager.ShizukuSettings
-                .isBlurUiEnabled()
-        ) {
-            MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.85f)
         } else {
             MaterialTheme.colorScheme.surfaceContainer
         }
@@ -237,14 +234,12 @@ fun SettingsScreen(
                                 ),
                         color =
                             run {
-                                val barAlpha = ((fraction - 0.65f) / 0.35f).coerceIn(0f, 1f)
-                                if (af.shizuku.manager.ShizukuSettings
-                                        .isBlurUiEnabled()
-                                ) {
-                                    barScrolledColor.copy(alpha = 0.85f * barAlpha)
-                                } else {
-                                    barScrolledColor.copy(alpha = barAlpha)
-                                }
+                                // Fade in early and end fully opaque: the list scrolls under the
+                                // collapsing title, and a bar that stayed clear until 65% (or
+                                // capped at ~72% with "frosted glass", which never actually blurs
+                                // here) let row text show straight through the title.
+                                val barAlpha = ((fraction - 0.3f) / 0.4f).coerceIn(0f, 1f)
+                                barScrolledColor.copy(alpha = barAlpha)
                             },
                     ) {
                         Box(
@@ -279,7 +274,11 @@ fun SettingsScreen(
 
                             // Title and One UI subtitle
                             val titleStartPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
-                            val titleFontSize = lerp(start = if (isOneUi) 36.sp else 30.sp, stop = 20.sp, fraction = curvedFraction)
+                            // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
+                            // large system fonts don't push a 34sp title into the action icons.
+                            val fontScaleCap = LocalDensity.current.fontScale.coerceAtLeast(1f)
+                            val expandedTitleSp = (if (isOneUi) 34f else 30f) / fontScaleCap
+                            val titleFontSize = lerp(start = expandedTitleSp.sp, stop = 20.sp, fraction = curvedFraction)
                             val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
                             val titleLetterSpacing = lerp((-0.5).sp, (-0.2).sp, curvedFraction)
 

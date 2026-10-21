@@ -15,20 +15,13 @@
             android:key="night_mode"
             android:title="@string/dark_theme"
             android:icon="@drawable/ic_outline_dark_mode_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="black_night_theme"
-            android:summary="@string/settings_black_night_theme_summary"
-            android:title="@string/settings_black_night_theme"
-            android:icon="@drawable/ic_bedtime_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="amoled_plus_enabled"
-            android:title="@string/settings_amoled_plus"
-            android:summary="@string/settings_amoled_plus_summary"
-            android:defaultValue="false"
-            android:dependency="black_night_theme"
-            android:icon="@drawable/ic_bedtime_24" />
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="dark_style"
+            android:persistent="false"
+            android:title="@string/settings_dark_style_title"
+            android:icon="@drawable/ic_bedtime_24"
+            android:entries="@array/dark_styles"
+            android:entryValues="@array/dark_styles_value" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="high_contrast_mode"
@@ -202,20 +195,13 @@
             android:summary="@string/settings_follow_system_animations_summary"
             android:defaultValue="false"
             android:icon="@drawable/ic_settings_suggest_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="haptic_feedback"
-            android:title="@string/settings_haptic_feedback"
-            android:summary="@string/settings_haptic_feedback_summary"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_vibration_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="follow_system_haptics"
-            android:title="@string/settings_follow_system_haptics"
-            android:summary="@string/settings_follow_system_haptics_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_vibration_24" />
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="haptics_mode"
+            android:persistent="false"
+            android:title="@string/settings_haptics_mode_title"
+            android:icon="@drawable/ic_vibration_24"
+            android:entries="@array/haptics_modes"
+            android:entryValues="@array/haptics_modes_value" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

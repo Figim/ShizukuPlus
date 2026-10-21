@@ -20,7 +20,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -385,46 +384,8 @@ fun HomeScreen(
                                 }
                             } // end Crossfade
 
-                            if (isOneUi && !isEditMode) {
-                                val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
-                                if (subtitleAlpha > 0f) {
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
-                                    ) {
-                                        Box(
-                                            modifier =
-                                                Modifier
-                                                    .size(8.dp)
-                                                    .background(
-                                                        color =
-                                                            if (isServerRunning) {
-                                                                MaterialTheme.colorScheme.primary
-                                                            } else {
-                                                                MaterialTheme.colorScheme.error
-                                                            },
-                                                        shape = CircleShape,
-                                                    ),
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text(
-                                            text =
-                                                if (isServerRunning) {
-                                                    stringResource(R.string.onboarding_setup_running)
-                                                } else {
-                                                    stringResource(R.string.server_metrics_server_not_running)
-                                                },
-                                            style =
-                                                MaterialTheme.typography.bodyMedium.copy(
-                                                    fontWeight = FontWeight.Medium,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                ),
-                                            maxLines = 1,
-                                        )
-                                    }
-                                }
-                            }
+                            // No status subtitle here: the server status card directly below already says
+                            // whether Shizuku is running, so the header repeated it word for word.
                         }
                     }
 

@@ -143,6 +143,13 @@ fun SegmentedChoiceRow(
                     }
                 },
                 enabled = enabled,
+                // The default unchecked container is near the card color and vanishes on dark /
+                // AMOLED cards; a tonal container keeps every option visibly tappable.
+                colors =
+                    androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
+                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainerHighest,
+                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                    ),
                 shapes =
                     when (index) {
                         0 ->

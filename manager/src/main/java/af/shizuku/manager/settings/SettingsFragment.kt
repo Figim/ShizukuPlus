@@ -32,7 +32,11 @@ class SettingsFragment : BaseSettingsFragment() {
     ) {
         setPreferencesFromResource(R.xml.settings_main, rootKey)
         findPreference<Preference>("nav_about")?.setCustomSummary(
-            getString(R.string.settings_main_nav_about_version, BuildConfig.VERSION_NAME),
+            getString(
+                R.string.settings_main_nav_about_version,
+                // VERSION_NAME is "Shizuku+ 13.7.0.rNNNN"; the row title already names the app.
+                BuildConfig.VERSION_NAME.substringAfter(' ', BuildConfig.VERSION_NAME),
+            ),
         )
         findPreference<Preference>("status_at_a_glance")?.setOnPreferenceClickListener {
             val ctx = it.context

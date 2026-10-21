@@ -45,8 +45,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     override fun getTitle(): CharSequence? = getString(R.string.settings_category_appearance)
 
     private lateinit var nightModePreference: IntegerSegmentedControlPreference
-    private lateinit var blackNightThemePreference: TwoStatePreference
-    private lateinit var amoledPlusPreference: TwoStatePreference
+    private lateinit var darkStylePreference: SegmentedControlPreference
     private lateinit var useSystemColorPreference: TwoStatePreference
     private lateinit var customAccentPreference: Preference
     private lateinit var languagePreference: ListPreference
@@ -70,8 +69,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // 1. Theme and Color Controls
         nightModePreference = requireNotNull(findPreference(KEY_NIGHT_MODE))
-        blackNightThemePreference = requireNotNull(findPreference(KEY_BLACK_NIGHT_THEME))
-        amoledPlusPreference = requireNotNull(findPreference(KEY_AMOLED_PLUS))
+        darkStylePreference = requireNotNull(findPreference("dark_style"))
         useSystemColorPreference = requireNotNull(findPreference(KEY_USE_SYSTEM_COLOR))
         customAccentPreference = requireNotNull(findPreference("custom_accent"))
 
@@ -89,53 +87,22 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        val blackNightAvailable = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
-        setChildAvailable(blackNightThemePreference, blackNightAvailable)
-        blackNightThemePreference.apply {
-            if (blackNightAvailable) {
-                isChecked = ThemeHelper.isBlackNightTheme(context)
-                setOnPreferenceChangeListener { _, newValue ->
-                    if (newValue is Boolean) {
-                        setChildAvailable(amoledPlusPreference, newValue)
-                        if (!newValue && amoledPlusPreference.isChecked) {
-                            amoledPlusPreference.isChecked = false
-                            ShizukuSettings
-                                .getPreferences()
-                                .edit()
-                                .putBoolean(KEY_AMOLED_PLUS, false)
-                                .apply()
-                        }
-                    }
-                    if (ResourceUtils.isNightMode(context.resources.configuration)) {
-                        applyTheme(requiresRecreate = false)
-                    }
-                    true
-                }
+        // One "Dark style" choice replaces the Black night theme + AMOLED+ switch pair (AMOLED+
+        // only ever made sense on top of Black). Same two keys underneath, so nothing resets.
+        setChildAvailable(darkStylePreference, ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO)
+        darkStylePreference.value = currentDarkStyle()
+        darkStylePreference.setOnPreferenceChangeListener { _, newValue ->
+            val style = newValue as? String ?: return@setOnPreferenceChangeListener false
+            ShizukuSettings
+                .getPreferences()
+                .edit()
+                .putBoolean(KEY_BLACK_NIGHT_THEME, style != DARK_STYLE_STANDARD)
+                .putBoolean(KEY_AMOLED_PLUS, style == DARK_STYLE_AMOLED)
+                .apply()
+            if (ResourceUtils.isNightMode(context.resources.configuration)) {
+                applyTheme(requiresRecreate = false)
             }
-        }
-
-        setChildAvailable(
-            amoledPlusPreference,
-            blackNightAvailable && ThemeHelper.isBlackNightTheme(context),
-        )
-        amoledPlusPreference.apply {
-            isChecked = ShizukuSettings.isAmoledPlusEnabled()
-            setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean && newValue) {
-                    if (!blackNightThemePreference.isChecked) {
-                        blackNightThemePreference.isChecked = true
-                        ShizukuSettings
-                            .getPreferences()
-                            .edit()
-                            .putBoolean(KEY_BLACK_NIGHT_THEME, true)
-                            .apply()
-                    }
-                }
-                if (ResourceUtils.isNightMode(context.resources.configuration)) {
-                    applyTheme(requiresRecreate = false)
-                }
-                true
-            }
+            true
         }
 
         val systemColorAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
@@ -146,7 +113,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 setOnPreferenceChangeListener { _, value ->
                     if (value is Boolean) {
                         if (ThemeHelper.isUsingSystemColor() != value) {
-                            customAccentPreference.isEnabled = !value
+                            // Hide (not grey out) the accent picker while system colors win:
+                            // a disabled slider still showed a stale accent name.
+                            setChildAvailable(customAccentPreference, !value)
                             applyTheme(requiresRecreate = false)
                         }
                     }
@@ -156,8 +125,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
 
         customAccentPreference.apply {
-            val isUsingSysColor = ThemeHelper.isUsingSystemColor()
-            isEnabled = !isUsingSysColor
+            setChildAvailable(this, !ThemeHelper.isUsingSystemColor())
             setCustomSummary(getCustomAccentSummary())
             setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is String) {
@@ -255,10 +223,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        expressiveAnimationsPreference.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                setChildAvailable(animationIntensityPreference, newValue)
-            }
+        expressiveAnimationsPreference.setOnPreferenceChangeListener { _, _ ->
+            // isChecked updates after this returns; re-sync once it has.
+            view?.post { syncIntensityAvailability() }
             applyTheme(requiresRecreate = false)
             true
         }
@@ -268,14 +235,53 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        val hapticPreference = findPreference<TwoStatePreference>("haptic_feedback")
-        val followSystemHapticsPreference = findPreference<Preference>("follow_system_haptics")
-        followSystemHapticsPreference?.let { setChildAvailable(it, hapticPreference?.isChecked ?: true) }
-        hapticPreference?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                followSystemHapticsPreference?.let { setChildAvailable(it, newValue) }
+        // Off / Follow system / Always on replaces "Haptic feedback" + its dependent
+        // "Follow system haptics" switch; writes the same two keys.
+        findPreference<SegmentedControlPreference>("haptics_mode")?.apply {
+            val prefs = ShizukuSettings.getPreferences()
+            value =
+                when {
+                    !prefs.getBoolean(ShizukuSettings.Keys.KEY_HAPTIC_FEEDBACK, true) -> "off"
+                    prefs.getBoolean(ShizukuSettings.Keys.KEY_FOLLOW_SYSTEM_HAPTICS, true) -> "system"
+                    else -> "always"
+                }
+            setOnPreferenceChangeListener { _, newValue ->
+                val mode = newValue as? String ?: return@setOnPreferenceChangeListener false
+                prefs
+                    .edit()
+                    .putBoolean(ShizukuSettings.Keys.KEY_HAPTIC_FEEDBACK, mode != "off")
+                    .putBoolean(ShizukuSettings.Keys.KEY_FOLLOW_SYSTEM_HAPTICS, mode == "system")
+                    .apply()
+                true
             }
+        }
+
+        // Intensity is ignored while following the system animation speed - hide it then.
+        syncIntensityAvailability()
+        findPreference<TwoStatePreference>("follow_system_animations")?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { syncIntensityAvailability() }
+            applyTheme(requiresRecreate = false)
             true
+        }
+
+        // Sub-options of the floating nav only matter while it's on: hide, don't grey out.
+        val floatingNavPreference = findPreference<TwoStatePreference>("floating_nav_enabled")
+        val floatingNavChildren = listOf("floating_nav_label_mode", "floating_nav_autohide").mapNotNull { findPreference<Preference>(it) }
+
+        fun syncFloatingNavChildren(enabled: Boolean) = floatingNavChildren.forEach { setChildAvailable(it, enabled) }
+        syncFloatingNavChildren(floatingNavPreference?.isChecked == true)
+        floatingNavPreference?.let { nav ->
+            val previous = nav.onPreferenceChangeListener
+            nav.setOnPreferenceChangeListener { pref, newValue ->
+                val accepted = previous?.onPreferenceChange(pref, newValue) ?: true
+                if (accepted && newValue is Boolean) syncFloatingNavChildren(newValue)
+                accepted
+            }
+        }
+
+        // One UI and one-handed mode always use expanded headers, so the switch does nothing there.
+        findPreference<Preference>("expanded_headers_enabled")?.let {
+            setChildAvailable(it, !ShizukuSettings.isOneUiThemeEnabled() && !ShizukuSettings.isOneHandedModeEnabled())
         }
 
         val showStatusOutlinePreference = findPreference<TwoStatePreference>("show_status_card_outline")
@@ -443,16 +449,24 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
     }
 
+    /** Intensity needs animations on and isn't used while following the system speed. */
+    private fun syncIntensityAvailability() {
+        val animationsOn = expressiveAnimationsPreference.isChecked
+        val followSystem = findPreference<TwoStatePreference>("follow_system_animations")
+        setChildAvailable(animationIntensityPreference, animationsOn && followSystem?.isChecked != true)
+        followSystem?.let { setChildAvailable(it, animationsOn) }
+    }
+
+    private fun currentDarkStyle(): String =
+        when {
+            ShizukuSettings.isAmoledPlusEnabled() -> DARK_STYLE_AMOLED
+            ThemeHelper.isBlackNightTheme(requireContext()) -> DARK_STYLE_BLACK
+            else -> DARK_STYLE_STANDARD
+        }
+
     private fun syncDependentVisibility() {
         val nightOn = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
-        setChildAvailable(
-            blackNightThemePreference,
-            nightOn,
-        )
-        setChildAvailable(
-            amoledPlusPreference,
-            nightOn && ThemeHelper.isBlackNightTheme(requireContext()),
-        )
+        setChildAvailable(darkStylePreference, nightOn)
     }
 
     /**
@@ -558,3 +572,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
     }
 }
+
+private const val DARK_STYLE_STANDARD = "standard"
+private const val DARK_STYLE_BLACK = "black"
+private const val DARK_STYLE_AMOLED = "amoled"
