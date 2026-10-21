@@ -1272,6 +1272,10 @@
     <string name="settings_personalization_category_motion_display">Motion &amp; display</string>
     <string name="settings_personalization_category_home_screen">Home screen</string>
     <string name="settings_personalization_category_language">Language</string>
+    <string name="settings_behavior_category_wireless_adb">Wireless &amp; ADB</string>
+    <string name="settings_behavior_category_network_security">Network security</string>
+    <string name="settings_behavior_category_notifications">Notifications</string>
+    <string name="settings_behavior_category_compat">Compatibility</string>
     <string name="settings_experimental_title">Experimental features</string>
     <string name="settings_experimental_category_nav">Floating navigation bar</string>
     <string name="settings_floating_nav_style_title">Bar style</string>

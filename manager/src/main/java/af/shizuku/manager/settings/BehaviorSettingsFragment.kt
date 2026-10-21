@@ -62,7 +62,8 @@ class BehaviorSettingsFragment :
         watchdogPreference = requireNotNull(findPreference(KEY_WATCHDOG))
         deviceHardeningPreference = requireNotNull(findPreference(KEY_DEVICE_HARDENING_ENABLED))
         wirelessAdbPreference = requireNotNull(findPreference("wireless_adb_card"))
-        networkCategory = requireNotNull(findPreference("category_network_activity"))
+        // Wireless & ADB group (key kept from the old "ADB connection" category).
+        networkCategory = requireNotNull(findPreference("category_adb_connection"))
         startupCategory = requireNotNull(findPreference("category_startup"))
 
         startOnBootPreference.apply {
@@ -198,11 +199,15 @@ class BehaviorSettingsFragment :
         }
 
         listOf("network_governor_plus_enabled", "binder_firewall_enabled", "continuity_bridge_enabled").forEach { key ->
-            findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { _, _ ->
-                ShizukuSettings.syncAllPlusFeaturesToServer()
+            findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { _, newValue ->
+                // The listener runs before the switch persists its value; sync once it has, or the
+                // server gets the old state.
+                view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
+                if (key == "binder_firewall_enabled") syncTrustedNetworksAvailability(newValue as Boolean)
                 true
             }
         }
+        syncTrustedNetworksAvailability(findPreference<TwoStatePreference>("binder_firewall_enabled")?.isChecked == true)
 
         findPreference<Preference>("automation_trusted_networks")?.setOnPreferenceChangeListener { _, _ ->
             val ctx = context
@@ -282,9 +287,9 @@ class BehaviorSettingsFragment :
 
         // Route through setChildAvailable so the category's expand/collapse cycle
         // does not restore preferences that should stay hidden in root mode.
-        networkCategory.setChildAvailable("wireless_adb_card", tcpModeAvailable && !isRootMode)
+        findPreference<Preference>("wireless_adb_card")?.setAvailable(tcpModeAvailable && !isRootMode)
         val mdnsSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-        startupCategory.setChildAvailable(KEY_AUTO_RECONNECT_MDNS, isAdbMode && mdnsSupported)
+        findPreference<Preference>(KEY_AUTO_RECONNECT_MDNS)?.setAvailable(isAdbMode && mdnsSupported)
 
         // Category summaries as mode indicators
         networkCategory.setCustomSummary(if (isRootMode) getString(R.string.settings_mode_indicator_root) else null)
@@ -329,9 +334,16 @@ class BehaviorSettingsFragment :
         }
     }
 
+    /** Trusted networks only tune the App connection firewall - hide them while it's off. */
+    private fun syncTrustedNetworksAvailability(firewallOn: Boolean) {
+        findPreference<Preference>("automation_trusted_networks")?.setAvailable(firewallOn)
+    }
+
     private fun syncWatchdogPreference() {
         val isOn = watchdogShownOn()
         watchdogPreference.isChecked = isOn
+        // Crash notifications come from the watchdog; nothing to configure while it's off.
+        findPreference<Preference>("watchdog_crash_alerts")?.setAvailable(isOn)
         if (isOn && !WatchdogService.isRunning()) {
             watchdogPreference.setSummary(R.string.settings_watchdog_not_running)
         } else {
