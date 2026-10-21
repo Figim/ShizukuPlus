@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package af.shizuku.manager.permissionmanager
 
 import af.shizuku.manager.R
@@ -238,7 +240,7 @@ private fun AppListPane(
 
         if (isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                androidx.compose.material3.LoadingIndicator()
             }
         } else if (apps.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -346,7 +348,7 @@ private fun PermissionDetailPane(
                 .padding(paddingValues),
             contentAlignment = Alignment.Center,
         ) {
-            CircularProgressIndicator()
+            androidx.compose.material3.LoadingIndicator()
         }
         return
     }

@@ -6,6 +6,7 @@ import af.shizuku.manager.databinding.HomeServerStatusBinding
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import af.shizuku.manager.utils.springTo
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,9 @@ class ServerStatusViewHolder(
     private val binding: HomeServerStatusBinding,
     root: View,
 ) : BaseViewHolder<ServiceStatus>(root) {
+    /** Last running state the icon morph was drawn for (null = first bind, no animation). */
+    private var lastMorphOk: Boolean? = null
+
     private val cardView: com.google.android.material.card.MaterialCardView = itemView as com.google.android.material.card.MaterialCardView
 
     companion object {
@@ -250,6 +254,19 @@ class ServerStatusViewHolder(
             }
         af.shizuku.manager.utils.IconStyleHelper
             .applyToStatusCardIcon(iconView, pillColor = iconPillColor, tintColor = iconOnPillColor)
+        // With an expressive icon shape picked, running = that shape, stopped = plain circle, and
+        // the icon springs between them when the state changes (M3E MaterialShapes morph, #430).
+        (iconView.background as? af.shizuku.manager.utils.MorphShapeDrawable)?.let { morph ->
+            val target = if (ok) 1f else 0f
+            val previous = lastMorphOk
+            lastMorphOk = ok
+            if (previous == null || previous == ok) {
+                morph.progress = target
+            } else {
+                morph.progress = 1f - target
+                morph.springTo(target)
+            }
+        }
 
         val isRoot = status.uid == 0
         val apiVersion = status.apiVersion

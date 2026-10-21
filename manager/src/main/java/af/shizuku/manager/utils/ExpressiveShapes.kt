@@ -108,3 +108,36 @@ class MorphShapeDrawable(
     @Deprecated("Deprecated in Java")
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 }
+
+/**
+ * Springs [MorphShapeDrawable.progress] to [target] (0 = circle, 1 = shape) with the bouncy M3E
+ * feel; jumps straight there when animations are off.
+ */
+fun MorphShapeDrawable.springTo(target: Float) {
+    if (af.shizuku.manager.ShizukuSettings
+            .getAnimationDurationScale() <= 0f
+    ) {
+        progress = target
+        return
+    }
+    androidx.dynamicanimation.animation
+        .SpringAnimation(
+            this,
+            object : androidx.dynamicanimation.animation.FloatPropertyCompat<MorphShapeDrawable>("morph") {
+                override fun getValue(d: MorphShapeDrawable) = d.progress
+
+                override fun setValue(
+                    d: MorphShapeDrawable,
+                    value: Float,
+                ) {
+                    d.progress = value
+                }
+            },
+            target,
+        ).apply {
+            spring.dampingRatio = androidx.dynamicanimation.animation.SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+            spring.stiffness = androidx.dynamicanimation.animation.SpringForce.STIFFNESS_LOW
+            setStartValue(progress)
+            start()
+        }
+}

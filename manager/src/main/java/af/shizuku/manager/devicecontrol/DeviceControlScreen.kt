@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package af.shizuku.manager.devicecontrol
 
 import af.shizuku.manager.R
@@ -186,7 +188,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                         .padding(innerPadding),
                 contentAlignment = Alignment.Center,
             ) {
-                CircularProgressIndicator()
+                androidx.compose.material3.LoadingIndicator()
             }
             return@Scaffold
         }
