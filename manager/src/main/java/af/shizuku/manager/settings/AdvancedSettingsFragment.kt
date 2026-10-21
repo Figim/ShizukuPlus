@@ -392,8 +392,8 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         val peerLabel = SettingsShareManager.getPeerLabel(requireContext())
         val isPeerInstalled = SettingsShareManager.isPeerInstalled(requireContext())
 
-        syncPeerPref?.isVisible = isPeerInstalled
-        autoSyncPref?.isVisible = isPeerInstalled
+        syncPeerPref?.setAvailable(isPeerInstalled)
+        autoSyncPref?.setAvailable(isPeerInstalled)
 
         if (isPeerInstalled) {
             syncPeerPref?.title = getString(R.string.settings_sync_peer_title, peerLabel)

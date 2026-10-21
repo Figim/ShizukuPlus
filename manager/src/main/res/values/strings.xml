@@ -1271,8 +1271,11 @@
     <string name="settings_personalization_category_motion_display">Motion &amp; display</string>
     <string name="settings_personalization_category_home_screen">Home screen</string>
     <string name="settings_personalization_category_language">Language</string>
+    <string name="settings_experimental_title">Experimental features</string>
+    <string name="settings_experimental_summary">Try features that are still being polished</string>
+    <string name="settings_experimental_category_personalization">Personalization</string>
     <string name="settings_experimental_app_identity_title">App icon &amp; name customization</string>
-    <string name="settings_experimental_app_identity_summary">Experimental. Adds launcher icon, app name and Icon Studio options to Appearance. Turning it off restores the standard icon and name</string>
+    <string name="settings_experimental_app_identity_summary">Adds launcher icon, app name and Icon Studio options to Appearance. Turning it off restores the standard icon and name</string>
     <string name="settings_dark_style_title">Dark style</string>
     <string name="settings_dark_style_standard">Standard</string>
     <string name="settings_dark_style_black">Black</string>
@@ -1682,6 +1685,9 @@
 
     <!-- Peer Settings Sharing / Drop-In Sync -->
     <string name="settings_sync_peer_title">Sync with %1$s</string>
+    <string name="settings_sync_peer_title_generic">Sync with the other Shizuku+ app</string>
+    <string name="settings_sync_peer_summary_generic">Import or export settings between Shizuku+ and its drop-in version</string>
+    <string name="settings_auto_sync_peer_title_generic">Auto-sync with the other Shizuku+ app</string>
     <string name="settings_sync_peer_summary_installed">%1$s is installed • Tap to sync settings</string>
     <string name="settings_sync_peer_summary_not_installed">%1$s is not installed on this device</string>
     <string name="settings_sync_peer_not_installed_dialog">%1$s is not currently installed. When you install %1$s for testing or as a drop-in replacement, you can seamlessly import and sync settings between both apps.</string>

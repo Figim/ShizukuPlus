@@ -335,3 +335,14 @@ class CollapsiblePreferenceCategory
             return result
         }
     }
+
+/**
+ * Shows/hides a preference in a way a collapsible parent respects. Setting isVisible directly is
+ * undone the next time the category expands (it re-shows every child), which is how hidden rows
+ * like the peer-sync entries came back with their raw "%1$s" XML titles.
+ */
+fun androidx.preference.Preference.setAvailable(available: Boolean) {
+    val category = parent as? CollapsiblePreferenceCategory
+    val k = key
+    if (category != null && k != null) category.setChildAvailable(k, available) else isVisible = available
+}
