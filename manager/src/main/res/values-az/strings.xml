@@ -51,11 +51,6 @@
         <item>Konturlu</item>
         <item>İki Rəngli</item>
     </string-array>
-    <string-array name="icon_styles_value">
-        <item>standart</item>
-        <item>konturlanmış</item>
-        <item>iki rəngli</item>
-    </string-array>
 
     <string name="icon_style_filled">Dolu</string>
     <string name="icon_style_outlined">Konturlu</string>
@@ -69,11 +64,6 @@
         <item>Eynilik</item>
         <item>Dinamik</item>
     </string-array>
-    <string-array name="icon_color_modes_value">
-        <item>heç biri</item>
-        <item>eyni cür</item>
-        <item>hər_ikon</item>
-    </string-array>
 
     <string-array name="shape_styles">
         <item>Zen (Yarpaq/Damcı)</item>
@@ -82,13 +72,6 @@
         <item>Üzvi (Dairəvi)</item>
         <item>Kəsilmiş (Bucaqlı)</item>
     </string-array>
-    <string-array name="shape_styles_value">
-        <item>zen</item>
-        <item>müasir</item>
-        <item>klassik</item>
-        <item>dairəvi</item>
-        <item>Kəsik</item>
-    </string-array>
 
     <string-array name="animation_intensities">
         <item>Yoxdur</item>
@@ -96,20 +79,10 @@
         <item>Standart</item>
         <item>Ekspressiv</item>
     </string-array>
-    <string-array name="animation_intensities_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <string-array name="status_card_outline_styles">
         <item>Material (tema rəngi)</item>
         <item>Yaşıl / Qırmızı (status rəngi)</item>
-    </string-array>
-    <string-array name="status_card_outline_styles_value">
-        <item>material</item>
-        <item>status</item>
     </string-array>
 
 

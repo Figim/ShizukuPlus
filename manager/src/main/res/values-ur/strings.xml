@@ -34,20 +34,10 @@
         <item>Outlined</item>
         <item>Two-Tone</item>
     </string-array>
-    <string-array name="icon_styles_value">
-        <item>standard</item>
-        <item>outlined</item>
-        <item>twotone</item>
-    </string-array>
     <string-array name="icon_color_modes">
         <item>کوئی رنگ نہیں (Monochrome)</item>
         <item>سب کے لیے ایک ہی رنگ</item>
         <item>ہر ایک کے لیے مختلف رنگ</item>
-    </string-array>
-    <string-array name="icon_color_modes_value">
-        <item>none</item>
-        <item>uniform</item>
-        <item>per_icon</item>
     </string-array>
     <string-array name="shape_styles">
         <item>Zen (Leaf/Droplet)</item>
@@ -56,24 +46,11 @@
         <item>Organic (Squircle)</item>
         <item>Cut (Angular)</item>
     </string-array>
-    <string-array name="shape_styles_value">
-        <item>zen</item>
-        <item>modern</item>
-        <item>classic</item>
-        <item>squircle</item>
-        <item>cut</item>
-    </string-array>
     <string-array name="animation_intensities">
         <item>کوئی نہیں</item>
         <item>ہلکی</item>
         <item>معیاری</item>
         <item>ایکسپریسیو</item>
-    </string-array>
-    <string-array name="animation_intensities_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
     </string-array>
 
     <string name="settings_icon_color_mode">دو رنگی آئیکن کے رنگ</string>

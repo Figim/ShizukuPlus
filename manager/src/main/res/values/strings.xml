@@ -50,7 +50,7 @@
         <item>Outlined</item>
         <item>Two-Tone</item>
     </string-array>
-    <string-array name="icon_styles_value">
+    <string-array name="icon_styles_value" translatable="false">
         <item>standard</item>
         <item>outlined</item>
         <item>twotone</item>
@@ -68,7 +68,7 @@
         <item>Uniform</item>
         <item>Dynamic</item>
     </string-array>
-    <string-array name="icon_color_modes_value">
+    <string-array name="icon_color_modes_value" translatable="false">
         <item>none</item>
         <item>uniform</item>
         <item>per_icon</item>
@@ -81,7 +81,7 @@
         <item>Organic (Squircle)</item>
         <item>Cut (Angular)</item>
     </string-array>
-    <string-array name="shape_styles_value">
+    <string-array name="shape_styles_value" translatable="false">
         <item>zen</item>
         <item>modern</item>
         <item>classic</item>
@@ -95,7 +95,7 @@
         <item>Standard</item>
         <item>Expressive</item>
     </string-array>
-    <string-array name="animation_intensities_value">
+    <string-array name="animation_intensities_value" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -106,7 +106,7 @@
         <item>Material (theme color)</item>
         <item>Green / Red (status color)</item>
     </string-array>
-    <string-array name="status_card_outline_styles_value">
+    <string-array name="status_card_outline_styles_value" translatable="false">
         <item>material</item>
         <item>status</item>
     </string-array>

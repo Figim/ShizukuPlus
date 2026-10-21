@@ -45,11 +45,6 @@
         <item>描边</item>
         <item>双色调</item>
     </string-array>
-    <string-array name="icon_styles_value">
-        <item>standard</item>
-        <item>outlined</item>
-        <item>twotone</item>
-    </string-array>
 
     <string name="settings_icon_color_mode">双色调图标颜色</string>
     <string name="settings_icon_color_mode_summary">双色调图标背景的着色方式</string>
@@ -57,11 +52,6 @@
         <item>无色（单色）</item>
         <item>全部相同颜色</item>
         <item>每个图标不同颜色</item>
-    </string-array>
-    <string-array name="icon_color_modes_value">
-        <item>none</item>
-        <item>uniform</item>
-        <item>per_icon</item>
     </string-array>
 
     <string-array name="shape_styles">
@@ -71,13 +61,6 @@
         <item>有机（方圆形）</item>
         <item>切割（棱角）</item>
     </string-array>
-    <string-array name="shape_styles_value">
-        <item>zen</item>
-        <item>modern</item>
-        <item>classic</item>
-        <item>squircle</item>
-        <item>cut</item>
-    </string-array>
 
     <string-array name="animation_intensities">
         <item>无</item>
@@ -85,20 +68,10 @@
         <item>标准</item>
         <item>表现力</item>
     </string-array>
-    <string-array name="animation_intensities_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
     <string-array name="status_card_outline_styles">
         <item>Material（主题色）</item>
         <item>绿 / 红（状态色）</item>
-    </string-array>
-    <string-array name="status_card_outline_styles_value">
-        <item>material</item>
-        <item>status</item>
     </string-array>
 
 

@@ -49,11 +49,6 @@
         <item>Контурний</item>
         <item>Двотонний</item>
     </string-array>
-    <string-array name="icon_styles_value">
-        <item>standard</item>
-        <item>outlined</item>
-        <item>twotone</item>
-    </string-array>
 
     <string name="settings_icon_color_mode">Кольори двотонних іконок</string>
     <string name="settings_icon_color_mode_summary">Як розфарбовується фон двотонної іконки</string>
@@ -61,11 +56,6 @@
         <item>Без кольору (монохромний)</item>
         <item>Однаковий колір для всіх</item>
         <item>Різний колір для кожної</item>
-    </string-array>
-    <string-array name="icon_color_modes_value">
-        <item>none</item>
-        <item>uniform</item>
-        <item>per_icon</item>
     </string-array>
 
     <string-array name="shape_styles">
@@ -75,25 +65,12 @@
         <item>Органічний (Squircle)</item>
         <item>Гострий (Кутастий)</item>
     </string-array>
-    <string-array name="shape_styles_value">
-        <item>zen</item>
-        <item>modern</item>
-        <item>classic</item>
-        <item>squircle</item>
-        <item>cut</item>
-    </string-array>
 
     <string-array name="animation_intensities">
         <item>Вимкнено</item>
         <item>Легка</item>
         <item>Стандартна</item>
         <item>Виразна</item>
-    </string-array>
-    <string-array name="animation_intensities_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
     </string-array>
 
 
@@ -1068,10 +1045,6 @@
     <string-array name="status_card_outline_styles">
         <item>Material (колір теми)</item>
         <item>Зелений / Червоний (колір статусу)</item>
-    </string-array>
-    <string-array name="status_card_outline_styles_value">
-        <item>material</item>
-        <item>status</item>
     </string-array>
     <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi відключено.</b><br>Android не може виявити бездротове налагодження через мобільні дані (5G/LTE).]]></string>
     <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Порада:</b> увімкніть <b>Мобільну точку доступу</b> телефону, щоб використовувати бездротове налагодження без мережі Wi-Fi, або підключіться через локальний порт 5555.]]></string>

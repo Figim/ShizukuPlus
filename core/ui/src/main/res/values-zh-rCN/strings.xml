@@ -19,34 +19,17 @@
         <item>描边</item>
         <item>双色调</item>
     </string-array>
-    <string-array name="icon_styles_value">
-        <item>standard</item>
-        <item>outlined</item>
-        <item>twotone</item>
-    </string-array>
     <string-array name="shape_styles">
         <item>禅意（艺术）</item>
         <item>现代（Material 3）</item>
         <item>经典（Material 2）</item>
         <item>有机（圆角方形）</item>
     </string-array>
-    <string-array name="shape_styles_value">
-        <item>zen</item>
-        <item>modern</item>
-        <item>classic</item>
-        <item>squircle</item>
-    </string-array>
     <string-array name="animation_intensities">
         <item>无</item>
         <item>轻微</item>
         <item>标准</item>
         <item>富有表现力</item>
-    </string-array>
-    <string-array name="animation_intensities_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
     </string-array>
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s 正在运行</string>
