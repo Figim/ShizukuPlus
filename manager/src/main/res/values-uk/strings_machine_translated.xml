@@ -7,11 +7,8 @@
 -->
 <resources>
     <string name="home_wireless_adb_button_reconnect">Підключити знову</string>
-    <string name="settings_tcp_randomize_port">Випадковий порт TCP</string>
-    <string name="settings_tcp_randomize_port_summary">Вибирати випадковий порт із високого діапазону (49152–65535), щоб зменшити ризик виявлення сканерами портів</string>
     <string name="snackbar_tcp_port_randomized">Порт TCP змінено на %1$d</string>
     <string name="settings_tcp_auto_close_port">Автоматично закривати порт TCP при зупинці</string>
-    <string name="settings_tcp_auto_close_port_summary">Вимикати бездротове налагодження, коли Shizuku зупиняється, і закривати порт ADB TCP</string>
     <string name="activity_log_sort_by_app">За застосунком</string>
     <string name="activity_log_type_start">Запуск</string>
     <string name="activity_log_type_stop">Зупинка</string>
@@ -50,8 +47,6 @@
     <string name="changelog_summary_up_to_date">У вас остання версія</string>
     <string name="settings_sync_peer_title">Синхронізація з %1$s</string>
     <string name="settings_sync_peer_summary_installed">%1$s встановлено • Торкніться, щоб синхронізувати налаштування</string>
-    <string name="settings_sync_peer_summary_not_installed">%1$s не встановлено на цьому пристрої</string>
-    <string name="settings_sync_peer_not_installed_dialog">%1$s наразі не встановлено. Коли ви встановите %1$s для тестування або як пряму заміну, ви зможете безперешкодно імпортувати та синхронізувати налаштування між обома застосунками.</string>
     <string name="settings_sync_peer_import">Імпортувати налаштування з %1$s</string>
     <string name="settings_sync_peer_export">Експортувати налаштування до %1$s</string>
     <string name="settings_sync_peer_import_success">Налаштування успішно імпортовано з %1$s</string>

@@ -7,11 +7,8 @@
 -->
 <resources>
     <string name="home_wireless_adb_button_reconnect">Reconectar</string>
-    <string name="settings_tcp_randomize_port">Aleatorizar porta TCP</string>
-    <string name="settings_tcp_randomize_port_summary">Escolhe uma porta aleatória na faixa alta (49152–65535) para reduzir a exposição a scanners de portas</string>
     <string name="snackbar_tcp_port_randomized">Porta TCP aleatorizada para %1$d</string>
     <string name="settings_tcp_auto_close_port">Fechar porta TCP automaticamente ao parar</string>
-    <string name="settings_tcp_auto_close_port_summary">Desativa a depuração sem fio quando o Shizuku para, fechando a porta TCP de escuta do ADB</string>
     <string name="activity_log_sort_by_app">Por app</string>
     <string name="activity_log_type_start">Início</string>
     <string name="activity_log_type_stop">Parada</string>
@@ -50,8 +47,6 @@
     <string name="changelog_summary_up_to_date">Você está atualizado</string>
     <string name="settings_sync_peer_title">Sincronizar com %1$s</string>
     <string name="settings_sync_peer_summary_installed">%1$s está instalado • Toque para sincronizar as configurações</string>
-    <string name="settings_sync_peer_summary_not_installed">%1$s não está instalado neste dispositivo</string>
-    <string name="settings_sync_peer_not_installed_dialog">%1$s não está instalado no momento. Ao instalar %1$s para testes ou como substituto direto, você poderá importar e sincronizar as configurações entre os dois apps sem complicações.</string>
     <string name="settings_sync_peer_import">Importar configurações de %1$s</string>
     <string name="settings_sync_peer_export">Exportar configurações para %1$s</string>
     <string name="settings_sync_peer_import_success">Configurações importadas de %1$s com sucesso</string>

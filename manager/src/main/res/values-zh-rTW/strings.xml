@@ -49,13 +49,11 @@
     <string name="adb_pairing_requires_multi_window_reason">
         系統需求配對對話框始終可見。只有使用分割畫面模式才能讓此應用程式和系統對話方塊同時可見。</string>
     <string name="adb_error_key_store">無法產生無線調試密鑰。\n這可能是因為此裝置的金鑰庫機制已損壞。</string>
-    <string name="adb_stopping_tcp">關閉 TCP 連接埠</string>
     <string name="adb_error_stop_tcp">未能阻止 ADB 透過 TCP 傳輸</string>
     <string name="adb_pair_required">請先進行配對步驟。</string>
     <string name="enable">啟用</string>
     <string name="development_settings">開發人員選項</string>
     <string name="notification_settings">通知設定</string>
-    <string name="adb_pairing_tutorial_title">將 Shizuku 與您的裝置配對</string>
     <string name="adb_pairing_tutorial_content_notification">一則來自 Shizuku 的通知將協助您完成配對。</string>
     <string name="adb_pairing_tutorial_content_steps">進入“開發者選項”，然後啟用“USB調試”和“無線調試”。</string>
     <string name="adb_pairing_tutorial_content_enter_pairing_code">
@@ -86,10 +84,6 @@
     <string name="home_automation_description">Tasker 和 MacroDroid 等應用程式可以傳送 Intent 來自動啟動/停止
         Shizuku。</string>
     <string name="home_automation_button_view_intents">查看意圖</string>
-    <string name="home_automation_dialog_label_action">動作</string>
-    <string name="home_automation_dialog_label_package">套件名</string>
-    <string name="home_automation_dialog_label_class">類別名</string>
-    <string name="home_automation_dialog_label_target">目標</string>
     <!-- Home - Learn more -->
     <string name="home_learn_more_title">開發者指南</string>
     <string name="home_learn_more_description">瞭解如何使用 Shizuku 開發</string>
@@ -117,7 +111,6 @@
     <string name="rish_description"><![CDATA[使用 %1$s，您可以在任何終端應用程式中執行 shell 命令。<p>點選了解更多使用方法。]]></string>
     <!-- Settings -->
     <string name="settings_title">設定</string>
-    <string name="settings_behavior">行為</string>
     <string name="settings_start_on_boot">開機時啟動</string>
     <string name="settings_start_on_boot_summary">需要 Android 11+ 或 root 權限</string>
     <string name="settings_start_on_boot_bug">由於 Android 11-12
@@ -125,28 +118,18 @@
     <string name="settings_use_system_color">使用系統主題色彩</string>
     <string name="settings_watchdog">看門狗</string>
     <string name="settings_watchdog_summary">如果 Shizuku 崩潰，則自動重新啟動。</string>
-    <string name="settings_tcp_mode">TCP 模式</string>
     <string name="settings_tcp_mode_summary">"讓雫能在沒有 Wi-Fi 的情況下重新開始。（雫自重啟後應該開始過一次）"</string>
     <string name="settings_tcp_mode_dialog_close_port">"TCP連接埠將立即關閉。您需要連接Wi-Fi才能重新啟用TCP模式。是否繼續？"</string>
     <string name="settings_tcp_mode_closing_port">正在關閉 TCP 連接埠...</string>
     <string name="settings_restart_dialog_title">需要重啟</string>
     <string name="settings_restart_dialog_message">Shizuku 需要重啟才能套用此設定。</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>需要 Wi-Fi。Shizuku 會在後台繼續運作並等待 Wi-Fi 連接，連線成功後才會重新啟動。</b>]]></string>
-    <string name="settings_tcp_port">TCP 埠</string>
-    <string name="settings_tcp_port_default">預設值 (5555)</string>
-    <string name="settings_tcp_port_hint">留空使用預設值（5555）</string>
-    <string name="settings_tcp_learn_more">了解更多關於使用自動化應用程式控制 Shizuku 的方法</string>
     <string name="settings_language">語言</string>
     <string name="settings_translation_contributors">翻譯貢獻者</string>
     <string name="settings_translation">參與翻譯</string>
     <string name="settings_translation_summary">協助我們將 %s 翻譯至您的語言</string>
-    <string name="settings_user_interface">外觀</string>
-    <string name="settings_black_night_theme">黑色夜間主題</string>
-    <string name="settings_black_night_theme_summary">夜間模式啟用時使用純黑色主題</string>
-    <string name="settings_support">支援</string>
     <string name="settings_help">幫助</string>
     <string name="settings_report_bug">回報錯誤</string>
-    <string name="settings_advanced">進階</string>
     <string name="settings_legacy_pairing">傳統配對</string>
     <string name="settings_legacy_pairing_summary">請在對話框中輸入配對代碼，而非通知</string>
     <!-- Bug Report Dialog -->
@@ -175,20 +158,12 @@
     <string name="dark_theme_on">始終使用深色主題</string>
     <string name="follow_system">跟隨系統</string>
     <!-- About -->
-    <string name="action_about">關於</string>
-    <string name="about_dialog_button_close">關閉</string>
-    <string name="about_view_source_code"><![CDATA[在 %s 檢視原始碼]]></string>
     <!-- Start -->
-    <string name="action_start">開始 Shizuku</string>
     <!-- Stop -->
     <string name="action_stop">停止 Shizuku</string>
     <string name="dialog_stop_message">Shizuku 服務將被停止。</string>
     <!-- Notification -->
-    <string name="notification_channel_service_status">服務啟動狀態</string>
-    <string name="notification_service_starting">Shizuku 服務正在啟動…</string>
-    <string name="notification_service_start_failed">啟動 Shizuku 服務時失敗。</string>
     <string name="notification_service_start_no_root">無法要求 Root 權限。</string>
-    <string name="notification_working">正在處理…</string>
     <string name="notification_channel_adb_pairing">無線偵錯配對</string>
     <string name="notification_adb_pairing_input_paring_code">輸入配對碼</string>
     <string name="notification_adb_pairing_searching_for_service_title">正在尋找配對服務</string>
@@ -213,11 +188,9 @@
     <string name="wadb_notification_wifi_required">等待 Wi-Fi 連線後再繼續</string>
     <string name="wadb_notification_retry">等待重試</string>
     <string name="wadb_error_title">開機時出現錯誤</string>
-    <string name="wadb_error_notify_dev">點擊即可通知開發者。</string>
     <string name="wadb_permission_error_notification_title">權限錯誤</string>
     <string name="wadb_permission_error_notification_content">Shizuku
         需要WRITE_SECURE_SETTINGS才能於開機時啟動。點擊了解如何授予此權限。</string>
-    <string name="wadb_notification_channel">ADB 自動啟動服務</string>
     <!-- Watchdog -->
     <string name="watchdog_running">看門狗正在執行</string>
     <string name="watchdog_turn_off">關閉</string>
@@ -251,17 +224,12 @@
     <string name="activity_log_sort_most_active">最活躍</string>
     <string name="activity_log_stack_activities">合併重複事件</string>
     <string name="activity_log_stacked_count">%d 次</string>
-    <string name="activity_log_stacked_expand">點按以查看全部記錄</string>
     <string name="activity_log_type_connection">連線</string>
     <!-- 背景保護提示 -->
     <string name="background_nudge_channel">背景保護</string>
     <string name="background_nudge_text">手機的電池管理員可能正在背景限制 Shizuku。請開啟服務醫生進行修復。</string>
     <string name="background_nudge_title">Shizuku 經常被停止</string>
     <!-- 功能標籤 -->
-    <string name="badge_device_owner">裝置擁有者</string>
-    <string name="badge_root_only">ROOT</string>
-    <string name="badge_samsung_only">ONE UI</string>
-    <string name="badge_wireless_adb">ADB</string>
     <!-- 電池最佳化豁免 -->
     <string name="battery_exemption_channel_name">電池最佳化</string>
     <string name="battery_exemption_notification_text">看門狗已自動開啟。請將 Shizuku+ 從電池最佳化中排除，以便服務停止時能自動重新啟動。</string>
@@ -294,8 +262,6 @@
     <string name="home_status_diagnostics_tips">保持運作提示</string>
     <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ 已透過無線偵錯啟動。若連線中斷，請點按「重新連線」。]]></string>
     <!-- 知識庫 -->
-    <string name="knowledgebase_action_view_guide">在知識庫中檢視</string>
-    <string name="knowledgebase_peek">快速查看知識庫</string>
     <string name="knowledgebase_title">知識庫</string>
     <!-- 底部導覽 -->
     <string name="nav_apps">應用程式</string>
@@ -305,35 +271,11 @@
     <!-- 瀏覽器 -->
     <string name="open_in_browser">在瀏覽器中開啟</string>
     <!-- 設定 -->
-    <string name="settings_binder_firewall_consumer_summary">檢查並封鎖應用程式在未經您同意的情況下，存取受限 Android 系統服務的隱匿背景請求。</string>
-    <string name="settings_binder_firewall_consumer_title">應用程式連線防火牆（Binder 防護）</string>
-    <string name="settings_fake_su_consumer_summary">讓標準 root 應用程式（例如 AdAway 或 Franco Kernel）無需永久 root 手機，即可透過 Shizuku+ 運作。</string>
-    <string name="settings_fake_su_consumer_title">Root 應用程式轉譯器（SU Bridge）</string>
     <string name="settings_floating_nav">浮動導覽列</string>
     <string name="settings_floating_nav_info">這是用於在首頁、應用程式、中心與設定之間跳轉的實驗性導覽列。向下捲動時會自動隱藏，並在頁面之間滑動切換。此功能預設為關閉且可能變更；若有異常，請在此將其關閉。</string>
     <string name="settings_floating_nav_summary">透過浮動於內容上方的導覽列，在首頁、應用程式、中心與設定之間快速跳轉</string>
-    <string name="settings_main_category_preferences">偏好設定</string>
-    <string name="settings_mdns_consumer_summary">自動掃描本機 Wi-Fi 連線，尋找手機目前的無線偵錯連接埠，無需手動輸入連接埠號碼。</string>
-    <string name="settings_mdns_consumer_title">自動探索 Wi-Fi 連接埠（無線 ADB）</string>
     <string name="settings_plus_category_core">核心</string>
-    <string name="settings_root_file_interceptor_consumer_summary">複製應用程式檔案時保留原始擁有者與系統安全性規則，避免當機與資料損毀。</string>
-    <string name="settings_root_file_interceptor_consumer_title">檔案權限與安全性標籤保護器</string>
-    <string name="settings_samsung_autoblocker_consumer_summary">Samsung 內建防護，會封鎖背景系統工具與 ADB 偵錯。關閉後可讓 Shizuku+ 持續保持連線。</string>
-    <string name="settings_samsung_autoblocker_consumer_title">Samsung Knox 自動防護（Auto Blocker）</string>
-    <string name="settings_shadow_binder_consumer_summary">隱藏 Shizuku+ 及所選的敏感應用程式，避免被 root 偵測器、銀行應用程式與遊戲掃描器偵測到。</string>
-    <string name="settings_shadow_binder_consumer_title">應用程式偽裝與隱形防護</string>
-    <string name="settings_show_advanced_summary">顯示專屬進階使用者工具、系統調控功能與低階橋接功能</string>
-    <string name="settings_show_advanced_title">顯示進階選項</string>
-    <string name="settings_status_banner_running_adb">模式：ADB Shell（無線／USB 權限已啟用）</string>
-    <string name="settings_status_banner_running_root">模式：已 Root（超級使用者權限已啟用）</string>
-    <string name="settings_status_banner_stopped">狀態：Shizuku 服務已停止</string>
     <string name="settings_status_banner_title">服務狀態</string>
-    <string name="settings_tcp_protection">在共用網路上保護 TCP</string>
-    <string name="settings_tcp_protection_auto_close">自動關閉連接埠</string>
-    <string name="settings_tcp_protection_auto_close_summary">當您連線到不受信任的網路時，不經詢問即重新啟動偵錯常駐程式</string>
-    <string name="settings_tcp_trusted_networks">信任的網路</string>
-    <string name="settings_tcp_trusted_networks_none">尚未儲存——點按以新增目前的網路</string>
-    <string name="settings_tcp_trusted_networks_summary">已儲存 %d 個——點按以管理</string>
     <string name="settings_usb_phone_switch_notify">USB 連線與切換通知</string>
     <string name="settings_usb_phone_switch_notify_summary">連接手機或 USB 裝置時，固定顯示包含快速設定與工具捷徑的通知</string>
     <string name="settings_watchdog_crash_alerts">當機通知</string>
@@ -367,12 +309,6 @@
     <string name="tcp_protection_off">關閉</string>
     <string name="tcp_protection_open">開放與公開 Wi-Fi</string>
     <string name="tcp_protection_trusted">僅限信任的網路</string>
-    <string name="tcp_trusted_add_current">信任目前的網路</string>
-    <string name="tcp_trusted_added">已信任 %s</string>
-    <string name="tcp_trusted_dialog_empty">尚無信任的網路。</string>
-    <string name="tcp_trusted_not_on_wifi">請先連線至 Wi-Fi 網路。</string>
-    <string name="tcp_trusted_remove_selected">移除所選項目</string>
-    <string name="tcp_trusted_ssid_hidden">Android 未提供此網路的名稱。請允許位置存取（Android 讀取 Wi-Fi 名稱所需），然後再試一次。</string>
     <!-- 提示 -->
     <string name="tip_auto_reconnect_desc">在 Wi-Fi 環境下自動重新探索無線偵錯並重新連線</string>
     <string name="tip_battery_doctor_desc">保護 Shizuku 不受系統省電模式與 OEM 休眠限制影響</string>
@@ -415,8 +351,6 @@
     <string name="settings_main_nav_about_summary">版本、版本更新記錄、授權與開發人員選項</string>
     <string name="settings_binder_firewall">應用程式連線防火牆（Binder 防護）</string>
     <string name="settings_binder_firewall_summary">檢查並封鎖應用程式在未經您同意的情況下，試圖存取受限 Android 系統服務的隱匿背景請求</string>
-    <string name="settings_binder_logging">通訊診斷記錄</string>
-    <string name="settings_binder_logging_summary">將應用程式對系統的內部請求記錄到系統記錄，以協助診斷連線問題</string>
     <string name="settings_shadow_binder">應用程式偽裝與隱形防護</string>
     <string name="settings_shadow_binder_summary">讓 Shizuku+ 與所選的敏感應用程式不被 root 偵測工具、銀行應用程式與遊戲掃描器察覺</string>
     <string name="settings_live_activity_summary">在看門狗通知中顯示即時的服務活動</string>
@@ -451,7 +385,6 @@
     <string name="onboarding_network_guard_desc">在開放或不受信任的網路上封鎖啟動 TCP</string>
     <string name="onboarding_watchdog_title">看門狗背景保活</string>
     <string name="onboarding_watchdog_desc">服務被終止後自動修復並重新喚醒</string>
-    <string name="onboarding_tour_title">新功能導覽</string>
     <string name="onboarding_take_tour">功能導覽</string>
     <string name="onboarding_take_tour_summary">探索全新的 M3 表現力外觀、首頁版面與網路信任護盾</string>
     <string name="app_name_classic">Shizuku</string>
@@ -464,10 +397,7 @@
     <string name="settings_show_home_cards_outline">首頁卡片邊框</string>
     <string name="settings_show_home_cards_outline_summary">在首頁卡片周圍顯示細微描邊</string>
     <string name="sentry_offline_report_github">在 GitHub 上回報</string>
-    <string name="settings_about_category_app_info">應用程式資訊</string>
     <string name="settings_about_category_updates">更新</string>
-    <string name="settings_about_category_version_updates">版本與更新</string>
-    <string name="settings_about_category_project">專案資訊</string>
     <string name="settings_hide_launcher_icon">隱藏桌面圖示</string>
     <string name="settings_hide_launcher_icon_summary">從桌面移除應用程式，可透過 ADB 或其他應用程式開啟。</string>
     <string name="settings_stealth_mode_pkg_query">套件查詢過濾</string>
