@@ -213,7 +213,7 @@
     <string name="adb_pairing_status_failed">配对失败。</string>
 
     <!-- App Management -->
-    <string name="app_management_badge_format"><b><font color="%1$s">[%2$s]</font></b> %3$s</string>
+    <string name="app_management_badge_format"><b><font color="%1$s">%2$s</font></b> %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">请启用辅助功能服务以开始配对过程。这将使 Shizuku 能够检测到配对码。\n\n辅助功能服务将在找到配对码后或1分钟后关闭以节省电量。</string>
     <string name="dialog_adb_pairing_accessibility_navigate">请按照以下步骤开始配对：\n- 进入“开发者选项”\n- 启用“USB调试”和“无线调试”\n- 点击“无线调试”左侧\n- 点击“使用配对码配对设备”。Shizuku 将自动检测配对码。</string>
     <string name="adb_pairing_requires_multi_window">请先进入分屏（多窗口）模式。</string>

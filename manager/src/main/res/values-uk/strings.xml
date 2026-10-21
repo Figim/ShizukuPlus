@@ -186,7 +186,7 @@
     <string name="adb_pairing_status_failed">Не вдалося створити пару.</string>
 
     <!-- App Management -->
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
+    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;%2$s&lt;/font&gt;&lt;/b&gt; · %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Будь ласка, увімкніть службу доступності, щоб розпочати процес створення пари. Це дозволить Shizuku виявити код.\n\nСлужба доступності вимкнеться після знаходження коду або через 1 хвилину для економії енергії.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Будь ласка, розпочніть створення пари, виконавши такі кроки:\n- Перейдіть до розділу \"Параметри розробника\"\n- Увімкніть \"Налагодження USB\" та \"Бездротове налагодження\"\n- Натисніть ліву частину \"Бездротове налагодження\"\n- Натисніть \"Створити пару з пристроєм за допомогою коду\". Shizuku автоматично виявить код створення пари.</string>
     <string name="adb_pairing_requires_multi_window">Будь ласка, спершу увійдіть у режим розділеного екрана (багатовіконний режим).</string>
