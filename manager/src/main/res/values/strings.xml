@@ -1289,6 +1289,14 @@
     <string name="settings_experimental_app_identity_title">App icon &amp; name customization</string>
     <string name="settings_experimental_app_identity_summary">Adds launcher icon, app name and Icon Studio options to Appearance. Turning it off restores the standard icon and name</string>
     <string name="settings_dark_style_title">Dark style</string>
+    <string name="settings_icon_morph_shape_title">Expressive icon shape</string>
+    <string name="settings_icon_morph_shape_off">Off</string>
+    <string name="settings_icon_morph_shape_clover">Clover</string>
+    <string name="settings_icon_morph_shape_sunny">Sunny</string>
+    <string name="settings_icon_morph_shape_gem">Gem</string>
+    <string name="settings_icon_morph_shape_flower">Flower</string>
+    <string name="settings_icon_morph_on_toggle_title">Morph when toggled</string>
+    <string name="settings_icon_morph_on_toggle_summary">Switch icons morph from a circle into this shape when turned on</string>
     <string name="settings_dark_style_standard">Standard</string>
     <string name="settings_dark_style_black">Black</string>
     <string name="settings_dark_style_amoled">AMOLED+</string>

@@ -270,6 +270,7 @@ dependencies {
 
     implementation libs.libsu.core
     implementation libs.blurview
+    implementation libs.graphics.shapes
     
     implementation libs.aboutlibraries.core
     implementation libs.rikkax.appcompat

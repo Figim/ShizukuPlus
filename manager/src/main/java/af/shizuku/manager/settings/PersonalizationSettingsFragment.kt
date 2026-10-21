@@ -163,6 +163,31 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        // M3E morph shapes: only meaningful with expressive shapes on; the toggle-morph switch
+        // only matters once a shape is picked.
+        val morphShapePreference = findPreference<Preference>("icon_morph_shape")
+        val morphTogglePreference = findPreference<Preference>("icon_morph_on_toggle")
+
+        fun syncMorphAvailability(shape: String = ShizukuSettings.getIconMorphShape()) {
+            val shapesOn = expressiveShapesPreference.isChecked
+            morphShapePreference?.setAvailable(shapesOn)
+            morphTogglePreference?.setAvailable(shapesOn && shape != af.shizuku.manager.utils.ExpressiveShapes.OFF)
+        }
+        syncMorphAvailability()
+        morphShapePreference?.setOnPreferenceChangeListener { _, newValue ->
+            syncMorphAvailability(newValue as String)
+            // Restyle once the new value has been persisted.
+            view?.post {
+                applyTheme(requiresRecreate = false)
+                refreshIconStyles()
+            }
+            true
+        }
+        morphTogglePreference?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { refreshIconStyles() }
+            true
+        }
+
         shapeStylePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             refreshIconStyles()

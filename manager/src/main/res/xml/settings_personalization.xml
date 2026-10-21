@@ -134,6 +134,19 @@
             android:dependency="expressive_shapes"
             android:icon="@drawable/ic_settings_suggest_24" />
 
+        <af.shizuku.manager.settings.ShapePickerPreference
+            android:key="icon_morph_shape"
+            android:title="@string/settings_icon_morph_shape_title"
+            android:icon="@drawable/ic_interests_24"
+            android:defaultValue="off" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="icon_morph_on_toggle"
+            android:title="@string/settings_icon_morph_on_toggle_title"
+            android:summary="@string/settings_icon_morph_on_toggle_summary"
+            android:icon="@drawable/ic_animation_24"
+            android:defaultValue="true" />
+
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="rounded_edges_enabled"
             android:title="@string/settings_rounded_edges"

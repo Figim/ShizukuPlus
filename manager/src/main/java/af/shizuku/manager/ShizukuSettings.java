@@ -342,6 +342,18 @@ public class ShizukuSettings {
         return getPreferences().getString(Keys.KEY_ICON_COLOR_MODE, "uniform");
     }
 
+    /** M3E morph shape for icon containers ("off" = use the regular shape style). */
+    public static String getIconMorphShape() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString("icon_morph_shape", "off") : "off";
+    }
+
+    /** Switch rows morph their icon container from circle to the chosen shape when turned on. */
+    public static boolean isIconMorphOnToggle() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean("icon_morph_on_toggle", true);
+    }
+
     public static String getShapeStyle() {
         return getPreferences().getString(Keys.KEY_SHAPE_STYLE, "modern");
     }

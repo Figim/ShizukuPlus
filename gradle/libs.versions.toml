@@ -26,6 +26,7 @@ rikkax-lifecycle = "1.0.1"
 sentry = "8.40.0"
 libsu = "6.0.0"
 blurview = "version-3.2.0"
+graphics-shapes = "1.1.0"
 hiddenapibypass = "6.1"
 bouncycastle = "1.81"
 appiconloader = "1.5.0"
@@ -128,6 +129,8 @@ refine-runtime = { group = "dev.rikka.tools.refine", name = "runtime", version.r
 libsu-core = { group = "com.github.topjohnwu.libsu", name = "core", version.ref = "libsu" }
 # Real-time frosted-glass blur behind the floating nav bar (Apache-2.0).
 blurview = { group = "com.github.Dimezis", name = "BlurView", version.ref = "blurview" }
+# M3 Expressive shape library (RoundedPolygon / Morph) for morphing icon containers.
+graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
 bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }

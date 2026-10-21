@@ -206,6 +206,8 @@ object IconStyleHelper {
                 setColor(color)
             }
         }
+        val morphShape = ShizukuSettings.getIconMorphShape()
+        if (morphShape != ExpressiveShapes.OFF) return MorphShapeDrawable(color, morphShape)
         return when (ShizukuSettings.getShapeStyle()) {
             "zen" -> leafDrawable(context, color)
             "classic" ->
