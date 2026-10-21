@@ -490,24 +490,32 @@ fun ActivityLogScreen(
     val expandedKeys = remember { mutableStateListOf<String>() }
 
     // Pre-resolve app labels for filtering / sorting
-    val appLabels = remember { mutableStateMapOf<String, String>() }
+    // Published as a new immutable map once resolved: the filter/sort/group steps below are
+    // remember()-keyed on it, and mutating one map in place never changed the key, so labels that
+    // arrived later were never used for search, sort-by-app or group-by-app.
+    var appLabels by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     LaunchedEffect(rawLogs) {
         val pm = context.packageManager
-        withContext(Dispatchers.IO) {
-            val packages = rawLogs.map { it.packageName }.distinct()
-            for (pkg in packages) {
-                if (!appLabels.containsKey(pkg)) {
-                    val label =
-                        try {
-                            val ai = pm.getApplicationInfo(pkg, 0)
-                            AppIconCache.getLabel(context, ai)
-                        } catch (_: Exception) {
-                            pkg
-                        }
-                    appLabels[pkg] = label
+        val known = appLabels
+        val missing =
+            rawLogs
+                .asSequence()
+                .map { it.packageName }
+                .distinct()
+                .filter { it !in known }
+                .toList()
+        if (missing.isEmpty()) return@LaunchedEffect
+        val resolved =
+            withContext(Dispatchers.IO) {
+                missing.associateWith { pkg ->
+                    try {
+                        AppIconCache.getLabel(context, pm.getApplicationInfo(pkg, 0))
+                    } catch (_: Exception) {
+                        pkg
+                    }
                 }
             }
-        }
+        appLabels = known + resolved
     }
 
     // Process logs: Filter -> Group/Stack -> Sort
