@@ -172,19 +172,6 @@ fun HomeScreen(
                             ),
                 ) {
                     // Action icons pinned at top-end inside the 64dp collapsed row
-                    val isRtl = layoutDirection == androidx.compose.ui.unit.LayoutDirection.Rtl
-                    val topBarGradientColors =
-                        if (isRtl) {
-                            listOf(
-                                MaterialTheme.colorScheme.surface,
-                                androidx.compose.ui.graphics.Color.Transparent,
-                            )
-                        } else {
-                            listOf(
-                                androidx.compose.ui.graphics.Color.Transparent,
-                                MaterialTheme.colorScheme.surface,
-                            )
-                        }
 
                     AnimatedContent(
                         targetState = isEditMode,
@@ -211,10 +198,9 @@ fun HomeScreen(
                         modifier =
                             Modifier
                                 .align(Alignment.TopEnd)
-                                .height(collapsedHeight)
-                                .background(
-                                    Brush.horizontalGradient(colors = topBarGradientColors),
-                                ),
+                                // No backdrop: a transparent->surface gradient drew a grey block on
+                                // black/AMOLED pages, and the title already reserves end padding.
+                                .height(collapsedHeight),
                         label = "topBarActions",
                     ) { editMode ->
                         Row(

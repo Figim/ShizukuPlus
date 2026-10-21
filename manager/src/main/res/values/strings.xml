@@ -144,6 +144,7 @@
 
     <!-- Home - Wireless Adb -->
     <string name="home_wireless_adb_title"><![CDATA[Start via Wireless debugging]]></string>
+    <string name="home_wireless_adb_title_active">Wireless debugging</string>
     <string name="home_wireless_adb_description"><![CDATA[On Android 11 or above, you can enable Wireless debugging and start Shizuku directly from your device, without connecting to a computer.<p>Please view the step-by-step guide first.]]></string>
     <string name="home_wireless_adb_description_pre_11"><![CDATA[Before Android 11, connecting to a computer is required to enable Wireless debugging.]]></string>
     <string name="home_wireless_adb_view_guide_button">Step-by-step guide</string>

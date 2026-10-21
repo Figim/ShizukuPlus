@@ -219,6 +219,8 @@ class StartWirelessAdbViewHolder(
         IconStyleHelper.applyToCardIcon(binding.icon, originalIcon, "home_start_wireless_adb")
 
         val runningViaAdb = data?.isRunning == true && data?.uid != 0
+        // "Start via Wireless debugging" reads wrong while it's already running that way.
+        binding.title.setText(if (runningViaAdb) R.string.home_wireless_adb_title_active else R.string.home_wireless_adb_title)
         if (EnvironmentUtils.isTlsSupported()) {
             if (runningViaAdb) {
                 binding.button1.setText(R.string.home_wireless_adb_button_reconnect)

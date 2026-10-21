@@ -30,8 +30,11 @@
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Material3.Corner.Full</item>
     </style>
 
+    <!-- TitleLarge + medium, matching the server status card: HeadlineSmall (24sp regular)
+         read as oversized and thin next to it, and wrapped longer card titles. -->
     <style name="CardTitle">
-        <item name="android:textAppearance">?textAppearanceHeadlineSmall</item>
+        <item name="android:textAppearance">?textAppearanceTitleLarge</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">?colorOnSurface</item>
         <item name="android:lineSpacingExtra">1sp</item>
     </style>
