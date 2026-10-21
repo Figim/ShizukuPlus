@@ -132,22 +132,24 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private volatile int secondaryManagerAppId;
     // uptimeMillis of the last on-demand manager-appId re-resolve (throttle; see checkCallerManagerPermission).
     private volatile long lastManagerAppIdRefresh;
-    private final VirtualMachineManagerImpl virtualMachineManager = new VirtualMachineManagerImpl();
-    private final StorageProxyImpl storageProxy = new StorageProxyImpl();
+    // Created on first use: none of these is needed to start serving, and loading all fifteen
+    // implementation classes up front sat on the server's cold-start path.
+    private final Lazy<VirtualMachineManagerImpl> virtualMachineManager = new Lazy<>(VirtualMachineManagerImpl::new);
+    private final Lazy<StorageProxyImpl> storageProxy = new Lazy<>(StorageProxyImpl::new);
     private final AICorePlusImpl aiCorePlus;
-    private final WindowManagerPlusImpl windowManagerPlus = new WindowManagerPlusImpl();
-    private final ContinuityBridgeImpl continuityBridge = new ContinuityBridgeImpl();
-    private final OverlayManagerPlusImpl overlayManagerPlus = new OverlayManagerPlusImpl();
-    private final NetworkGovernorPlusImpl networkGovernorPlus = new NetworkGovernorPlusImpl();
-    private final ActivityManagerPlusImpl activityManagerPlus = new ActivityManagerPlusImpl();
-    private final StatusBarGovernorPlusImpl statusBarGovernorPlus = new StatusBarGovernorPlusImpl();
-    private final PackageGovernorPlusImpl packageGovernorPlus = new PackageGovernorPlusImpl();
-    private final DisplayTunerPlusImpl displayTunerPlus = new DisplayTunerPlusImpl();
-    private final AppInspectorImpl appInspector = new AppInspectorImpl();
-    private final PrivilegedDataSourceImpl privilegedDataSource = new PrivilegedDataSourceImpl();
-    private final BackupRestorePlusImpl backupRestorePlus = new BackupRestorePlusImpl();
-    private final ApkPatcherImpl apkPatcher = new ApkPatcherImpl();
-    private final DeviceControlPlusImpl deviceControlPlus = new DeviceControlPlusImpl();
+    private final Lazy<WindowManagerPlusImpl> windowManagerPlus = new Lazy<>(WindowManagerPlusImpl::new);
+    private final Lazy<ContinuityBridgeImpl> continuityBridge = new Lazy<>(ContinuityBridgeImpl::new);
+    private final Lazy<OverlayManagerPlusImpl> overlayManagerPlus = new Lazy<>(OverlayManagerPlusImpl::new);
+    private final Lazy<NetworkGovernorPlusImpl> networkGovernorPlus = new Lazy<>(NetworkGovernorPlusImpl::new);
+    private final Lazy<ActivityManagerPlusImpl> activityManagerPlus = new Lazy<>(ActivityManagerPlusImpl::new);
+    private final Lazy<StatusBarGovernorPlusImpl> statusBarGovernorPlus = new Lazy<>(StatusBarGovernorPlusImpl::new);
+    private final Lazy<PackageGovernorPlusImpl> packageGovernorPlus = new Lazy<>(PackageGovernorPlusImpl::new);
+    private final Lazy<DisplayTunerPlusImpl> displayTunerPlus = new Lazy<>(DisplayTunerPlusImpl::new);
+    private final Lazy<AppInspectorImpl> appInspector = new Lazy<>(AppInspectorImpl::new);
+    private final Lazy<PrivilegedDataSourceImpl> privilegedDataSource = new Lazy<>(PrivilegedDataSourceImpl::new);
+    private final Lazy<BackupRestorePlusImpl> backupRestorePlus = new Lazy<>(BackupRestorePlusImpl::new);
+    private final Lazy<ApkPatcherImpl> apkPatcher = new Lazy<>(ApkPatcherImpl::new);
+    private final Lazy<DeviceControlPlusImpl> deviceControlPlus = new Lazy<>(DeviceControlPlusImpl::new);
 
     // One-time backfill: re-grants the OS-level runtime permission for every already-authorized app.
     // Prior to the 741df2f4 fix (2026-07-19), grantRuntimePermission silently failed because no
@@ -1530,7 +1532,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     LOGGER.i("SUBridge: intercepting mount remount. Delegating to OverlayManager Proxy.");
                     if (isFeatureEnabled("overlay_fs_proxy_enabled") && (fullCmd.contains("/system") || fullCmd.contains("/vendor"))) {
                         try {
-                            overlayManagerPlus.prepareShadowMount(callingPkg, "/system");
+                            overlayManagerPlus.get().prepareShadowMount(callingPkg, "/system");
                         } catch (Exception e) {
                             LOGGER.e("SUBridge: shadow mount proxy failed", e);
                         }
@@ -1995,13 +1997,13 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 if (cmd[1].equals("force-stop")) {
                     String pkg = cmd[2];
                     LOGGER.i("Plus Optimization: am force-stop " + pkg + " via ActivityManagerPlus");
-                    if (activityManagerPlus.deepForceStop(pkg)) {
+                    if (activityManagerPlus.get().deepForceStop(pkg)) {
                         return newProcessInternal(new String[]{"true"}, env, dir);
                     }
                 } else if (cmd[1].equals("freeze") || cmd[1].equals("suspend")) {
                     String pkg = cmd[2];
                     LOGGER.i("Plus Optimization: am freeze " + pkg + " -> restricted bucket");
-                    if (activityManagerPlus.setAppStandbyBucket(pkg, 45)) { // 45 = RESTRICTED
+                    if (activityManagerPlus.get().setAppStandbyBucket(pkg, 45)) { // 45 = RESTRICTED
                         return newProcessInternal(new String[]{"true"}, env, dir);
                     }
                 }
@@ -2138,28 +2140,28 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     LOGGER.i("Plus Optimization (Storage Bridge): mapping " + baseCmd + " " + path);
                     try {
                         if (baseCmd.equals("ls")) {
-                            java.util.List<String> files = storageProxy.listFiles(path);
+                            java.util.List<String> files = storageProxy.get().listFiles(path);
                             if (files != null) {
                                 String joined = String.join("\n", files);
                                 return syntheticProcess(0, joined.isEmpty() ? "" : joined + "\n");
                             }
                         } else if (baseCmd.equals("cat")) {
-                            android.os.ParcelFileDescriptor pfd = storageProxy.openFile(path, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
+                            android.os.ParcelFileDescriptor pfd = storageProxy.get().openFile(path, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
                             if (pfd != null) {
                                 return new ProxyRemoteProcess(pfd, 0);
                             }
                         } else if (baseCmd.equals("stat")) {
-                            android.os.Bundle info = storageProxy.getFileInfo(path);
+                            android.os.Bundle info = storageProxy.get().getFileInfo(path);
                             if (info.getBoolean("exists")) {
                                 String statOut = "File: " + path + "\nSize: " + info.getLong("size") + "\nModify: " + info.getLong("lastModified") + "\n";
                                 return syntheticProcess(0, statOut);
                             }
                         } else if (baseCmd.equals("rm")) {
-                            if (storageProxy.delete(path)) {
+                            if (storageProxy.get().delete(path)) {
                                 return syntheticProcess(0, "");
                             }
                         } else if (baseCmd.equals("mkdir")) {
-                            if (storageProxy.mkdir(path)) {
+                            if (storageProxy.get().mkdir(path)) {
                                 return syntheticProcess(0, "");
                             }
                         }
@@ -2251,18 +2253,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     if (("enable".equals(overlaySubCmd) || "enable-exclusive".equals(overlaySubCmd)) && cmd.length >= 4) {
                         // Package name is always the last arg; --user N may appear in between
                         String pkg = cmd[cmd.length - 1];
-                        boolean ok = overlayManagerPlus.setOverlayEnabled(pkg, true);
+                        boolean ok = overlayManagerPlus.get().setOverlayEnabled(pkg, true);
                         return syntheticProcess(ok ? 0 : 1, "");
                     } else if ("disable".equals(overlaySubCmd) && cmd.length >= 4) {
                         String pkg = cmd[cmd.length - 1];
-                        boolean ok = overlayManagerPlus.setOverlayEnabled(pkg, false);
+                        boolean ok = overlayManagerPlus.get().setOverlayEnabled(pkg, false);
                         return syntheticProcess(ok ? 0 : 1, "");
                     } else if ("set-priority".equals(overlaySubCmd) && cmd.length >= 5 && "highest".equals(cmd[cmd.length - 1])) {
                         String pkg = cmd[cmd.length - 2];
-                        boolean ok = overlayManagerPlus.setHighestPriority(pkg);
+                        boolean ok = overlayManagerPlus.get().setHighestPriority(pkg);
                         return syntheticProcess(ok ? 0 : 1, "");
                     } else if ("list".equals(overlaySubCmd)) {
-                        java.util.List<String> overlays = overlayManagerPlus.getAllOverlays();
+                        java.util.List<String> overlays = overlayManagerPlus.get().getAllOverlays();
                         StringBuilder sb = new StringBuilder();
                         for (String entry : overlays) {
                             // Internal format is "packageName:true/false"; output mirrors cmd overlay list
@@ -3006,14 +3008,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public IVirtualMachineManager getVirtualMachineManager() {
         enforceCallingPermission("getVirtualMachineManager");
         if (!isFeatureEnabled("avf_manager")) return null;
-        return virtualMachineManager;
+        return virtualMachineManager.get();
     }
 
     @Override
     public IStorageProxy getStorageProxy() {
         enforceCallingPermission("getStorageProxy");
         if (!isFeatureEnabled("storage_proxy")) return null;
-        return storageProxy;
+        return storageProxy.get();
     }
 
     @Override
@@ -3032,86 +3034,86 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public IWindowManagerPlus getWindowManagerPlus() {
         enforceCallingPermission("getWindowManagerPlus");
         if (!isFeatureEnabled("window_manager_plus")) return null;
-        return windowManagerPlus;
+        return windowManagerPlus.get();
     }
 
     @Override
     public IContinuityBridge getContinuityBridge() {
         enforceCallingPermission("getContinuityBridge");
         if (!isFeatureEnabled("continuity_bridge")) return null;
-        return continuityBridge;
+        return continuityBridge.get();
     }
 
     @Override
     public IOverlayManagerPlus getOverlayManagerPlus() {
         enforceCallingPermission("getOverlayManagerPlus");
         if (!isFeatureEnabled("overlay_manager_plus")) return null;
-        return overlayManagerPlus;
+        return overlayManagerPlus.get();
     }
 
     @Override
     public INetworkGovernorPlus getNetworkGovernorPlus() {
         enforceCallingPermission("getNetworkGovernorPlus");
         if (!isFeatureEnabled("network_governor_plus")) return null;
-        return networkGovernorPlus;
+        return networkGovernorPlus.get();
     }
 
     @Override
     public IActivityManagerPlus getActivityManagerPlus() {
         enforceCallingPermission("getActivityManagerPlus");
         if (!isFeatureEnabled("activity_manager_plus")) return null;
-        return activityManagerPlus;
+        return activityManagerPlus.get();
     }
 
     @Override
     public IStatusBarGovernorPlus getStatusBarGovernorPlus() {
         enforceCallingPermission("getStatusBarGovernorPlus");
         if (!isFeatureEnabled("status_bar_governor_plus")) return null;
-        return statusBarGovernorPlus;
+        return statusBarGovernorPlus.get();
     }
 
     @Override
     public IPackageGovernorPlus getPackageGovernorPlus() {
         enforceCallingPermission("getPackageGovernorPlus");
         if (!isFeatureEnabled("package_governor_plus")) return null;
-        return packageGovernorPlus;
+        return packageGovernorPlus.get();
     }
 
     @Override
     public IDisplayTunerPlus getDisplayTunerPlus() {
         enforceCallingPermission("getDisplayTunerPlus");
         if (!isFeatureEnabled("display_tuner_plus")) return null;
-        return displayTunerPlus;
+        return displayTunerPlus.get();
     }
 
     @Override
     public IAppInspector getAppInspector() {
         enforceCallingPermission("getAppInspector");
-        return appInspector;
+        return appInspector.get();
     }
 
     @Override
     public IPrivilegedDataSource getPrivilegedDataSource() {
         enforceCallingPermission("getPrivilegedDataSource");
-        return privilegedDataSource;
+        return privilegedDataSource.get();
     }
 
     @Override
     public IBackupRestorePlus getBackupRestorePlus() {
         enforceCallingPermission("getBackupRestorePlus");
-        return backupRestorePlus;
+        return backupRestorePlus.get();
     }
 
     @Override
     public IApkPatcher getApkPatcher() {
         enforceCallingPermission("getApkPatcher");
-        return apkPatcher;
+        return apkPatcher.get();
     }
 
     @Override
     public IDeviceControlPlus getDeviceControlPlus() {
         enforceCallingPermission("getDeviceControlPlus");
-        return deviceControlPlus;
+        return deviceControlPlus.get();
     }
 
     @Override
@@ -3225,5 +3227,29 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // Let's ensure it returns the correct state if we ever sync hidden state to server.
         }
         return false;
+    }
+
+    /** Minimal thread-safe lazy holder (binder threads may race on first access). */
+    private static final class Lazy<T> {
+        private final java.util.function.Supplier<T> factory;
+        private volatile T value;
+
+        Lazy(java.util.function.Supplier<T> factory) {
+            this.factory = factory;
+        }
+
+        T get() {
+            T v = value;
+            if (v == null) {
+                synchronized (this) {
+                    v = value;
+                    if (v == null) {
+                        v = factory.get();
+                        value = v;
+                    }
+                }
+            }
+            return v;
+        }
     }
 }
