@@ -150,18 +150,7 @@ fun SegmentedChoiceRow(
                         containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainerHighest,
                         contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                     ),
-                shapes =
-                    when (index) {
-                        0 ->
-                            androidx.compose.material3.ButtonGroupDefaults
-                                .connectedLeadingButtonShapes()
-                        labels.lastIndex ->
-                            androidx.compose.material3.ButtonGroupDefaults
-                                .connectedTrailingButtonShapes()
-                        else ->
-                            androidx.compose.material3.ButtonGroupDefaults
-                                .connectedMiddleButtonShapes()
-                    },
+                shapes = connectedMorphShapes(index, labels.size),
                 // Tighter than the M3E default so 3-way rows like "Always light / Always dark /
                 // Follow system" fit; long labels wrap to two centred lines instead of "Follo…".
                 contentPadding =
@@ -183,4 +172,43 @@ fun SegmentedChoiceRow(
             }
         }
     }
+}
+
+/**
+ * Explicit M3 Expressive connected-group shapes so the morph is unmistakable: unselected buttons
+ * keep rounded outer ends but tight inner corners (a middle button reads as a segment, not a pill),
+ * pressing squeezes the inner corners further, and the selected button springs to a full pill.
+ * RoundedCornerShape -> RoundedCornerShape lets the theme's expressive motion scheme animate it.
+ */
+@Composable
+private fun connectedMorphShapes(
+    index: Int,
+    count: Int,
+): androidx.compose.material3.ToggleButtonShapes {
+    val outer =
+        androidx.compose.foundation.shape
+            .CornerSize(50)
+    val inner =
+        androidx.compose.foundation.shape
+            .CornerSize(6.dp)
+    val innerPressed =
+        androidx.compose.foundation.shape
+            .CornerSize(3.dp)
+    val first = index == 0
+    val last = index == count - 1
+
+    fun shapeWith(innerCorner: androidx.compose.foundation.shape.CornerSize) =
+        androidx.compose.foundation.shape.RoundedCornerShape(
+            topStart = if (first) outer else innerCorner,
+            bottomStart = if (first) outer else innerCorner,
+            topEnd = if (last) outer else innerCorner,
+            bottomEnd = if (last) outer else innerCorner,
+        )
+    return androidx.compose.material3.ToggleButtonShapes(
+        shape = shapeWith(inner),
+        pressedShape = shapeWith(innerPressed),
+        checkedShape =
+            androidx.compose.foundation.shape
+                .RoundedCornerShape(50),
+    )
 }
