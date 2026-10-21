@@ -129,8 +129,9 @@
     <string name="home_status_service_not_running_summary">%1$s is stopped</string>
     <string name="home_status_service_user_root">root</string>
     <string name="home_status_service_user_adb">adb</string>
-    <string name="home_status_service_version">Version %2$s, %1$s</string>
-    <string name="home_status_service_version_update"><![CDATA[Version %2$s, %1$s<br>Start again to update to version %3$s]]></string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
+    <string name="home_status_service_version">Service API %2$s · %1$s</string>
+    <string name="home_status_service_version_update"><![CDATA[Service API %2$s · %1$s<br>Restart Shizuku+ to update to API %3$s]]></string>
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Start by connecting to a computer]]></string>
