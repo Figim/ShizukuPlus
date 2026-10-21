@@ -264,21 +264,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        // Sub-options of the floating nav only matter while it's on: hide, don't grey out.
-        val floatingNavPreference = findPreference<TwoStatePreference>("floating_nav_enabled")
-        val floatingNavChildren = listOf("floating_nav_label_mode", "floating_nav_autohide").mapNotNull { findPreference<Preference>(it) }
-
-        fun syncFloatingNavChildren(enabled: Boolean) = floatingNavChildren.forEach { setChildAvailable(it, enabled) }
-        syncFloatingNavChildren(floatingNavPreference?.isChecked == true)
-        floatingNavPreference?.let { nav ->
-            val previous = nav.onPreferenceChangeListener
-            nav.setOnPreferenceChangeListener { pref, newValue ->
-                val accepted = previous?.onPreferenceChange(pref, newValue) ?: true
-                if (accepted && newValue is Boolean) syncFloatingNavChildren(newValue)
-                accepted
-            }
-        }
-
         // One UI and one-handed mode always use expanded headers, so the switch does nothing there.
         findPreference<Preference>("expanded_headers_enabled")?.let {
             setChildAvailable(it, !ShizukuSettings.isOneUiThemeEnabled() && !ShizukuSettings.isOneHandedModeEnabled())

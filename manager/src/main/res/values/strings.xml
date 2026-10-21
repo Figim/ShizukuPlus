@@ -1272,6 +1272,13 @@
     <string name="settings_personalization_category_home_screen">Home screen</string>
     <string name="settings_personalization_category_language">Language</string>
     <string name="settings_experimental_title">Experimental features</string>
+    <string name="settings_experimental_category_nav">Floating navigation bar</string>
+    <string name="settings_floating_nav_style_title">Bar style</string>
+    <string name="settings_floating_nav_style_floating">Floating</string>
+    <string name="settings_floating_nav_style_docked">Docked</string>
+    <string name="settings_floating_nav_style_compact">Compact</string>
+    <string name="settings_floating_nav_tabs_title">Tabs</string>
+    <string name="settings_floating_nav_tabs_summary">Home and Settings always show. %1$s</string>
     <string name="settings_experimental_summary">Try features that are still being polished</string>
     <string name="settings_experimental_category_personalization">Personalization</string>
     <string name="settings_experimental_app_identity_title">App icon &amp; name customization</string>

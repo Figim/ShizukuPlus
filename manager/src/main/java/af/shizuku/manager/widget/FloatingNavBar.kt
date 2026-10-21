@@ -41,6 +41,23 @@ import kotlin.math.min
  */
 object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     const val KEY_ENABLED = "floating_nav_enabled"
+    const val KEY_STYLE = "floating_nav_style"
+    const val KEY_TABS = "floating_nav_tabs"
+    private const val COMPACT_MAX_WIDTH_DP = 300
+
+    private fun style(): String =
+        runCatching { ShizukuSettings.getPreferences().getString(KEY_STYLE, "floating") }.getOrNull() ?: "floating"
+
+    /** Optional tabs the user kept (Home and Settings always show). */
+    private fun optionalTabs(): Set<String> =
+        runCatching { ShizukuSettings.getPreferences().getStringSet(KEY_TABS, null) }.getOrNull() ?: setOf("apps", "hub")
+
+    private fun isTabShown(itemId: Int): Boolean =
+        when (itemId) {
+            R.id.nav_apps -> "apps" in optionalTabs()
+            R.id.nav_hub -> "hub" in optionalTabs()
+            else -> true
+        }
 
     /** Which tab the user came from, so the new screen can slide the indicator to its own tab. */
     private const val EXTRA_FROM_ITEM = "floating_nav_from_item"
@@ -58,7 +75,12 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     // Held strongly: SharedPreferences keeps listeners in a weak map.
     private val prefsListener =
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == KEY_ENABLED || key == ShizukuSettings.Keys.KEY_FLOATING_NAV_LABEL_MODE || key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE) {
+            if (key == KEY_ENABLED ||
+                key == KEY_STYLE ||
+                key == KEY_TABS ||
+                key == ShizukuSettings.Keys.KEY_FLOATING_NAV_LABEL_MODE ||
+                key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE
+            ) {
                 current?.let { sync(it) }
             }
         }
@@ -92,7 +114,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     private fun sync(activity: Activity) {
         val content = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
         val existing = content.findViewById<View>(R.id.floating_nav_root)
-        val selected = itemFor(activity)
+        val selected = itemFor(activity)?.takeIf { isTabShown(it) }
         if (!isEnabled() || selected == null) {
             existing?.let { content.removeView(it) }
             af.shizuku.manager.app.SnackbarHelper
@@ -106,6 +128,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 it.applySpringTouch(scale = 0.98f)
             }
         val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav)
+        ORDER.forEach { id -> nav.menu.findItem(id)?.isVisible = isTabShown(id) }
 
         // Arriving from another tab: start on that tab and slide the indicator across, so the bar
         // reads as one persistent control even though each screen owns its own copy.
@@ -318,7 +341,14 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     ) {
         val density = activity.resources.displayMetrics.density
         val screenWidth = activity.resources.displayMetrics.widthPixels
-        val width = min((MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
+        val barStyle = style()
+        val width =
+            when (barStyle) {
+                // Docked: edge to edge along the bottom, like a classic navigation bar.
+                "docked" -> screenWidth
+                "compact" -> min((COMPACT_MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
+                else -> min((MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
+            }
         val lp = root.layoutParams as FrameLayout.LayoutParams
         lp.width = width
         lp.gravity = android.view.Gravity.BOTTOM or android.view.Gravity.CENTER_HORIZONTAL
@@ -378,6 +408,18 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 }
             card.strokeColor = glassRim
             card.strokeWidth = (1.0f * density).toInt()
+            if (barStyle == "docked") {
+                // Only the top corners round off; the bottom sits flush on the screen edge.
+                val top = card.radius.coerceAtMost(28f * density)
+                card.shapeAppearanceModel =
+                    card.shapeAppearanceModel
+                        .toBuilder()
+                        .setTopLeftCornerSize(top)
+                        .setTopRightCornerSize(top)
+                        .setBottomLeftCornerSize(0f)
+                        .setBottomRightCornerSize(0f)
+                        .build()
+            }
             // No elevation: the shadow of a translucent card renders *through* its fill as a
             // dark band under the bar (the recurring "black bar"). The rim defines the edge.
             card.cardElevation = 0f
@@ -415,7 +457,11 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             val bottom = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             val imeVisible = rootInsets.isVisible(WindowInsetsCompat.Type.ime())
             val params = v.layoutParams as FrameLayout.LayoutParams
-            val margin = bottom + (BOTTOM_MARGIN_DP * density).toInt()
+            val docked = style() == "docked"
+            // Docked sits on the screen edge and pads its content above the gesture/nav bar;
+            // floating styles hover above it with a margin.
+            val margin = if (docked) 0 else bottom + (BOTTOM_MARGIN_DP * density).toInt()
+            (v as? MaterialCardView)?.setContentPadding(0, 0, 0, if (docked) bottom else 0)
             if (params.bottomMargin != margin) {
                 params.bottomMargin = margin
                 v.layoutParams = params
