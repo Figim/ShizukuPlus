@@ -98,88 +98,73 @@ fun ServerMetricsScreen(
     var serverUid by remember { mutableIntStateOf(-1) }
     var seContext by remember { mutableStateOf<String?>(null) }
 
+    // Uptime ticks locally every second from the last sampled value, so the server is only polled
+    // every 2 s - and all binder work runs off the main thread (it used to make up to six IPCs a
+    // second on Main, including ones whose answers never change while the server is up).
+    var uptimeBaseMs by remember { mutableStateOf(-1L) }
+    var uptimeSampledAt by remember { mutableStateOf(0L) }
+    val memoryHistory = remember { androidx.compose.runtime.mutableStateListOf<Float>() }
     LaunchedEffect(Unit) {
+        var staticInfoLoaded = false
         while (true) {
-            try {
-                val alive = runCatching { Shizuku.pingBinder() }.getOrDefault(false)
-                isServerRunning = alive
-
-                if (alive) {
-                    serverUid = runCatching { Shizuku.getUid() }.getOrDefault(-1)
-                    val cachedPatch = runCatching { Shizuku.getServerPatchVersion() }.getOrDefault(-1)
-                    serverPatchVersion = if (cachedPatch >= 0) cachedPatch else queryLiveServerPatchVersion()
-                    seContext = runCatching { Shizuku.getSELinuxContext() }.getOrNull()
-
-                    val binder = Shizuku.getBinder()
-                    if (binder != null) {
-                        val shizukuService =
-                            moe.shizuku.server.IShizukuService.Stub
-                                .asInterface(binder)
-
-                        var ai: af.shizuku.server.IAICorePlus? = runCatching { shizukuService.aiCorePlus }.getOrNull()
-                        if (ai == null && (serverPatchVersion > 0 || Shizuku.isCustomApiEnabled())) {
-                            withContext(Dispatchers.IO) {
-                                runCatching {
-                                    shizukuService.updatePlusFeatureEnabled("ai_core_plus", true)
-                                }
-                                ShizukuSettings.syncAllPlusFeaturesToServer()
-                            }
-                            ai = runCatching { shizukuService.aiCorePlus }.getOrNull()
-                        }
-
-                        val stats = runCatching { ai?.serverStats }.getOrNull()
-                        if (stats != null) {
-                            isStockServer = false
-                            val uptimeMs = stats.getLong("uptime_ms")
-                            val seconds = (uptimeMs / 1000) % 60
-                            val minutes = (uptimeMs / (1000 * 60)) % 60
-                            val hours = (uptimeMs / (1000 * 60 * 60)) % 24
-                            val days = (uptimeMs / (1000 * 60 * 60 * 24))
-                            uptimeText =
-                                if (days > 0) {
-                                    String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds)
-                                } else {
-                                    String.format("%02d:%02d:%02d", hours, minutes, seconds)
-                                }
-
-                            clientCountText =
-                                context.getString(R.string.server_clients_connected, stats.getInt("client_count"))
-
-                            val maxRaw = stats.getLong("mem_max")
-                            val total = stats.getLong("mem_total")
-                            val free = stats.getLong("mem_free")
-                            val used = (total - free).coerceAtLeast(0L)
-                            val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
-
-                            memoryProgress = if (max > 0) (used.toFloat() / max.toFloat()).coerceIn(0f, 1f) else 0f
-
-                            val formatSize = { bytes: Long ->
-                                val kb = bytes / 1024
-                                val mb = kb / 1024
-                                val gb = mb / 1024
-                                if (gb > 0) {
-                                    "$gb GB"
-                                } else if (mb > 0) {
-                                    "$mb MB"
-                                } else {
-                                    "$kb KB"
-                                }
-                            }
-                            val maxStr =
-                                if (maxRaw == Long.MAX_VALUE) {
-                                    context.getString(R.string.server_memory_uncapped)
-                                } else {
-                                    formatSize(max)
-                                }
-                            memoryDetails = "${formatSize(used)} / $maxStr (Max Allowed)"
-                        } else {
-                            isStockServer = (serverPatchVersion <= 0)
-                        }
-                    }
+            val sample =
+                withContext(Dispatchers.IO) {
+                    runCatching { collectServerSample(fetchStaticInfo = !staticInfoLoaded) }
+                        .onFailure { Timber.w(it) }
+                        .getOrNull()
                 }
-            } catch (e: Exception) {
-                Timber.w(e)
+            if (sample == null || !sample.alive) {
+                isServerRunning = sample?.alive ?: isServerRunning
+                staticInfoLoaded = false
+                uptimeBaseMs = -1L
+                memoryHistory.clear()
+            } else {
+                isServerRunning = true
+                if (sample.uid != null) {
+                    serverUid = sample.uid
+                    serverPatchVersion = sample.patch ?: serverPatchVersion
+                    seContext = sample.seContext
+                    staticInfoLoaded = true
+                }
+                val stats = sample.stats
+                if (stats != null) {
+                    isStockServer = false
+                    uptimeBaseMs = stats.getLong("uptime_ms")
+                    uptimeSampledAt = android.os.SystemClock.elapsedRealtime()
+                    clientCountText = context.getString(R.string.server_clients_connected, stats.getInt("client_count"))
+
+                    val maxRaw = stats.getLong("mem_max")
+                    val total = stats.getLong("mem_total")
+                    val used = (total - stats.getLong("mem_free")).coerceAtLeast(0L)
+                    val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
+                    memoryProgress = if (max > 0) (used.toFloat() / max.toFloat()).coerceIn(0f, 1f) else 0f
+                    memoryHistory.add(memoryProgress)
+                    while (memoryHistory.size > 60) memoryHistory.removeAt(0)
+                    val maxStr =
+                        if (maxRaw == Long.MAX_VALUE) {
+                            context.getString(R.string.server_memory_uncapped)
+                        } else {
+                            android.text.format.Formatter
+                                .formatShortFileSize(context, max)
+                        }
+                    memoryDetails =
+                        context.getString(
+                            R.string.server_memory_used_of,
+                            android.text.format.Formatter
+                                .formatShortFileSize(context, used),
+                            maxStr,
+                        )
+                } else {
+                    isStockServer = (serverPatchVersion <= 0)
+                }
             }
+            delay(2000)
+        }
+    }
+    LaunchedEffect(uptimeBaseMs) {
+        while (uptimeBaseMs >= 0) {
+            val ms = uptimeBaseMs + (android.os.SystemClock.elapsedRealtime() - uptimeSampledAt)
+            uptimeText = formatUptime(ms)
             delay(1000)
         }
     }
@@ -329,17 +314,21 @@ fun ServerMetricsScreen(
             }
         } else if (isServerRunning == true) {
             // Metrics Diagnostic Cards
-            MetricCard(
-                title = stringResource(R.string.server_uptime),
-                value = uptimeText,
-                iconRes = R.drawable.ic_history_24,
-            )
-
-            MetricCard(
-                title = stringResource(R.string.active_connections),
-                value = clientCountText,
-                iconRes = R.drawable.ic_server_24,
-            )
+            // Two glanceable tiles side by side instead of two full-width rows.
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                StatTile(
+                    title = stringResource(R.string.server_uptime),
+                    value = uptimeText,
+                    iconRes = R.drawable.ic_history_24,
+                    modifier = Modifier.weight(1f),
+                )
+                StatTile(
+                    title = stringResource(R.string.active_connections),
+                    value = clientCountText,
+                    iconRes = R.drawable.ic_server_24,
+                    modifier = Modifier.weight(1f),
+                )
+            }
 
             Card(
                 shape = RoundedCornerShape(24.dp),
@@ -378,6 +367,14 @@ fun ServerMetricsScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(memoryDetails, style = MaterialTheme.typography.labelLarge)
+                    if (memoryHistory.size >= 2) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        MemorySparkline(
+                            values = memoryHistory,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                        )
+                    }
                 }
             }
         }
@@ -1464,4 +1461,121 @@ private fun exportLogsToText(
         sb.appendLine("[$timeStr] [$typeStr] $app (${record.packageName}) - ${record.action}")
     }
     return sb.toString()
+}
+
+private class ServerSample(
+    val alive: Boolean,
+    val uid: Int? = null,
+    val patch: Int? = null,
+    val seContext: String? = null,
+    val stats: android.os.Bundle? = null,
+)
+
+/** One poll of the server; call on a background dispatcher. */
+private fun collectServerSample(fetchStaticInfo: Boolean): ServerSample {
+    if (!runCatching { Shizuku.pingBinder() }.getOrDefault(false)) return ServerSample(alive = false)
+    // uid / patch / SELinux context can't change while this server instance is up: fetch once.
+    var uid: Int? = null
+    var patch: Int? = null
+    var se: String? = null
+    if (fetchStaticInfo) {
+        uid = runCatching { Shizuku.getUid() }.getOrDefault(-1)
+        val cached = runCatching { Shizuku.getServerPatchVersion() }.getOrDefault(-1)
+        patch = if (cached >= 0) cached else queryLiveServerPatchVersion()
+        se = runCatching { Shizuku.getSELinuxContext() }.getOrNull()
+    }
+    val binder = Shizuku.getBinder() ?: return ServerSample(true, uid, patch, se)
+    val service =
+        moe.shizuku.server.IShizukuService.Stub
+            .asInterface(binder)
+    var ai: af.shizuku.server.IAICorePlus? = runCatching { service.aiCorePlus }.getOrNull()
+    if (ai == null && ((patch ?: 0) > 0 || Shizuku.isCustomApiEnabled())) {
+        runCatching { service.updatePlusFeatureEnabled("ai_core_plus", true) }
+        ShizukuSettings.syncAllPlusFeaturesToServer()
+        ai = runCatching { service.aiCorePlus }.getOrNull()
+    }
+    return ServerSample(true, uid, patch, se, runCatching { ai?.serverStats }.getOrNull())
+}
+
+private fun formatUptime(ms: Long): String {
+    val totalSeconds = (ms / 1000).coerceAtLeast(0)
+    val days = totalSeconds / 86_400
+    val hours = (totalSeconds / 3_600) % 24
+    val minutes = (totalSeconds / 60) % 60
+    val seconds = totalSeconds % 60
+    return if (days > 0) {
+        String.format(java.util.Locale.getDefault(), "%dd %02d:%02d:%02d", days, hours, minutes, seconds)
+    } else {
+        String.format(java.util.Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+}
+
+@Composable
+private fun StatTile(
+    title: String,
+    value: String,
+    iconRes: Int,
+    modifier: Modifier = Modifier,
+) {
+    Card(shape = RoundedCornerShape(24.dp), modifier = modifier) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Icon(
+                painterResource(iconRes),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp),
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            )
+            Text(
+                title,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+/** Heap usage over the last ~2 minutes (one point per 2 s poll), scaled 0-100%. */
+@Composable
+private fun MemorySparkline(
+    values: List<Float>,
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.foundation.Canvas(modifier) {
+        if (values.size < 2) return@Canvas
+        val step = size.width / (values.size - 1)
+        val line =
+            androidx.compose.ui.graphics
+                .Path()
+        values.forEachIndexed { i, v ->
+            val x = i * step
+            val y = size.height * (1f - v.coerceIn(0f, 1f))
+            if (i == 0) line.moveTo(x, y) else line.lineTo(x, y)
+        }
+        val fill =
+            androidx.compose.ui.graphics.Path().apply {
+                addPath(line)
+                lineTo((values.size - 1) * step, size.height)
+                lineTo(0f, size.height)
+                close()
+            }
+        drawPath(fill, color.copy(alpha = 0.15f))
+        drawPath(
+            line,
+            color,
+            style =
+                androidx.compose.ui.graphics.drawscope
+                    .Stroke(width = 2.dp.toPx()),
+        )
+    }
 }
