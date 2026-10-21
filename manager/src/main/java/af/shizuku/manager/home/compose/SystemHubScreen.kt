@@ -9,16 +9,21 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -29,17 +34,39 @@ fun SystemHubScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
+    // One UI / one-handed: a real large title that collapses on scroll (title in thumb reach),
+    // instead of a small bar plus a blank 18-22% spacer inside each page.
+    val reachMode =
+        af.shizuku.manager.ShizukuSettings
+            .isOneUiThemeEnabled() ||
+            af.shizuku.manager.ShizukuSettings
+                .isOneHandedModeEnabled()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+    val nav =
+        @Composable {
+            IconButton(onClick = onBackClick) {
+                Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = stringResource(R.string.cd_navigate_back))
+            }
+        }
 
     Scaffold(
+        modifier = if (reachMode) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.system_hub_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = stringResource(R.string.cd_navigate_back))
-                    }
-                },
-            )
+            if (reachMode) {
+                LargeTopAppBar(
+                    title = title,
+                    navigationIcon = nav,
+                    expandedHeight =
+                        af.shizuku.manager.settings
+                            .expandedHeaderHeightDp(screenHeightDp)
+                            .dp,
+                    scrollBehavior = scrollBehavior,
+                )
+            } else {
+                TopAppBar(title = title, navigationIcon = nav)
+            }
         },
     ) { innerPadding ->
         val navClearance =
@@ -77,8 +104,8 @@ fun SystemHubScreen(
                     // Bottom clearance goes inside each page's scroll content, not on this
                     // Column: padding here leaves an empty band that shows the bare window
                     // background (a black bar in AMOLED) and stops content short of the nav bar.
-                    0 -> ServerMetricsScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance)
-                    1 -> ActivityLogScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance)
+                    0 -> ServerMetricsScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance, reachSpacer = !reachMode)
+                    1 -> ActivityLogScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance, reachSpacer = !reachMode)
                 }
             }
         }

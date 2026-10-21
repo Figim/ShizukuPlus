@@ -83,7 +83,10 @@ private fun queryLiveServerPatchVersion(): Int {
 }
 
 @Composable
-fun ServerMetricsScreen(bottomInset: Dp = 0.dp) {
+fun ServerMetricsScreen(
+    bottomInset: Dp = 0.dp,
+    reachSpacer: Boolean = true,
+) {
     val context = LocalContext.current
     var isServerRunning by remember { mutableStateOf<Boolean?>(null) }
     var isStockServer by remember { mutableStateOf(false) }
@@ -184,7 +187,7 @@ fun ServerMetricsScreen(bottomInset: Dp = 0.dp) {
     val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
     val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
-    val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.22f).dp else 0.dp
+    val oneHandedTop = if (reachSpacer && (isOneHanded || isOneUi)) (screenHeightDp * 0.22f).dp else 0.dp
 
     Column(
         modifier =
@@ -470,6 +473,7 @@ fun ActivityLogScreen(
     showTopBar: Boolean = false,
     onBackClick: (() -> Unit)? = null,
     bottomInset: Dp = 0.dp,
+    reachSpacer: Boolean = true,
 ) {
     val context = LocalContext.current
     val view = LocalView.current
@@ -633,7 +637,7 @@ fun ActivityLogScreen(
     val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
     val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
-    val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.18f).dp else 0.dp
+    val oneHandedTop = if (reachSpacer && (isOneHanded || isOneUi)) (screenHeightDp * 0.18f).dp else 0.dp
 
     if (showClearDialog) {
         AlertDialog(
