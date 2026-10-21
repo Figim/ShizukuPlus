@@ -82,6 +82,13 @@ android {
         jniLibs {
             useLegacyPackaging = true
         }
+        // Store dex uncompressed (and page-aligned) so ART can map it straight from the APK.
+        // The server runs from this APK via app_process and gets no app dexopt of its own:
+        // with deflated dex it had to inflate every classes*.dex into anonymous memory on each
+        // start (~1 s of class loading and tens of MB that end up in swap). Costs some APK size.
+        dex {
+            useLegacyPackaging = false
+        }
         resources {
             excludes += ["**"]
         }

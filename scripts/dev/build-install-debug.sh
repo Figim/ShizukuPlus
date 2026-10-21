@@ -133,6 +133,13 @@ with zipfile.ZipFile(src, 'r') as zin, zipfile.ZipFile(dst, 'w', compression=zip
 print("  Done.")
 PY
 
+# ── 3b. Align ────────────────────────────────────────────────────────────────
+# The Python repack above keeps each entry's compression but not its alignment. Uncompressed
+# dex/.so must be aligned or ART/the linker falls back to extracting them into memory.
+ALIGNED_APK="${TMPDIR_LOCAL}/sp-aligned-$$.apk"
+zipalign -f -P 16 4 "$PATCHED_APK" "$ALIGNED_APK"
+mv -f "$ALIGNED_APK" "$PATCHED_APK"
+
 # ── 4. Sign ──────────────────────────────────────────────────────────────────
 SIGNED_APK="${TMPDIR_LOCAL}/sp-signed-$$.apk"
 echo "▸ Signing …"
