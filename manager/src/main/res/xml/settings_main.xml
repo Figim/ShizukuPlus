@@ -48,6 +48,13 @@
             android:fragment="af.shizuku.manager.settings.RootIntegrationSettingsFragment" />
 
         <Preference
+            android:key="nav_experimental"
+            android:title="@string/settings_experimental_title"
+            android:summary="@string/settings_experimental_summary"
+            android:icon="@drawable/ic_science_24"
+            android:fragment="af.shizuku.manager.settings.ExperimentalSettingsFragment" />
+
+        <Preference
             android:key="nav_advanced"
             android:title="@string/settings_main_nav_advanced_diagnostics_title"
             android:summary="@string/settings_main_nav_advanced_diagnostics_summary"

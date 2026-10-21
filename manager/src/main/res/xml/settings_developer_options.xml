@@ -22,13 +22,6 @@
         android:icon="@drawable/ic_science_24"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="experimental_app_identity"
-            android:persistent="false"
-            android:title="@string/settings_experimental_app_identity_title"
-            android:summary="@string/settings_experimental_app_identity_summary"
-            android:icon="@drawable/ic_sparkle_24" />
-
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="vector_enabled"
             android:title="@string/settings_vector_experimental"

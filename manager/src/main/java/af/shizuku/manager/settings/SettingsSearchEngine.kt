@@ -29,6 +29,7 @@ object SettingsSearchEngine {
             R.xml.settings_behavior to "af.shizuku.manager.settings.BehaviorSettingsFragment",
             R.xml.settings_advanced to "af.shizuku.manager.settings.AdvancedSettingsFragment",
             R.xml.settings_developer_options to "af.shizuku.manager.settings.DeveloperOptionsFragment",
+            R.xml.settings_experimental to "af.shizuku.manager.settings.ExperimentalSettingsFragment",
             R.xml.settings_root_integration to "af.shizuku.manager.settings.RootIntegrationSettingsFragment",
             R.xml.settings_app_management to "af.shizuku.manager.settings.AppManagementSettingsFragment",
             R.xml.settings_about to "af.shizuku.manager.settings.AboutSettingsFragment",

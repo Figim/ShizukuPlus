@@ -1,0 +1,35 @@
+package af.shizuku.manager.settings
+
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
+import android.os.Bundle
+import androidx.preference.TwoStatePreference
+
+/** Experimental features anyone can try - the low-risk counterpart to Developer options. */
+class ExperimentalSettingsFragment : BaseSettingsFragment() {
+    override fun getTitle(): CharSequence? = getString(R.string.settings_experimental_title)
+
+    override fun onCreateSettingsPreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
+        setPreferencesFromResource(R.xml.settings_experimental, rootKey)
+
+        // Launcher icon / app name / Icon Studio. Turning it off puts the standard icon and name
+        // back, so a camouflaged launcher entry can't outlive the options that set it.
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_EXPERIMENTAL_APP_IDENTITY)?.apply {
+            isChecked = ShizukuSettings.isExperimentalAppIdentityEnabled()
+            setOnPreferenceChangeListener { _, v ->
+                val enabled = v as Boolean
+                ShizukuSettings.setExperimentalAppIdentityEnabled(enabled)
+                if (!enabled) {
+                    ShizukuSettings.setAppIconAlias("default")
+                    ShizukuSettings.setCustomAppName("")
+                    af.shizuku.manager.utils.AppAliasManager
+                        .applyAlias(requireContext(), "default")
+                }
+                true
+            }
+        }
+    }
+}

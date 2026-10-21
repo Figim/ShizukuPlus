@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Experimental features: safe, still-being-polished options anyone can try. Distinct from
+     Developer options (hidden behind 7 taps) which holds the riskier, dev-style toggles. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_experimental_features"
+        android:title="@string/settings_experimental_category_personalization"
+        android:icon="@drawable/ic_science_24"
+        app:collapsible="false"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="experimental_app_identity"
+            android:persistent="false"
+            android:title="@string/settings_experimental_app_identity_title"
+            android:summary="@string/settings_experimental_app_identity_summary"
+            android:icon="@drawable/ic_sparkle_24" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+</PreferenceScreen>

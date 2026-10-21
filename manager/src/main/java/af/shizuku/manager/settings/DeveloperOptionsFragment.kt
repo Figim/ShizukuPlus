@@ -23,23 +23,6 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
     ) {
         setPreferencesFromResource(R.xml.settings_developer_options, rootKey)
 
-        // Experimental: launcher icon / app name / Icon Studio. Turning it off puts the standard
-        // icon and name back, so a camouflaged launcher entry can't outlive the hidden options.
-        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_EXPERIMENTAL_APP_IDENTITY)?.apply {
-            isChecked = ShizukuSettings.isExperimentalAppIdentityEnabled()
-            setOnPreferenceChangeListener { _, v ->
-                val enabled = v as Boolean
-                ShizukuSettings.setExperimentalAppIdentityEnabled(enabled)
-                if (!enabled) {
-                    ShizukuSettings.setAppIconAlias("default")
-                    ShizukuSettings.setCustomAppName("")
-                    af.shizuku.manager.utils.AppAliasManager
-                        .applyAlias(requireContext(), "default")
-                }
-                true
-            }
-        }
-
         // Vector / AVF Manager
         findPreference<TwoStatePreference>(KEY_VECTOR_ENABLED)?.apply {
             isChecked = ShizukuSettings.isVectorEnabled()
