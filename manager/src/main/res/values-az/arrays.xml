@@ -22,15 +22,15 @@
     </string-array>
 
     <string-array name="swipe_actions_values">
-        <item>heç_biri</item>
-        <item>tətbiqi_aç</item>
-        <item>tətbiq_məlumatı</item>
-        <item>icazəni_dəyişdir</item>
-        <item>siyahıdan_gizlət</item>
+        <item>none</item>
+        <item>open_app</item>
+        <item>app_info</item>
+        <item>toggle_permission</item>
+        <item>hide_from_list</item>
     </string-array>
 
     <string-array name="spoof_targets">
-        <item>Avtomatik aşkarla (Sistem Standartı)</item>
+        <item>Avtomatik aşkarla (Sistem standartı)</item>
         <item>Pixel 10 Pro XL</item>
         <item>Pixel 9 Pro XL</item>
         <item>Pixel 8 Pro</item>
@@ -49,7 +49,7 @@
     </string-array>
 
     <string-array name="spoof_targets_values">
-        <item>avto</item>
+        <item>auto</item>
         <item>pixel_10_pro_xl</item>
         <item>pixel_9_pro_xl</item>
         <item>pixel_8_pro</item>
@@ -67,7 +67,7 @@
         <item>tcl_50_pro</item>
     </string-array>
 
-  
+ 
   <string-array name="corner_style_entries">
         <item>@string/corner_style_global</item>
         <item>@string/corner_style_sharp</item>
@@ -78,30 +78,30 @@
     </string-array>
 
     <string-array name="corner_style_values">
-        <item>ümumi</item>
-        <item>itilənmiş</item>
-        <item>yuvarlaqlaşdırılmış</item>
-        <item>böyük</item>
-        <item>dairəvi</item>
-        <item>çox_böyük</item>
+        <item>global</item>
+        <item>sharp</item>
+        <item>rounded</item>
+        <item>large</item>
+        <item>squircle</item>
+        <item>xlarge</item>
     </string-array>
 
     <string-array name="corner_rounding_entries">
-        <item>Təkmilləşdirilmiş — 32dp (Defolt)</item>
+        <item>Təkmilləşdirilmiş — 32dp (Standart)</item>
         <item>Zərif — 20dp</item>
         <item>Standart M3 — 28dp</item>
         <item>Böyük — 36dp</item>
         <item>Maksimum — 44dp</item>
-        <item>Sistem Standartı</item>
+        <item>Sistem standartı</item>
     </string-array>
 
     <string-array name="corner_rounding_values">
-        <item>defolt</item>
-        <item>zərif</item>
-        <item>standart</item>
-        <item>böyük</item>
-        <item>maksimum</item>
-        <item>sistem</item>
+        <item>default</item>
+        <item>gentle</item>
+        <item>standard</item>
+        <item>large</item>
+        <item>maximum</item>
+        <item>system</item>
     </string-array>
 
     <string-array name="update_channel_entries">
@@ -110,41 +110,41 @@
     </string-array>
 
     <string-array name="update_channel_values">
-        <item>sabit</item>
-        <item>tərtibatçı</item>
+        <item>stable</item>
+        <item>dev</item>
     </string-array>
 
     <string-array name="custom_accents">
-        <item>Standart Mavi (Defolt)</item>
-        <item>Gecə Bənövşəyi</item>
-        <item>Meşə Yaşılı</item>
-        <item>Tünd Qırmızı Qızılgül</item>
-        <item>Dərin Okean</item>
-        <item>Kəhrəba Qürubu</item>
-        <item>Qızılgül Ləçəyi</item>
-        <item>Gecə Şist rəngi</item>
+        <item>Standart Mavi (Standart)</item>
+        <item>Gecə bənövşəyi</item>
+        <item>Meşə yaşılı</item>
+        <item>Alqırmızı</item>
+        <item>Dərin okean</item>
+        <item>Kəhrəba qürubu</item>
+        <item>Qızılgül ləçəyi</item>
+        <item>Gecə şiferi</item>
     </string-array>
 
     <string-array name="custom_accents_values">
-        <item>DEFOLT</item>
-        <item>Bənövşəyi</item>
-        <item>YAŞIL</item>
-        <item>TÜND_QIRMIZI</item>
-        <item>OKEAN</item>
-        <item>KƏHRƏBA</item>
-        <item>QIZILGÜL</item>
-        <item>ŞİST</item>
+        <item>DEFAULT</item>
+        <item>VIOLET</item>
+        <item>GREEN</item>
+        <item>CRIMSON</item>
+        <item>OCEAN</item>
+        <item>AMBER</item>
+        <item>ROSE</item>
+        <item>SLATE</item>
     </string-array>
 
-   
+ 
   <string-array name="changelog_styles">
         <item>@string/changelog_style_classic</item>
         <item>@string/changelog_style_timeline</item>
     </string-array>
 
     <string-array name="changelog_styles_value">
-        <item>klassik</item>
-        <item>xronologiya</item>
+        <item>classic</item>
+        <item>timeline</item>
     </string-array>
 
     <string-array name="tcp_network_protection_entries">
@@ -154,27 +154,27 @@
     </string-array>
 
     <string-array name="tcp_network_protection_values">
-        <item>sönülü</item>
-        <item>açıq</item>
-        <item>etibarlı</item>
+        <item>off</item>
+        <item>open</item>
+        <item>trusted</item>
     </string-array>
 
     <string-array name="app_icon_alias_entries">
-        <item>Shizuku+ (Defolt)</item>
+        <item>Shizuku+ (Standart)</item>
         <item>Shizuku (Klassik)</item>
-        <item>Sistem Xidməti (Maskalanma)</item>
-        <item>Alətlər (Maskalanma)</item>
-        <item>Fayllar (Maskalanma)</item>
-        <item>Qeydlər (Maskalanma)</item>
+        <item>Sistem Xidməti (Kamuflyaj)</item>
+        <item>Alətlər (Kamuflyaj)</item>
+        <item>Fayllar (Kamuflyaj)</item>
+        <item>Qeydlər (Kamuflyaj)</item>
     </string-array>
 
     <string-array name="app_icon_alias_values">
-        <item>defolt</item>
-        <item>klassik</item>
-        <item>sistem</item>
-        <item>alətlər</item>
-        <item>fayllar</item>
-        <item>qeydlər</item>
+        <item>default</item>
+        <item>classic</item>
+        <item>system</item>
+        <item>tools</item>
+        <item>files</item>
+        <item>notes</item>
     </string-array>
 
 </resources>
