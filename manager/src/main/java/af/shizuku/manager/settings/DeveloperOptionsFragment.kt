@@ -62,7 +62,6 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
 
         val expKeys =
             listOf(
-                "device_control_home_enabled",
                 "window_manager_plus_enabled",
                 "overlay_manager_plus_enabled",
                 "ai_core_plus_enabled",

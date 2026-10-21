@@ -31,5 +31,12 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
                 true
             }
         }
+
+        // Device control home card: a Plus feature, so the server needs the new value. The change
+        // listener runs before the switch persists it - sync on the next frame, once it has.
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_DEVICE_CONTROL_HOME_ENABLED)?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
+            true
+        }
     }
 }

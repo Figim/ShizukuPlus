@@ -17,5 +17,13 @@
             android:summary="@string/settings_experimental_app_identity_summary"
             android:icon="@drawable/ic_sparkle_24" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="device_control_home_enabled"
+            android:title="@string/settings_device_control_home_title"
+            android:summary="@string/settings_device_control_home_summary"
+            android:icon="@drawable/ic_devices_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 </PreferenceScreen>
