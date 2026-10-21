@@ -1271,6 +1271,8 @@
     <string name="settings_personalization_category_motion_display">Motion &amp; display</string>
     <string name="settings_personalization_category_home_screen">Home screen</string>
     <string name="settings_personalization_category_language">Language</string>
+    <string name="settings_experimental_app_identity_title">App icon &amp; name customization</string>
+    <string name="settings_experimental_app_identity_summary">Experimental. Adds launcher icon, app name and Icon Studio options to Appearance. Turning it off restores the standard icon and name</string>
     <string name="settings_dark_style_title">Dark style</string>
     <string name="settings_dark_style_standard">Standard</string>
     <string name="settings_dark_style_black">Black</string>

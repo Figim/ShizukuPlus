@@ -89,12 +89,17 @@ object SettingsSearchEngine {
         if (query.isBlank()) return emptyList()
         val q = query.trim().lowercase()
         val devUnlocked = ShizukuSettings.isVectorEnabled()
+        val appIdentityOn = ShizukuSettings.isExperimentalAppIdentityEnabled()
 
         return items.filter { item ->
             if (!devUnlocked && item.fragmentClass == "af.shizuku.manager.settings.DeveloperOptionsFragment") return@filter false
+            // Experimental app identity rows stay out of search while the dev toggle is off.
+            if (!appIdentityOn && item.key in APP_IDENTITY_KEYS) return@filter false
             item.title.lowercase().contains(q) ||
                 (item.summary != null && item.summary.lowercase().contains(q)) ||
                 (item.category != null && item.category.lowercase().contains(q))
         }
     }
+
+    private val APP_IDENTITY_KEYS = setOf("category_app_identity", "custom_icon_studio", "app_icon_alias", "custom_app_name")
 }

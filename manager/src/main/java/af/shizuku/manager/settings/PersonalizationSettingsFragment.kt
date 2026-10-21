@@ -288,6 +288,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         val statusOutlineStylePreference = findPreference<Preference>("status_card_outline_style")
         statusOutlineStylePreference?.let { setChildAvailable(it, showStatusOutlinePreference?.isChecked ?: true) }
 
+        // Experimental (Developer options): hide the whole App icon & name section unless enabled.
+        findPreference<Preference>("category_app_identity")?.isVisible =
+            ShizukuSettings.isExperimentalAppIdentityEnabled()
+
         findPreference<ListPreference>("app_icon_alias")?.apply {
             value = ShizukuSettings.getAppIconAlias()
             setOnPreferenceChangeListener { _, newValue ->

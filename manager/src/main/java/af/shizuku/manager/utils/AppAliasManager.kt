@@ -55,22 +55,28 @@ object AppAliasManager {
             return
         }
 
-        // Enable target alias, disable others
-        ALL_ALIASES.forEach { alias ->
+        // Enable the target first, and only then disable the others: disabling in list order
+        // could switch off the current launcher entry before the new one was on, and a failure
+        // in between left the app with no launcher icon at all.
+        try {
+            pm.setComponentEnabledSetting(
+                ComponentName(context, targetAlias),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP,
+            )
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to enable alias $targetAlias; leaving the current icon in place")
+            return
+        }
+        ALL_ALIASES.filter { it != targetAlias }.forEach { alias ->
             try {
-                val newState =
-                    if (alias == targetAlias) {
-                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                    } else {
-                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED
-                    }
                 pm.setComponentEnabledSetting(
                     ComponentName(context, alias),
-                    newState,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP,
                 )
             } catch (e: Exception) {
-                Timber.w(e, "Failed to update alias $alias")
+                Timber.w(e, "Failed to disable alias $alias")
             }
         }
     }

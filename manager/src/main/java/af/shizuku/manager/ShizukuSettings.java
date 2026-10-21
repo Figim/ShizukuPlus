@@ -177,6 +177,7 @@ public class ShizukuSettings {
         public static final String KEY_SHOW_HOME_CARDS_OUTLINE = "show_home_cards_outline";
         public static final String KEY_DEV_OPTIONS_UNLOCKED = "dev_options_unlocked";
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
+        public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
         public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
@@ -1872,6 +1873,27 @@ public class ShizukuSettings {
             return custom.trim();
         }
         return context != null ? context.getString(R.string.app_name) : "Shizuku+";
+    }
+
+    /**
+     * App icon & name customization (launcher alias, custom name, Icon Studio) is experimental and
+     * hidden behind a Developer options toggle. Defaults to on only for people who already changed
+     * the icon or name, so nobody is left with a camouflaged icon they can no longer switch back.
+     */
+    public static boolean isExperimentalAppIdentityEnabled() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return false;
+        if (p.contains(Keys.KEY_EXPERIMENTAL_APP_IDENTITY)) {
+            return p.getBoolean(Keys.KEY_EXPERIMENTAL_APP_IDENTITY, false);
+        }
+        String alias = p.getString(Keys.KEY_APP_ICON_ALIAS, "default");
+        String name = p.getString(Keys.KEY_CUSTOM_APP_NAME, "");
+        return !"default".equals(alias) || (name != null && !name.trim().isEmpty());
+    }
+
+    public static void setExperimentalAppIdentityEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_EXPERIMENTAL_APP_IDENTITY, enabled).apply();
     }
 
     public static void setCustomAppName(String name) {
