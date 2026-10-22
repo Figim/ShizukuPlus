@@ -3,6 +3,9 @@ import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.AppConstants
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.AdbPairingTutorialActivityBinding
+import af.shizuku.manager.home.StartWirelessAdbViewHolder
+import af.shizuku.manager.home.showAccessibilityDialog
+import af.shizuku.manager.home.tryEnableAccessibilityAutomatically
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
@@ -19,6 +22,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rikka.compatibility.DeviceCompatibility
 import timber.log.Timber
 
@@ -102,6 +109,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             miui.applySpringTouch()
             developerOptions.applySpringTouch()
             manualPairing.applySpringTouch()
+            autoFillCode.applySpringTouch()
             syncNotificationEnabled()
 
             if (DeviceCompatibility.isMiui()) {
@@ -116,6 +124,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                 af.shizuku.manager.home
                     .AdbPairDialogFragment()
                     .show(supportFragmentManager, null)
+            }
+
+            autoFillCode.setOnClickListener {
+                enableCodeAutoFill()
             }
 
             notificationOptions.setOnClickListener {
@@ -155,6 +167,22 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                 binding.header.root.alpha = alpha
             },
         )
+    }
+
+    // Opt-in: reading the code off the Settings screen needs the pairing accessibility service.
+    // It is switched on silently when the app can (WRITE_SECURE_SETTINGS from an earlier start, or
+    // root); otherwise the shared dialog walks the user through turning it on.
+    private fun enableCodeAutoFill() {
+        lifecycleScope.launch {
+            val enabled = withContext(Dispatchers.IO) { tryEnableAccessibilityAutomatically() }
+            if (isFinishing) return@launch
+            if (enabled) {
+                Toast.makeText(this@AdbPairingTutorialActivity, R.string.adb_pairing_tutorial_autofill_ready, Toast.LENGTH_LONG).show()
+                SettingsHelper.launchOrHighlightWirelessDebugging(this@AdbPairingTutorialActivity)
+            } else {
+                showAccessibilityDialog()
+            }
+        }
     }
 
     private fun requestOrOpenNotificationSettings() {
@@ -210,6 +238,16 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
     override fun onResume() {
         super.onResume()
+
+        // Paired while the user was in Settings, but the server start could not be queued in the
+        // background (no WRITE_SECURE_SETTINGS yet): start it now that we are in front again.
+        val state = ShizukuStateMachine.get()
+        if (AdbPairingService.consumeRecentPairingNeedingStart() &&
+            state != ShizukuStateMachine.State.RUNNING &&
+            state != ShizukuStateMachine.State.STARTING
+        ) {
+            StartWirelessAdbViewHolder.start(this, lifecycleScope)
+        }
 
         val newNotificationEnabled = isNotificationEnabled()
         if (newNotificationEnabled != notificationEnabled) {

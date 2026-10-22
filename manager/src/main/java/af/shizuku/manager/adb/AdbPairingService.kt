@@ -40,6 +40,60 @@ class AdbPairingService : Service() {
         private const val portKey = "port_number"
         internal const val dialogCodeKey = "dialog_code"
 
+        // Port of the pairing service the open "Pair with code" dialog advertises, or -1. Read by
+        // the auto-fill accessibility service, which prefers it over the port parsed from screen.
+        @Volatile
+        var discoveredPairingPort: Int = -1
+            private set
+
+        // When the last pairing succeeded, and whether the server start was already queued for it.
+        @Volatile
+        private var pairedAtMs = 0L
+
+        @Volatile
+        private var startQueuedForPairing = false
+
+        /**
+         * Records a successful pairing; returns true when the server start was queued in the
+         * background (WRITE_SECURE_SETTINGS held), so nothing else should start it again.
+         */
+        internal fun onPaired(context: Context): Boolean {
+            pairedAtMs = android.os.SystemClock.elapsedRealtime()
+            val canStartInBackground =
+                context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) ==
+                    android.content.pm.PackageManager.PERMISSION_GRANTED
+            startQueuedForPairing = canStartInBackground
+            if (canStartInBackground) {
+                af.shizuku.manager.worker.AdbStartWorker
+                    .enqueue(context, explicit = true)
+            }
+            return canStartInBackground
+        }
+
+        /**
+         * True once for a pairing that succeeded in the last two minutes and whose server start
+         * was not queued yet - the pairing screen then starts the server itself when the user
+         * comes back to it.
+         */
+        internal fun consumeRecentPairingNeedingStart(): Boolean {
+            val recent =
+                pairedAtMs != 0L &&
+                    android.os.SystemClock.elapsedRealtime() - pairedAtMs < 120_000L
+            val needsStart = recent && !startQueuedForPairing
+            if (recent) pairedAtMs = 0L
+            return needsStart
+        }
+
+        /** Stops a running pairing service and removes its notification (another path paired). */
+        internal fun dismiss(context: Context) {
+            try {
+                context.stopService(Intent(context, AdbPairingService::class.java))
+            } catch (e: Throwable) {
+                Timber.tag(tag).w(e, "failed to stop pairing service")
+            }
+            context.getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
+        }
+
         fun startIntent(context: Context): Intent = Intent(context, AdbPairingService::class.java).setAction(startAction)
 
         private fun stopIntent(context: Context): Intent = Intent(context, AdbPairingService::class.java).setAction(stopAction)
@@ -62,16 +116,39 @@ class AdbPairingService : Service() {
 
     private var adbMdns: AdbMdns? = null
 
+    // Set once a code was submitted: from then on the notification shows progress and the result,
+    // and a "service lost" (Settings closes the dialog when pairing succeeds) must not replace it.
+    @Volatile
+    private var pairingSubmitted = false
+
+    // The port the "enter code" notification last alerted for. mDNS can drop and re-find the same
+    // service; only a new dialog (new port) pops up again.
+    private var alertedPort = -1
+
     private val observer =
         Observer<Int> { port ->
             Timber.tag(tag).i("Pairing service port: $port")
-            if (port <= 0) return@Observer
+            if (pairingSubmitted) return@Observer
+            val nm = getSystemService(NotificationManager::class.java)
+            if (port <= 0) {
+                // The pairing dialog was closed: drop the reply action, it points at a dead port.
+                if (discoveredPairingPort > 0) {
+                    discoveredPairingPort = -1
+                    nm.notify(NOTIFICATION_ID, searchingNotification)
+                }
+                return@Observer
+            }
+            discoveredPairingPort = port
+
+            // Alert (heads-up over Settings) when a pairing dialog appears, so the code can be typed
+            // straight into the notification without leaving the dialog - unless the auto-fill
+            // accessibility service is already pairing with the code it read from the screen.
+            val alert = port != alertedPort && !AdbPairingAccessibilityService.isPairing
+            if (alert) alertedPort = port
 
             // Since the service could be killed before user finishing input,
             // we need to put the port into Intent
-            val notification = createInputNotification(port)
-
-            getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+            nm.notify(NOTIFICATION_ID, createInputNotification(port, alert))
         }
 
     private var started = false
@@ -175,6 +252,7 @@ class AdbPairingService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        discoveredPairingPort = -1
         stopSearch()
         serviceScope.cancel()
     }
@@ -188,6 +266,7 @@ class AdbPairingService : Service() {
         code: String,
         port: Int,
     ): Notification {
+        pairingSubmitted = true
         serviceScope.launch {
             // Prefer the mDNS-resolved host; falls back to loopback if discovery isn't live (e.g.
             // the service was killed and restarted from the reply intent, which only carries the port).
@@ -222,17 +301,21 @@ class AdbPairingService : Service() {
 
         val title: String
         val text: String?
+        var autoStarted = false
 
         if (success) {
             Timber.tag(tag).i("Pair succeed")
 
             title = getString(R.string.notification_adb_pairing_succeed_title)
-            text = getString(R.string.notification_adb_pairing_succeed_text)
+            text = null
 
             stopSearch()
-            // No auto-launch here: CLEAR_TOP on MainActivity would tear down onboarding / the
+            // No activity launch here: CLEAR_TOP on MainActivity would tear down onboarding / the
             // pairing tutorial, and a background activity start is blocked on Android 10+ anyway.
-            // The success notification below carries the Start action.
+            // With WRITE_SECURE_SETTINGS the start is queued in the background; otherwise the
+            // success notification carries the Start action and the pairing screen starts the
+            // server when the user returns to it.
+            autoStarted = onPaired(this)
         } else {
             title = getString(R.string.notification_adb_pairing_failed_title)
 
@@ -266,14 +349,25 @@ class AdbPairingService : Service() {
                 .setColor(getColor(R.color.notification))
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .setContentTitle(title)
-                .setContentText(text)
-                .setOnlyAlertOnce(true)
-                .apply {
+                // The result alerts once (no setOnlyAlertOnce): the user is still in Settings, and
+                // the heads-up is where they see a wrong code or tap Start.
+                .setContentText(
+                    when {
+                        !success -> text
+                        autoStarted -> getString(R.string.notification_adb_pairing_succeed_starting)
+                        else -> getString(R.string.notification_adb_pairing_succeed_text)
+                    },
+                ).apply {
                     if (!success) {
                         addAction(retryNotificationAction)
                     } else {
                         setContentIntent(launchPendingIntent)
-                        addAction(startNotificationAction)
+                        if (!autoStarted) {
+                            addAction(startNotificationAction)
+                        } else {
+                            // The start worker posts its own progress; this is only a note.
+                            setTimeoutAfter(60_000L)
+                        }
                         setAutoCancel(true)
                     }
                 }.build(),
@@ -442,7 +536,10 @@ class AdbPairingService : Service() {
             .build()
     }
 
-    private fun createInputNotification(port: Int): Notification {
+    private fun createInputNotification(
+        port: Int,
+        alert: Boolean,
+    ): Notification {
         val dialogIntent =
             Intent(this, AdbPairingDialogActivity::class.java)
                 .putExtra(portKey, port)
@@ -467,7 +564,7 @@ class AdbPairingService : Service() {
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(false)
-                .setOnlyAlertOnce(true)
+                .setOnlyAlertOnce(!alert)
                 .build()
         }
         return Notification
@@ -478,7 +575,9 @@ class AdbPairingService : Service() {
             .setSmallIcon(R.drawable.ic_notification_icon)
             // No content intent: tapping the body would open an activity over Settings and can
             // close the system pairing dialog (invalidating the code). Inline reply only.
-            .setOnlyAlertOnce(true)
+            // Not setOnlyAlertOnce: this replaces the "searching" notification under the same id,
+            // and only an alerting update shows as a heads-up over the Settings dialog.
+            .setOnlyAlertOnce(!alert)
             .addAction(replyNotificationAction(port))
             .build()
     }
