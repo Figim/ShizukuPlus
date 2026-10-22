@@ -99,6 +99,12 @@ class AdbPairingAccessibilityService : AccessibilityService() {
             while (true) {
                 delay(5_000)
                 if (pairingStarted) return@launch
+                // The dialog may show the code before mDNS resolves its port and then send no
+                // further events: look again once the port is known.
+                if (AdbPairingService.discoveredPairingPort > 0) {
+                    rootInActiveWindow?.let { scan(it) }
+                    if (pairingStarted) return@launch
+                }
                 val now = SystemClock.elapsedRealtime()
                 if (now - lastEventAt > IDLE_TIMEOUT_MS || now - connectedAt > MAX_LIFETIME_MS) {
                     Timber.tag(TAG).w("Pairing discovery timed out")
@@ -122,6 +128,11 @@ class AdbPairingAccessibilityService : AccessibilityService() {
         // Look at the whole window the event came from: the code and the IP:port are separate
         // views of the same dialog, and both must come from it.
         val root = event.source?.let { rootOf(it) } ?: rootInActiveWindow ?: return
+        scan(root)
+    }
+
+    private fun scan(root: AccessibilityNodeInfo) {
+        if (pairingStarted) return
         var port: Int? = null
         var code: String? = null
         walk(root, 0) { text ->
