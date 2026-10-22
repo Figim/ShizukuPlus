@@ -315,12 +315,27 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
 
         findPreference<EditTextPreference>("custom_app_name")?.apply {
-            text = ShizukuSettings.getCustomAppName(requireContext())
-            setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is String) {
-                    ShizukuSettings.setCustomAppName(newValue)
+            // Don't seed `text`: EditTextPreference.setText() persists, which would save this
+            // flavor's own name as a "custom" one and peer sync would copy it to the other flavor.
+            // Show the effective name in the summary and the dialog instead.
+            summaryProvider =
+                Preference.SummaryProvider<EditTextPreference> {
+                    ShizukuSettings.getCustomAppName(requireContext())
                 }
-                true
+            setOnBindEditTextListener { editText ->
+                editText.setText(ShizukuSettings.getCustomAppName(requireContext()))
+                editText.setSelection(editText.text.length)
+            }
+            setOnPreferenceChangeListener { pref, newValue ->
+                if (newValue is String) {
+                    // Entering the default name (or nothing) clears the custom name.
+                    val name = newValue.trim()
+                    ShizukuSettings.setCustomAppName(if (name == getString(R.string.app_name)) "" else name)
+                    // Re-setting the provider is the public way to refresh a provider summary.
+                    pref.summaryProvider = pref.summaryProvider
+                }
+                // Already persisted above; returning true would write the raw value again.
+                false
             }
         }
 

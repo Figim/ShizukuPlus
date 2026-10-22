@@ -1496,12 +1496,9 @@ private fun collectServerSample(fetchStaticInfo: Boolean): ServerSample {
     val service =
         moe.shizuku.server.IShizukuService.Stub
             .asInterface(binder)
-    var ai: af.shizuku.server.IAICorePlus? = runCatching { service.aiCorePlus }.getOrNull()
-    if (ai == null && ((patch ?: 0) > 0 || Shizuku.isCustomApiEnabled())) {
-        runCatching { service.updatePlusFeatureEnabled("ai_core_plus", true) }
-        ShizukuSettings.syncAllPlusFeaturesToServer()
-        ai = runCatching { service.aiCorePlus }.getOrNull()
-    }
+    // Read-only: never flip server feature flags from here. The server exempts the manager from
+    // the ai_core_plus gate; an older server that still returns null just shows no stats.
+    val ai: af.shizuku.server.IAICorePlus? = runCatching { service.aiCorePlus }.getOrNull()
     return ServerSample(true, uid, patch, se, runCatching { ai?.serverStats }.getOrNull())
 }
 

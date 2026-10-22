@@ -41,12 +41,20 @@ class SettingsActivity :
     fun onPreferenceListScrolled(
         dy: Int,
         canScrollUp: Boolean = true,
+        scrollOffset: Int = 0,
     ) {
         val state = preferenceScrollState ?: return
         val limit = state.heightOffsetLimit
         when {
             dy > 0 -> state.heightOffset = (state.heightOffset - dy).coerceAtLeast(limit)
-            dy < 0 && !canScrollUp -> state.heightOffset = (state.heightOffset - dy).coerceAtMost(0f)
+            // Scrolling up only reveals the header as the list reaches the top: it follows the
+            // list's own offset, so it is fully expanded exactly when the list is back at the top
+            // (the list's top padding is the expanded header height). Only adding the last dy
+            // here left a collapsed header over an empty gap.
+            dy < 0 && !canScrollUp -> state.heightOffset = 0f
+            dy < 0 ->
+                state.heightOffset =
+                    maxOf(state.heightOffset, (-scrollOffset).toFloat().coerceIn(limit, 0f))
         }
         state.contentOffset -= dy
         _isScrollIdle = false

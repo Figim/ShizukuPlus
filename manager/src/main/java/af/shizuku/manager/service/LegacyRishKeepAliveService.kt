@@ -46,13 +46,12 @@ class LegacyRishKeepAliveService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        running.set(true)
         createChannel()
         if (!startForegroundSafely(buildNotification())) {
-            running.set(false)
             stopSelf()
             return
         }
+        foregrounded.set(true)
         // If the server is not (or no longer) running there is nothing to keep alive for.
         if (!ShizukuSettings.isLegacyRishKeepaliveEnabled() ||
             ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING
@@ -77,14 +76,22 @@ class LegacyRishKeepAliveService : Service() {
         intent: Intent?,
         flags: Int,
         startId: Int,
-    ): Int = START_STICKY
+    ): Int {
+        // Every startForegroundService() call must be answered with startForeground(), including
+        // repeat starts of an already running instance; it is idempotent for the same id.
+        if (!startForegroundSafely(buildNotification())) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+        return START_STICKY
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
         stateJob?.cancel()
         scope.cancel()
-        running.set(false)
+        foregrounded.set(false)
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         nm?.cancel(NOTIFICATION_ID)
         super.onDestroy()
@@ -155,26 +162,49 @@ class LegacyRishKeepAliveService : Service() {
         private const val CHANNEL_ID = "legacy_rish_keepalive"
         private const val NOTIFICATION_ID = 1466
 
-        private val running = AtomicBoolean(false)
+        // True only once startForeground() succeeded, until onDestroy().
+        private val foregrounded = AtomicBoolean(false)
 
-        fun isRunning(): Boolean = running.get()
+        fun isRunning(): Boolean = foregrounded.get()
+
+        /**
+         * Starts or stops the service to match the setting and the current server state. Called on
+         * every state change, when the setting changes and whenever an activity comes to the
+         * foreground - the last one retries a start the platform refused in the background
+         * (Android 12+ background FGS restrictions), since the state itself will not change again.
+         */
+        fun sync(context: Context) {
+            if (ShizukuSettings.isLegacyRishKeepaliveEnabled() &&
+                ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
+            ) {
+                start(context)
+            } else {
+                stop(context)
+            }
+        }
 
         /** Starts the keep-alive service if the feature is enabled; safe to call from any thread. */
         fun start(context: Context) {
-            if (!ShizukuSettings.isLegacyRishKeepaliveEnabled()) return
+            if (!ShizukuSettings.isLegacyRishKeepaliveEnabled() || foregrounded.get()) return
             try {
                 ContextCompat.startForegroundService(
                     context,
                     Intent(context, LegacyRishKeepAliveService::class.java),
                 )
             } catch (e: Throwable) {
-                // Background FGS start restrictions (or a frozen process) - the next RUNNING
-                // transition or app launch retries.
+                // Background FGS start restrictions (or a frozen process) - sync() retries when
+                // an activity next comes to the foreground.
                 Timber.tag(TAG).w(e, "Could not start legacy rish keep-alive service")
             }
         }
 
         fun stop(context: Context) {
+            // Never stopService() an instance that has not reached startForeground() yet: the
+            // system then kills the whole process with "did not then call startForeground()".
+            // That happens on cold start, when the persisted RUNNING state flips to CRASHED a few
+            // ms after start(). Such an instance re-checks the setting and state right after
+            // startForeground() in onCreate() and stops itself.
+            if (!foregrounded.get()) return
             try {
                 context.stopService(Intent(context, LegacyRishKeepAliveService::class.java))
             } catch (e: Throwable) {

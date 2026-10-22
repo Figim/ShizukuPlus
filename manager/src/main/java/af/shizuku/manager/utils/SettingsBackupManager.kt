@@ -28,6 +28,10 @@ object SettingsBackupManager {
             ShizukuSettings.Keys.KEY_LAST_SEEN_CHANGELOG_VERSION,
             ShizukuSettings.Keys.KEY_SYNCED_START_ON_BOOT_DEFAULT,
             ShizukuSettings.Keys.KEY_WATCHDOG_DEFAULT,
+            // Per-flavor default (on for Drop-In, off for Shizuku+) - syncing it between the two
+            // flavors would switch off MT Manager compatibility on the Drop-In build.
+            ShizukuSettings.Keys.KEY_LEGACY_RISH_KEEPALIVE,
+            ShizukuSettings.Keys.KEY_CUSTOM_APP_NAME_SEED_CLEARED,
             ShizukuSettings.Keys.KEY_WATCHDOG_EXEMPTION_PENDING,
             ShizukuSettings.Keys.KEY_WATCHDOG_VENDOR_BATTERY_REPORTED,
             // Ephemeral runtime state

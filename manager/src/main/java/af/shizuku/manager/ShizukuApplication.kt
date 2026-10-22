@@ -10,10 +10,13 @@ import af.shizuku.manager.utils.AppContextSettingsImpl
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.utils.ThemeDelegateImpl
 import af.shizuku.manager.worker.RemoteDbSyncWorker
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
+import android.os.Bundle
 import android.os.UserManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
@@ -51,6 +54,11 @@ import timber.log.Timber
 class ShizukuApplication :
     Application(),
     Configuration.Provider {
+    // SharedPreferences only holds change listeners weakly - keep strong references here or they
+    // get garbage collected and silently stop firing.
+    private var peerSyncPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    private var keepAlivePrefsListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+
     companion object {
         lateinit var appContext: Context
             private set
@@ -492,16 +500,52 @@ class ShizukuApplication :
             ShizukuStateMachine
                 .asFlow()
                 .distinctUntilChanged()
-                .collect { state ->
-                    if (state == ShizukuStateMachine.State.RUNNING) {
-                        af.shizuku.manager.service.LegacyRishKeepAliveService
-                            .start(this@ShizukuApplication)
-                    } else {
-                        af.shizuku.manager.service.LegacyRishKeepAliveService
-                            .stop(this@ShizukuApplication)
-                    }
+                .collect {
+                    af.shizuku.manager.service.LegacyRishKeepAliveService
+                        .sync(this@ShizukuApplication)
                 }
         }
+        // Apply the settings switch live, not only on the next state change.
+        keepAlivePrefsListener =
+            SharedPreferences
+                .OnSharedPreferenceChangeListener { _, key ->
+                    if (key == ShizukuSettings.Keys.KEY_LEGACY_RISH_KEEPALIVE) {
+                        af.shizuku.manager.service.LegacyRishKeepAliveService
+                            .sync(this)
+                    }
+                }.also { ShizukuSettings.getPreferences()?.registerOnSharedPreferenceChangeListener(it) }
+        // A start refused in the background is retried once the app is in the foreground, where
+        // foreground service starts are always allowed.
+        registerActivityLifecycleCallbacks(
+            object : ActivityLifecycleCallbacks {
+                override fun onActivityStarted(activity: Activity) {
+                    if (!af.shizuku.manager.service.LegacyRishKeepAliveService
+                            .isRunning()
+                    ) {
+                        af.shizuku.manager.service.LegacyRishKeepAliveService
+                            .sync(this@ShizukuApplication)
+                    }
+                }
+
+                override fun onActivityCreated(
+                    activity: Activity,
+                    savedInstanceState: Bundle?,
+                ) = Unit
+
+                override fun onActivityResumed(activity: Activity) = Unit
+
+                override fun onActivityPaused(activity: Activity) = Unit
+
+                override fun onActivityStopped(activity: Activity) = Unit
+
+                override fun onActivitySaveInstanceState(
+                    activity: Activity,
+                    outState: Bundle,
+                ) = Unit
+
+                override fun onActivityDestroyed(activity: Activity) = Unit
+            },
+        )
 
         ActivityLogManager.initialize(this, ActivityLogSettingsImpl())
         af.shizuku.manager.database.ScriptSnippetManager
@@ -699,6 +743,7 @@ class ShizukuApplication :
         // update (keeps the off an absent setting meant). See decideWatchdogDefaultIfNeeded().
         ShizukuSettings.decideWatchdogDefaultIfNeeded(this)
         ShizukuSettings.decideLegacyRishKeepaliveDefaultIfNeeded(this)
+        ShizukuSettings.clearSeededCustomAppNameOnce()
 
         // 0. Initialize Timber
         if (BuildConfig.DEBUG) {
@@ -822,26 +867,28 @@ class ShizukuApplication :
 
     private fun initPeerSettingsSync() {
         val prefs = ShizukuSettings.getPreferences() ?: return
-        prefs.registerOnSharedPreferenceChangeListener { _, key ->
-            if (key != null &&
-                key != ShizukuSettings.Keys.KEY_SETTINGS_LAST_MODIFIED &&
-                key != ShizukuSettings.Keys.KEY_PEER_INITIAL_IMPORT_DONE &&
-                key != ShizukuSettings.Keys.KEY_AUTO_SYNC_PEER_SETTINGS
-            ) {
-                af.shizuku.manager.settings.SettingsShareManager
-                    .markSettingsModified()
-                if (af.shizuku.manager.settings.SettingsShareManager
-                        .isAutoSyncEnabled() &&
-                    af.shizuku.manager.settings.SettingsShareManager
-                        .isPeerInstalled(this)
-                ) {
-                    CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        peerSyncPrefsListener =
+            SharedPreferences
+                .OnSharedPreferenceChangeListener { _, key ->
+                    if (key != null &&
+                        key != ShizukuSettings.Keys.KEY_SETTINGS_LAST_MODIFIED &&
+                        key != ShizukuSettings.Keys.KEY_PEER_INITIAL_IMPORT_DONE &&
+                        key != ShizukuSettings.Keys.KEY_AUTO_SYNC_PEER_SETTINGS
+                    ) {
                         af.shizuku.manager.settings.SettingsShareManager
-                            .exportToPeer(this@ShizukuApplication)
+                            .markSettingsModified()
+                        if (af.shizuku.manager.settings.SettingsShareManager
+                                .isAutoSyncEnabled() &&
+                            af.shizuku.manager.settings.SettingsShareManager
+                                .isPeerInstalled(this)
+                        ) {
+                            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                                af.shizuku.manager.settings.SettingsShareManager
+                                    .exportToPeer(this@ShizukuApplication)
+                            }
+                        }
                     }
-                }
-            }
-        }
+                }.also { prefs.registerOnSharedPreferenceChangeListener(it) }
 
         // On startup: check for initial import or auto-sync in background
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {

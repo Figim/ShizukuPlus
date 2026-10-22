@@ -26,7 +26,8 @@ class BinderRequestReceiver : BroadcastReceiver() {
         // A legacy rish client is asking for the binder. Keep a process that receives this
         // broadcast reachable for its next request too: such clients retry on every launch and
         // only wait a few hundred milliseconds for the shell socket. See docs/MT_COMPAT.md.
-        LegacyRishKeepAliveService.start(context)
+        // sync() rather than start(): only while the server is RUNNING.
+        LegacyRishKeepAliveService.sync(context)
 
         val rawToken =
             intent.getStringExtra("auth")

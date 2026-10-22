@@ -28,6 +28,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
     private var notificationEnabled: Boolean = false
 
+    // Only a request the user asked for (the "notification options" button) may send them to
+    // system settings on denial; the automatic request on first open must never do that.
+    private var notifRequestFromUser = false
+
     // Registered unconditionally (required before onStart); only invoked on API 33+.
     private val notifPermissionLauncher =
         registerForActivityResult(
@@ -35,9 +39,12 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         ) { granted ->
             notificationEnabled = isNotificationEnabled()
             syncNotificationEnabled()
+            val fromUser = notifRequestFromUser
+            notifRequestFromUser = false
             if (notificationEnabled || granted) {
                 startPairingService()
             } else if (
+                fromUser &&
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                 !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
             ) {
@@ -79,9 +86,12 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
         if (notificationEnabled) {
             startPairingService()
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        } else if (savedInstanceState == null &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
+            // Ask once per visit (not on rotation). A permanent denial comes back at once with no
+            // dialog; the warning card then offers the way to settings.
             notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
 
@@ -154,6 +164,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                     PackageManager.PERMISSION_GRANTED
             if (!granted) {
                 // Show rationale then request — or just request directly if first time
+                notifRequestFromUser = true
                 notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 return
             }

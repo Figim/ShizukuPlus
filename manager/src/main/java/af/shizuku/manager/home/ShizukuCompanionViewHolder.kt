@@ -16,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -320,30 +321,41 @@ class ShizukuCompanionViewHolder(
         binding.button2.setOnClickListener { v ->
             af.shizuku.manager.utils.HapticUtils
                 .tap(v)
-            showProgress(v.context.getString(R.string.compat_hub_progress_uninstalling), 30)
-            scope.launch {
-                withContext(Dispatchers.Main) {
-                    updateProgress(v.context.getString(R.string.compat_hub_progress_uninstalling), 70)
-                }
-                val privilegedSuccess = runPrivilegedCommand("pm uninstall ${StockShizukuCompat.PACKAGE}")
-                withContext(Dispatchers.Main) {
-                    updateProgress(v.context.getString(if (privilegedSuccess) R.string.compat_hub_uninstall_success else R.string.compat_hub_progress_finishing), 100)
-                    kotlinx.coroutines.delay(350)
-                    hideProgress()
-                    if (privilegedSuccess) {
-                        Toast.makeText(v.context, R.string.compat_hub_uninstall_success, Toast.LENGTH_SHORT).show()
-                        homeModel.reload()
-                    } else {
-                        try {
-                            val intent =
-                                Intent(Intent.ACTION_DELETE).apply {
-                                    data = Uri.parse("package:${StockShizukuCompat.PACKAGE}")
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                            v.context.startActivity(intent)
-                        } catch (e: Exception) {
-                            Timber.tag("ShizukuCompanion").e(e, "failed to start uninstall intent")
-                        }
+            // The privileged path removes the package and its data with no system dialog, so ask
+            // first - one stray tap must not wipe the user's stock Shizuku install.
+            MaterialAlertDialogBuilder(v.context)
+                .setTitle(R.string.companion_uninstall_confirm_title)
+                .setMessage(v.context.getString(R.string.companion_uninstall_confirm_message, StockShizukuCompat.PACKAGE))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(binding.button2.text) { _, _ -> uninstallStockPackage(v) }
+                .show()
+        }
+    }
+
+    private fun uninstallStockPackage(v: View) {
+        showProgress(v.context.getString(R.string.compat_hub_progress_uninstalling), 30)
+        scope.launch {
+            withContext(Dispatchers.Main) {
+                updateProgress(v.context.getString(R.string.compat_hub_progress_uninstalling), 70)
+            }
+            val privilegedSuccess = runPrivilegedCommand("pm uninstall ${StockShizukuCompat.PACKAGE}")
+            withContext(Dispatchers.Main) {
+                updateProgress(v.context.getString(if (privilegedSuccess) R.string.compat_hub_uninstall_success else R.string.compat_hub_progress_finishing), 100)
+                kotlinx.coroutines.delay(350)
+                hideProgress()
+                if (privilegedSuccess) {
+                    Toast.makeText(v.context, R.string.compat_hub_uninstall_success, Toast.LENGTH_SHORT).show()
+                    homeModel.reload()
+                } else {
+                    try {
+                        val intent =
+                            Intent(Intent.ACTION_DELETE).apply {
+                                data = Uri.parse("package:${StockShizukuCompat.PACKAGE}")
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                        v.context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuCompanion").e(e, "failed to start uninstall intent")
                     }
                 }
             }

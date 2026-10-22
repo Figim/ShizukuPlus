@@ -177,6 +177,7 @@ public class ShizukuSettings {
         public static final String KEY_SHOW_HOME_CARDS_OUTLINE = "show_home_cards_outline";
         public static final String KEY_DEV_OPTIONS_UNLOCKED = "dev_options_unlocked";
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
+        public static final String KEY_CUSTOM_APP_NAME_SEED_CLEARED = "custom_app_name_seed_cleared";
         public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
@@ -1906,6 +1907,22 @@ public class ShizukuSettings {
     public static void setExperimentalAppIdentityEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_EXPERIMENTAL_APP_IDENTITY, enabled).apply();
+    }
+
+    /**
+     * One-time cleanup: the Personalization screen used to save this flavor's own name as a
+     * custom name just by being opened, and peer sync carried it to the other flavor (where
+     * Drop-In then showed "Shizuku+"). Clears a stored name equal to either flavor's default.
+     */
+    public static void clearSeededCustomAppNameOnce() {
+        SharedPreferences p = getPreferences();
+        if (p == null || p.getBoolean(Keys.KEY_CUSTOM_APP_NAME_SEED_CLEARED, false)) return;
+        String name = p.getString(Keys.KEY_CUSTOM_APP_NAME, "");
+        SharedPreferences.Editor editor = p.edit().putBoolean(Keys.KEY_CUSTOM_APP_NAME_SEED_CLEARED, true);
+        if (name != null && ("Shizuku+".equals(name.trim()) || "Shizuku".equals(name.trim()))) {
+            editor.remove(Keys.KEY_CUSTOM_APP_NAME);
+        }
+        editor.apply();
     }
 
     public static void setCustomAppName(String name) {

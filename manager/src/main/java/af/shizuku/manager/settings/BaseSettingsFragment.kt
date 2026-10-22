@@ -326,7 +326,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     dy: Int,
                 ) {
                     val canScrollUp = rv.canScrollVertically(-1)
-                    (activity as? SettingsActivity)?.onPreferenceListScrolled(dy, canScrollUp)
+                    (activity as? SettingsActivity)?.onPreferenceListScrolled(dy, canScrollUp, rv.computeVerticalScrollOffset())
                 }
 
                 override fun onScrollStateChanged(
