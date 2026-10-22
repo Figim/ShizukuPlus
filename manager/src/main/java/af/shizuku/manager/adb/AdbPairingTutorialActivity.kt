@@ -22,7 +22,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,8 +132,63 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                 enableCodeAutoFill()
             }
 
+            startNow.applySpringTouch()
+            startNow.setOnClickListener {
+                StartWirelessAdbViewHolder.start(context, lifecycleScope)
+            }
+
             notificationOptions.setOnClickListener {
                 requestOrOpenNotificationSettings()
+            }
+        }
+
+        observePairingState()
+    }
+
+    private fun observePairingState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                AdbPairingService.state.collect { renderPairingState(it) }
+            }
+        }
+    }
+
+    private fun renderPairingState(state: AdbPairingService.State) {
+        val phase = state.phase
+        binding.apply {
+            pairingStatus.isVisible = phase != AdbPairingService.Phase.IDLE
+            if (phase == AdbPairingService.Phase.IDLE) return
+            val (title, text) =
+                when (phase) {
+                    AdbPairingService.Phase.SEARCHING ->
+                        R.string.notification_adb_pairing_searching_for_service_title to
+                            getString(R.string.adb_pairing_status_searching_text)
+                    AdbPairingService.Phase.FOUND ->
+                        R.string.notification_adb_pairing_service_found_title to
+                            getString(R.string.adb_pairing_status_found_text)
+                    AdbPairingService.Phase.PAIRING -> R.string.notification_adb_pairing_working_title to null
+                    AdbPairingService.Phase.PAIRED ->
+                        R.string.notification_adb_pairing_succeed_title to
+                            getString(R.string.notification_adb_pairing_succeed_text)
+                    AdbPairingService.Phase.STARTING ->
+                        R.string.notification_adb_pairing_succeed_title to
+                            getString(R.string.notification_adb_pairing_succeed_starting)
+                    else -> R.string.notification_adb_pairing_failed_title to state.detail
+                }
+            pairingStatusTitle.setText(title)
+            pairingStatusText.text = text
+            pairingStatusText.isVisible = !text.isNullOrEmpty()
+            val busy =
+                phase == AdbPairingService.Phase.SEARCHING ||
+                    phase == AdbPairingService.Phase.PAIRING ||
+                    phase == AdbPairingService.Phase.STARTING
+            pairingStatusProgress.isVisible = busy
+            pairingStatusIcon.isVisible = !busy
+            when (phase) {
+                AdbPairingService.Phase.FOUND -> pairingStatusIcon.setImageResource(R.drawable.ic_outline_notifications_active_24)
+                AdbPairingService.Phase.PAIRED -> pairingStatusIcon.setImageResource(R.drawable.ic_server_ok_24)
+                AdbPairingService.Phase.FAILED -> pairingStatusIcon.setImageResource(R.drawable.ic_server_error_24)
+                else -> Unit
             }
         }
     }

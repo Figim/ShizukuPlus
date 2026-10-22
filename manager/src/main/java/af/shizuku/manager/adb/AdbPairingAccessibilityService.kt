@@ -158,6 +158,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
             AdbPairingService.discoveredPairingPort.takeIf { it > 0 } ?: port ?: return
         pairingStarted = true
         isPairing = true
+        AdbPairingService.setState(AdbPairingService.Phase.PAIRING)
         Sentry.addBreadcrumb(
             Breadcrumb("Pairing code found on screen").apply {
                 category = "adb.pairing"
@@ -172,6 +173,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
     ) {
         serviceScope.launch {
             var toastMsg = getString(R.string.notification_adb_pairing_failed_title)
+            var succeeded = false
             try {
                 val key =
                     try {
@@ -205,6 +207,10 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                             // The notification flow has nothing left to do.
                             AdbPairingService.dismiss(this@AdbPairingAccessibilityService)
                             val queued = AdbPairingService.onPaired(this@AdbPairingAccessibilityService)
+                            succeeded = true
+                            AdbPairingService.setState(
+                                if (queued) AdbPairingService.Phase.STARTING else AdbPairingService.Phase.PAIRED,
+                            )
                             if (!queued) {
                                 // An accessibility service may start activities from the
                                 // background; Home starts the server from this extra. If the
@@ -230,6 +236,12 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                         }
                     }
             } finally {
+                if (!succeeded) {
+                    AdbPairingService.setState(
+                        AdbPairingService.Phase.FAILED,
+                        toastMsg.takeIf { it != getString(R.string.notification_adb_pairing_failed_title) },
+                    )
+                }
                 isPairing = false
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@AdbPairingAccessibilityService, toastMsg, Toast.LENGTH_LONG).show()

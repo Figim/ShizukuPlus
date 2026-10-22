@@ -14,12 +14,22 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import rikka.core.ktx.unsafeLazy
 import timber.log.Timber
 import java.net.ConnectException
 
 @TargetApi(Build.VERSION_CODES.R)
 class AdbPairingService : Service() {
+    enum class Phase { IDLE, SEARCHING, FOUND, PAIRING, PAIRED, STARTING, FAILED }
+
+    data class State(
+        val phase: Phase,
+        val detail: String? = null,
+    )
+
     companion object {
         const val NOTIFICATION_CHANNEL = "adb_pairing"
         const val NOTIFICATION_ID = 1
@@ -39,6 +49,18 @@ class AdbPairingService : Service() {
         private const val remoteInputResultKey = "paring_code"
         private const val portKey = "port_number"
         internal const val dialogCodeKey = "dialog_code"
+
+        private val stateFlow = MutableStateFlow(State(Phase.IDLE))
+
+        /** Where pairing stands, for the pairing screen's live status (both pairing paths). */
+        val state: StateFlow<State> = stateFlow.asStateFlow()
+
+        internal fun setState(
+            phase: Phase,
+            detail: String? = null,
+        ) {
+            stateFlow.value = State(phase, detail)
+        }
 
         // Port of the pairing service the open "Pair with code" dialog advertises, or -1. Read by
         // the auto-fill accessibility service, which prefers it over the port parsed from screen.
@@ -134,11 +156,13 @@ class AdbPairingService : Service() {
                 // The pairing dialog was closed: drop the reply action, it points at a dead port.
                 if (discoveredPairingPort > 0) {
                     discoveredPairingPort = -1
+                    setState(Phase.SEARCHING)
                     nm.notify(NOTIFICATION_ID, searchingNotification)
                 }
                 return@Observer
             }
             discoveredPairingPort = port
+            if (!AdbPairingAccessibilityService.isPairing) setState(Phase.FOUND)
 
             // Alert (heads-up over Settings) when a pairing dialog appears, so the code can be typed
             // straight into the notification without leaving the dialog - unless the auto-fill
@@ -253,11 +277,14 @@ class AdbPairingService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         discoveredPairingPort = -1
+        val phase = state.value.phase
+        if (phase == Phase.SEARCHING || phase == Phase.FOUND) setState(Phase.IDLE)
         stopSearch()
         serviceScope.cancel()
     }
 
     private fun onStart(): Notification {
+        if (!pairingSubmitted) setState(if (discoveredPairingPort > 0) Phase.FOUND else Phase.SEARCHING)
         startSearch()
         return searchingNotification
     }
@@ -267,6 +294,7 @@ class AdbPairingService : Service() {
         port: Int,
     ): Notification {
         pairingSubmitted = true
+        setState(Phase.PAIRING)
         serviceScope.launch {
             // Prefer the mDNS-resolved host; falls back to loopback if discovery isn't live (e.g.
             // the service was killed and restarted from the reply intent, which only carries the port).
@@ -316,6 +344,7 @@ class AdbPairingService : Service() {
             // success notification carries the Start action and the pairing screen starts the
             // server when the user returns to it.
             autoStarted = onPaired(this)
+            setState(if (autoStarted) Phase.STARTING else Phase.PAIRED)
         } else {
             title = getString(R.string.notification_adb_pairing_failed_title)
 
@@ -335,6 +364,11 @@ class AdbPairingService : Service() {
                     }
                 }
 
+            // Known causes have a readable message; anything else is a stack trace, which belongs
+            // in the notification's detail, not on the pairing screen.
+            val knownCause =
+                exception is ConnectException || exception is AdbInvalidPairingCodeException || exception is AdbKeyException
+            setState(Phase.FAILED, if (knownCause) text else null)
             if (exception != null) {
                 Timber.tag(tag).w(exception, "Pair failed")
             } else {
