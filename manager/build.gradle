@@ -109,7 +109,11 @@ android {
 
 spotless {
     kotlin {
-        target "**/*.kt"
+        // Source dirs only: a project-wide tree also covers src/main/assets, which
+        // copyCompatApkDebug writes, and Gradle fails spotless + lint in one run.
+        target fileTree("src/main/java") { include "**/*.kt" },
+                fileTree("src/test/java") { include "**/*.kt" },
+                fileTree("src/androidTest/java") { include "**/*.kt" }
         ktlint("1.3.1")
         trimTrailingWhitespace()
         indentWithSpaces()
