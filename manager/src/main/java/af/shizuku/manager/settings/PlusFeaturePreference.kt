@@ -72,6 +72,10 @@ class PlusFeaturePreference(
         }
     }
 
+    private fun harmonized(color: Int): Int =
+        com.google.android.material.color.MaterialColors
+            .harmonizeWithPrimary(context, color)
+
     private fun badgeStyleFor(type: Int): Triple<String, Int, Int>? =
         when (type) {
             1 ->
@@ -107,16 +111,17 @@ class PlusFeaturePreference(
             6 ->
                 Triple(
                     "ONE UI",
-                    0xFFD0E4FF.toInt(),
-                    0xFF001D36.toInt(),
+                    harmonized(0xFFD0E4FF.toInt()),
+                    harmonized(0xFF001D36.toInt()),
                 )
             else -> null
         }
 
     private fun severityBadgeStyleFor(type: Int): Triple<String, Int, Int>? =
         when (type) {
-            // No M3 "warning" role exists, so RISKY is a fixed amber rather than theme-resolved.
-            1 -> Triple("RISKY", 0xFFFFE0B2.toInt(), 0xFF7A4A00.toInt())
+            // No M3 "warning" role exists: RISKY is a custom amber, harmonized with the theme's
+            // primary (M3's guidance for custom colours) so it sits with any accent.
+            1 -> Triple("RISKY", harmonized(0xFFFFE0B2.toInt()), harmonized(0xFF7A4A00.toInt()))
             // Solid colorError (not the softer colorErrorContainer ROOT uses) so DANGEROUS reads as
             // a step up in severity even when both badges appear on the same item.
             2 ->

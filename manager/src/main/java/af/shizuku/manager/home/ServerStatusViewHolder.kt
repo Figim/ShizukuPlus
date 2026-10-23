@@ -189,7 +189,8 @@ class ServerStatusViewHolder(
                 when {
                     ok ->
                         if (useStatusColors) {
-                            ContextCompat.getColor(context, R.color.status_ok)
+                            com.google.android.material.color.MaterialColors
+                                .harmonizeWithPrimary(context, ContextCompat.getColor(context, R.color.status_ok))
                         } else {
                             com.google.android.material.color.MaterialColors.getColor(
                                 context,
@@ -199,7 +200,8 @@ class ServerStatusViewHolder(
                         }
                     else ->
                         if (useStatusColors) {
-                            ContextCompat.getColor(context, R.color.status_error)
+                            com.google.android.material.color.MaterialColors
+                                .harmonizeWithPrimary(context, ContextCompat.getColor(context, R.color.status_error))
                         } else {
                             com.google.android.material.color.MaterialColors.getColor(
                                 context,

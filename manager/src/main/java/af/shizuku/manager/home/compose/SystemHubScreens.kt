@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -191,10 +192,10 @@ fun ServerMetricsScreen(
         when {
             isServerRunning == false -> {
                 Card(
-                    shape = RoundedCornerShape(24.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
                     colors =
                         CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f),
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
                         ),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -220,7 +221,7 @@ fun ServerMetricsScreen(
                             Text(
                                 text = stringResource(R.string.server_metrics_server_not_running_summary),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.85f),
+                                color = MaterialTheme.colorScheme.onErrorContainer,
                             )
                         }
                     }
@@ -228,10 +229,10 @@ fun ServerMetricsScreen(
             }
             isServerRunning == true -> {
                 Card(
-                    shape = RoundedCornerShape(24.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
                     colors =
                         CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f),
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                         ),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -279,10 +280,10 @@ fun ServerMetricsScreen(
 
         if (isStockServer) {
             Card(
-                shape = RoundedCornerShape(24.dp),
+                shape = MaterialTheme.shapes.extraLarge,
                 colors =
                     CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.6f),
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     ),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -308,7 +309,7 @@ fun ServerMetricsScreen(
                         Text(
                             text = stringResource(R.string.server_metrics_stock_server_summary),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.85f),
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
                         )
                     }
                 }
@@ -332,7 +333,7 @@ fun ServerMetricsScreen(
             }
 
             Card(
-                shape = RoundedCornerShape(24.dp),
+                shape = MaterialTheme.shapes.extraLarge,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
@@ -347,7 +348,7 @@ fun ServerMetricsScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Surface(
-                            shape = RoundedCornerShape(100.dp),
+                            shape = CircleShape,
                             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                         ) {
                             Text(
@@ -387,15 +388,16 @@ private fun StatusBadge(
     text: String,
     color: Color,
 ) {
+    val (container, onContainer) = containerPair(color)
     Surface(
-        shape = RoundedCornerShape(100.dp),
-        color = color.copy(alpha = 0.18f),
+        shape = CircleShape,
+        color = container,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Medium,
-            color = color,
+            color = onContainer,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
         )
     }
@@ -408,7 +410,7 @@ fun MetricCard(
     iconRes: Int? = null,
 ) {
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = MaterialTheme.shapes.extraLarge,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
@@ -705,7 +707,7 @@ fun ActivityLogScreen(
                         }
                     },
                     singleLine = true,
-                    shape = RoundedCornerShape(100.dp),
+                    shape = CircleShape,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
                 )
@@ -1041,8 +1043,8 @@ private fun TimelineDateHeader(title: String) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Surface(
-            shape = RoundedCornerShape(100.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
         ) {
             Text(
                 text = title,
@@ -1220,10 +1222,10 @@ private fun ActivityLogTimelineRow(
 
         // M3E expressive Card with interactive elevation & animated expansion
         Card(
-            shape = RoundedCornerShape(18.dp),
+            shape = MaterialTheme.shapes.large,
             colors =
                 CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.42f),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 ),
             modifier =
                 Modifier
@@ -1276,7 +1278,7 @@ private fun ActivityLogTimelineRow(
                     // Occurrence badge if stacked (e.g. 5x)
                     if (isStacked) {
                         Surface(
-                            shape = RoundedCornerShape(100.dp),
+                            shape = CircleShape,
                             color = MaterialTheme.colorScheme.primaryContainer,
                         ) {
                             Text(
@@ -1292,14 +1294,14 @@ private fun ActivityLogTimelineRow(
 
                     // Event type status badge
                     Surface(
-                        shape = RoundedCornerShape(100.dp),
-                        color = typeColor.copy(alpha = 0.16f),
+                        shape = CircleShape,
+                        color = containerPair(typeColor).first,
                     ) {
                         Text(
                             text = typeLabel,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Medium,
-                            color = typeColor,
+                            color = containerPair(typeColor).second,
                             modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp),
                         )
                     }
@@ -1523,7 +1525,7 @@ private fun StatTile(
     iconRes: Int,
     modifier: Modifier = Modifier,
 ) {
-    Card(shape = RoundedCornerShape(24.dp), modifier = modifier) {
+    Card(shape = MaterialTheme.shapes.extraLarge, modifier = modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             Icon(
                 painterResource(iconRes),
@@ -1583,5 +1585,21 @@ private fun MemorySparkline(
                 androidx.compose.ui.graphics.drawscope
                     .Stroke(width = 2.dp.toPx()),
         )
+    }
+}
+
+/**
+ * The container / on-container pair for a scheme role used as an accent (badges, type chips),
+ * instead of the role at low alpha, which drifts with whatever sits underneath.
+ */
+@Composable
+private fun containerPair(role: Color): Pair<Color, Color> {
+    val cs = MaterialTheme.colorScheme
+    return when (role) {
+        cs.primary -> cs.primaryContainer to cs.onPrimaryContainer
+        cs.secondary -> cs.secondaryContainer to cs.onSecondaryContainer
+        cs.tertiary -> cs.tertiaryContainer to cs.onTertiaryContainer
+        cs.error -> cs.errorContainer to cs.onErrorContainer
+        else -> cs.surfaceContainerHighest to cs.onSurfaceVariant
     }
 }
