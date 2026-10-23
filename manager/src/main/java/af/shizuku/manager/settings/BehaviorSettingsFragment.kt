@@ -56,6 +56,7 @@ class BehaviorSettingsFragment :
     ) {
         migrateAutomationTrustedNetworks()
         setPreferencesFromResource(R.xml.settings_behavior, rootKey)
+        VerifiedInstallPrefs.attach(this)
         val context = requireContext()
 
         startOnBootPreference = requireNotNull(findPreference(KEY_START_ON_BOOT))

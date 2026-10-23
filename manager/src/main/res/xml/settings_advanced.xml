@@ -119,12 +119,6 @@
             android:icon="@drawable/ic_history_24"
             android:dependency="enable_activity_log" />
 
-        <Preference
-            android:key="update_app_database"
-            android:title="@string/settings_update_app_database"
-            android:summary="@string/settings_update_app_database_summary"
-            android:icon="@drawable/ic_autorenew" />
-
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="hide_launcher_icon"
             android:title="@string/settings_hide_launcher_icon"
@@ -138,7 +132,6 @@
             android:summary="@string/settings_hide_backup_settings_summary"
             android:icon="@drawable/ic_folder_24"
             android:defaultValue="false" />
-
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

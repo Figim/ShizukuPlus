@@ -6,7 +6,6 @@ import af.shizuku.manager.activitylog.ActivityLogActivity
 import af.shizuku.manager.backup.BackupKeyUnavailableException
 import af.shizuku.manager.backup.BackupRestoreManager
 import af.shizuku.manager.backup.CryptoUtils
-import af.shizuku.manager.database.AppContextManager
 import af.shizuku.manager.security.BiometricLock
 import af.shizuku.manager.utils.EnvironmentUtils
 import android.content.ClipData
@@ -181,41 +180,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 }
                 true
             }
-        }
-
-        findPreference<Preference>("update_app_database")?.setOnPreferenceClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/database/apps.json")
-                    val connection = url.openConnection() as java.net.HttpURLConnection
-                    val content =
-                        try {
-                            connection.instanceFollowRedirects = true
-                            connection.requestMethod = "GET"
-                            connection.connectTimeout = 10_000
-                            connection.readTimeout = 10_000
-
-                            val responseCode = connection.responseCode
-                            if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
-                                throw java.io.IOException("HTTP $responseCode from GitHub")
-                            }
-
-                            connection.inputStream.use { it.bufferedReader().readText() }
-                        } finally {
-                            connection.disconnect()
-                        }
-                    withContext(Dispatchers.Main) {
-                        AppContextManager.updateDatabase(content)
-                        Toast.makeText(context, R.string.settings_update_app_database_success, Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Timber.w("update app database failed", e)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, R.string.settings_update_app_database_error, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            true
         }
 
         findPreference<Preference>("service_doctor")?.setOnPreferenceClickListener {

@@ -1020,9 +1020,9 @@
     <string name="settings_main_nav_root_compat_summary">SU bridge, Device Owner &amp; stock app compatibility</string>
     <string name="settings_main_nav_appearance_summary">Theme, shapes, icons, motion, home layout, and language</string>
     <string name="settings_main_nav_app_interactions_title">App interactions</string>
-    <string name="settings_main_nav_app_interactions_summary">Gestures, long-press actions &amp; install checks</string>
+    <string name="settings_main_nav_app_interactions_summary">Gestures, long-press actions and the app database</string>
     <string name="settings_main_nav_startup_behavior_title">Startup &amp; behavior</string>
-    <string name="settings_main_nav_startup_behavior_summary">Boot options, watchdog, TCP/ADB ports, firewall, and keep-alive</string>
+    <string name="settings_main_nav_startup_behavior_summary">Boot options, watchdog, ADB, firewall and install checks</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; diagnostics</string>
     <string name="settings_main_nav_advanced_diagnostics_summary">Enhanced API, diagnostics &amp; backup</string>
     <string name="settings_main_nav_about_summary">Version, release changelog, licenses, and developer options</string>
