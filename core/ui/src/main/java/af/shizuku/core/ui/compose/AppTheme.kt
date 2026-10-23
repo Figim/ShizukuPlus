@@ -158,8 +158,8 @@ private fun androidShapes(context: Context): Shapes {
 }
 
 /**
- * "Bold typography": every role takes its M3 Expressive Emphasized style (heavier weight, same
- * size), mirroring ThemeOverlay.Typography.Bold on the XML side.
+ * "Bold typography": display, headline, title and label roles take their M3 Expressive Emphasized
+ * style (heavier weight, same size); body stays regular. Mirrors ThemeOverlay.Typography.Bold.
  */
 private val BoldTypography =
     Typography().run {
@@ -173,9 +173,6 @@ private val BoldTypography =
             titleLarge = titleLargeEmphasized,
             titleMedium = titleMediumEmphasized,
             titleSmall = titleSmallEmphasized,
-            bodyLarge = bodyLargeEmphasized,
-            bodyMedium = bodyMediumEmphasized,
-            bodySmall = bodySmallEmphasized,
             labelLarge = labelLargeEmphasized,
             labelMedium = labelMediumEmphasized,
             labelSmall = labelSmallEmphasized,

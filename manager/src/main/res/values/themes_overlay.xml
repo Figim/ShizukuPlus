@@ -620,8 +620,9 @@
 
     <!--
         Bold Typography overlay (settings key "bold_typography").
-        Swaps each of the 15 type roles for its M3 Expressive Emphasized style (heavier weight,
-        same size), so the scale keeps its hierarchy. Applied before ThemeOverlay.OneUI so One
+        Swaps the display, headline, title and label roles for their M3 Expressive Emphasized
+        styles (heavier weight, same size), so the scale keeps its hierarchy. Body text stays at
+        regular weight; preference titles (listItem) are a title role and take BodyLarge.Emphasized. Applied before ThemeOverlay.OneUI so One
         UI's values win when both are on.
     -->
     <style name="ThemeOverlay.Typography.Bold" parent="">
@@ -634,9 +635,6 @@
         <item name="textAppearanceTitleLarge">@style/TextAppearance.Material3.TitleLarge.Emphasized</item>
         <item name="textAppearanceTitleMedium">@style/TextAppearance.Material3.TitleMedium.Emphasized</item>
         <item name="textAppearanceTitleSmall">@style/TextAppearance.Material3.TitleSmall.Emphasized</item>
-        <item name="textAppearanceBodyLarge">@style/TextAppearance.Material3.BodyLarge.Emphasized</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.Material3.BodyMedium.Emphasized</item>
-        <item name="textAppearanceBodySmall">@style/TextAppearance.Material3.BodySmall.Emphasized</item>
         <item name="textAppearanceLabelLarge">@style/TextAppearance.Material3.LabelLarge.Emphasized</item>
         <item name="textAppearanceLabelMedium">@style/TextAppearance.Material3.LabelMedium.Emphasized</item>
         <item name="textAppearanceLabelSmall">@style/TextAppearance.Material3.LabelSmall.Emphasized</item>
