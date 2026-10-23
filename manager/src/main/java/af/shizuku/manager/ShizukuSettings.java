@@ -1036,9 +1036,10 @@ public class ShizukuSettings {
         getPreferences().edit().putString(Keys.KEY_PITHUS_API_KEY, key).apply();
     }
 
+    /** The Home activity-log card: its own switch, and logging itself must be on (else it's empty). */
     public static boolean showActivityLogHome() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true);
+        return (p == null || p.getBoolean(Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true)) && isActivityLogEnabled();
     }
 
     /** Whether to show a colored outline on the service status card. Default: on. */

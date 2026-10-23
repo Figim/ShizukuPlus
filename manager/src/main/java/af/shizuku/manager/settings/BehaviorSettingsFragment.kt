@@ -56,7 +56,6 @@ class BehaviorSettingsFragment :
     ) {
         migrateAutomationTrustedNetworks()
         setPreferencesFromResource(R.xml.settings_behavior, rootKey)
-        VerifiedInstallPrefs.attach(this)
         val context = requireContext()
 
         startOnBootPreference = requireNotNull(findPreference(KEY_START_ON_BOOT))
@@ -223,6 +222,10 @@ class BehaviorSettingsFragment :
         }
 
         syncModeVisibility()
+
+        // Verified installation + Package governor (moved here from App interactions): attached
+        // last so nothing later replaces their change listeners (the VirusTotal key veto).
+        VerifiedInstallPrefs.attach(this)
     }
 
     /**

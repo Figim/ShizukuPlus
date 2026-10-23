@@ -207,8 +207,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
 
         shapeStylePreference.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
-            refreshIconStyles()
+            // The style is a theme overlay (every corner token): recreate once it's saved.
+            view?.post { applyTheme(requiresRecreate = true) }
             true
         }
 
@@ -581,7 +581,13 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             "AMBER" -> getString(R.string.settings_accent_amber_applied)
             "ROSE" -> getString(R.string.settings_accent_rose_applied)
             "SLATE" -> getString(R.string.settings_accent_slate_applied)
-            else -> getString(R.string.settings_accent_default_applied)
+            "DEFAULT", null -> getString(R.string.settings_accent_default_applied)
+            // No "... applied" string for the newer accents (Cyan, Neon): use the accent's name.
+            else -> {
+                val values = resources.getStringArray(R.array.custom_accents_values)
+                resources.getStringArray(R.array.custom_accents).getOrNull(values.indexOf(currentValue))
+                    ?: getString(R.string.settings_accent_default_applied)
+            }
         }
     }
 }
