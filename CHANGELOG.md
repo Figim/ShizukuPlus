@@ -38,6 +38,13 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🎨 Appearance
 - **Shape scale** — every Shape Style now defines the newer Large Increased, Extra Large Increased and Extra Extra Large corners, and off-scale sizes snap to the scale (One UI corners are now 4/12/16/28/32). Compose screens follow your Shape Style and corner rounding choice too, and the update, changelog and activity-log cards use the scale instead of fixed corners.
 - **Switches show their state on the thumb** — a check when on and an X when off, on every switch in the app. The check used to be painted the same colour as the thumb, so it was invisible.
+- **M3 Expressive buttons and button groups** — buttons use the Expressive styles (their shape morphs when pressed), Start is the one filled button on its Home card, and the onboarding and automation choices are connected button groups.
+- **Loading** — the app picker, app profiles and backups show the M3 loading indicator instead of the old spinner.
+- **Snackbars** use the standard M3 look (inverse colours, corners from your Shape Style) instead of a pill that blended into cards.
+- **System Hub** uses proper container colours instead of see-through ones, follows your Shape Style, and badge colours match your accent. The RISKY and One UI badges and the status-card outline colours are tuned to the accent too.
+- **App bars** in Permission Manager and Device control shrink as you scroll, and long app names wrap instead of being cut off. System Hub's bar fills in when content scrolls under it.
+- **Back gesture preview** — leaving selection mode in Apps and closing an app in Permission Manager follow your finger and spring back if you cancel.
+- **Material screen transitions (Experimental)** — screens and settings pages slide forward and back instead of exploding or cutting. Opt in under Settings → System → Experimental features.
 - **Rounded edges off stays sharp** — One UI style or a corner rounding choice no longer rounds the corners again.
 - **Bold typography uses the Material 3 Expressive Emphasized styles** — headings, titles and labels get heavier weights at the same sizes, so they keep their hierarchy, and body text stays regular. One UI card titles are 22sp (they were larger than headlines), and no text is smaller than 11sp. Feature badges now follow your system font size.
 - **Motion** — dragging Home cards, edit-mode buttons, section arrows and switch icons now move on springs that can be interrupted mid-way (fading never overshoots), and the Home header, System Hub and settings search use the theme's motion. With Elastic animations off, components use the calmer Standard springs, and the emphasized easing curves are correct.
@@ -45,7 +52,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **AMOLED black** — segmented choices, slider tracks and shape tiles stay visible on pure black. Fixed black bars behind the floating nav bar and the grey block behind the Home top-right buttons.
 - **Full colour schemes (Experimental)** — opt in under Settings → System → Experimental features. Custom accents then colour every part of the app (backgrounds, cards, outlines) instead of a dozen hand-picked colours, dark mode drops the neon primaries, and High contrast mode and Android 14's Medium/High contrast setting switch to real high-contrast schemes. Off by default; accents look as before.
 - **High contrast mode** — now applies straight away, strengthens outlines correctly in light mode too, and keeps its stronger outlines with AMOLED black.
-- **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Floating, Docked or Compact styles, label options, and an option to hide it while scrolling. Snackbars sit above it.
+- **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Docked (now the default), Floating or Compact styles, labels shown by default, M3 colours, and tapping the current tab scrolls to the top. It can hide while scrolling (never while TalkBack is on), keeps at least 3 tabs, and snackbars sit above it.
 
 ### ⚙️ Settings
 - **Reorganized** — compact section labels instead of header cards, a shorter expanded header, regrouped Personalization and Startup & behavior, and section jump chips on long screens.
@@ -53,6 +60,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Experimental features screen** (Settings → System) — try options that are still being polished without opening Developer options. App icon & name customization, Device control and the floating nav bar live there.
 - **About** — grouped into App info, Updates and Project info. The update controls are regular full-width rows like the rest of Settings (they sat in a narrower boxed card), with Stable / Dev as a connected button group, and they show up in settings search. Help and Report a bug moved here from Advanced & diagnostics.
 - **Live status banner** — says whether Shizuku+ is running and how it was started; tap it to open Service Doctor or Home.
+- **TalkBack** — sliders announce the step name ("Gentle") instead of a number, Plus feature badges are read out, long-press help is announced as "Help", and rows no longer read their title twice through a tooltip. Buttons no longer say "button" twice. The help sheet has a proper drag handle.
 - Fixed: Trusted networks hiding while you're on a trusted Wi-Fi, the haptics control showing "Follow system" while haptics always played, the Expressive shapes switch not showing its options until you reopened the screen, Developer options switches sending the old value, peer-sync rows showing raw "Sync with %1$s", switch rows buzzing twice, and a crash showing some preference icons in search.
 
 ### 🧩 Icon Studio, System Hub & Activity Log
@@ -63,6 +71,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ### 🏠 Home & Apps
 - **No more "0 authorized apps" flash on launch.**
+- Home cards no longer have a hidden checked state, and Learn more's report link is a button instead of a chip inside the card.
 - Home card titles match the status card. The status card's version is labelled "Service API". The Wireless debugging card no longer says "Start via Wireless debugging" while Shizuku+ is already running over it.
 - The app enhancement badge reads as a badge instead of "[Plus upgrade available]".
 
