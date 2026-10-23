@@ -69,9 +69,9 @@
                 android:layout_height="wrap_content"
                 android:text="@string/sentry_offline_notice_summary" />
 
-            <com.google.android.material.chip.Chip
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/chip_report_issue"
-                style="@style/Widget.Material3.Chip.Assist"
+                style="?attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"

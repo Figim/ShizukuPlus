@@ -62,7 +62,7 @@ class LearnMoreViewHolder(
         val sentrySection = itemView.findViewById<View>(R.id.sentry_offline_section)
         sentrySection?.isVisible = sentryLimitReached
         if (sentryLimitReached) {
-            val chipReport = itemView.findViewById<com.google.android.material.chip.Chip>(R.id.chip_report_issue)
+            val chipReport = itemView.findViewById<com.google.android.material.button.MaterialButton>(R.id.chip_report_issue)
             chipReport?.setOnClickListener { v ->
                 CustomTabsHelper.launchUrlOrCopy(v.context, "https://github.com/thejaustin/ShizukuPlus/issues")
             }
