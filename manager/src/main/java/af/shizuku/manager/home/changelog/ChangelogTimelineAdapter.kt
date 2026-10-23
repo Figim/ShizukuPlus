@@ -195,13 +195,13 @@ class ChangelogTimelineAdapter(
                     (itemView.parent as? ViewGroup)?.let {
                         TransitionManager.beginDelayedTransition(
                             it,
-                            AutoTransition().setDuration(ShizukuSettings.scaledAnimationDuration(220)),
+                            AutoTransition().setDuration(ShizukuSettings.scaledAnimationDuration(200)),
                         )
                     }
                     ObjectAnimator
                         .ofFloat(chevron, View.ROTATION, if (open) 180f else 0f)
                         .setDuration(
-                            ShizukuSettings.scaledAnimationDuration(220),
+                            ShizukuSettings.scaledAnimationDuration(200),
                         ).start()
                 } else {
                     chevron.rotation = if (open) 180f else 0f
@@ -333,7 +333,7 @@ class ChangelogTimelineAdapter(
                         (itemView.parent as? ViewGroup)?.let {
                             TransitionManager.beginDelayedTransition(
                                 it,
-                                AutoTransition().setDuration(ShizukuSettings.scaledAnimationDuration(220)),
+                                AutoTransition().setDuration(ShizukuSettings.scaledAnimationDuration(200)),
                             )
                         }
                     }

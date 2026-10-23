@@ -183,7 +183,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             .animate()
             .alpha(1f)
             .translationY(0f)
-            .setDuration(ShizukuSettings.scaledAnimationDuration(320))
+            .setDuration(ShizukuSettings.scaledAnimationDuration(300))
             .setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
             .start()
     }
@@ -219,13 +219,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                                 .animate()
                                 .scaleX(1.02f)
                                 .scaleY(1.02f)
-                                .setDuration(ShizukuSettings.scaledAnimationDuration(80))
+                                .setDuration(ShizukuSettings.scaledAnimationDuration(100))
                                 .withEndAction {
                                     bar
                                         .animate()
                                         .scaleX(1.0f)
                                         .scaleY(1.0f)
-                                        .setDuration(ShizukuSettings.scaledAnimationDuration(120))
+                                        .setDuration(ShizukuSettings.scaledAnimationDuration(100))
                                         .start()
                                 }.start()
                         } else if (canScrollDown && atBottom && dy < -12) {
@@ -262,13 +262,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                             .animate()
                             .scaleX(1.02f)
                             .scaleY(1.02f)
-                            .setDuration(ShizukuSettings.scaledAnimationDuration(80))
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(100))
                             .withEndAction {
                                 bar
                                     .animate()
                                     .scaleX(1.0f)
                                     .scaleY(1.0f)
-                                    .setDuration(ShizukuSettings.scaledAnimationDuration(120))
+                                    .setDuration(ShizukuSettings.scaledAnimationDuration(100))
                                     .start()
                             }.start()
                     } else if (canScrollDown && atBottom && dy < -12) {

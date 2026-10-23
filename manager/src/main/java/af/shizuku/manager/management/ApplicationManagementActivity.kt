@@ -158,7 +158,7 @@ open class ApplicationManagementActivity :
             if (kotlin.math.abs(currentRadius - toRadius) < 0.5f) return
             cornerAnimator =
                 android.animation.ValueAnimator.ofFloat(currentRadius, toRadius).apply {
-                    duration = 240L
+                    duration = 250L
                     interpolator =
                         androidx.interpolator.view.animation
                             .FastOutSlowInInterpolator()
@@ -748,7 +748,7 @@ open class ApplicationManagementActivity :
                 .animate()
                 .translationY(hint.height.toFloat())
                 .alpha(0f)
-                .setDuration(ShizukuSettings.scaledAnimationDuration(280))
+                .setDuration(ShizukuSettings.scaledAnimationDuration(300))
                 .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                 .withEndAction { (hint.parent as? ViewGroup)?.removeView(hint) }
                 .start()

@@ -208,7 +208,7 @@ open class HomeActivity :
                             .alpha(0f)
                             .scaleX(0.8f)
                             .scaleY(0.8f)
-                            .setDuration(ShizukuSettings.scaledAnimationDuration(220))
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(200))
                             .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD_ACCELERATE)
                             .withEndAction { provider.remove() }
                             .start()

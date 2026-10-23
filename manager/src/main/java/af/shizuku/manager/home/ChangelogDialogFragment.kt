@@ -470,7 +470,7 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
                 .alpha(0f)
                 .setDuration(
                     af.shizuku.manager.ShizukuSettings
-                        .scaledAnimationDuration(180L),
+                        .scaledAnimationDuration(200L),
                 ).withEndAction { picker.visibility = View.GONE }
                 .start()
         }

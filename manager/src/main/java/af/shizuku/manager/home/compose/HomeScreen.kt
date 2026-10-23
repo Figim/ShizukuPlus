@@ -69,7 +69,7 @@ fun HomeScreen(
     val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
     // Header motion runs on the theme's MotionScheme springs; 0 animation scale (Expressive
     // animations or system animations off) snaps.
-    val motionOn = ShizukuSettings.scaledAnimationDuration(220) > 0
+    val motionOn = ShizukuSettings.scaledAnimationDuration(200) > 0
     val motionScheme = MaterialTheme.motionScheme
 
     // Status bar height — must be included in the Surface height so content sits below it,
