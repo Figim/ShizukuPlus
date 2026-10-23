@@ -342,6 +342,18 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">32dp</item>
     </style>
+    <style name="ShapeAppearance.Modern.Corner.LargeIncreased" parent="ShapeAppearance.Material3.Corner.LargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+    <style name="ShapeAppearance.Modern.Corner.ExtraLargeIncreased" parent="ShapeAppearance.Material3.Corner.ExtraLargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+    <style name="ShapeAppearance.Modern.Corner.ExtraExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">48dp</item>
+    </style>
     <style name="ThemeOverlay.Shape" parent=""/>
 
     <style name="ThemeOverlay.Shape.Modern">
@@ -350,6 +362,9 @@
         <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Modern.Corner.Medium</item>
         <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Modern.Corner.Large</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Modern.Corner.ExtraLarge</item>
+        <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Modern.Corner.LargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Modern.Corner.ExtraLargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Modern.Corner.ExtraExtraLarge</item>
     </style>
 
     <!-- Classic (Material 2): flatter, boxier corners, no "Full"/pill shapes. -->
@@ -373,12 +388,27 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">8dp</item>
     </style>
+    <style name="ShapeAppearance.Classic.Corner.LargeIncreased" parent="ShapeAppearance.Material3.Corner.LargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+    <style name="ShapeAppearance.Classic.Corner.ExtraLargeIncreased" parent="ShapeAppearance.Material3.Corner.ExtraLargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.Classic.Corner.ExtraExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
     <style name="ThemeOverlay.Shape.Classic">
         <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Classic.Corner.ExtraSmall</item>
         <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Classic.Corner.Small</item>
         <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Classic.Corner.Medium</item>
         <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Classic.Corner.Large</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Classic.Corner.ExtraLarge</item>
+        <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Classic.Corner.LargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Classic.Corner.ExtraLargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Classic.Corner.ExtraExtraLarge</item>
     </style>
 
     <!-- Organic (Squircle): generously rounded, continuous-looking corners throughout. -->
@@ -400,7 +430,19 @@
     </style>
     <style name="ShapeAppearance.Squircle.Corner.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">36dp</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+    <style name="ShapeAppearance.Squircle.Corner.LargeIncreased" parent="ShapeAppearance.Material3.Corner.LargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ShapeAppearance.Squircle.Corner.ExtraLargeIncreased" parent="ShapeAppearance.Material3.Corner.ExtraLargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+    <style name="ShapeAppearance.Squircle.Corner.ExtraExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">48dp</item>
     </style>
     <style name="ThemeOverlay.Shape.Squircle">
         <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Squircle.Corner.ExtraSmall</item>
@@ -408,6 +450,9 @@
         <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Squircle.Corner.Medium</item>
         <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Squircle.Corner.Large</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Squircle.Corner.ExtraLarge</item>
+        <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Squircle.Corner.LargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Squircle.Corner.ExtraLargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Squircle.Corner.ExtraExtraLarge</item>
     </style>
 
     <!-- Cut (Angular): M3 Expressive's "Embrace Tension" principle (mixing sharp/angular forms
@@ -433,11 +478,23 @@
     </style>
     <style name="ShapeAppearance.Cut.Corner.Large" parent="ShapeAppearance.Material3.Corner.Large">
         <item name="cornerFamily">cut</item>
-        <item name="cornerSize">18dp</item>
+        <item name="cornerSize">16dp</item>
     </style>
     <style name="ShapeAppearance.Cut.Corner.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ShapeAppearance.Cut.Corner.LargeIncreased" parent="ShapeAppearance.Material3.Corner.LargeIncreased">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+    <style name="ShapeAppearance.Cut.Corner.ExtraLargeIncreased" parent="ShapeAppearance.Material3.Corner.ExtraLargeIncreased">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+    <style name="ShapeAppearance.Cut.Corner.ExtraExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraExtraLarge">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">48dp</item>
     </style>
     <style name="ThemeOverlay.Shape.Cut">
         <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Cut.Corner.ExtraSmall</item>
@@ -445,6 +502,9 @@
         <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Cut.Corner.Medium</item>
         <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Cut.Corner.Large</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Cut.Corner.ExtraLarge</item>
+        <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Cut.Corner.LargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Cut.Corner.ExtraLargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Cut.Corner.ExtraExtraLarge</item>
     </style>
 
     <!--
@@ -485,7 +545,7 @@
     -->
     <style name="ShapeAppearance.OneUI.Corner.ExtraSmall" parent="ShapeAppearance.Material3.Corner.ExtraSmall">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">6dp</item>
+        <item name="cornerSize">4dp</item>
     </style>
     <style name="ShapeAppearance.OneUI.Corner.Small" parent="ShapeAppearance.Material3.Corner.Small">
         <item name="cornerFamily">rounded</item>
@@ -493,15 +553,27 @@
     </style>
     <style name="ShapeAppearance.OneUI.Corner.Medium" parent="ShapeAppearance.Material3.Corner.Medium">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">18dp</item>
+        <item name="cornerSize">16dp</item>
     </style>
     <style name="ShapeAppearance.OneUI.Corner.Large" parent="ShapeAppearance.Material3.Corner.Large">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">26dp</item>
+        <item name="cornerSize">28dp</item>
     </style>
     <style name="ShapeAppearance.OneUI.Corner.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">36dp</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+    <style name="ShapeAppearance.OneUI.Corner.LargeIncreased" parent="ShapeAppearance.Material3.Corner.LargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ShapeAppearance.OneUI.Corner.ExtraLargeIncreased" parent="ShapeAppearance.Material3.Corner.ExtraLargeIncreased">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">32dp</item>
+    </style>
+    <style name="ShapeAppearance.OneUI.Corner.ExtraExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">48dp</item>
     </style>
 
     <style name="ThemeOverlay.OneUI" parent="">
@@ -511,6 +583,9 @@
         <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.OneUI.Corner.Medium</item>
         <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.OneUI.Corner.Large</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.OneUI.Corner.ExtraLarge</item>
+        <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.OneUI.Corner.LargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.OneUI.Corner.ExtraLargeIncreased</item>
+        <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.OneUI.Corner.ExtraExtraLarge</item>
         <!-- Bolder headline typography (One UI "SamsungOne" look) -->
         <item name="textAppearanceHeadlineLarge">@style/TextAppearance.OneUI.HeadlineLarge</item>
         <item name="textAppearanceTitleLarge">@style/TextAppearance.OneUI.TitleLarge</item>
