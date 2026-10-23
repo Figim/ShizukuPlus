@@ -759,6 +759,7 @@
     <string name="manual_report_last_crash_summary">A persistent crash was detected. Tap to generate a report with the saved stacktrace.</string>
     <string name="manual_report_clipboard_label">Crash Report</string>
     <string name="manual_report_copied_dialog_share">Share File</string>
+    <string name="manual_report_pick_crashes_title">Crashes to include</string>
     <string name="crash_detected_dialog_message">Shizuku+ detected a crash from your last session. Would you like to generate a report to help us fix it?</string>
     <string name="crash_detected_dialog_ignore">Ignore</string>
     <string name="shortcut_open_terminal">Open Terminal</string>

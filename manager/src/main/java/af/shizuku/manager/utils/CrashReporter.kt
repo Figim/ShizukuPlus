@@ -12,15 +12,36 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object CrashReporter {
-    fun generateReport(context: Context): String {
+    /**
+     * [crashes]: logged crashes to include (from [CrashHandler.getCrashHistory]); null keeps the
+     * old behaviour of attaching only the last crash, empty attaches none.
+     */
+    fun generateReport(
+        context: Context,
+        crashes: List<LoggedCrash>? = null,
+    ): String {
         val sb = StringBuilder()
 
         // 1. Header
         sb.append("## Shizuku+ Manual Crash Report\n\n")
         sb.append("Please describe what you were doing when the crash occurred.\n\n")
 
-        // 2. Persistent Crash (if available)
-        val lastCrash = CrashHandler.getLastCrashReport(context)
+        // 2. Crashes: the ones picked from the history, or the last persistent one
+        if (crashes != null) {
+            if (crashes.isNotEmpty()) sb.append("### Logged Crashes (${crashes.size})\n")
+            crashes.forEach { crash ->
+                val text =
+                    try {
+                        crash.file.readText()
+                    } catch (_: Exception) {
+                        return@forEach
+                    }
+                sb.append("#### ").append(SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date(crash.timestamp)))
+                sb.append(" - ").append(crash.exception).append("\n")
+                sb.append("```text\n").append(text).append("```\n\n")
+            }
+        }
+        val lastCrash = if (crashes == null) CrashHandler.getLastCrashReport(context) else null
         if (lastCrash != null) {
             sb.append("### Last Persistent Crash Detected\n")
             sb.append("```text\n")
@@ -106,8 +127,11 @@ object CrashReporter {
     /**
      * Generate a pre-filled GitHub issue URL
      */
-    fun getGitHubReportUrl(context: Context): String {
-        val report = generateReport(context)
+    fun getGitHubReportUrl(
+        context: Context,
+        crashes: List<LoggedCrash>? = null,
+    ): String {
+        val report = generateReport(context, crashes)
         val title = "Manual Crash Report: ${Build.MANUFACTURER} ${Build.MODEL} (Android ${Build.VERSION.RELEASE})"
         return "https://github.com/thejaustin/ShizukuPlus/issues/new" +
             "?title=" + Uri.encode(title) +
@@ -117,8 +141,11 @@ object CrashReporter {
     /**
      * Share the report as a .txt file
      */
-    fun shareAsFile(context: Context) {
-        val report = generateReport(context)
+    fun shareAsFile(
+        context: Context,
+        crashes: List<LoggedCrash>? = null,
+    ) {
+        val report = generateReport(context, crashes)
         val dir = context.cacheDir ?: context.filesDir ?: return
         val file = File(dir, "shizuku_plus_crash_report.txt")
         val parent = file.parentFile

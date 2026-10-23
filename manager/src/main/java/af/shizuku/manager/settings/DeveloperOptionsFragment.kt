@@ -6,6 +6,7 @@ import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.utils.CrashHandler
 import af.shizuku.manager.utils.CrashReporter
 import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.LoggedCrash
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
@@ -95,32 +96,68 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
                         .setTitle(if (hasLastCrash) R.string.manual_report_last_crash_title else R.string.manual_report_title)
                         .setMessage(R.string.manual_report_summary)
                         .setPositiveButton(R.string.manual_report_button_github) { _, _ ->
-                            val report = CrashReporter.generateReport(ctx)
-                            val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            clipboard.setPrimaryClip(
-                                android.content.ClipData.newPlainText(
-                                    ctx.getString(R.string.manual_report_clipboard_label),
-                                    report,
-                                ),
-                            )
-
-                            Toast.makeText(ctx, R.string.manual_report_toast_copied, Toast.LENGTH_LONG).show()
-
-                            val url = CrashReporter.getGitHubReportUrl(ctx)
-                            CustomTabsHelper.launchUrlOrCopy(ctx, url)
-
-                            if (hasLastCrash) {
-                                CrashHandler.clearLastCrash(ctx)
-                            }
+                            pickCrashes(ctx) { crashes -> sendToGitHub(ctx, crashes, hasLastCrash) }
                         }.setNeutralButton(R.string.manual_report_copied_dialog_share) { _, _ ->
-                            CrashReporter.shareAsFile(ctx)
-                            if (hasLastCrash) {
-                                CrashHandler.clearLastCrash(ctx)
+                            pickCrashes(ctx) { crashes ->
+                                CrashReporter.shareAsFile(ctx, crashes)
+                                if (hasLastCrash) {
+                                    CrashHandler.clearLastCrash(ctx)
+                                }
                             }
                         }.setNegativeButton(android.R.string.cancel, null),
                 )
                 true
             }
         }
+    }
+
+    private fun sendToGitHub(
+        ctx: Context,
+        crashes: List<LoggedCrash>?,
+        hasLastCrash: Boolean,
+    ) {
+        val report = CrashReporter.generateReport(ctx, crashes)
+        val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(
+            android.content.ClipData.newPlainText(
+                ctx.getString(R.string.manual_report_clipboard_label),
+                report,
+            ),
+        )
+
+        Toast.makeText(ctx, R.string.manual_report_toast_copied, Toast.LENGTH_LONG).show()
+
+        val url = CrashReporter.getGitHubReportUrl(ctx, crashes)
+        CustomTabsHelper.launchUrlOrCopy(ctx, url)
+
+        if (hasLastCrash) {
+            CrashHandler.clearLastCrash(ctx)
+        }
+    }
+
+    /**
+     * Lets the user choose which logged crashes go into the report (#628); the newest is checked.
+     * With no history (crashes from before it existed) it falls back to the last crash file.
+     */
+    private fun pickCrashes(
+        ctx: Context,
+        onPicked: (List<LoggedCrash>?) -> Unit,
+    ) {
+        val history = CrashHandler.getCrashHistory(ctx)
+        if (history.isEmpty()) {
+            onPicked(null)
+            return
+        }
+        val format = java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT)
+        val labels = history.map { "${format.format(java.util.Date(it.timestamp))} · ${it.exception}" }.toTypedArray()
+        val checked = BooleanArray(history.size) { it == 0 }
+        showDialog(
+            MaterialAlertDialogBuilder(ctx)
+                .setTitle(R.string.manual_report_pick_crashes_title)
+                .setMultiChoiceItems(labels, checked) { _, which, isChecked -> checked[which] = isChecked }
+                .setPositiveButton(R.string.action_continue) { _, _ ->
+                    onPicked(history.filterIndexed { i, _ -> checked[i] })
+                }.setNegativeButton(android.R.string.cancel, null),
+        )
     }
 }

@@ -20,6 +20,9 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Safer defaults for new installs** — TCP mode starts off, and root-bridge features stay off on the server until your settings reach it.
 - **Imported settings never switch privileged features on** — restoring a backup asks before it turns on anything that grants access.
 
+### 🐞 Crash reports
+- **Pick which crashes go into a manual crash report** — Shizuku+ now keeps its last 10 crashes, and Developer options → Manual Crash Report asks which to include (the newest is pre-selected) before copying or sharing the report. ([#628](https://github.com/thejaustin/ShizukuPlus/issues/628))
+
 ### 🔌 Pairing & Connection
 - **Pairing code entry pops up over Settings again** — the "pairing service found" notification alerts as a heads-up instead of updating silently, so you no longer need to pull down the shade mid-pairing. Tapping it no longer opens a dialog that could close Android's pairing screen.
 - **Live pairing status** — the pairing screen shows what's happening (searching, found, pairing, paired, failed and why) and gives you a Start button once paired. If Shizuku+ can write secure settings, it starts the service right after pairing.
