@@ -83,6 +83,11 @@ object ShizukuStateMachine {
                     },
                 )
                 set(State.RUNNING)
+                // Push the user's Plus feature flags as soon as the binder arrives - in the
+                // background too (watchdog, boot), not only when Home is open - so the server never
+                // runs with defaults the user changed.
+                af.shizuku.manager.ShizukuSettings
+                    .syncAllPlusFeaturesToServer()
             },
         )
         Shizuku.addBinderDeadListener(

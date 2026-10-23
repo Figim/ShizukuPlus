@@ -52,6 +52,9 @@ class AICorePlusService : AccessibilityService() {
         super.onServiceConnected()
         _instance = java.lang.ref.WeakReference(this)
         Timber.d("AICorePlusService connected")
+        // Connected means it is enabled; remembered as consent for the OEM-disable self-heal.
+        af.shizuku.manager.ShizukuSettings
+            .markAICoreAccessibilityUserEnabled()
         registerBridge()
     }
 

@@ -178,6 +178,7 @@ public class ShizukuSettings {
         public static final String KEY_DEV_OPTIONS_UNLOCKED = "dev_options_unlocked";
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
         public static final String KEY_CUSTOM_APP_NAME_SEED_CLEARED = "custom_app_name_seed_cleared";
+        public static final String KEY_AICORE_A11Y_USER_ENABLED = "aicore_a11y_user_enabled";
         public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
@@ -1158,6 +1159,23 @@ public class ShizukuSettings {
     public static boolean isAICorePlusEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_AI_CORE_PLUS_ENABLED, true);
+    }
+
+    /**
+     * Whether the AICore+ accessibility service has ever been connected on this device, i.e. the
+     * user switched it on through Android's own consent screen. Only then may the self-heal turn it
+     * back on after an OEM disables it; an AICore+ setting that merely defaults to on is not consent.
+     */
+    public static boolean isAICoreAccessibilityUserEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_AICORE_A11Y_USER_ENABLED, false);
+    }
+
+    public static void markAICoreAccessibilityUserEnabled() {
+        SharedPreferences p = getPreferences();
+        if (p != null && !p.getBoolean(Keys.KEY_AICORE_A11Y_USER_ENABLED, false)) {
+            p.edit().putBoolean(Keys.KEY_AICORE_A11Y_USER_ENABLED, true).apply();
+        }
     }
 
     public static void setAICorePlusEnabled(boolean enabled) {

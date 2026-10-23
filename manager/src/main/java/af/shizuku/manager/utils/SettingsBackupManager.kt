@@ -32,6 +32,8 @@ object SettingsBackupManager {
             // flavors would switch off MT Manager compatibility on the Drop-In build.
             ShizukuSettings.Keys.KEY_LEGACY_RISH_KEEPALIVE,
             ShizukuSettings.Keys.KEY_CUSTOM_APP_NAME_SEED_CLEARED,
+            // Consent is per device: never restore or sync it.
+            ShizukuSettings.Keys.KEY_AICORE_A11Y_USER_ENABLED,
             ShizukuSettings.Keys.KEY_WATCHDOG_EXEMPTION_PENDING,
             ShizukuSettings.Keys.KEY_WATCHDOG_VENDOR_BATTERY_REPORTED,
             // Ephemeral runtime state
