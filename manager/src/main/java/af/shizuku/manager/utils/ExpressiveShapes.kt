@@ -69,6 +69,9 @@ class MorphShapeDrawable(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
     private val path = Path()
 
+    /** Reused by [springTo] so a rapid re-toggle retargets the running spring instead of racing it. */
+    internal var morphSpring: androidx.dynamicanimation.animation.SpringAnimation? = null
+
     var progress: Float = 1f
         set(value) {
             val v = value.coerceIn(0f, 1.15f) // a touch of overshoot for spring animations
@@ -117,27 +120,33 @@ fun MorphShapeDrawable.springTo(target: Float) {
     if (af.shizuku.manager.ShizukuSettings
             .getAnimationDurationScale() <= 0f
     ) {
+        morphSpring?.cancel()
         progress = target
         return
     }
-    androidx.dynamicanimation.animation
-        .SpringAnimation(
-            this,
-            object : androidx.dynamicanimation.animation.FloatPropertyCompat<MorphShapeDrawable>("morph") {
-                override fun getValue(d: MorphShapeDrawable) = d.progress
+    val anim =
+        morphSpring ?: androidx.dynamicanimation.animation
+            .SpringAnimation(
+                this,
+                object : androidx.dynamicanimation.animation.FloatPropertyCompat<MorphShapeDrawable>("morph") {
+                    override fun getValue(d: MorphShapeDrawable) = d.progress
 
-                override fun setValue(
-                    d: MorphShapeDrawable,
-                    value: Float,
-                ) {
-                    d.progress = value
-                }
-            },
-            target,
-        ).apply {
-            spring.dampingRatio = androidx.dynamicanimation.animation.SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
-            spring.stiffness = androidx.dynamicanimation.animation.SpringForce.STIFFNESS_LOW
-            setStartValue(progress)
-            start()
-        }
+                    override fun setValue(
+                        d: MorphShapeDrawable,
+                        value: Float,
+                    ) {
+                        d.progress = value
+                    }
+                },
+            ).apply {
+                spring =
+                    androidx.dynamicanimation.animation.SpringForce().apply {
+                        dampingRatio = androidx.dynamicanimation.animation.SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+                        stiffness = androidx.dynamicanimation.animation.SpringForce.STIFFNESS_LOW
+                    }
+                // The default threshold is one pixel, which on a 0..1 value ends the spring
+                // almost as soon as it starts.
+                minimumVisibleChange = androidx.dynamicanimation.animation.DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE
+            }.also { morphSpring = it }
+    anim.animateToFinalPosition(target)
 }
