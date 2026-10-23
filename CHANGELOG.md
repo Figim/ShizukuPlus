@@ -24,6 +24,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Pairing code entry pops up over Settings again** — the "pairing service found" notification alerts as a heads-up instead of updating silently, so you no longer need to pull down the shade mid-pairing. Tapping it no longer opens a dialog that could close Android's pairing screen.
 - **Live pairing status** — the pairing screen shows what's happening (searching, found, pairing, paired, failed and why) and gives you a Start button once paired. If Shizuku+ can write secure settings, it starts the service right after pairing.
 - **Optional "Fill in the code for me"** — an opt-in helper that types the 6-digit code into Android's pairing dialog. It only works inside the Settings app.
+- **rish and the SU Bridge work again on release builds** — they stopped with "VerifyError … not instanceof Throwable" because the app's shortened internal class names collided with those in the rish file. No need to export rish again. ([#626](https://github.com/thejaustin/ShizukuPlus/issues/626))
 - **MT Manager 2.14 and other apps with the old rish loader now work** — they looked for upstream Shizuku's class name and native library. To answer them in time, Shizuku+ can keep itself running while the server is up (Settings → Startup & behavior; on by default for the Drop-In version).
 
 ### ⚡ Performance

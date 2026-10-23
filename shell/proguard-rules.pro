@@ -10,4 +10,6 @@
 -keep class rikka.hidden.compat.** { *; }
 
 -allowaccessmodification
--repackageclasses
+# Not the default package: the manager APK's Shell runs in a class loader whose parent holds this
+# dex, so default-package names here shadowed the manager's renamed classes (#626).
+-repackageclasses rikka.shizuku.shell.r8

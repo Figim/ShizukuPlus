@@ -231,6 +231,11 @@
 -dontwarn androidx.window.sidecar.**
 
 -allowaccessmodification
-#-repackageclasses rikka.shizuku
+# R8 full mode moves renamed classes into the default package unless told otherwise, and so does
+# the rish dex (shell module). rish starts this APK's Shell in a class loader whose parent holds
+# rish_shizuku.dex, and lookups go to the parent first: a renamed class here that shares a short
+# name with one in the rish dex (all 54 of its names did) resolved to the wrong class, and rish
+# failed with "VerifyError ... not instanceof Throwable" (#626). A package of our own can't clash.
+-repackageclasses af.shizuku.r8
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
