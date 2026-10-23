@@ -4,6 +4,8 @@ package af.shizuku.manager.devicecontrol
 
 import af.shizuku.manager.R
 import af.shizuku.manager.widget.AppSwitch
+import af.shizuku.manager.widget.GuardHeightOffset
+import af.shizuku.manager.widget.nonNegative
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -169,6 +171,7 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
 
     // M3 app-bar contract: a flexible medium bar that compresses on scroll, title wraps.
     val appBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    appBarScroll.GuardHeightOffset()
     Scaffold(
         modifier = Modifier.nestedScroll(appBarScroll.nestedScrollConnection),
         topBar = {
@@ -186,7 +189,8 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
                 scrollBehavior = appBarScroll,
             )
         },
-    ) { innerPadding ->
+    ) { rawPadding ->
+        val innerPadding = rawPadding.nonNegative()
         if (isLoading) {
             Box(
                 modifier =

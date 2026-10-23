@@ -5,6 +5,8 @@ package af.shizuku.manager.permissionmanager
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.widget.AppSwitch
+import af.shizuku.manager.widget.GuardHeightOffset
+import af.shizuku.manager.widget.nonNegative
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
@@ -139,6 +141,7 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
 
     // M3 app-bar contract: a flexible medium bar that compresses on scroll, title wraps.
     val appBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    appBarScroll.GuardHeightOffset()
     Scaffold(
         modifier = Modifier.nestedScroll(appBarScroll.nestedScrollConnection),
         topBar = {
@@ -169,7 +172,8 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                 scrollBehavior = appBarScroll,
             )
         },
-    ) { paddingValues ->
+    ) { rawPadding ->
+        val paddingValues = rawPadding.nonNegative()
         if (selectedApp != null) {
             // ── Permission detail view ────────────────────────────────────────
             Box(

@@ -1,6 +1,8 @@
 package af.shizuku.manager.home.compose
 
 import af.shizuku.manager.R
+import af.shizuku.manager.widget.GuardHeightOffset
+import af.shizuku.manager.widget.nonNegative
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -44,6 +46,7 @@ fun SystemHubScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     // Outside reach mode the small bar still fills its container when content scrolls under it.
     val pinnedBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    scrollBehavior.GuardHeightOffset()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 1, overflow = TextOverflow.Ellipsis) }
     val nav =
@@ -70,7 +73,8 @@ fun SystemHubScreen(
                 TopAppBar(title = title, navigationIcon = nav, scrollBehavior = pinnedBehavior)
             }
         },
-    ) { innerPadding ->
+    ) { rawPadding ->
+        val innerPadding = rawPadding.nonNegative()
         val navClearance =
             if (af.shizuku.manager.ShizukuSettings
                     .isFloatingNavBarEnabled()
