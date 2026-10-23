@@ -276,7 +276,7 @@ fun SettingsScreen(
                             val titleStartPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
                             // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
                             // large system fonts don't push a 34sp title into the action icons.
-                            val fontScaleCap = LocalDensity.current.fontScale.coerceAtLeast(1f)
+                            val fontScaleCap = if (isOneUi) LocalDensity.current.fontScale.coerceAtLeast(1f) else 1f
                             val expandedTitleSp = (if (isOneUi) 34f else 30f) / fontScaleCap
                             val titleFontSize = lerp(start = expandedTitleSp.sp, stop = 20.sp, fraction = curvedFraction)
                             val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
