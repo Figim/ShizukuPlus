@@ -46,7 +46,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     private const val COMPACT_MAX_WIDTH_DP = 300
 
     private fun style(): String =
-        runCatching { ShizukuSettings.getPreferences().getString(KEY_STYLE, "floating") }.getOrNull() ?: "floating"
+        runCatching { ShizukuSettings.getPreferences().getString(KEY_STYLE, "docked") }.getOrNull() ?: "docked"
 
     /** Optional tabs the user kept (Home and Settings always show). */
     private fun optionalTabs(): Set<String> =
@@ -164,6 +164,12 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         nav: BottomNavigationView,
         selected: Int,
     ) {
+        // Tapping the current tab again scrolls its page back to the top (M3 reselect).
+        nav.setOnItemReselectedListener {
+            val content = activity.findViewById<ViewGroup>(android.R.id.content) ?: return@setOnItemReselectedListener
+            findRecyclerView(content)?.smoothScrollToPosition(0)
+            findNestedScrollView(content)?.smoothScrollTo(0, 0)
+        }
         nav.setOnItemSelectedListener { item ->
             if (item.itemId != selected) {
                 af.shizuku.manager.utils.HapticUtils
@@ -196,7 +202,12 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         content.post {
             var hidden = false
             var atBottom = false
-            val autohide = ShizukuSettings.isFloatingNavAutohideEnabled()
+            // No autohide with TalkBack: a bar that slides away under touch exploration is lost.
+            val autohide =
+                ShizukuSettings.isFloatingNavAutohideEnabled() &&
+                    content.context
+                        .getSystemService(android.view.accessibility.AccessibilityManager::class.java)
+                        ?.isTouchExplorationEnabled != true
 
             findRecyclerView(content)?.addOnScrollListener(
                 object : RecyclerView.OnScrollListener() {
@@ -215,19 +226,6 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                                 hidden = false
                                 slideBar(bar, hide = false)
                             }
-                            bar
-                                .animate()
-                                .scaleX(1.02f)
-                                .scaleY(1.02f)
-                                .setDuration(ShizukuSettings.scaledAnimationDuration(100))
-                                .withEndAction {
-                                    bar
-                                        .animate()
-                                        .scaleX(1.0f)
-                                        .scaleY(1.0f)
-                                        .setDuration(ShizukuSettings.scaledAnimationDuration(100))
-                                        .start()
-                                }.start()
                         } else if (canScrollDown && atBottom && dy < -12) {
                             // Re-arm only on a real scroll back up: canScrollVertically() flickers
                             // at the end of a fling and would replay the bounce + haptic tick.
@@ -258,19 +256,6 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                             hidden = false
                             slideBar(bar, hide = false)
                         }
-                        bar
-                            .animate()
-                            .scaleX(1.02f)
-                            .scaleY(1.02f)
-                            .setDuration(ShizukuSettings.scaledAnimationDuration(100))
-                            .withEndAction {
-                                bar
-                                    .animate()
-                                    .scaleX(1.0f)
-                                    .scaleY(1.0f)
-                                    .setDuration(ShizukuSettings.scaledAnimationDuration(100))
-                                    .start()
-                            }.start()
                     } else if (canScrollDown && atBottom && dy < -12) {
                         atBottom = false
                     }
@@ -440,15 +425,23 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     else -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
                 }
 
-            val primary = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
-            val indicatorColor =
-                if (ResourceUtils.isNightMode(activity.resources.configuration)) {
-                    ColorUtils.setAlphaComponent(primary, (255 * 0.35f).toInt())
-                } else {
-                    ColorUtils.setAlphaComponent(primary, (255 * 0.22f).toInt())
-                }
-            nav.itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
-            nav.itemRippleColor = ColorStateList.valueOf(ColorUtils.setAlphaComponent(primary, 40))
+            // M3 navigation bar roles: secondaryContainer indicator, onSecondaryContainer active
+            // icon, secondary active label, onSurfaceVariant inactive (was primary at 22-35% alpha).
+            fun role(attr: Int) = MaterialColors.getColor(activity, attr, Color.GRAY)
+            val inactive = role(com.google.android.material.R.attr.colorOnSurfaceVariant)
+            val checked = intArrayOf(android.R.attr.state_checked)
+            nav.itemActiveIndicatorColor =
+                ColorStateList.valueOf(role(com.google.android.material.R.attr.colorSecondaryContainer))
+            nav.itemIconTintList =
+                ColorStateList(
+                    arrayOf(checked, intArrayOf()),
+                    intArrayOf(role(com.google.android.material.R.attr.colorOnSecondaryContainer), inactive),
+                )
+            nav.itemTextColor =
+                ColorStateList(
+                    arrayOf(checked, intArrayOf()),
+                    intArrayOf(role(com.google.android.material.R.attr.colorSecondary), inactive),
+                )
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->

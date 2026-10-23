@@ -69,7 +69,7 @@
             android:icon="@drawable/ic_space_dashboard_24"
             android:entries="@array/floating_nav_styles"
             android:entryValues="@array/floating_nav_styles_value"
-            android:defaultValue="floating" />
+            android:defaultValue="docked" />
 
         <androidx.preference.MultiSelectListPreference
             android:key="floating_nav_tabs"
@@ -84,7 +84,7 @@
             android:key="floating_nav_label_mode"
             android:title="@string/settings_floating_nav_label_mode"
             android:summary="@string/settings_floating_nav_label_mode_summary"
-            android:defaultValue="selected"
+            android:defaultValue="labeled"
             android:entries="@array/floating_nav_label_modes"
             android:entryValues="@array/floating_nav_label_modes_value"
             android:dependency="floating_nav_enabled"

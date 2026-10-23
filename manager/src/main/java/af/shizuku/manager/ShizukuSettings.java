@@ -2011,8 +2011,8 @@ public class ShizukuSettings {
     @NonNull
     public static String getFloatingNavLabelMode() {
         SharedPreferences p = getPreferences();
-        String mode = p != null ? p.getString(Keys.KEY_FLOATING_NAV_LABEL_MODE, "selected") : "selected";
-        return mode != null ? mode : "selected";
+        String mode = p != null ? p.getString(Keys.KEY_FLOATING_NAV_LABEL_MODE, "labeled") : "labeled";
+        return mode != null ? mode : "labeled";
     }
 
     public static void setFloatingNavLabelMode(String mode) {

@@ -66,7 +66,10 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             describe(values)
             setOnPreferenceChangeListener { _, v ->
                 @Suppress("UNCHECKED_CAST")
-                describe(v as Set<String>)
+                val tabs = v as Set<String>
+                // M3: a navigation bar has at least 3 destinations (Home and Settings always show).
+                if (tabs.isEmpty()) return@setOnPreferenceChangeListener false
+                describe(tabs)
                 true
             }
         }
