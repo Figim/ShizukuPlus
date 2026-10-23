@@ -8,6 +8,7 @@ import af.shizuku.manager.settings.IconStudioRenderer.Shape
 import af.shizuku.manager.settings.IconStudioRenderer.Source
 import af.shizuku.manager.settings.IconStudioRenderer.State
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.widget.AppSwitch
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.RectF
@@ -836,7 +837,7 @@ private fun AdjustPage(
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
-        af.shizuku.manager.widget.AppSwitch(checked = state.shadow, onCheckedChange = { v -> update { copy(shadow = v) } })
+        AppSwitch(checked = state.shadow, onCheckedChange = { v -> update { copy(shadow = v) } })
     }
 }
 

@@ -4,6 +4,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.TcpNetworkGuard
+import af.shizuku.manager.widget.AppSwitch
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
@@ -259,7 +260,7 @@ class WirelessAdbPreference
                         }
                         Spacer(Modifier.width(12.dp))
                         // Row-level toggleable owns the click; the switch is visual only.
-                        af.shizuku.manager.widget.AppSwitch(checked = isOn, onCheckedChange = null, enabled = switchEnabled)
+                        AppSwitch(checked = isOn, onCheckedChange = null, enabled = switchEnabled)
                     }
 
                     AnimatedVisibility(

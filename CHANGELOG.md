@@ -37,6 +37,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ### 🎨 Appearance
 - **Shape scale** — every Shape Style now defines the newer Large Increased, Extra Large Increased and Extra Extra Large corners, and off-scale sizes snap to the scale (One UI corners are now 4/12/16/28/32). Compose screens follow your Shape Style and corner rounding choice too, and the update, changelog and activity-log cards use the scale instead of fixed corners.
+- **Switches show their state on the thumb** — a check when on and an X when off, on every switch in the app. The check used to be painted the same colour as the thumb, so it was invisible.
 - **Rounded edges off stays sharp** — One UI style or a corner rounding choice no longer rounds the corners again.
 - **Bold typography uses the Material 3 Expressive Emphasized styles** — headings, titles and labels get heavier weights at the same sizes, so they keep their hierarchy, and body text stays regular. One UI card titles are 22sp (they were larger than headlines), and no text is smaller than 11sp. Feature badges now follow your system font size.
 - **Motion** — dragging Home cards, edit-mode buttons, section arrows and switch icons now move on springs that can be interrupted mid-way (fading never overshoots), and the Home header, System Hub and settings search use the theme's motion. With Elastic animations off, components use the calmer Standard springs, and the emphasized easing curves are correct.

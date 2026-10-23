@@ -4,6 +4,7 @@ package af.shizuku.manager.permissionmanager
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.widget.AppSwitch
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
@@ -461,7 +462,7 @@ private fun PermToggleRow(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        af.shizuku.manager.widget.AppSwitch(checked = perm.isGranted, onCheckedChange = null)
+        AppSwitch(checked = perm.isGranted, onCheckedChange = null)
     }
 }
 

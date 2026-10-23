@@ -3,6 +3,7 @@
 package af.shizuku.manager.devicecontrol
 
 import af.shizuku.manager.R
+import af.shizuku.manager.widget.AppSwitch
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -476,7 +477,7 @@ private fun ControlToggleRow(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
         )
-        af.shizuku.manager.widget.AppSwitch(checked = checked, onCheckedChange = onCheckedChange)
+        AppSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
