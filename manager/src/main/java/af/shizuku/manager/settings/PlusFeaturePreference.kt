@@ -66,7 +66,8 @@ class PlusFeaturePreference(
         androidx.core.view.ViewCompat.replaceAccessibilityAction(
             holder.itemView,
             androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK,
-            context.getString(R.string.settings_help),
+            // Long-press opens the integration app when there is one, otherwise the help topic.
+            if (integrationPackage != null) null else context.getString(R.string.settings_help),
             null,
         )
 

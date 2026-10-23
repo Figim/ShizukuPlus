@@ -231,7 +231,8 @@ fun ServerMetricsScreen(
                     shape = MaterialTheme.shapes.extraLarge,
                     colors =
                         CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                            // Live status: same role as the Settings status banner.
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         ),
                     modifier = Modifier.fillMaxWidth(),
                 ) {

@@ -118,7 +118,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_wadb_start"
-                        style="?attr/materialButtonStyle"
+                        style="@style/Widget.Material3Expressive.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
@@ -198,7 +198,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_root_start"
-                    style="?attr/materialButtonStyle"
+                    style="@style/Widget.Material3Expressive.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/home_root_button_start" />
@@ -258,7 +258,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_adb_command"
-                    style="?attr/materialButtonStyle"
+                    style="@style/Widget.Material3Expressive.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/home_adb_button_view_command" />
