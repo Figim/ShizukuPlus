@@ -154,28 +154,31 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         setChildAvailable(shapeStylePreference, expressiveShapesPreference.isChecked)
         setChildAvailable(animationIntensityPreference, expressiveAnimationsPreference.isChecked)
 
-        expressiveShapesPreference.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                setChildAvailable(shapeStylePreference, newValue)
-            }
-            applyTheme(requiresRecreate = false)
-            refreshIconStyles()
-            true
-        }
-
         // M3E morph shapes: only meaningful with expressive shapes on; the toggle-morph switch
         // only matters once a shape is picked.
         val morphShapePreference = findPreference<Preference>("icon_morph_shape")
         val morphTogglePreference = findPreference<Preference>("icon_morph_on_toggle")
 
-        fun syncMorphAvailability(shape: String = ShizukuSettings.getIconMorphShape()) {
-            val shapesOn = expressiveShapesPreference.isChecked
+        fun syncMorphAvailability(
+            shapesOn: Boolean = expressiveShapesPreference.isChecked,
+            shape: String = ShizukuSettings.getIconMorphShape(),
+        ) {
             morphShapePreference?.setAvailable(shapesOn)
             morphTogglePreference?.setAvailable(shapesOn && shape != af.shizuku.manager.utils.ExpressiveShapes.OFF)
         }
         syncMorphAvailability()
+
+        expressiveShapesPreference.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                setChildAvailable(shapeStylePreference, newValue)
+                syncMorphAvailability(shapesOn = newValue)
+            }
+            applyTheme(requiresRecreate = false)
+            refreshIconStyles()
+            true
+        }
         morphShapePreference?.setOnPreferenceChangeListener { _, newValue ->
-            syncMorphAvailability(newValue as String)
+            syncMorphAvailability(shape = newValue as String)
             // Restyle once the new value has been persisted.
             view?.post {
                 applyTheme(requiresRecreate = false)
