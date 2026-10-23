@@ -115,7 +115,8 @@ class ThemeDelegateImpl : ThemeDelegate {
 
         // System colours have no generated High contrast scheme, so the switch strengthens outlines.
         if (ThemeHelper.isUsingSystemColor() && ShizukuSettings.isHighContrastEnabled()) {
-            theme.applyStyle(R.style.ThemeOverlay_HighContrast, true)
+            val dark = context.resources.configuration.isNight()
+            theme.applyStyle(if (dark) R.style.ThemeOverlay_HighContrast_Dark else R.style.ThemeOverlay_HighContrast, true)
         }
 
         if (!ShizukuSettings.isExpressiveAnimationsEnabled()) {

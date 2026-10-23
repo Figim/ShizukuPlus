@@ -46,8 +46,12 @@
     <!-- High contrast with system (dynamic) colours: outlines only. Custom accents and Default use
          their generated High contrast scheme instead (themes_accents.xml). -->
     <style name="ThemeOverlay.HighContrast" parent="">
-        <item name="colorOutline">#8E8E93</item>
-        <item name="colorOutlineVariant">#545458</item>
+        <item name="colorOutline">#424242</item>
+        <item name="colorOutlineVariant">#757575</item>
+    </style>
+    <style name="ThemeOverlay.HighContrast.Dark" parent="">
+        <item name="colorOutline">#9E9E9E</item>
+        <item name="colorOutlineVariant">#616161</item>
     </style>
 
     <style name="ThemeOverlay.DynamicColors.Light" parent="ThemeOverlay.Material3.DynamicColors.Light.Shizuku"/>

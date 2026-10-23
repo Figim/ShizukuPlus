@@ -140,6 +140,13 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        // High contrast swaps the whole colour scheme (or the outlines with system colours), which
+        // only a recreate re-applies.
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_HIGH_CONTRAST)?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { applyTheme(requiresRecreate = true) }
+            true
+        }
+
         // 2. M3 Expressive Controls
         expressiveShapesPreference = requireNotNull(findPreference(KEY_EXPRESSIVE_SHAPES))
         expressiveAnimationsPreference = requireNotNull(findPreference(KEY_EXPRESSIVE_ANIMATIONS))
