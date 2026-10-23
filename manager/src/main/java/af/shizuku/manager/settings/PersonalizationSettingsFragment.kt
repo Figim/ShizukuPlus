@@ -54,7 +54,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private lateinit var expressiveAnimationsPreference: TwoStatePreference
     private lateinit var iconStylePreference: SegmentedControlPreference
     private lateinit var iconColorModePreference: SegmentedControlPreference
-    private lateinit var shapeStylePreference: SliderPreference
+    private lateinit var shapeStylePreference: Preference
     private lateinit var animationIntensityPreference: SliderPreference
     private lateinit var edgeToEdgePreference: TwoStatePreference
     private lateinit var blurUiPreference: TwoStatePreference
@@ -133,7 +133,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                     if (prefs.getString("custom_accent", "DEFAULT") != newValue) {
                         prefs.edit().putString("custom_accent", newValue).apply()
                         setCustomSummary(getCustomAccentSummary(newValue))
-                        applyTheme(requiresRecreate = false)
+                        // An accent changes every colour role: recreate so it shows now, not on
+                        // the next resume.
+                        view?.post { applyTheme(requiresRecreate = true) }
                     }
                 }
                 true

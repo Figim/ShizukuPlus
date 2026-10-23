@@ -34,7 +34,7 @@
             android:title="@string/settings_use_system_color"
             android:icon="@drawable/ic_wallpaper_24" />
 
-        <af.shizuku.manager.settings.SliderPreference
+        <af.shizuku.manager.settings.AccentPickerPreference
             android:key="custom_accent"
             android:title="@string/settings_custom_accent_title"
             android:defaultValue="DEFAULT"
@@ -115,7 +115,7 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_interests_24" />
 
-        <af.shizuku.manager.settings.SliderPreference
+        <af.shizuku.manager.settings.ShapeStylePickerPreference
             android:key="shape_style"
             android:title="@string/settings_shape_style"
             android:defaultValue="modern"

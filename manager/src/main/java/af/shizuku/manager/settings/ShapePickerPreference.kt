@@ -12,7 +12,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -103,7 +104,7 @@ private fun ShapeTiles(
         )
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.horizontalScroll(rememberScrollState()).padding(top = 8.dp),
+        modifier = Modifier.horizontalScroll(rememberScrollState()).padding(top = 8.dp).selectableGroup(),
     ) {
         ExpressiveShapes.KEYS.forEach { key ->
             val isSelected = key == selectedKey
@@ -122,7 +123,7 @@ private fun ShapeTiles(
                 modifier =
                     Modifier
                         .clip(RoundedCornerShape(16.dp))
-                        .clickable(enabled = enabled, role = Role.RadioButton) {
+                        .selectable(selected = isSelected, enabled = enabled, role = Role.RadioButton) {
                             HapticUtils.segmentTick(view)
                             onSelect(key)
                         }.semantics { contentDescription = label }
