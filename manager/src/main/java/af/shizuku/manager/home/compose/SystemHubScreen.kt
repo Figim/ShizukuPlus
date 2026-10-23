@@ -42,6 +42,8 @@ fun SystemHubScreen(
             af.shizuku.manager.ShizukuSettings
                 .isOneHandedModeEnabled()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    // Outside reach mode the small bar still fills its container when content scrolls under it.
+    val pinnedBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 1, overflow = TextOverflow.Ellipsis) }
     val nav =
@@ -52,7 +54,7 @@ fun SystemHubScreen(
         }
 
     Scaffold(
-        modifier = if (reachMode) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
+        modifier = Modifier.nestedScroll(if (reachMode) scrollBehavior.nestedScrollConnection else pinnedBehavior.nestedScrollConnection),
         topBar = {
             if (reachMode) {
                 LargeTopAppBar(
@@ -65,7 +67,7 @@ fun SystemHubScreen(
                     scrollBehavior = scrollBehavior,
                 )
             } else {
-                TopAppBar(title = title, navigationIcon = nav)
+                TopAppBar(title = title, navigationIcon = nav, scrollBehavior = pinnedBehavior)
             }
         },
     ) { innerPadding ->

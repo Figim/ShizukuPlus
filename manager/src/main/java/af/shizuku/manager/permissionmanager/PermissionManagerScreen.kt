@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -136,12 +137,16 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
             }
         }
 
+    // M3 app-bar contract: a flexible medium bar that compresses on scroll, title wraps.
+    val appBarScroll = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
+        modifier = Modifier.nestedScroll(appBarScroll.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            @OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+            androidx.compose.material3.MediumFlexibleTopAppBar(
                 title = {
                     if (selectedApp != null) {
-                        Text(selectedApp!!.label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(selectedApp!!.label, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     } else {
                         Text(stringResource(R.string.home_permission_manager_title))
                     }
@@ -161,6 +166,7 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                         )
                     }
                 },
+                scrollBehavior = appBarScroll,
             )
         },
     ) { paddingValues ->
