@@ -267,7 +267,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             value =
                 when {
                     !prefs.getBoolean(ShizukuSettings.Keys.KEY_HAPTIC_FEEDBACK, true) -> "off"
-                    prefs.getBoolean(ShizukuSettings.Keys.KEY_FOLLOW_SYSTEM_HAPTICS, true) -> "system"
+                    prefs.getBoolean(ShizukuSettings.Keys.KEY_FOLLOW_SYSTEM_HAPTICS, false) -> "system"
                     else -> "always"
                 }
             setOnPreferenceChangeListener { _, newValue ->
