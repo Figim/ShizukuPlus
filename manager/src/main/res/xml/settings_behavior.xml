@@ -43,6 +43,13 @@
             app:badgeType="adb" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="allow_automation_plugin"
+            android:title="@string/settings_allow_automation_plugin_title"
+            android:summary="@string/settings_allow_automation_plugin_summary"
+            android:icon="@drawable/ic_bolt_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="device_hardening_enabled"
             android:title="@string/settings_device_hardening"
             android:summary="@string/settings_device_hardening_summary"

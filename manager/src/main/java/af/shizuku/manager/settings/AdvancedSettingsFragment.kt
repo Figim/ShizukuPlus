@@ -170,6 +170,20 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         setPreferencesFromResource(R.xml.settings_advanced, rootKey)
         val context = requireContext()
 
+        findPreference<androidx.preference.TwoStatePreference>(ShizukuSettings.Keys.KEY_CRASH_REPORTING)?.apply {
+            isChecked = ShizukuSettings.isCrashReportingEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                val on = newValue == true
+                ShizukuSettings.setCrashReportingEnabled(on)
+                if (on) {
+                    (requireActivity().application as? af.shizuku.manager.ShizukuApplication)?.initializeSentryEarly()
+                } else {
+                    io.sentry.Sentry.close()
+                }
+                true
+            }
+        }
+
         findPreference<Preference>("update_app_database")?.setOnPreferenceClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
@@ -478,9 +492,38 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             ?.isVisible = !hide
     }
 
+    // The restore applied everything except sensitive settings it would have switched on: list
+    // those and let the user decide, instead of a backup silently re-enabling them.
+    private fun confirmHeldBackPrivilegedSettings() {
+        val held = af.shizuku.manager.utils.SettingsBackupManager.heldBack
+        if (held.isEmpty()) return
+        val ctx = requireContext()
+        val names =
+            held.keys.joinToString("\n") { key ->
+                "\u2022 " +
+                    (
+                        af.shizuku.manager.utils.SettingsBackupManager.PRIVILEGED_KEYS[key]
+                            ?.let { ctx.getString(it) } ?: key
+                    )
+            }
+        com.google.android.material.dialog
+            .MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.restore_privileged_title)
+            .setMessage(ctx.getString(R.string.restore_privileged_message, names))
+            .setNegativeButton(R.string.restore_privileged_keep_off) { _, _ ->
+                af.shizuku.manager.utils.SettingsBackupManager
+                    .discardHeldBack()
+            }.setPositiveButton(R.string.restore_privileged_turn_on) { _, _ ->
+                af.shizuku.manager.utils.SettingsBackupManager
+                    .applyHeldBack()
+            }.setCancelable(false)
+            .show()
+    }
+
     private fun onRestoreSuccess() {
         if (!isAdded) return
         Toast.makeText(requireContext(), R.string.backup_restored_success, Toast.LENGTH_SHORT).show()
+        confirmHeldBackPrivilegedSettings()
         Snackbar
             .make(
                 requireView(),

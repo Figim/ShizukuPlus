@@ -130,9 +130,10 @@
 
         <meta-data android:name="io.sentry.dsn" android:value="${sentryDsn}" />
         <meta-data android:name="io.sentry.auto-init" android:value="false" />
-        <meta-data android:name="io.sentry.traces-sample-rate" android:value="0.2" />
-        <meta-data android:name="io.sentry.attach-screenshot" android:value="true" />
-        <meta-data android:name="io.sentry.attach-view-hierarchy" android:value="true" />
+        <!-- Matches the manual init in ShizukuApplication: no tracing, no screenshots. -->
+        <meta-data android:name="io.sentry.traces-sample-rate" android:value="0.0" />
+        <meta-data android:name="io.sentry.attach-screenshot" android:value="false" />
+        <meta-data android:name="io.sentry.attach-view-hierarchy" android:value="false" />
 
         <!-- Main launcher activity -->
         <activity

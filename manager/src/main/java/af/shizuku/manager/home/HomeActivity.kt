@@ -790,12 +790,37 @@ open class HomeActivity :
         ShizukuStateMachine.addListener(stateListener)
         ShizukuSettings.getPreferences()?.registerOnSharedPreferenceChangeListener(appearanceChangeListener)
 
+        maybeAskCrashReporting(savedInstanceState)
+
         // Handle cold-start launch from the ADB pairing success notification.
         // onNewIntent() is only called when the activity already exists; when the app
         // is not running the system calls onCreate() with the launch intent instead.
         if (intent?.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false) == true) {
             handleStartViaMdnsNotification()
         }
+    }
+
+    // Asked once, after onboarding, never during it: crash reports are only sent after a yes.
+    private fun maybeAskCrashReporting(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) return
+        if (af.shizuku.manager.BuildConfig.SENTRY_DSN
+                .isEmpty()
+        ) {
+            return
+        }
+        if (ShizukuSettings.isCrashReportingAsked() || !ShizukuSettings.isOnboardingSeen()) return
+        com.google.android.material.dialog
+            .MaterialAlertDialogBuilder(this)
+            .setIcon(R.drawable.ic_bug_report_24)
+            .setTitle(R.string.crash_reporting_prompt_title)
+            .setMessage(R.string.crash_reporting_prompt_message)
+            .setNegativeButton(R.string.crash_reporting_prompt_no) { _, _ ->
+                ShizukuSettings.setCrashReportingEnabled(false)
+            }.setPositiveButton(R.string.crash_reporting_prompt_yes) { _, _ ->
+                ShizukuSettings.setCrashReportingEnabled(true)
+                (application as? af.shizuku.manager.ShizukuApplication)?.initializeSentryEarly()
+            }.setCancelable(false)
+            .show()
     }
 
     override fun onNewIntent(intent: Intent) {

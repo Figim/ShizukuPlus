@@ -1,5 +1,6 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import android.content.Context
 import org.json.JSONObject
@@ -34,6 +35,9 @@ object SettingsBackupManager {
             ShizukuSettings.Keys.KEY_CUSTOM_APP_NAME_SEED_CLEARED,
             // Consent is per device: never restore or sync it.
             ShizukuSettings.Keys.KEY_AICORE_A11Y_USER_ENABLED,
+            ShizukuSettings.Keys.KEY_SECURITY_DEFAULTS_DECIDED,
+            ShizukuSettings.Keys.KEY_CRASH_REPORTING,
+            ShizukuSettings.Keys.KEY_CRASH_REPORTING_ASKED,
             ShizukuSettings.Keys.KEY_WATCHDOG_EXEMPTION_PENDING,
             ShizukuSettings.Keys.KEY_WATCHDOG_VENDOR_BATTERY_REPORTED,
             // Ephemeral runtime state
@@ -74,6 +78,66 @@ object SettingsBackupManager {
         return json.toString(2)
     }
 
+    /**
+     * Settings that widen privilege, disguise the app or expose a network port, mapped to their
+     * titles. An import (cloud restore, peer sync, a backup file) never switches one of these on by
+     * itself: turning one off is applied, turning one on is held back in [heldBack] for the user
+     * to confirm (see [applyHeldBack]).
+     */
+    val PRIVILEGED_KEYS: Map<String, Int> =
+        mapOf(
+            ShizukuSettings.Keys.KEY_SU_BRIDGE_ENABLED to R.string.settings_fake_su,
+            ShizukuSettings.Keys.KEY_ROOT_AUTO_GRANT_ENABLED to R.string.settings_root_auto_grant,
+            ShizukuSettings.Keys.KEY_TCP_MODE to R.string.privileged_setting_tcp_mode,
+            ShizukuSettings.Keys.KEY_STEALTH_MODE to R.string.settings_stealth_mode_pkg_query,
+            ShizukuSettings.Keys.KEY_SHADOW_BINDER_ENABLED to R.string.settings_shadow_binder,
+            ShizukuSettings.Keys.KEY_DHIZUKU_MODE to R.string.settings_dhizuku_mode,
+            ShizukuSettings.Keys.KEY_ROOT_MAGISK_MOCKING_ENABLED to R.string.settings_root_magisk_mocking,
+            ShizukuSettings.Keys.KEY_SPOOF_DEVICE_ENABLED to R.string.settings_spoof_device_experimental,
+            ShizukuSettings.Keys.KEY_ALLOW_AUTOMATION_PLUGIN to R.string.settings_allow_automation_plugin_title,
+            ShizukuSettings.Keys.KEY_SAMSUNG_SYSTEM_UID_ESCALATION_ENABLED to R.string.settings_samsung_uid_escalation,
+            ShizukuSettings.Keys.KEY_SOFTWARE_KEYSTORE_FALLBACK_ENABLED to R.string.settings_keystore_fallback,
+            ShizukuSettings.Keys.KEY_EXPERIMENTAL_ROOT_COMPAT to R.string.settings_experimental_root_experimental,
+            ShizukuSettings.Keys.KEY_ON_DEVICE_ADB_TCP to R.string.settings_on_device_adb_tcp,
+            ShizukuSettings.Keys.KEY_ADB_PROXY_ENABLED to R.string.settings_adb_proxy,
+            "custom_su_path" to R.string.settings_custom_su_path,
+            ShizukuSettings.Keys.KEY_ROOT_FILE_INTERCEPTOR_ENABLED to R.string.settings_root_file_interceptor,
+            ShizukuSettings.Keys.KEY_ROOT_BUSYBOX_MOCKING_ENABLED to R.string.settings_root_busybox_mocking,
+            ShizukuSettings.Keys.KEY_ROOT_BUILD_PROP_REDIRECT_ENABLED to R.string.settings_root_build_prop_redirect,
+            ShizukuSettings.Keys.KEY_ROOT_IPTABLES_MOCKING_ENABLED to R.string.settings_root_iptables_mocking,
+            ShizukuSettings.Keys.KEY_BOOTLOADER_FLASH_OTA_ENABLED to R.string.settings_bootloader_flash_ota,
+            ShizukuSettings.Keys.KEY_BOOTLOADER_FASTBOOTD_REBOOT_ENABLED to R.string.settings_bootloader_fastbootd,
+            ShizukuSettings.Keys.KEY_OVERLAY_FS_PROXY_ENABLED to R.string.settings_overlay_fs_proxy,
+            ShizukuSettings.Keys.KEY_ROOT_KERNEL_GHOSTING_ENABLED to R.string.settings_root_kernel_ghosting,
+            ShizukuSettings.Keys.KEY_ROOT_PARTITION_GHOSTING_ENABLED to R.string.settings_root_partition_ghosting,
+            ShizukuSettings.Keys.KEY_ROOT_POWER_GHOSTING_ENABLED to R.string.settings_root_power_ghosting,
+        )
+
+    /** Privileged values the last import held back instead of switching on. */
+    @Volatile
+    var heldBack: Map<String, Any> = emptyMap()
+        private set
+
+    /** Applies (after the user confirmed) the privileged values the last import held back. */
+    fun applyHeldBack() {
+        val pending = heldBack
+        heldBack = emptyMap()
+        if (pending.isEmpty()) return
+        val editor = ShizukuSettings.getPreferences()?.edit() ?: return
+        pending.forEach { (key, v) ->
+            when (v) {
+                is Boolean -> editor.putBoolean(key, v)
+                is String -> editor.putString(key, v)
+            }
+        }
+        editor.apply()
+        ShizukuSettings.syncAllPlusFeaturesToServer()
+    }
+
+    fun discardHeldBack() {
+        heldBack = emptyMap()
+    }
+
     fun import(
         @Suppress("UNUSED_PARAMETER") context: Context,
         json: String,
@@ -103,10 +167,21 @@ object SettingsBackupManager {
             val prefs = ShizukuSettings.getPreferences() ?: return false
             val editor = prefs.edit()
 
+            val held = mutableMapOf<String, Any>()
             val keys = obj.keys()
             while (keys.hasNext()) {
                 val key = keys.next()
                 if (key == VERSION_KEY || key in EXCLUDED_KEYS) continue
+                if (key in PRIVILEGED_KEYS) {
+                    // Switching one off is safe to apply; switching one on (or pointing the su path
+                    // somewhere) waits for the user's confirmation.
+                    when (val v = obj.get(key)) {
+                        false -> editor.putBoolean(key, false)
+                        true -> if (!prefs.getBoolean(key, false)) held[key] = true
+                        is String -> if (v.isNotEmpty() && v != prefs.getString(key, "")) held[key] = v
+                    }
+                    continue
+                }
                 when (val v = obj.get(key)) {
                     is Boolean -> editor.putBoolean(key, v)
                     is Int -> editor.putInt(key, v)
@@ -125,6 +200,7 @@ object SettingsBackupManager {
             if (!obj.has(ShizukuSettings.Keys.KEY_WATCHDOG) && !prefs.contains(ShizukuSettings.Keys.KEY_WATCHDOG)) {
                 editor.putBoolean(ShizukuSettings.Keys.KEY_WATCHDOG, false)
             }
+            heldBack = held
             if (synchronous) {
                 editor.commit()
             } else {

@@ -116,11 +116,17 @@ class ShizukuApplication :
     /**
      * Initialize Sentry FIRST to catch all crashes including early startup failures
      */
-    private fun initializeSentryEarly() {
+    internal fun initializeSentryEarly() {
         if (BuildConfig.SENTRY_DSN.isEmpty()) {
             Timber.w("Sentry DSN is empty, skipping initialization")
             return
         }
+        // Consent first: nothing is sent until the user said yes (first-run prompt or setting).
+        if (!ShizukuSettings.isCrashReportingEnabled()) {
+            Timber.i("Crash reporting is off")
+            return
+        }
+        if (Sentry.isEnabled()) return
 
         af.shizuku.manager.utils.SentryEventDeduper
             .resetIfWindowExpired()
@@ -147,10 +153,8 @@ class ShizukuApplication :
                 // bug where one is actually worth the quota cost (UI-rendering/theme crashes,
                 // e.g. the black-screen recreate() bug) - gated by an allowlist so it only
                 // fires for those, not every event. See SelectiveScreenshotEventProcessor.
-                options.addEventProcessor(
-                    af.shizuku.manager.utils
-                        .SelectiveScreenshotEventProcessor(),
-                )
+                // Screenshots are never attached: they can show anything on screen. (The selective
+                // screenshot processor is no longer registered.)
 
                 // Breadcrumbs are bundled into the event itself (not separately billed), so
                 // keep them for context. isEnableUserInteractionTracing and
@@ -186,6 +190,13 @@ class ShizukuApplication :
 
                 // Include breadcrumbs for navigation tracking
                 options.maxBreadcrumbs = 100
+                // Logs become breadcrumbs: strip addresses, network names and emails first.
+                options.setBeforeBreadcrumb { breadcrumb, _ ->
+                    breadcrumb.message =
+                        af.shizuku.manager.utils.TelemetryScrubber
+                            .scrub(breadcrumb.message)
+                    breadcrumb
+                }
 
                 // Send default PII (for device info, not user data)
                 options.isSendDefaultPii = false
@@ -743,6 +754,7 @@ class ShizukuApplication :
         // update (keeps the off an absent setting meant). See decideWatchdogDefaultIfNeeded().
         ShizukuSettings.decideWatchdogDefaultIfNeeded(this)
         ShizukuSettings.decideLegacyRishKeepaliveDefaultIfNeeded(this)
+        ShizukuSettings.decideSecurityDefaultsIfNeeded(this)
         ShizukuSettings.clearSeededCustomAppNameOnce()
 
         // 0. Initialize Timber

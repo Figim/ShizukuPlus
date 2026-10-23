@@ -92,6 +92,14 @@
             android:icon="@drawable/ic_medical_services_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="crash_reporting_enabled"
+            android:title="@string/settings_crash_reporting_title"
+            android:summary="@string/settings_crash_reporting_summary"
+            android:icon="@drawable/ic_bug_report_24"
+            android:defaultValue="false"
+            android:persistent="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="diagnostics_enabled"
             android:title="@string/settings_diagnostics_enabled"
             android:summary="@string/settings_diagnostics_enabled_summary"

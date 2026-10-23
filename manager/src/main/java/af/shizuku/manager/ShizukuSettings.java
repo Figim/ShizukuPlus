@@ -179,6 +179,10 @@ public class ShizukuSettings {
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
         public static final String KEY_CUSTOM_APP_NAME_SEED_CLEARED = "custom_app_name_seed_cleared";
         public static final String KEY_AICORE_A11Y_USER_ENABLED = "aicore_a11y_user_enabled";
+        public static final String KEY_ALLOW_AUTOMATION_PLUGIN = "allow_automation_plugin";
+        public static final String KEY_SECURITY_DEFAULTS_DECIDED = "security_defaults_decided";
+        public static final String KEY_CRASH_REPORTING = "crash_reporting_enabled";
+        public static final String KEY_CRASH_REPORTING_ASKED = "crash_reporting_asked";
         public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
@@ -705,6 +709,55 @@ public class ShizukuSettings {
         Keys.KEY_MIGRATED_APPCOMPAT_LOCALES,
         Keys.KEY_LAST_SEEN_VERSION,
     };
+
+    /**
+     * One-time split of the safer defaults between new installs and updates. New installs start
+     * with TCP mode (adbd listening on a network port) and the Tasker/Locale start-stop plugin off;
+     * an update keeps what the earlier defaults gave it (both on), so nobody's setup changes.
+     */
+    public static void decideSecurityDefaultsIfNeeded(Context context) {
+        try {
+            SharedPreferences prefs = getPreferences();
+            if (prefs == null || prefs.getBoolean(Keys.KEY_SECURITY_DEFAULTS_DECIDED, false)) return;
+            boolean existing = isUpgradedInstall(context) || hasEarlierBuildSettings(prefs);
+            SharedPreferences.Editor editor = prefs.edit();
+            if (!prefs.contains(Keys.KEY_TCP_MODE)) editor.putBoolean(Keys.KEY_TCP_MODE, existing);
+            if (!prefs.contains(Keys.KEY_ALLOW_AUTOMATION_PLUGIN)) {
+                editor.putBoolean(Keys.KEY_ALLOW_AUTOMATION_PLUGIN, existing);
+            }
+            editor.putBoolean(Keys.KEY_SECURITY_DEFAULTS_DECIDED, true).apply();
+        } catch (Exception e) {
+            Timber.w(e, "Security defaults: could not decide");
+        }
+    }
+
+    /** Crash reports go to Sentry only after the user said yes (first-run prompt or the setting). */
+    public static boolean isCrashReportingEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_CRASH_REPORTING_ASKED, false)
+                && p.getBoolean(Keys.KEY_CRASH_REPORTING, false);
+    }
+
+    public static boolean isCrashReportingAsked() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_CRASH_REPORTING_ASKED, false);
+    }
+
+    public static void setCrashReportingEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) {
+            p.edit()
+                    .putBoolean(Keys.KEY_CRASH_REPORTING, enabled)
+                    .putBoolean(Keys.KEY_CRASH_REPORTING_ASKED, true)
+                    .apply();
+        }
+    }
+
+    /** Whether Tasker/Locale-compatible apps may start and stop the server through the plugin. */
+    public static boolean isAutomationPluginAllowed() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_ALLOW_AUTOMATION_PLUGIN, false);
+    }
 
     /**
      * The Watchdog is on by default for new installs only. Builds before this one read an absent
