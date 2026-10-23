@@ -9,7 +9,7 @@ Moving a row keeps its key, so saved values and search keep working; only the sc
 on changes. Fragments that look rows up with `requireNotNull(findPreference(...))` must move
 their wiring with the row (`PersonalizationSettingsFragment` does this for `translation`).
 
-## 1. Corners: five controls for one idea (high)
+## 1. Corners: five controls for one idea (high) - DONE `02ac89c3`
 
 Appearance > Shape & icon style has `rounded_edges_enabled`, `corner_rounding_override`,
 `shape_style`, `home_card_corner_style` and `settings_card_corner_style`. They overlap: Rounded
@@ -23,7 +23,7 @@ beside it. Drop the two card-specific sliders, or move them under a "Customize p
 row for people who really want different home and settings cards. Migrate: Rounded edges off
 -> Sharp; card styles -> nearest scale step.
 
-## 2. Names that don't match each other (high, cheap)
+## 2. Names that don't match each other (high, cheap) - DONE `6a0e4434`
 
 - "Elastic Animations" is called Expressive animations everywhere else (code, changelog,
   M3 terms). Pick one; "Expressive animations" matches the M3 name.
@@ -36,7 +36,7 @@ row for people who really want different home and settings cards. Migrate: Round
   and "↳ System Theming Bridge" fakes nesting with an arrow. Drop the suffixes (the screen is
   already Developer options) and show the child relationship with `dependency` or a sub-label.
 
-## 3. Rows on the wrong screen (medium)
+## 3. Rows on the wrong screen (medium) - DONE `bbfb7e6d` `f637bfa5` `c985f085` (Hide launcher icon stays in Advanced: App icon & name only shows with its experimental switch)
 
 - Main screen: "App interactions" sits under **Personalization**, but it holds swipe and
   long-press actions plus Verified installation and Package governor, which are security.
@@ -53,7 +53,7 @@ row for people who really want different home and settings cards. Migrate: Round
   screen, Appearance). Put both in Advanced > Diagnostics, or make the Home switch depend on
   the first so it can't be on while logging is off.
 
-## 4. Writing style (medium, blocked on translations)
+## 4. Writing style (medium, blocked on translations) - DEFERRED
 
 64 of ~190 titles use Title Case ("Custom Accent Color", "Local ADB Proxy Server", "Reset ADB
 Keys") next to sentence case ("Start on boot"). M3 and Android use sentence case. Product
@@ -61,7 +61,7 @@ names stay capitalised (Service Doctor, Binder Firewall, Shadow Binder). This is
 pass already planned; it waits until translations are refreshed, because each changed English
 string goes stale in every locale.
 
-## 5. Controls (low)
+## 5. Controls (low) - accent/shape pickers DONE `1bce2d01`; long-press info row open
 
 - App interactions uses an empty-title info row (`lp_category_info`) as a label above the
   long-press switches; the rest of Settings uses section labels. Make long-press its own
