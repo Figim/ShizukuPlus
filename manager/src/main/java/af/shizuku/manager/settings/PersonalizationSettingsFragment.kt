@@ -341,6 +341,11 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         val simulatorPref = findPreference<HomeLayoutSimulatorPreference>("home_layout_simulator")
         simulatorPref?.setFragment(this)
 
+        // The Home activity log card needs logging on (Advanced > Diagnostics > Enable activity log):
+        // a cross-screen dependency, so grey it out here instead of android:dependency.
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME)?.isEnabled =
+            ShizukuSettings.isActivityLogEnabled()
+
         val switchKeys = listOf("show_activity_log_home", "show_status_card_outline", "show_home_cards_outline")
 
         for (prefKey in switchKeys) {
