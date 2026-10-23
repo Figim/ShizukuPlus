@@ -75,7 +75,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/home_layout_sim_adb"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
                     android:id="@+id/eye_start_adb"
@@ -111,7 +111,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/home_layout_sim_terminal_apps"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
                     android:id="@+id/eye_terminal"
@@ -147,7 +147,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/home_layout_sim_automation"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
                     android:id="@+id/eye_automation"
@@ -183,7 +183,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/home_layout_sim_activity_logs"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
                     android:id="@+id/eye_activity_log"
@@ -218,7 +218,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     android:text="@string/home_layout_sim_developer_guide"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
                     android:id="@+id/eye_learn_more"

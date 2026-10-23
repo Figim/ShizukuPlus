@@ -343,7 +343,7 @@ fun HomeScreen(
                                                     MaterialTheme.typography.labelSmall.copy(
                                                         fontWeight = FontWeight.Bold,
                                                         letterSpacing = 0.4.sp,
-                                                        fontSize = lerp(11.sp, 9.5.sp, curvedFraction),
+                                                        fontSize = 11.sp,
                                                     ),
                                                 modifier =
                                                     Modifier.padding(

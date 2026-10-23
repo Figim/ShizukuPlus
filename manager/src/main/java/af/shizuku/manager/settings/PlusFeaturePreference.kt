@@ -142,7 +142,18 @@ class PlusFeaturePreference(
             spannable.append(" ")
             val end = spannable.length
             spannable.setSpan(
-                InlineBadgeSpan(badgeLabel, bgColor, fgColor, density),
+                InlineBadgeSpan(
+                    badgeLabel,
+                    bgColor,
+                    fgColor,
+                    density,
+                    // labelSmall's 11sp floor, in sp so it follows the system font size
+                    android.util.TypedValue.applyDimension(
+                        android.util.TypedValue.COMPLEX_UNIT_SP,
+                        11f,
+                        titleView.resources.displayMetrics,
+                    ),
+                ),
                 start,
                 end,
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
@@ -159,8 +170,8 @@ class PlusFeaturePreference(
         private val bgColor: Int,
         private val fgColor: Int,
         private val density: Float,
+        private val textSizePx: Float,
     ) : ReplacementSpan() {
-        private val textSizePx = 9f * density
         private val paddingH = 5f * density
         private val paddingV = 2f * density
         private val cornerRadius = 4f * density

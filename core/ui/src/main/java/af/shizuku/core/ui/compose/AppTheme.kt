@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.shape.AbsoluteCornerSize
@@ -156,100 +157,42 @@ private fun androidShapes(context: Context): Shapes {
     )
 }
 
-private val OneUiTypography = Typography(
-    headlineLarge = Typography().headlineLarge.copy(
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 34.sp,
-        letterSpacing = (-0.5).sp
-    ),
-    headlineMedium = Typography().headlineMedium.copy(
-        fontWeight = FontWeight.Bold,
-        fontSize = 26.sp,
-        letterSpacing = (-0.25).sp
-    ),
-    headlineSmall = Typography().headlineSmall.copy(
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp
-    ),
-    titleLarge = Typography().titleLarge.copy(
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        letterSpacing = (-0.15).sp
-    ),
-    titleMedium = Typography().titleMedium.copy(
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp
-    ),
-    titleSmall = Typography().titleSmall.copy(
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 14.sp
-    ),
-    labelLarge = Typography().labelLarge.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    labelMedium = Typography().labelMedium.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    labelSmall = Typography().labelSmall.copy(
-        fontWeight = FontWeight.Medium
-    ),
-    bodyLarge = Typography().bodyLarge.copy(
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        letterSpacing = 0.sp
-    ),
-    bodyMedium = Typography().bodyMedium.copy(
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        letterSpacing = 0.sp
-    ),
-    bodySmall = Typography().bodySmall.copy(
-        fontSize = 12.sp,
-        letterSpacing = 0.sp
-    )
-)
+/**
+ * "Bold typography": every role takes its M3 Expressive Emphasized style (heavier weight, same
+ * size), mirroring ThemeOverlay.Typography.Bold on the XML side.
+ */
+private val BoldTypography =
+    Typography().run {
+        Typography(
+            displayLarge = displayLargeEmphasized,
+            displayMedium = displayMediumEmphasized,
+            displaySmall = displaySmallEmphasized,
+            headlineLarge = headlineLargeEmphasized,
+            headlineMedium = headlineMediumEmphasized,
+            headlineSmall = headlineSmallEmphasized,
+            titleLarge = titleLargeEmphasized,
+            titleMedium = titleMediumEmphasized,
+            titleSmall = titleSmallEmphasized,
+            bodyLarge = bodyLargeEmphasized,
+            bodyMedium = bodyMediumEmphasized,
+            bodySmall = bodySmallEmphasized,
+            labelLarge = labelLargeEmphasized,
+            labelMedium = labelMediumEmphasized,
+            labelSmall = labelSmallEmphasized,
+        )
+    }
 
-private val BoldTypography = Typography(
-    headlineLarge = Typography().headlineLarge.copy(
-        fontWeight = FontWeight.ExtraBold,
-        letterSpacing = (-0.5).sp
-    ),
-    headlineMedium = Typography().headlineMedium.copy(
-        fontWeight = FontWeight.Bold,
-        letterSpacing = (-0.25).sp
-    ),
-    headlineSmall = Typography().headlineSmall.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    titleLarge = Typography().titleLarge.copy(
-        fontWeight = FontWeight.Bold,
-        letterSpacing = (-0.15).sp
-    ),
-    titleMedium = Typography().titleMedium.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    titleSmall = Typography().titleSmall.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    labelLarge = Typography().labelLarge.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    labelMedium = Typography().labelMedium.copy(
-        fontWeight = FontWeight.Bold
-    ),
-    labelSmall = Typography().labelSmall.copy(
-        fontWeight = FontWeight.SemiBold
-    ),
-    bodyLarge = Typography().bodyLarge.copy(
-        fontWeight = FontWeight.Medium
-    ),
-    bodyMedium = Typography().bodyMedium.copy(
-        fontWeight = FontWeight.Medium
-    ),
-    bodySmall = Typography().bodySmall.copy(
-        fontWeight = FontWeight.Normal
+/**
+ * Mirrors TextAppearance.OneUI.{HeadlineLarge,TitleLarge,TitleMedium} in themes_overlay.xml on
+ * top of [base] (default or bold), like ThemeOverlay.OneUI over ThemeOverlay.Typography.Bold.
+ */
+private fun oneUiTypography(base: Typography) =
+    base.copy(
+        headlineLarge =
+            base.headlineLarge.copy(fontWeight = FontWeight.Bold, fontSize = 30.sp, letterSpacing = (-0.01).em),
+        titleLarge = base.titleLarge.copy(fontWeight = FontWeight.Bold, fontSize = 22.sp),
+        titleMedium = base.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 17.sp),
     )
-)
 
 private val SharpShapes =
     RoundedCornerShape(0.dp).let { sharp ->
@@ -315,11 +258,8 @@ fun AppTheme(
 
     val shapes =
         if (!isRoundedEdges) SharpShapes else remember(context, themeVersion) { androidShapes(context) }
-    val typography = when {
-        isOneUi -> OneUiTypography
-        isBoldTypography -> BoldTypography
-        else -> Typography()
-    }
+    val baseTypography = if (isBoldTypography) BoldTypography else Typography()
+    val typography = if (isOneUi) oneUiTypography(baseTypography) else baseTypography
 
     // M3 Expressive motion: springy, physics-based specs for every M3 component (switch thumbs,
     // sliders, tabs, segmented buttons, sheets). Standard scheme when the user turned it off.
