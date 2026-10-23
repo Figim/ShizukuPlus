@@ -4,13 +4,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import android.app.Activity
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 
 object SnackbarHelper {
@@ -42,43 +36,9 @@ object SnackbarHelper {
                 },
             )
         }
-        ThemeHelper.applySnackbarTheme(context, newSnackbar)
-
-        // Make the snackbar an elevated pill with rounded corners
-        val density = context.resources.displayMetrics.density
-        val snackView = newSnackbar.view
-        val shape =
-            ShapeAppearanceModel
-                .builder()
-                .setAllCornerSizes(16f * density)
-                .build()
-        val bgDrawable =
-            MaterialShapeDrawable(shape).apply {
-                val surfaceContainer =
-                    ThemeHelper.resolveColor(context, com.google.android.material.R.attr.colorSurfaceContainerHigh)
-                fillColor =
-                    ColorStateList.valueOf(
-                        if (surfaceContainer != 0 && surfaceContainer != Color.BLACK) {
-                            surfaceContainer
-                        } else {
-                            ThemeHelper.resolveColor(context, R.attr.colorPrimaryContainer)
-                        },
-                    )
-                elevation = 6f * density
-                if (ShizukuSettings.isHighContrastEnabled() || ShizukuSettings.isAmoledPlusEnabled()) {
-                    strokeColor = ColorStateList.valueOf(Color.argb(80, 255, 255, 255))
-                    strokeWidth = 1f * density
-                }
-            }
-        ViewCompat.setBackground(snackView, bgDrawable)
-
-        (snackView.layoutParams as? ViewGroup.MarginLayoutParams)?.let { lp ->
-            val marginH = (16 * density).toInt()
-            lp.leftMargin = marginH
-            lp.rightMargin = marginH
-            lp.bottomMargin = (12 * density).toInt()
-            snackView.layoutParams = lp
-        }
+        // MDC's default snackbar is the M3 spec: inverse-surface container, inverse-primary
+        // action, corners from the theme's shape scale. A surface-coloured custom pill used to
+        // replace it and sank into cards on AMOLED.
 
         // Sit above the optional floating nav bar instead of underneath/over it (#498).
         val navRoot =

@@ -7,7 +7,6 @@ import android.util.TypedValue;
 import android.view.View;
 import androidx.annotation.StyleRes;
 import androidx.core.graphics.ColorUtils;
-import com.google.android.material.snackbar.Snackbar;
 import af.shizuku.manager.R;
 import af.shizuku.manager.ShizukuSettings;
 import af.shizuku.manager.utils.EnvironmentUtils;
@@ -48,16 +47,6 @@ public class ThemeHelper {
             default:
                 return R.style.ThemeOverlay;
         }
-    }
-
-    public static void applySnackbarTheme(Context context, Snackbar snackbar) {
-        int container = resolveColor(context, com.google.android.material.R.attr.colorSurfaceContainerHigh);
-        if (container == 0 || container == android.graphics.Color.BLACK) {
-            container = resolveColor(context, R.attr.colorPrimaryContainer);
-        }
-        snackbar.setBackgroundTint(container)
-            .setTextColor(resolveColor(context, R.attr.colorOnSurface))
-            .setActionTextColor(resolveColor(context, R.attr.colorPrimary));
     }
 
     public static int resolveColor(Context context, int color) {
