@@ -1,7 +1,6 @@
 package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
 import android.util.AttributeSet
@@ -12,7 +11,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
 
 /**
@@ -28,7 +26,6 @@ class UpdateSettingsPreference
         context: Context,
         attrs: AttributeSet? = null,
     ) : Preference(context, attrs) {
-        private var cardContainer: MaterialCardView? = null
         private var textStatus: TextView? = null
         private var btnCheckUpdate: MaterialButton? = null
         private var progressCheckUpdate: ProgressBar? = null
@@ -81,7 +78,6 @@ class UpdateSettingsPreference
             super.onBindViewHolder(holder)
             holder.itemView.tag = "standalone_card"
 
-            cardContainer = holder.findViewById(R.id.card_update_container) as? MaterialCardView
             textStatus = holder.findViewById(R.id.text_update_status) as? TextView
             btnCheckUpdate = holder.findViewById(R.id.btn_check_update) as? MaterialButton
             progressCheckUpdate = holder.findViewById(R.id.progress_check_update) as? ProgressBar
@@ -89,10 +85,6 @@ class UpdateSettingsPreference
             switchAutoUpdate = holder.findViewById(R.id.switch_auto_update) as? MaterialSwitch
             rowAutoInstall = holder.findViewById(R.id.row_auto_install)
             switchAutoInstall = holder.findViewById(R.id.switch_auto_install) as? MaterialSwitch
-
-            if (!ShizukuSettings.isRoundedEdgesEnabled()) {
-                cardContainer?.radius = 0f
-            }
 
             textStatus?.text = statusText ?: context.getString(R.string.settings_check_for_update_summary)
 

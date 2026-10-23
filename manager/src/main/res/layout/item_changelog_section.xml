@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     app:cardElevation="0dp"
-    app:cardCornerRadius="20dp"
+    app:shapeAppearance="?attr/shapeAppearanceCornerLargeIncreased"
     app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
     app:strokeWidth="0dp">
 
@@ -30,7 +30,7 @@
                 android:layout_height="28dp"
                 android:layout_marginEnd="10dp"
                 app:cardElevation="0dp"
-                app:cardCornerRadius="9dp"
+                app:shapeAppearance="?attr/shapeAppearanceCornerSmall"
                 app:strokeWidth="0dp">
 
                 <ImageView

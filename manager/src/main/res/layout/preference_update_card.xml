@@ -12,7 +12,7 @@
     app:cardBackgroundColor="?colorSurfaceContainerHigh"
     app:strokeColor="?colorOutlineVariant"
     app:strokeWidth="1dp"
-    app:cardCornerRadius="20dp"
+    app:shapeAppearance="?attr/shapeAppearanceCornerLargeIncreased"
     app:cardElevation="0dp">
 
     <LinearLayout
