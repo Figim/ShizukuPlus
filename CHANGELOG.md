@@ -2,6 +2,72 @@
 
 All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
+## [Unreleased]
+
+### 🌟 Highlights
+
+- **Material 3 Expressive look, done properly** — springy motion that follows the Expressive animations switch, a full corner scale that every Shape Style (and Compose screens) now share, a real type scale for Bold typography, morphing expressive icon shapes, and connected toggle-button groups in Settings.
+- **Easier wireless pairing** — the pairing code entry pops up over Settings again, the pairing screen shows live status with a Start button, and an opt-in helper can fill in the code for you.
+- **You decide what gets privileged access** — crash reports, automation apps (Tasker/Locale) and the AICore+ accessibility service now wait for your consent, and the server only trusts a second manager signed like this one.
+- **Faster server** — apps get their Shizuku connection about 3x sooner after the server starts, and the server uses noticeably less memory.
+- **Rebuilt Icon Studio, System Hub and Activity Log** — plus a new Experimental features screen and an optional floating navigation bar.
+
+### 🔒 Privacy & Security
+- **Crash reports are opt-in** — nothing is sent until you say yes (asked once after setup; switch in Settings → Advanced & diagnostics). Reports no longer carry IP/MAC addresses, Wi-Fi names, emails or screenshots.
+- **Automation apps need permission** — Tasker/Locale can start or stop Shizuku+ only with "Allow automation apps" on. It stays on after an update and is off for new installs.
+- **AICore+ accessibility service is never switched on behind your back** — its self-repair only runs once you've enabled the service yourself in Android's settings.
+- **Only a manager signed like this one is trusted** — the side-by-side Plus/Drop-In manager and the manager-only grants were decided by package name, so another app using that name could get them. Root apps are no longer granted automatically, and grants Shizuku+ made are taken back when you turn the feature off.
+- **Safer defaults for new installs** — TCP mode starts off, and root-bridge features stay off on the server until your settings reach it.
+- **Imported settings never switch privileged features on** — restoring a backup asks before it turns on anything that grants access.
+
+### 🔌 Pairing & Connection
+- **Pairing code entry pops up over Settings again** — the "pairing service found" notification alerts as a heads-up instead of updating silently, so you no longer need to pull down the shade mid-pairing. Tapping it no longer opens a dialog that could close Android's pairing screen.
+- **Live pairing status** — the pairing screen shows what's happening (searching, found, pairing, paired, failed and why) and gives you a Start button once paired. If Shizuku+ can write secure settings, it starts the service right after pairing.
+- **Optional "Fill in the code for me"** — an opt-in helper that types the 6-digit code into Android's pairing dialog. It only works inside the Settings app.
+- **MT Manager and other apps with the old rish loader work again.**
+
+### ⚡ Performance
+- **Apps get their binder about 3x faster after the server starts** — the server only looks at running apps and no longer sends the manager its binder twice.
+- **Lower server memory** — the server's code loads straight from the APK and extra Plus services are created only when used.
+- **System Hub metrics no longer stutter the UI** — polling runs in the background every 2 seconds.
+
+### 🎨 Appearance
+- **Shape scale** — every Shape Style now defines the newer Large Increased, Extra Large Increased and Extra Extra Large corners, and off-scale sizes snap to the scale (One UI corners are now 4/12/16/28/32). Compose screens follow your Shape Style and corner rounding choice too, and the update, changelog and activity-log cards use the scale instead of fixed corners.
+- **Rounded edges off stays sharp** — One UI style or a corner rounding choice no longer rounds the corners again.
+- **Bold typography uses the Material 3 Expressive Emphasized styles** — heavier weights at the same sizes, so headings keep their hierarchy. One UI card titles are 22sp (they were larger than headlines), and no text is smaller than 11sp. Feature badges now follow your system font size.
+- **Motion** — with Expressive animations off, components use the calmer Standard springs, and the emphasized easing curves are correct.
+- **Expressive icon shapes** — pick Cookie, Clover, Sunny, Gem or Flower in Shapes. Switch rows can morph their icon when toggled, and the Home status icon morphs between running and stopped.
+- **AMOLED black** — segmented choices, slider tracks and shape tiles stay visible on pure black. Fixed black bars behind the floating nav bar and the grey block behind the Home top-right buttons.
+- **High contrast mode** — sharper outlines across the app.
+- **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Floating, Docked or Compact styles, label options, and it hides on scroll. Snackbars sit above it.
+
+### ⚙️ Settings
+- **Reorganized** — compact section labels instead of header cards, a shorter expanded header, regrouped Personalization and Startup & behavior, and section jump chips on long screens.
+- **New controls** — sliders with haptic detents for corner rounding, animation intensity and shape options, and connected toggle groups that morph between segment and pill shapes.
+- **Experimental features screen** (Settings → System) — try options that are still being polished without opening Developer options. App icon & name customization, Device control and the floating nav bar live there.
+- **Live status banner** — says whether Shizuku+ is running and how it was started; tap it to open Service Doctor or Home.
+- Fixed: Trusted networks hiding while you're on a trusted Wi-Fi, the haptics control showing "Follow system" while haptics always played, the Expressive shapes switch not showing its options until you reopened the screen, Developer options switches sending the old value, peer-sync rows showing raw "Sync with %1$s", switch rows buzzing twice, and a crash showing some preference icons in search.
+
+### 🧩 Icon Studio, System Hub & Activity Log
+- **Rebuilt Icon Studio** — live preview on a light or dark wallpaper next to other icons, a tabbed editor, and Save PNG that really saves (to Downloads, with an error if it fails).
+- **System Hub** — metrics show even when experimental features are off, a status banner for running, stock and stopped servers, metric tiles with a memory trend, and a large title that collapses in One UI / one-handed mode.
+- **Activity Log** — timeline layout, search, multi-select event filters, date groups, grouping of repeated events, export, and app names instead of package names.
+- **Compat Hub** — install and uninstall show staged progress.
+
+### 🏠 Home & Apps
+- **No more "0 authorized apps" flash on launch.**
+- Home card titles match the status card. The status card's version is labelled "Service API". The Wireless debugging card no longer says "Start via Wireless debugging" while Shizuku+ is already running over it.
+- The app enhancement badge reads as a badge instead of "[Plus upgrade available]".
+
+### 📰 Changelog
+- The Close button no longer truncates, and README-only entries and releases without user-facing changes are hidden.
+
+### 🌐 Localization
+- **Chinese (Simplified and Traditional) complete** and Azerbaijani updated, with thanks to the community translators. Screens that still showed English text are now translated.
+- **Fixed translated settings breaking options** — in az, pt-BR, uk, ur and zh some internal setting values were translated, which broke icon style, shape style, accent and swipe-action choices in those languages. Corner rounding labels in az, ko and zh-CN now point at the right sizes.
+
+---
+
 ## [v13.7.0 — Major Stable Release] - 2026-10-19
 
 ### 🌟 Highlights & What's New
