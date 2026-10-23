@@ -19,6 +19,7 @@ import android.content.IContentProvider;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.Signature;
 import android.content.pm.PackageManager;
 import android.content.pm.UserInfo;
 import android.ddm.DdmHandleAppName;
@@ -210,6 +211,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             };
             for (String pkg : managerIds) {
                 if (pkg == null) continue;
+                // WRITE_SECURE_SETTINGS and DUMP only go to the manager and a same-signed flavor.
+                if (!isSignedLikeManager(pkg)) continue;
                 try {
                     Android17Compat.grantRuntimePermission(pkg, WRITE_SECURE_SETTINGS, userId);
                     Android17Compat.grantRuntimePermission(pkg, "android.permission.DUMP", userId);
@@ -320,7 +323,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         String otherApplicationId = ServerConstants.DROPIN_APPLICATION_ID.equals(ServerConstants.MANAGER_APPLICATION_ID)
                 ? ServerConstants.PLUS_APPLICATION_ID : ServerConstants.DROPIN_APPLICATION_ID;
         ApplicationInfo secondaryAi = Android17Compat.getApplicationInfo(otherApplicationId, 0, 0);
-        secondaryManagerAppId = secondaryAi != null ? secondaryAi.uid : -1;
+        secondaryManagerAppId = secondaryAi != null && isSignedLikeManager(otherApplicationId) ? secondaryAi.uid : -1;
 
         configManager = getConfigManager();
         clientManager = getClientManager();
@@ -366,66 +369,32 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             sendBinderToManager();
         });
 
-        // Proactive auto-grant: after service is up, grant all shell-accessible privileged
-        // permissions to every installed package that has declared them, so backup apps and
-        // other tools work without requiring the user to manually grant each one.
-        new Thread(this::scheduleAutoGrantPrivilegedPermissions, "AutoGrantPrivileged").start();
+        // No proactive auto-grant: granting every shell-grantable permission (WRITE_SECURE_SETTINGS,
+        // INSTALL_PACKAGES, ...) to every app that merely declares it handed privileges to apps the
+        // user never chose. "Auto-grant" now only answers an explicit `pm grant` from a client the
+        // user already allowed (see the SU bridge), and turning it off revokes what it granted.
     }
 
-    // Shell-grantable privileged permissions (mirrors PermissionManagerScreen.PRIVILEGED_PERMISSIONS).
-    private static final java.util.Set<String> SHELL_GRANTABLE_PERMISSIONS = new java.util.HashSet<>(java.util.Arrays.asList(
-        "android.permission.READ_LOGS",
-        "android.permission.DUMP",
-        "android.permission.PACKAGE_USAGE_STATS",
-        "android.permission.WRITE_SECURE_SETTINGS",
-        "android.permission.READ_FRAME_BUFFER",
-        "android.permission.INTERACT_ACROSS_USERS",
-        "android.permission.INTERACT_ACROSS_USERS_FULL",
-        "android.permission.MANAGE_USB",
-        "android.permission.BATTERY_STATS",
-        "android.permission.MOUNT_UNMOUNT_FILESYSTEMS",
-        "android.permission.INSTALL_PACKAGES",
-        "android.permission.DELETE_PACKAGES",
-        "android.permission.CHANGE_NETWORK_STATE",
-        "android.permission.CHANGE_WIFI_STATE",
-        "android.permission.ACCESS_WIFI_STATE",
-        "android.permission.MANAGE_NETWORK_POLICY",
-        "android.permission.CONNECTIVITY_INTERNAL",
-        "android.permission.OBSERVE_APP_USAGE",
-        "android.permission.GET_APP_OPS_STATS",
-        "android.permission.MANAGE_APP_OPS_MODES",
-        "android.permission.CHANGE_COMPONENT_ENABLED_STATE",
-        "android.permission.FORCE_STOP_PACKAGES"
-    ));
-
-    private void scheduleAutoGrantPrivilegedPermissions() {
-        if (!isFeatureEnabled("root_auto_grant")) return;
+    /** Revokes every grant the auto-grant feature made (tracked as "package|permission"). */
+    private void revokeAutoGrantedPermissions() {
         try {
-            LOGGER.i("autoGrant: scanning installed packages for privileged permissions");
+            java.util.Set<String> granted = configManager.getAutoGrantedPermissions();
+            if (granted.isEmpty()) return;
             int userId = UserHandleCompat.getUserId(android.os.Process.myUid());
-            java.util.List<PackageInfo> packages =
-                InstalledPackagesCompat.getInstalledPackagesNoThrow(PackageManager.GET_PERMISSIONS, userId);
-            // Grant each (package, permission) pair only once: re-granting on every restart silently
-            // undid manual `pm revoke` calls (#571).
-            java.util.Set<String> already = configManager.getAutoGrantedPermissions();
-            java.util.List<String> newlyGranted = new java.util.ArrayList<>();
-            for (PackageInfo pi : packages) {
-                if (pi.requestedPermissions == null) continue;
-                for (String perm : pi.requestedPermissions) {
-                    if (perm == null || !SHELL_GRANTABLE_PERMISSIONS.contains(perm)) continue;
-                    String key = pi.packageName + "|" + perm;
-                    if (already.contains(key)) continue;
-                    try {
-                        Android17Compat.grantRuntimePermission(pi.packageName, perm, userId);
-                        newlyGranted.add(key);
-                    } catch (Throwable ignored) {
-                    }
+            int revoked = 0;
+            for (String key : granted) {
+                int sep = key.indexOf('|');
+                if (sep <= 0) continue;
+                try {
+                    Android17Compat.revokeRuntimePermission(key.substring(0, sep), key.substring(sep + 1), userId);
+                    revoked++;
+                } catch (Throwable ignored) {
                 }
             }
-            configManager.addAutoGrantedPermissions(newlyGranted);
-            LOGGER.i("autoGrant: granted %d new privileged permission grants (%d already handled)", newlyGranted.size(), already.size());
+            configManager.clearAutoGrantedPermissions();
+            LOGGER.i("autoGrant: turned off, revoked %d of %d grants", revoked, granted.size());
         } catch (Throwable e) {
-            LOGGER.w(e, "autoGrant: scan failed");
+            LOGGER.w(e, "autoGrant: revoke failed");
         }
     }
 
@@ -462,6 +431,41 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         return false;
     }
 
+    /**
+     * Whether {@code packageName} is the running manager or is signed with the same certificate.
+     * Plus and Drop-In are one codebase under two ids and may be installed side by side; trusting
+     * the other id by name alone would make any app sideloaded under it (or stock Shizuku, which
+     * uses the Drop-In id) a manager with WRITE_SECURE_SETTINGS and every API unprompted.
+     */
+    private static boolean isSignedLikeManager(String packageName) {
+        String manager = MANAGER_APPLICATION_ID;
+        if (manager == null || packageName == null) return false;
+        if (manager.equals(packageName)) return true;
+        try {
+            Signature[] expected = currentSigners(manager);
+            Signature[] actual = currentSigners(packageName);
+            if (expected == null || actual == null || expected.length == 0) return false;
+            return new java.util.HashSet<>(java.util.Arrays.asList(expected))
+                    .equals(new java.util.HashSet<>(java.util.Arrays.asList(actual)));
+        } catch (Throwable e) {
+            LOGGER.w(e, "signature check failed for %s", packageName);
+            return false;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static Signature[] currentSigners(String packageName) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES, 0);
+            if (pi == null || pi.signingInfo == null) return null;
+            return pi.signingInfo.hasMultipleSigners()
+                    ? pi.signingInfo.getApkContentsSigners()
+                    : pi.signingInfo.getSigningCertificateHistory();
+        }
+        PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_SIGNATURES, 0);
+        return pi != null ? pi.signatures : null;
+    }
+
     private boolean isManagerAppId(int appId) {
         int cleanAppId = UserHandleCompat.getAppId(appId);
         int cleanManagerAppId = UserHandleCompat.getAppId(managerAppId);
@@ -486,9 +490,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         String otherApplicationId = ServerConstants.DROPIN_APPLICATION_ID.equals(ServerConstants.MANAGER_APPLICATION_ID)
                 ? ServerConstants.PLUS_APPLICATION_ID : ServerConstants.DROPIN_APPLICATION_ID;
         ApplicationInfo secondaryAi = Android17Compat.getApplicationInfo(otherApplicationId, 0, 0);
-        if (secondaryAi != null) {
-            secondaryManagerAppId = secondaryAi.uid;
-        }
+        secondaryManagerAppId = secondaryAi != null && isSignedLikeManager(otherApplicationId) ? secondaryAi.uid : -1;
         LOGGER.i("Re-resolved manager appId=%d secondary=%d", managerAppId, secondaryManagerAppId);
         return true;
     }
@@ -675,9 +677,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
 
         // Accept either manager flavor's applicationId - see secondaryManagerAppId's declaration.
+        // The other flavor's id only counts when it is the trusted secondary manager (same signing
+        // certificate) - anyone can install an app under that package name.
         isManager = MANAGER_APPLICATION_ID.equals(requestPackageName)
-                || ServerConstants.DROPIN_APPLICATION_ID.equals(requestPackageName)
-                || ServerConstants.PLUS_APPLICATION_ID.equals(requestPackageName);
+                || ((ServerConstants.DROPIN_APPLICATION_ID.equals(requestPackageName)
+                        || ServerConstants.PLUS_APPLICATION_ID.equals(requestPackageName))
+                    && isManagerAppId(UserHandleCompat.getAppId(callingUid)));
 
         if (isManager) {
             grantManagerEssentialPermissions();
@@ -825,8 +830,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 ? featureEnabledMap.get(key.substring(0, key.length() - "_enabled".length()))
                 : featureEnabledMap.get(key + "_enabled");
         if (value != null) return value;
-        // Core bridge, mocking, and diagnostic AI features default to true so standalone CLI / ADB runs work
-        if (key.equals("su_bridge") || key.equals("shell_interceptor") || key.equals("root_magisk_mocking") || key.equals("ai_core_plus")) {
+        // Until the manager syncs its flags, match the manager's own defaults. su_bridge and
+        // root_magisk_mocking default to OFF there, so they must not be ON here either: a server
+        // started by the watchdog or at boot would otherwise run them even for a user who turned
+        // them off. Only features that default on in the manager default on here.
+        if (key.equals("shell_interceptor") || key.equals("ai_core_plus")) {
             return true;
         }
         return featureEnabledMap.getOrDefault(key, false);
@@ -1098,7 +1106,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public void updatePlusFeatureEnabled(String key, boolean enabled) {
         enforceManagerPermission("updatePlusFeatureEnabled");
         LOGGER.i("Plus Feature Update: " + key + " -> " + enabled);
+        boolean wasAutoGrant = ("root_auto_grant".equals(key) || "root_auto_grant_enabled".equals(key))
+                && isFeatureEnabled("root_auto_grant");
         featureEnabledMap.put(key, enabled);
+        if (wasAutoGrant && !enabled) {
+            new Thread(this::revokeAutoGrantedPermissions, "AutoGrantRevoke").start();
+        }
     }
 
     @Override
@@ -1613,6 +1626,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         try {
                             // Primary: direct Binder IPC — works at shell UID, no exec/fork needed.
                             Android17Compat.grantRuntimePermission(targetPkg, perm, grantUserId);
+                            // Tracked so turning auto-grant off can revoke it again.
+                            configManager.addAutoGrantedPermissions(java.util.Collections.singletonList(targetPkg + "|" + perm));
                             return newProcessInternal(new String[]{"true"}, env, dir);
                         } catch (Exception e) {
                             LOGGER.w(e, "SUBridge: grantRuntimePermission IPC failed for %s/%s, falling back to exec", targetPkg, perm);
@@ -3195,7 +3210,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public void registerAIAutomationBridge(af.shizuku.server.IAIAutomationBridge bridge) {
-        enforceCallingPermission("registerAIAutomationBridge");
+        // Manager only: the bridge answers other clients' UI-hierarchy, touch and text requests,
+        // so any granted app registering its own would intercept them.
+        enforceManagerPermission("registerAIAutomationBridge");
         this.aiAutomationBridge = bridge;
         if (aiCorePlus != null) {
             aiCorePlus.setAutomationBridge(bridge);

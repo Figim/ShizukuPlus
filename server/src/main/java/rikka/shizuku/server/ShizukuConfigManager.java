@@ -519,6 +519,14 @@ public class ShizukuConfigManager extends ConfigManager {
         }
     }
 
+    public void clearAutoGrantedPermissions() {
+        synchronized (this) {
+            if (config.autoGrantedPermissions == null || config.autoGrantedPermissions.isEmpty()) return;
+            config.autoGrantedPermissions = new java.util.ArrayList<>();
+            scheduleWriteLocked(true);
+        }
+    }
+
     public void markPermGrantMigrationDone() {
         synchronized (this) {
             if (config.permGrantMigrationDone) {

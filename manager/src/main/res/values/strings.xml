@@ -651,7 +651,7 @@
     <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
     <string name="settings_root_magisk_mocking_summary">Fakes Magisk binaries, properties, and internal folders to fool root-detecting applications.</string>
     <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
-    <string name="settings_root_auto_grant_summary">Automatically approves \'pm grant\' requests for sensitive permissions like WRITE_SECURE_SETTINGS.</string>
+    <string name="settings_root_auto_grant_summary">Approves \'pm grant\' requests from apps you already allowed, including sensitive permissions like WRITE_SECURE_SETTINGS. Turning it off revokes what it granted.</string>
     <string name="settings_root_file_interceptor">Smart file interceptor</string>
     <string name="settings_root_file_interceptor_summary">Automatically injects permission-preservation flags into file operations targeting sensitive system paths.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulation</string>
