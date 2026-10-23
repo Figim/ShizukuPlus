@@ -28,6 +28,23 @@
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_experimental_color"
+        android:title="@string/settings_experimental_category_color"
+        android:icon="@drawable/ic_palette_24"
+        app:collapsible="false"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="experimental_color_schemes"
+            android:title="@string/settings_experimental_color_schemes_title"
+            android:summary="@string/settings_experimental_color_schemes_summary"
+            android:icon="@drawable/ic_palette_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_experimental_nav"
         android:title="@string/settings_experimental_category_nav"
         android:icon="@drawable/ic_nav_apps_24"

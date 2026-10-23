@@ -427,7 +427,11 @@
     <string name="settings_floating_nav_autohide">Auto-hide on scroll</string>
     <string name="settings_floating_nav_autohide_summary">Fluidly retract the floating bar when scrolling down and restore on scroll up</string>
     <string name="settings_high_contrast_title">High contrast mode</string>
-    <string name="settings_high_contrast_summary">Stronger contrast for text, buttons, cards and borders</string>
+    <string name="settings_high_contrast_summary">Sharpen card borders and container separation for enhanced visual definition</string>
+    <string name="settings_high_contrast_summary_full">Stronger contrast for text, buttons, cards and borders</string>
+    <string name="settings_experimental_color_schemes_title">Full colour schemes</string>
+    <string name="settings_experimental_color_schemes_summary">Custom accents colour every part of the app, and High contrast and Android\'s contrast setting switch to matching high-contrast schemes</string>
+    <string name="settings_experimental_category_color">Colour</string>
     <string name="custom_icon_studio_saved_success">Icon saved to Downloads/ShizukuPlus/Icons</string>
     <string name="custom_icon_studio_save_png_short">Save PNG</string>
     <string name="custom_icon_studio_saved_to">Icon saved to %1$s</string>

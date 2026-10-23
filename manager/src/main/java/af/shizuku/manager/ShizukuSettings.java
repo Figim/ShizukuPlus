@@ -184,6 +184,8 @@ public class ShizukuSettings {
         public static final String KEY_CRASH_REPORTING = "crash_reporting_enabled";
         public static final String KEY_CRASH_REPORTING_ASKED = "crash_reporting_asked";
         public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
+        /** Experimental: generated accent schemes + Medium/High contrast schemes (off = released accents). */
+        public static final String KEY_EXPERIMENTAL_COLOR_SCHEMES = "experimental_color_schemes";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
         public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
@@ -1964,6 +1966,11 @@ public class ShizukuSettings {
      * hidden behind a Developer options toggle. Defaults to on only for people who already changed
      * the icon or name, so nobody is left with a camouflaged icon they can no longer switch back.
      */
+    public static boolean isExperimentalColorSchemesEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_EXPERIMENTAL_COLOR_SCHEMES, false);
+    }
+
     public static boolean isExperimentalAppIdentityEnabled() {
         SharedPreferences p = getPreferences();
         if (p == null) return false;

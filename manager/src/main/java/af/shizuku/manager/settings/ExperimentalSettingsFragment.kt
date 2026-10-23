@@ -32,6 +32,12 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        // Full colour schemes re-themes everything: recreate once the new value is saved.
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_EXPERIMENTAL_COLOR_SCHEMES)?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition() }
+            true
+        }
+
         // Floating navigation bar: its options only matter while it's on - hide, don't grey out.
         val navToggle = findPreference<TwoStatePreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_ENABLED)
         val navChildren =

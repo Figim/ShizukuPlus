@@ -21,7 +21,7 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.isBoldTypographyEnabled() + ShizukuSettings.isExpandedHeadersEnabled() +
             ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled() +
             ShizukuSettings.isHighContrastEnabled() + ShizukuSettings.isExpressiveAnimationsEnabled() +
-            contrastLevel(context)
+            ShizukuSettings.isExperimentalColorSchemesEnabled() + contrastLevel(context)
     }
 
     override fun isUsingSystemColor(): Boolean = ThemeHelper.isUsingSystemColor()
@@ -38,27 +38,12 @@ class ThemeDelegateImpl : ThemeDelegate {
                 theme.applyStyle(R.style.ThemeOverlay_DynamicColors_Light, true)
             }
         } else {
-            // Generated schemes (themes_accents.xml): light Standard/Medium/High, then dark.
-            // Default's standard entry is @null - the base theme already is that scheme.
-            val accentArray =
-                when (ShizukuSettings.getPreferences().getString("custom_accent", "DEFAULT")) {
-                    "VIOLET" -> R.array.theme_overlay_accent_violet
-                    "GREEN" -> R.array.theme_overlay_accent_green
-                    "CRIMSON" -> R.array.theme_overlay_accent_crimson
-                    "OCEAN" -> R.array.theme_overlay_accent_ocean
-                    "AMBER" -> R.array.theme_overlay_accent_amber
-                    "ROSE" -> R.array.theme_overlay_accent_rose
-                    "SLATE" -> R.array.theme_overlay_accent_slate
-                    "CYAN" -> R.array.theme_overlay_accent_cyan
-                    "NEON" -> R.array.theme_overlay_accent_neon
-                    else -> R.array.theme_overlay_accent_default
-                }
-            val index = (if (context.resources.configuration.isNight()) 3 else 0) + contrastLevel(context)
-            val styles = context.resources.obtainTypedArray(accentArray)
-            val styleRes = styles.getResourceId(index, 0)
-            styles.recycle()
-            if (styleRes != 0) {
-                theme.applyStyle(styleRes, true)
+            val accent = ShizukuSettings.getPreferences().getString("custom_accent", "DEFAULT")
+            val dark = context.resources.configuration.isNight()
+            if (ShizukuSettings.isExperimentalColorSchemesEnabled()) {
+                applyGeneratedAccent(context, theme, accent, dark)
+            } else {
+                applyClassicAccent(context, theme, accent, dark)
             }
         }
 
@@ -113,8 +98,11 @@ class ThemeDelegateImpl : ThemeDelegate {
             theme.applyStyle(R.style.ThemeOverlay_Shape_Sharp, true)
         }
 
-        // System colours have no generated High contrast scheme, so the switch strengthens outlines.
-        if (ThemeHelper.isUsingSystemColor() && ShizukuSettings.isHighContrastEnabled()) {
+        // Outline-only High contrast: system colours always (they have no generated scheme), and
+        // every colour source while Full colour schemes is off.
+        if (ShizukuSettings.isHighContrastEnabled() &&
+            (ThemeHelper.isUsingSystemColor() || !ShizukuSettings.isExperimentalColorSchemesEnabled())
+        ) {
             val dark = context.resources.configuration.isNight()
             theme.applyStyle(if (dark) R.style.ThemeOverlay_HighContrast_Dark else R.style.ThemeOverlay_HighContrast, true)
         }
@@ -125,8 +113,9 @@ class ThemeDelegateImpl : ThemeDelegate {
 
         val blackStyle = ThemeHelper.getThemeStyleRes(context)
         theme.applyStyle(blackStyle, true)
-        // AMOLED's dim outlines only at standard contrast; above it the scheme's outlines stay.
-        if (contrastLevel(context) == 0) {
+        // AMOLED's dim outlines only at standard contrast; with High contrast or a raised level the
+        // stronger outlines stay (applied after them, Black's used to silently replace them).
+        if (!ShizukuSettings.isHighContrastEnabled() && contrastLevel(context) == 0) {
             when (blackStyle) {
                 R.style.ThemeOverlay_Black -> theme.applyStyle(R.style.ThemeOverlay_Black_Outlines, true)
                 R.style.ThemeOverlay_Black_Plus -> theme.applyStyle(R.style.ThemeOverlay_Black_Plus_Outlines, true)
@@ -134,11 +123,71 @@ class ThemeDelegateImpl : ThemeDelegate {
         }
     }
 
+    /** Generated schemes (themes_accents.xml): light Standard/Medium/High, then dark. */
+    private fun applyGeneratedAccent(
+        context: Context,
+        theme: Theme,
+        accent: String?,
+        dark: Boolean,
+    ) {
+        // Default's standard entry is @null - the base theme already is that scheme.
+        val array =
+            when (accent) {
+                "VIOLET" -> R.array.theme_overlay_accent_violet
+                "GREEN" -> R.array.theme_overlay_accent_green
+                "CRIMSON" -> R.array.theme_overlay_accent_crimson
+                "OCEAN" -> R.array.theme_overlay_accent_ocean
+                "AMBER" -> R.array.theme_overlay_accent_amber
+                "ROSE" -> R.array.theme_overlay_accent_rose
+                "SLATE" -> R.array.theme_overlay_accent_slate
+                "CYAN" -> R.array.theme_overlay_accent_cyan
+                "NEON" -> R.array.theme_overlay_accent_neon
+                else -> R.array.theme_overlay_accent_default
+            }
+        applyFromArray(context, theme, array, (if (dark) 3 else 0) + contrastLevel(context))
+    }
+
+    /** The released hand-made accents (themes_accents_classic.xml): light, dark. */
+    private fun applyClassicAccent(
+        context: Context,
+        theme: Theme,
+        accent: String?,
+        dark: Boolean,
+    ) {
+        val array =
+            when (accent) {
+                "VIOLET" -> R.array.theme_overlay_accent_classic_violet
+                "GREEN" -> R.array.theme_overlay_accent_classic_green
+                "CRIMSON" -> R.array.theme_overlay_accent_classic_crimson
+                "OCEAN" -> R.array.theme_overlay_accent_classic_ocean
+                "AMBER" -> R.array.theme_overlay_accent_classic_amber
+                "ROSE" -> R.array.theme_overlay_accent_classic_rose
+                "SLATE" -> R.array.theme_overlay_accent_classic_slate
+                "CYAN" -> R.array.theme_overlay_accent_classic_cyan
+                "NEON" -> R.array.theme_overlay_accent_classic_neon
+                else -> return
+            }
+        applyFromArray(context, theme, array, if (dark) 1 else 0)
+    }
+
+    private fun applyFromArray(
+        context: Context,
+        theme: Theme,
+        array: Int,
+        index: Int,
+    ) {
+        val styles = context.resources.obtainTypedArray(array)
+        val styleRes = styles.getResourceId(index, 0)
+        styles.recycle()
+        if (styleRes != 0) theme.applyStyle(styleRes, true)
+    }
+
     /**
-     * 0 standard, 1 medium, 2 high. The in-app High contrast switch wins; otherwise Android 14+'s
+     * 0 standard, 1 medium, 2 high (always 0 while Full colour schemes is off). The in-app High contrast switch wins; otherwise Android 14+'s
      * contrast setting (-1..1), with MDC's thresholds: 1/3 and up is medium, 2/3 and up is high.
      */
     private fun contrastLevel(context: Context): Int {
+        if (!ShizukuSettings.isExperimentalColorSchemesEnabled()) return 0
         if (ShizukuSettings.isHighContrastEnabled()) return 2
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return 0
         val contrast = context.getSystemService(UiModeManager::class.java)?.contrast ?: 0f

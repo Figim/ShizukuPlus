@@ -142,9 +142,15 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // High contrast swaps the whole colour scheme (or the outlines with system colours), which
         // only a recreate re-applies.
-        findPreference<Preference>(ShizukuSettings.Keys.KEY_HIGH_CONTRAST)?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = true) }
-            true
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_HIGH_CONTRAST)?.apply {
+            // With Full colour schemes (experimental) High contrast swaps the whole scheme.
+            if (ShizukuSettings.isExperimentalColorSchemesEnabled() && !ThemeHelper.isUsingSystemColor()) {
+                setCustomSummary(getString(R.string.settings_high_contrast_summary_full))
+            }
+            setOnPreferenceChangeListener { _, _ ->
+                view?.post { applyTheme(requiresRecreate = true) }
+                true
+            }
         }
 
         // 2. M3 Expressive Controls
