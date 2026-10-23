@@ -334,9 +334,14 @@ class BehaviorSettingsFragment :
         }
     }
 
-    /** Trusted networks only tune the App connection firewall - hide them while it's off. */
+    /**
+     * Trusted networks only tune the App connection firewall - hide them while it's off. A saved
+     * list keeps the row: joining a trusted Wi-Fi turns the firewall off, and the list must stay
+     * editable then.
+     */
     private fun syncTrustedNetworksAvailability(firewallOn: Boolean) {
-        findPreference<Preference>("automation_trusted_networks")?.setAvailable(firewallOn)
+        findPreference<Preference>("automation_trusted_networks")
+            ?.setAvailable(firewallOn || ShizukuSettings.getTrustedNetworks().isNotBlank())
     }
 
     private fun syncWatchdogPreference() {
