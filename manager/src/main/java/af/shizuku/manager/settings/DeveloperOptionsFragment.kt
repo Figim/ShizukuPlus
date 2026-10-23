@@ -73,7 +73,9 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
             )
         expKeys.forEach { key ->
             findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { _, _ ->
-                ShizukuSettings.syncAllPlusFeaturesToServer()
+                // The listener runs before the switch persists its value; sync once it has, or the
+                // server gets the old state.
+                view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
                 true
             }
         }
