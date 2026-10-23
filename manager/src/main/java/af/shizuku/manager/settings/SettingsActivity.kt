@@ -194,7 +194,11 @@ class SettingsActivity :
      * (forward in, back out) instead of cutting.
      */
     private fun applySharedAxis(next: androidx.fragment.app.Fragment) {
-        if (!af.shizuku.manager.ShizukuSettings.isExperimentalScreenTransitionsEnabled()) return
+        if (!af.shizuku.manager.ShizukuSettings
+                .isExperimentalScreenTransitionsEnabled()
+        ) {
+            return
+        }
         val axis = com.google.android.material.transition.MaterialSharedAxis.X
         next.enterTransition =
             com.google.android.material.transition
