@@ -836,7 +836,7 @@ private fun AdjustPage(
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )
-        Switch(checked = state.shadow, onCheckedChange = { v -> update { copy(shadow = v) } })
+        af.shizuku.manager.widget.AppSwitch(checked = state.shadow, onCheckedChange = { v -> update { copy(shadow = v) } })
     }
 }
 

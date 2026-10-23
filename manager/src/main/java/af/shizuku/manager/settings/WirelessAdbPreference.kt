@@ -259,7 +259,7 @@ class WirelessAdbPreference
                         }
                         Spacer(Modifier.width(12.dp))
                         // Row-level toggleable owns the click; the switch is visual only.
-                        Switch(checked = isOn, onCheckedChange = null, enabled = switchEnabled)
+                        af.shizuku.manager.widget.AppSwitch(checked = isOn, onCheckedChange = null, enabled = switchEnabled)
                     }
 
                     AnimatedVisibility(

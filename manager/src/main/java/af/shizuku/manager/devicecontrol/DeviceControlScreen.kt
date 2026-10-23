@@ -476,7 +476,7 @@ private fun ControlToggleRow(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
         )
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        af.shizuku.manager.widget.AppSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 

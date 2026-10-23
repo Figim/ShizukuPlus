@@ -461,7 +461,7 @@ private fun PermToggleRow(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        Switch(checked = perm.isGranted, onCheckedChange = null)
+        af.shizuku.manager.widget.AppSwitch(checked = perm.isGranted, onCheckedChange = null)
     }
 }
 

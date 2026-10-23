@@ -165,4 +165,10 @@
         <item name="android:letterSpacing">0.04</item>
     </style>
 
+    <!-- Every switch: check / X on the thumb (M3 "icon on both states"), tinted by MDC's state
+         colours. A ?colorOnPrimary tint used to paint the check the same colour as the thumb. -->
+    <style name="Widget.App.MaterialSwitch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="thumbIcon">@drawable/m3_switch_thumb_icon</item>
+    </style>
+
 </resources>
