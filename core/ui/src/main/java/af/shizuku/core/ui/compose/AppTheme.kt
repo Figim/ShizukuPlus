@@ -70,59 +70,85 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
     val surfaceContainerHighest = color(MaterialR.attr.colorSurfaceContainerHighest, fallback.surfaceContainerHighest)
     val surfaceContainerLow = color(MaterialR.attr.colorSurfaceContainerLow, fallback.surfaceContainerLow)
     val surfaceContainerLowest = color(MaterialR.attr.colorSurfaceContainerLowest, fallback.surfaceContainerLowest)
+    val inversePrimary = color(MaterialR.attr.colorPrimaryInverse, fallback.inversePrimary)
+    val inverseSurface = color(MaterialR.attr.colorSurfaceInverse, fallback.inverseSurface)
+    val inverseOnSurface = color(MaterialR.attr.colorOnSurfaceInverse, fallback.inverseOnSurface)
 
     // darkColorScheme()/lightColorScheme() are plain functions (not a shared type with a common
     // named-argument call), so a stored function reference can't be invoked with named args here -
     // hence the duplicated call rather than picking one reference to invoke once.
-    return if (darkTheme) {
-        darkColorScheme(
-            primary = primary, onPrimary = onPrimary,
-            primaryContainer = primaryContainer, onPrimaryContainer = onPrimaryContainer,
-            secondary = secondary, onSecondary = onSecondary,
-            secondaryContainer = secondaryContainer, onSecondaryContainer = onSecondaryContainer,
-            tertiary = tertiary, onTertiary = onTertiary,
-            tertiaryContainer = tertiaryContainer, onTertiaryContainer = onTertiaryContainer,
-            error = error, onError = onError,
-            errorContainer = errorContainer, onErrorContainer = onErrorContainer,
-            background = background, onBackground = onBackground,
-            surface = surface, onSurface = onSurface,
-            surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
-            outline = outline,
-            outlineVariant = outlineVariant,
-            scrim = scrim,
-            surfaceBright = surfaceBright,
-            surfaceDim = surfaceDim,
-            surfaceContainer = surfaceContainer,
-            surfaceContainerHigh = surfaceContainerHigh,
-            surfaceContainerHighest = surfaceContainerHighest,
-            surfaceContainerLow = surfaceContainerLow,
-            surfaceContainerLowest = surfaceContainerLowest,
-        )
-    } else {
-        lightColorScheme(
-            primary = primary, onPrimary = onPrimary,
-            primaryContainer = primaryContainer, onPrimaryContainer = onPrimaryContainer,
-            secondary = secondary, onSecondary = onSecondary,
-            secondaryContainer = secondaryContainer, onSecondaryContainer = onSecondaryContainer,
-            tertiary = tertiary, onTertiary = onTertiary,
-            tertiaryContainer = tertiaryContainer, onTertiaryContainer = onTertiaryContainer,
-            error = error, onError = onError,
-            errorContainer = errorContainer, onErrorContainer = onErrorContainer,
-            background = background, onBackground = onBackground,
-            surface = surface, onSurface = onSurface,
-            surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
-            outline = outline,
-            outlineVariant = outlineVariant,
-            scrim = scrim,
-            surfaceBright = surfaceBright,
-            surfaceDim = surfaceDim,
-            surfaceContainer = surfaceContainer,
-            surfaceContainerHigh = surfaceContainerHigh,
-            surfaceContainerHighest = surfaceContainerHighest,
-            surfaceContainerLow = surfaceContainerLow,
-            surfaceContainerLowest = surfaceContainerLowest,
-        )
-    }
+    val scheme =
+        if (darkTheme) {
+            darkColorScheme(
+                primary = primary, onPrimary = onPrimary,
+                primaryContainer = primaryContainer, onPrimaryContainer = onPrimaryContainer,
+                secondary = secondary, onSecondary = onSecondary,
+                secondaryContainer = secondaryContainer, onSecondaryContainer = onSecondaryContainer,
+                tertiary = tertiary, onTertiary = onTertiary,
+                tertiaryContainer = tertiaryContainer, onTertiaryContainer = onTertiaryContainer,
+                error = error, onError = onError,
+                errorContainer = errorContainer, onErrorContainer = onErrorContainer,
+                background = background, onBackground = onBackground,
+                surface = surface, onSurface = onSurface,
+                surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
+                outline = outline,
+                outlineVariant = outlineVariant,
+                scrim = scrim,
+                surfaceBright = surfaceBright,
+                surfaceDim = surfaceDim,
+                surfaceContainer = surfaceContainer,
+                surfaceContainerHigh = surfaceContainerHigh,
+                surfaceContainerHighest = surfaceContainerHighest,
+                surfaceContainerLow = surfaceContainerLow,
+                surfaceContainerLowest = surfaceContainerLowest,
+                inversePrimary = inversePrimary,
+                inverseSurface = inverseSurface,
+                inverseOnSurface = inverseOnSurface,
+                surfaceTint = primary,
+            )
+        } else {
+            lightColorScheme(
+                primary = primary, onPrimary = onPrimary,
+                primaryContainer = primaryContainer, onPrimaryContainer = onPrimaryContainer,
+                secondary = secondary, onSecondary = onSecondary,
+                secondaryContainer = secondaryContainer, onSecondaryContainer = onSecondaryContainer,
+                tertiary = tertiary, onTertiary = onTertiary,
+                tertiaryContainer = tertiaryContainer, onTertiaryContainer = onTertiaryContainer,
+                error = error, onError = onError,
+                errorContainer = errorContainer, onErrorContainer = onErrorContainer,
+                background = background, onBackground = onBackground,
+                surface = surface, onSurface = onSurface,
+                surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
+                outline = outline,
+                outlineVariant = outlineVariant,
+                scrim = scrim,
+                surfaceBright = surfaceBright,
+                surfaceDim = surfaceDim,
+                surfaceContainer = surfaceContainer,
+                surfaceContainerHigh = surfaceContainerHigh,
+                surfaceContainerHighest = surfaceContainerHighest,
+                surfaceContainerLow = surfaceContainerLow,
+                surfaceContainerLowest = surfaceContainerLowest,
+                inversePrimary = inversePrimary,
+                inverseSurface = inverseSurface,
+                inverseOnSurface = inverseOnSurface,
+                surfaceTint = primary,
+            )
+        }
+    return scheme.copy(
+        primaryFixed = color(MaterialR.attr.colorPrimaryFixed, scheme.primaryFixed),
+        primaryFixedDim = color(MaterialR.attr.colorPrimaryFixedDim, scheme.primaryFixedDim),
+        onPrimaryFixed = color(MaterialR.attr.colorOnPrimaryFixed, scheme.onPrimaryFixed),
+        onPrimaryFixedVariant = color(MaterialR.attr.colorOnPrimaryFixedVariant, scheme.onPrimaryFixedVariant),
+        secondaryFixed = color(MaterialR.attr.colorSecondaryFixed, scheme.secondaryFixed),
+        secondaryFixedDim = color(MaterialR.attr.colorSecondaryFixedDim, scheme.secondaryFixedDim),
+        onSecondaryFixed = color(MaterialR.attr.colorOnSecondaryFixed, scheme.onSecondaryFixed),
+        onSecondaryFixedVariant = color(MaterialR.attr.colorOnSecondaryFixedVariant, scheme.onSecondaryFixedVariant),
+        tertiaryFixed = color(MaterialR.attr.colorTertiaryFixed, scheme.tertiaryFixed),
+        tertiaryFixedDim = color(MaterialR.attr.colorTertiaryFixedDim, scheme.tertiaryFixedDim),
+        onTertiaryFixed = color(MaterialR.attr.colorOnTertiaryFixed, scheme.onTertiaryFixed),
+        onTertiaryFixedVariant = color(MaterialR.attr.colorOnTertiaryFixedVariant, scheme.onTertiaryFixedVariant),
+    )
 }
 
 /**
@@ -238,18 +264,7 @@ fun AppTheme(
             surfaceContainerHigh = if (isAmoledPlus) Color.Black else Color(0xFF121212),
             surfaceContainerHighest = if (isAmoledPlus) Color.Black else Color(0xFF181818),
             surfaceVariant = if (isAmoledPlus) Color(0xFF121212) else Color(0xFF1E1E1E),
-            outlineVariant = if (isAmoledPlus) Color(0xFF1C1C1C) else Color(0xFF262626),
-            outline = if (isAmoledPlus) Color(0xFF333333) else Color(0xFF4A4A4A),
             scrim = Color.Black,
-        )
-    }
-
-    if (isHighContrast) {
-        val highContrastOutline = if (darkTheme) Color(0xFF9E9E9E) else Color(0xFF424242)
-        val highContrastVariant = if (darkTheme) Color(0xFF616161) else Color(0xFF757575)
-        colorScheme = colorScheme.copy(
-            outline = highContrastOutline,
-            outlineVariant = highContrastVariant,
         )
     }
 

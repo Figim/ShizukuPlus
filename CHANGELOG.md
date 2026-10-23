@@ -38,7 +38,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Motion** — dragging Home cards, edit-mode buttons, section arrows and switch icons now move on springs that can be interrupted mid-way (fading never overshoots), and the Home header, System Hub and settings search use the theme's motion. With Expressive animations off, components use the calmer Standard springs, and the emphasized easing curves are correct.
 - **Expressive icon shapes** — pick Cookie, Clover, Sunny, Gem or Flower in Shapes. Switch rows can morph their icon when toggled, and the Home status icon morphs between running and stopped.
 - **AMOLED black** — segmented choices, slider tracks and shape tiles stay visible on pure black. Fixed black bars behind the floating nav bar and the grey block behind the Home top-right buttons.
-- **High contrast mode** — sharper outlines across the app.
+- **Custom accents are full colour schemes** — each accent now sets every colour role (surfaces, outlines, inverse and fixed colours) from its own colour instead of a dozen hand-picked ones, so backgrounds and cards match the accent and dark mode no longer uses neon primaries.
+- **Contrast** — with a custom accent or the default colours, High contrast mode switches to a real high-contrast scheme (stronger text, containers and outlines), and Android 14's Medium and High contrast settings are followed too. With system colours, Android 14 already applies its contrast setting and High contrast mode strengthens outlines. AMOLED black keeps the stronger outlines when contrast is raised.
 - **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Floating, Docked or Compact styles, label options, and an option to hide it while scrolling. Snackbars sit above it.
 
 ### ⚙️ Settings

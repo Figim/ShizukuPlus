@@ -168,8 +168,25 @@ public final class GenerateAccents {
             appendStyle(out, colors, "ThemeOverlay.Accent.Default" + c[0], DEFAULT_SEED, false, Double.parseDouble(c[1]), VARIANT);
             appendStyle(out, colors, "ThemeOverlay.Accent.Default.Dark" + c[0], DEFAULT_SEED, true, Double.parseDouble(c[1]), VARIANT);
         }
+        // Lookup arrays for ThemeDelegateImpl: light Standard/Medium/High, then dark. Default has no
+        // standard entry (@null): its standard scheme is the base theme.
+        for (String accent : SEEDS.keySet()) {
+            appendArray(out, accent, true);
+        }
+        appendArray(out, "Default", false);
         out.append("</resources>\n");
         System.out.print(out);
+    }
+
+    private static void appendArray(StringBuilder out, String accent, boolean hasStandard) {
+        out.append("    <array name=\"theme_overlay_accent_").append(accent.toLowerCase(Locale.ROOT)).append("\">\n");
+        for (String mode : new String[] {"", ".Dark"}) {
+            for (String[] c : CONTRASTS) {
+                boolean none = !hasStandard && c[0].isEmpty();
+                out.append("        <item>").append(none ? "@null" : "@style/ThemeOverlay.Accent." + accent + mode + c[0]).append("</item>\n");
+            }
+        }
+        out.append("    </array>\n");
     }
 
     private static void appendStyle(StringBuilder out, MaterialDynamicColors colors, String name, int seed, boolean dark, double contrast) {
