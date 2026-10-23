@@ -791,11 +791,6 @@ class ServiceDoctorActivity : AppBarActivity() {
                 android.content.res.ColorStateList
                     .valueOf(context.themeColor(colorAttr))
 
-            androidx.appcompat.widget.TooltipCompat.setTooltipText(
-                holder.itemView,
-                "${check.title}: ${check.status}",
-            )
-
             val topic =
                 check.topicId ?: when {
                     check.title.contains("battery", ignoreCase = true) || check.title.contains("sleeping", ignoreCase = true) || check.title.contains("autostart", ignoreCase = true) || check.title.contains("blocker", ignoreCase = true) -> af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_BATTERY_OEM

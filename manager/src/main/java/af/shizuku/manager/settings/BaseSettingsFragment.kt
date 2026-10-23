@@ -394,9 +394,17 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 adapter.onBindViewHolder(holder, position)
                 val pref = (adapter as? androidx.preference.PreferenceGroupAdapter)?.getItem(position)
                 if (pref != null && pref !is PlusFeaturePreference) {
-                    androidx.appcompat.widget.TooltipCompat.setTooltipText(
+                    // No tooltip: the row's title and summary are already visible (M3 keeps
+                    // tooltips for unlabelled controls) and TalkBack read them twice.
+                    val hasHelp =
+                        af.shizuku.manager.knowledgebase.KnowledgebaseRegistry
+                            .topicForPrefKey(pref.key) != null
+                    // Long-press opens help: name the action so TalkBack announces it.
+                    androidx.core.view.ViewCompat.replaceAccessibilityAction(
                         holder.itemView,
-                        pref.summary ?: pref.title,
+                        androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK,
+                        if (hasHelp) holder.itemView.context.getString(R.string.settings_help) else null,
+                        null,
                     )
                     holder.itemView.setOnLongClickListener {
                         val topicId =

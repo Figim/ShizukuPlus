@@ -61,9 +61,13 @@ class PlusFeaturePreference(
 
         holder.itemView.requestLayout()
 
-        androidx.appcompat.widget.TooltipCompat.setTooltipText(
+        // Long-press opens help (or the integration): name the action for TalkBack instead of a
+        // tooltip that repeated the visible title/summary.
+        androidx.core.view.ViewCompat.replaceAccessibilityAction(
             holder.itemView,
-            summary ?: title,
+            androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK,
+            context.getString(R.string.settings_help),
+            null,
         )
 
         holder.itemView.setOnLongClickListener {
@@ -165,6 +169,8 @@ class PlusFeaturePreference(
             )
         }
         titleView.text = spannable
+        // The pills are drawn over a placeholder, so TalkBack wouldn't hear them: say them.
+        titleView.contentDescription = "$title, " + badges.joinToString(", ") { it.first }
     }
 
     /** Draws a pill-shaped badge inline with the preference title. Replaces the stacked

@@ -47,26 +47,19 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
         val root =
             LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                setPadding(dp(20), dp(12), dp(20), dp(20))
-                setBackgroundColor(resolveThemeColor(context, com.google.android.material.R.attr.colorSurface, 0xFFFFFFFF.toInt()))
+                setPadding(dp(20), 0, dp(20), dp(20))
             }
 
-        // Drag handle indicator
-        val dragHandle =
-            View(context).apply {
+        // M3 drag handle: accessible (tap to expand/collapse, announced by TalkBack), unlike a
+        // drawn bar.
+        root.addView(
+            com.google.android.material.bottomsheet.BottomSheetDragHandleView(context).apply {
                 layoutParams =
-                    LinearLayout.LayoutParams(dp(36), dp(4)).apply {
+                    LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                         gravity = Gravity.CENTER_HORIZONTAL
-                        bottomMargin = dp(16)
                     }
-                background =
-                    android.graphics.drawable.GradientDrawable().apply {
-                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = 2f * density
-                        setColor(resolveThemeColor(context, com.google.android.material.R.attr.colorOutlineVariant, 0xFFCCCCCC.toInt()))
-                    }
-            }
-        root.addView(dragHandle)
+            },
+        )
 
         // Header container (Icon + Title + Subtitle)
         val headerLayout =
@@ -216,8 +209,8 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
         buttonRow.addView(webButton)
 
         val closeButton =
-            MaterialButton(context).apply {
-                text = context.getString(android.R.string.ok)
+            MaterialButton(context, null, androidx.appcompat.R.attr.borderlessButtonStyle).apply {
+                text = context.getString(R.string.changelog_close)
                 layoutParams =
                     LinearLayout.LayoutParams(
                         0,
