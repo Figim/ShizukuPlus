@@ -130,6 +130,16 @@ Things discussed or sketched that we never formally decided to build.
 - **Branches**: `review/ur-part2` = master@`9f4287b4` + revert of the 520-string drop (review-noise only), base `review/ur-base2`; does NOT include the security/app-count commits — re-cut before launching the ultrareview.
 - **M3 audit**: full m3.material.io export at `~/m3-corpus/md` (see memory reference-m3-material-corpus); plan in `docs/M3E_DESIGN_PLAN.md`. Hold the ~185-string sentence-case pass until translations are refreshed.
 - **Approved, not started**: replace the AICore+ accessibility service with server-side UiAutomation + direct input injection (remove the service after one release); visible "protect from battery restrictions" switch (server whitelists the manager each start, replacing the magic-number AppOps elevation); keep the pairing a11y helper opt-in.
+- **Part-two ultrareview already ran** (session f0fb31d9, 3rd/last free run, `review/ur-part23` vs `review/ur-base2`); findings NOT yet fixed. `review/ur-part2` (re-cut here) is redundant. Open items:
+  1. Push `api` submodule (`e7d1773`) BEFORE the parent repo (`Service.descriptorOf()` at ShizukuService ~:971/:2111).
+  2. "Trusted networks" row hidden while the firewall is off, but trusted Wi-Fi turns the firewall off (`BehaviorSettingsFragment.kt` ~:337).
+  3. ~~App identity toggle on for everyone (seeded custom_app_name)~~ — fixed by `7a1cd1e8` + one-time cleanup.
+  4. Haptics control treats unset `follow_system_haptics` as on, haptics code as off (`PersonalizationSettingsFragment.kt` ~:270 vs `ShizukuSettings.java` ~:432).
+  5. `corner_rounding_entries` label order mismatches values in az, zh-rCN, ko.
+  6. Icon morph barely plays: spring visibility threshold too large for 0..1 (`ExpressiveShapes.kt` ~:123); also earlier `springTo()` not cancelled on rapid toggles.
+  7. Expanded settings title font cap applies to all themes, not only One UI (`SettingsScreen.kt` ~:277).
+  8. Expressive shapes toggle doesn't show/hide morph rows until reopen.
+  9. Developer options Plus switches sync to the server before persist (needs `view?.post`, like Behavior/Experimental).
 - **User request queued for M3 phase**: About screen - the update-settings card sits awkwardly narrower than the screen; improve the About and Device info sections overall.
 - CHANGELOG entries still owed for all of the above. Nothing pushed.
 
