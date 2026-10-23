@@ -9,7 +9,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Material 3 Expressive look, done properly** — springy motion that follows the Expressive animations switch, a full corner scale that every Shape Style (and Compose screens) now share, a real type scale for Bold typography, morphing expressive icon shapes, and connected toggle-button groups in Settings.
 - **Easier wireless pairing** — the pairing code entry pops up over Settings again, the pairing screen shows live status with a Start button, and an opt-in helper can fill in the code for you.
 - **You decide what gets privileged access** — crash reports, automation apps (Tasker/Locale) and the AICore+ accessibility service now wait for your consent, and the server only trusts a second manager signed like this one.
-- **Faster server** — apps get their Shizuku connection about 3x sooner after the server starts, and the server uses noticeably less memory.
+- **Faster server** — apps get their Shizuku connection about 3x sooner after the server starts, and the server needs much less memory.
 - **Rebuilt Icon Studio, System Hub and Activity Log** — plus a new Experimental features screen and an optional floating navigation bar.
 
 ### 🔒 Privacy & Security
@@ -24,22 +24,22 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Pairing code entry pops up over Settings again** — the "pairing service found" notification alerts as a heads-up instead of updating silently, so you no longer need to pull down the shade mid-pairing. Tapping it no longer opens a dialog that could close Android's pairing screen.
 - **Live pairing status** — the pairing screen shows what's happening (searching, found, pairing, paired, failed and why) and gives you a Start button once paired. If Shizuku+ can write secure settings, it starts the service right after pairing.
 - **Optional "Fill in the code for me"** — an opt-in helper that types the 6-digit code into Android's pairing dialog. It only works inside the Settings app.
-- **MT Manager and other apps with the old rish loader work again.**
+- **MT Manager 2.14 and other apps with the old rish loader now work** — they looked for upstream Shizuku's class name and native library. To answer them in time, Shizuku+ can keep itself running while the server is up (Settings → Startup & behavior; on by default for the Drop-In version).
 
 ### ⚡ Performance
 - **Apps get their binder about 3x faster after the server starts** — the server only looks at running apps and no longer sends the manager its binder twice.
-- **Lower server memory** — the server's code loads straight from the APK and extra Plus services are created only when used.
+- **Lower server memory** — the server maps its code straight from the APK instead of unpacking it into memory (about 56 MB less on a test device), and Plus services are created only when first used. The download is about 4.6 MB larger as a result.
 - **System Hub metrics no longer stutter the UI** — polling runs in the background every 2 seconds.
 
 ### 🎨 Appearance
 - **Shape scale** — every Shape Style now defines the newer Large Increased, Extra Large Increased and Extra Extra Large corners, and off-scale sizes snap to the scale (One UI corners are now 4/12/16/28/32). Compose screens follow your Shape Style and corner rounding choice too, and the update, changelog and activity-log cards use the scale instead of fixed corners.
 - **Rounded edges off stays sharp** — One UI style or a corner rounding choice no longer rounds the corners again.
-- **Bold typography uses the Material 3 Expressive Emphasized styles** — heavier weights at the same sizes, so headings keep their hierarchy. One UI card titles are 22sp (they were larger than headlines), and no text is smaller than 11sp. Feature badges now follow your system font size.
+- **Bold typography uses the Material 3 Expressive Emphasized styles** — headings, titles and labels get heavier weights at the same sizes, so they keep their hierarchy, and body text stays regular. One UI card titles are 22sp (they were larger than headlines), and no text is smaller than 11sp. Feature badges now follow your system font size.
 - **Motion** — with Expressive animations off, components use the calmer Standard springs, and the emphasized easing curves are correct.
 - **Expressive icon shapes** — pick Cookie, Clover, Sunny, Gem or Flower in Shapes. Switch rows can morph their icon when toggled, and the Home status icon morphs between running and stopped.
 - **AMOLED black** — segmented choices, slider tracks and shape tiles stay visible on pure black. Fixed black bars behind the floating nav bar and the grey block behind the Home top-right buttons.
 - **High contrast mode** — sharper outlines across the app.
-- **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Floating, Docked or Compact styles, label options, and it hides on scroll. Snackbars sit above it.
+- **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Floating, Docked or Compact styles, label options, and an option to hide it while scrolling. Snackbars sit above it.
 
 ### ⚙️ Settings
 - **Reorganized** — compact section labels instead of header cards, a shorter expanded header, regrouped Personalization and Startup & behavior, and section jump chips on long screens.
