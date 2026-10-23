@@ -45,6 +45,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Reorganized** — compact section labels instead of header cards, a shorter expanded header, regrouped Personalization and Startup & behavior, and section jump chips on long screens.
 - **New controls** — sliders with haptic detents for corner rounding, animation intensity and shape options, and connected toggle groups that morph between segment and pill shapes.
 - **Experimental features screen** (Settings → System) — try options that are still being polished without opening Developer options. App icon & name customization, Device control and the floating nav bar live there.
+- **About** — the update controls are regular full-width rows like the rest of Settings (they sat in a narrower boxed card), with Stable / Dev as a connected button group, and they show up in settings search.
 - **Live status banner** — says whether Shizuku+ is running and how it was started; tap it to open Service Doctor or Home.
 - Fixed: Trusted networks hiding while you're on a trusted Wi-Fi, the haptics control showing "Follow system" while haptics always played, the Expressive shapes switch not showing its options until you reopened the screen, Developer options switches sending the old value, peer-sync rows showing raw "Sync with %1$s", switch rows buzzing twice, and a crash showing some preference icons in search.
 
@@ -73,7 +74,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🌟 Highlights & What's New
 
 - **App Icon & Name Camouflage** — Disguise Shizuku+ in your launcher as *Dev Tools*, *Files & Storage*, *Quick Notes*, or *Android System*—or pick between the modern Shizuku+ and Classic icon. It's fully integrated into Settings → Personalization.
-- **Streamlined About Screen & All-in-One Update Card** — The About screen is cleaner than ever without cluttered section headers. Version, Changelog, and What's New tour lead the way, followed by a brand-new Material 3 compound Update Card that puts update checks, channel toggles (Stable vs Dev), and auto-install settings all in one place.
+- **Streamlined About Screen & All-in-One Update Card** — The About screen is cleaner than ever without cluttered section headers. Version, Changelog, and What's New tour lead the way, followed by the update controls: check for updates, the Stable / Dev channel, auto-check and auto-install.
 - **Interactive Multi-Card Onboarding Tour** — Whether you're setting up for the first time or checking out recent updates, an 8-card interactive walkthrough introduces you to gestures, theming, Network Trust Shield, and layout controls. You can revisit it anytime via What's New or Settings → About.
 - **Normalized Home Card Margins & Status Card Styling** — Eliminated launch animation glitches that made cards appear with uneven margins. The Server Status card now has proper breathing room at the top, along with optional outline borders matching the home cards.
 - **Instant & Smarter Wireless ADB** — Connects to Wireless Debugging in a fraction of a second on boot and network changes. Shizuku+ probes candidate ports in parallel and never stacks duplicate "Allow USB debugging?" prompts.

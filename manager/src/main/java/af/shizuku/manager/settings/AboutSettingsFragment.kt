@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
+import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -21,12 +22,14 @@ import timber.log.Timber
 class AboutSettingsFragment : BaseSettingsFragment() {
     companion object {
         private const val TAG = "AboutSettingsFragment"
-        private const val KEY_UPDATE_CARD = "update_card"
+        private const val KEY_CHECK_FOR_UPDATE = "check_for_update"
+        private const val KEY_UPDATE_CHANNEL = "update_channel"
         private const val RELEASES_URL = "https://github.com/thejaustin/ShizukuPlus/releases"
     }
 
     private val updateManager: UpdateManager by inject()
     private var versionClickCount = 0
+    private var isCheckingForUpdate = false
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_about)
 
@@ -118,57 +121,51 @@ class AboutSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun setupUpdateCardPreference() {
-        val pref = findPreference<UpdateSettingsPreference>(KEY_UPDATE_CARD) ?: return
-        pref.channel = ShizukuSettings.getUpdateChannel()
-        pref.isAutoUpdateEnabled = ShizukuSettings.isAutoUpdateEnabled()
-        pref.isAutoInstallEnabled = ShizukuSettings.isAutoInstallEnabled()
         updateLastCheckSummary()
 
-        pref.onCheckClickListener = {
-            checkForUpdate()
+        findPreference<Preference>(KEY_CHECK_FOR_UPDATE)?.setOnPreferenceClickListener {
+            if (!isCheckingForUpdate) checkForUpdate()
+            true
         }
 
-        pref.onChannelChangeListener = { newChannel ->
-            if (newChannel == "dev") {
+        findPreference<SegmentedControlPreference>(KEY_UPDATE_CHANNEL)?.let { channelPref ->
+            channelPref.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue != "dev") return@setOnPreferenceChangeListener true
+                // Dev builds can be unstable: only switch once the user confirms.
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.update_channel_dev_warning_title)
                     .setMessage(R.string.update_channel_dev_warning_message)
                     .setPositiveButton(R.string.update_channel_dev) { _, _ ->
-                        ShizukuSettings.setUpdateChannel("dev")
-                        pref.channel = "dev"
-                    }.setNegativeButton(android.R.string.cancel) { _, _ ->
-                        pref.channel = "stable"
-                    }.setOnCancelListener {
-                        pref.channel = "stable"
-                    }.show()
-            } else {
-                ShizukuSettings.setUpdateChannel("stable")
-                pref.channel = "stable"
+                        channelPref.value = "dev"
+                    }.setNegativeButton(android.R.string.cancel, null)
+                    .show()
+                false
             }
         }
 
-        pref.onAutoUpdateChangeListener = { enabled ->
-            ShizukuSettings.setAutoUpdateEnabled(enabled)
-            if (!enabled) {
-                ShizukuSettings.setAutoInstallEnabled(false)
-                pref.isAutoInstallEnabled = false
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_UPDATE_ENABLED)
+            ?.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue == false) {
+                    findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_INSTALL_ENABLED)?.isChecked = false
+                }
+                true
             }
-        }
 
-        pref.onAutoInstallChangeListener = { enabled ->
-            if (enabled && !updateManager.canRequestPackageInstalls()) {
-                pref.isAutoInstallEnabled = false
-                showPermissionRequiredDialog()
-            } else {
-                ShizukuSettings.setAutoInstallEnabled(enabled)
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_INSTALL_ENABLED)
+            ?.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue == true && !updateManager.canRequestPackageInstalls()) {
+                    showPermissionRequiredDialog()
+                    false
+                } else {
+                    true
+                }
             }
-        }
     }
 
     private fun updateLastCheckSummary() {
-        val pref = findPreference<UpdateSettingsPreference>(KEY_UPDATE_CARD) ?: return
+        val pref = findPreference<Preference>(KEY_CHECK_FOR_UPDATE) ?: return
         val lastCheck = ShizukuSettings.getLastUpdateCheckTime()
-        pref.statusText =
+        val status =
             when {
                 ShizukuSettings.wasLastUpdateCheckFailed() && lastCheck > 0 -> {
                     val date =
@@ -193,12 +190,12 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 else ->
                     getString(R.string.settings_check_for_update_summary)
             }
+        pref.setCustomSummary(status)
     }
 
     private fun checkForUpdate() {
-        val pref = findPreference<UpdateSettingsPreference>(KEY_UPDATE_CARD)
-        pref?.isChecking = true
-        pref?.statusText = getString(R.string.update_checking)
+        isCheckingForUpdate = true
+        findPreference<Preference>(KEY_CHECK_FOR_UPDATE)?.setCustomSummary(getString(R.string.update_checking))
         val channel = ShizukuSettings.getUpdateChannel()
         lifecycleScope.launch {
             try {
@@ -207,7 +204,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                         if (isAdded) {
                             ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
                             ShizukuSettings.setLastUpdateCheckFailed(false)
-                            pref?.isChecking = false
+                            isCheckingForUpdate = false
                             updateLastCheckSummary()
                             showUpdateAvailableDialog(result.info)
                         }
@@ -216,7 +213,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                         if (isAdded) {
                             ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
                             ShizukuSettings.setLastUpdateCheckFailed(false)
-                            pref?.isChecking = false
+                            isCheckingForUpdate = false
                             updateLastCheckSummary()
                             showUpToDateDialog()
                         }
@@ -224,7 +221,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                     is UpdateChecker.CheckResult.NetworkError -> {
                         if (isAdded) {
                             ShizukuSettings.setLastUpdateCheckFailed(true)
-                            pref?.isChecking = false
+                            isCheckingForUpdate = false
                             updateLastCheckSummary()
                             showErrorDialog()
                         }
@@ -234,7 +231,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 Timber.tag(TAG).e(e, "Unexpected error checking for update")
                 if (isAdded) {
                     ShizukuSettings.setLastUpdateCheckFailed(true)
-                    pref?.isChecking = false
+                    isCheckingForUpdate = false
                     updateLastCheckSummary()
                     showErrorDialog()
                 }

@@ -19,8 +19,34 @@
         android:summary="@string/onboarding_take_tour_summary"
         android:icon="@drawable/ic_sparkle_24" />
 
-    <af.shizuku.manager.settings.UpdateSettingsPreference
-        android:key="update_card" />
+    <Preference
+        android:key="check_for_update"
+        android:title="@string/settings_about_category_updates"
+        android:summary="@string/settings_check_for_update_summary"
+        android:icon="@drawable/ic_update_24" />
+
+    <af.shizuku.manager.settings.SegmentedControlPreference
+        android:key="update_channel"
+        android:title="@string/settings_update_channel_title"
+        android:icon="@drawable/ic_science_24"
+        android:entries="@array/update_channel_entries"
+        android:entryValues="@array/update_channel_values"
+        android:defaultValue="stable" />
+
+    <af.shizuku.manager.settings.GrayableIconSwitchPreference
+        android:key="auto_update_enabled"
+        android:title="@string/settings_auto_update_title"
+        android:summary="@string/settings_auto_update_summary"
+        android:icon="@drawable/ic_autorenew"
+        android:defaultValue="true" />
+
+    <af.shizuku.manager.settings.GrayableIconSwitchPreference
+        android:key="auto_install_enabled"
+        android:dependency="auto_update_enabled"
+        android:title="@string/settings_auto_install_title"
+        android:summary="@string/settings_auto_install_summary"
+        android:icon="@drawable/ic_install_24"
+        android:defaultValue="false" />
 
     <Preference
         android:key="source_code"
