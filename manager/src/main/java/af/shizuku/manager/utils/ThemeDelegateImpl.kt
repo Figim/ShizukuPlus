@@ -57,13 +57,14 @@ class ThemeDelegateImpl : ThemeDelegate {
             }
         }
 
-        if (!ShizukuSettings.isRoundedEdgesEnabled()) {
-            theme.applyStyle(R.style.ThemeOverlay_Shape_Sharp, true)
-        } else if (!ShizukuSettings.isExpressiveShapesEnabled()) {
+        // Rounded edges off: no shape style here - ThemeOverlay.Shape.Sharp is applied last,
+        // after One UI and the corner rounding override, since both set corner tokens too.
+        val roundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+        if (roundedEdges && !ShizukuSettings.isExpressiveShapesEnabled()) {
             // shape_style's preference entry is UI-disabled while expressive_shapes is off, so
             // it doesn't apply here regardless of its stored value - flatten to plain Material3.
             theme.applyStyle(R.style.ThemeOverlay_Shapes_Standard, true)
-        } else {
+        } else if (roundedEdges) {
             val shapeStyleRes =
                 when (ShizukuSettings.getShapeStyle()) {
                     "zen" -> 0 // "zen": keep the base Material3Expressive corner scale
@@ -101,6 +102,10 @@ class ThemeDelegateImpl : ThemeDelegate {
             }
         if (cornerOverlayRes != 0) {
             theme.applyStyle(cornerOverlayRes, true)
+        }
+
+        if (!roundedEdges) {
+            theme.applyStyle(R.style.ThemeOverlay_Shape_Sharp, true)
         }
 
         if (ShizukuSettings.isHighContrastEnabled()) {

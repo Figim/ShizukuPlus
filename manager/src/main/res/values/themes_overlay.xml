@@ -468,6 +468,9 @@
         <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Sharp.Corner</item>
         <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Sharp.Corner</item>
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Sharp.Corner</item>
         <item name="cardCornerRadius">0dp</item>
     </style>
 
