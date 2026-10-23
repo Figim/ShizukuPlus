@@ -55,7 +55,6 @@
         android:layout_marginTop="16dp"
         android:text="@string/home_adb_button_view_help"
         android:textColor="?colorOnError"
-        android:contentDescription="@string/accessibility_button_view_guide"
         app:backgroundTint="?colorError"
         app:icon="@drawable/ic_outline_open_in_new_24"
         app:iconTint="?colorOnError"

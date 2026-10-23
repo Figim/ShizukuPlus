@@ -27,7 +27,14 @@
         <item name="android:textColor">?colorOnSecondaryContainer</item>
         <item name="iconTint">?colorOnSecondaryContainer</item>
         <item name="iconPadding">12dp</item>
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Material3.Corner.Full</item>
+    </style>
+
+    <!-- The card's main action (Start): M3 allows one filled button per surface; the others
+         stay tonal (CardButton). -->
+    <style name="CardButton.Primary">
+        <item name="android:backgroundTint">?colorPrimary</item>
+        <item name="android:textColor">?colorOnPrimary</item>
+        <item name="iconTint">?colorOnPrimary</item>
     </style>
 
     <!-- TitleLarge + medium, matching the server status card: HeadlineSmall (24sp regular)

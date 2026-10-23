@@ -169,7 +169,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/notification_options"
-                        style="@style/Widget.Material3.Button.TonalButton"
+                        style="?attr/materialButtonTonalStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -317,7 +317,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/developer_options"
-                    style="@style/Widget.Material3.Button.TonalButton"
+                    style="?attr/materialButtonTonalStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -360,7 +360,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/manual_pairing"
-                    style="@style/Widget.Material3.Button.TonalButton"
+                    style="?attr/materialButtonTonalStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -370,7 +370,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/auto_fill_code"
-                    style="@style/Widget.Material3.Button.TextButton.Icon"
+                    style="?attr/borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -414,7 +414,7 @@
                 <!-- Also the way in for someone who paired before: starting needs no new pairing. -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/start_now"
-                    style="@style/Widget.Material3.Button.TonalButton"
+                    style="?attr/materialButtonTonalStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
