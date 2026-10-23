@@ -1156,7 +1156,7 @@
     <string name="settings_haptics_always">Always on</string>
     <string name="settings_personalization_category_app_identity">App icon &amp; name</string>
     <string name="settings_personalization_category_motion_haptics">Motion &amp; haptics</string>
-    <string name="settings_personalization_category_layout_nav">Layout &amp; navigation</string>
+    <string name="settings_personalization_category_layout_nav">Text &amp; layout</string>
     <string name="settings_plus_category_system_performance">System &amp; performance</string>
     <string name="settings_plus_category_security_access">Security &amp; access</string>
     <string name="settings_plus_category_backup_restore">Backup &amp; restore</string>

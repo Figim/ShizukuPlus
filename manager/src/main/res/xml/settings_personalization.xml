@@ -42,13 +42,6 @@
             android:entryValues="@array/custom_accents_values"
             android:icon="@drawable/ic_colorize_24" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="bold_typography"
-            android:title="@string/settings_bold_typography"
-            android:summary="@string/settings_bold_typography_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_format_bold_24" />
-
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="oneui_theme_enabled"
             android:title="@string/settings_oneui_theme"
@@ -196,6 +189,13 @@
         android:title="@string/settings_personalization_category_layout_nav"
         android:icon="@drawable/ic_smartphone_24"
         android:defaultValue="false">
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="bold_typography"
+            android:title="@string/settings_bold_typography"
+            android:summary="@string/settings_bold_typography_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_format_bold_24" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="one_handed_mode"
