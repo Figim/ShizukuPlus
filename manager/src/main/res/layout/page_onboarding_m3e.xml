@@ -50,6 +50,7 @@
             android:layout_marginBottom="8dp" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
+            style="@style/Widget.Material3Expressive.MaterialButtonToggleGroup"
             android:id="@+id/toggle_group_icon_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +60,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_icon_filled"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -67,7 +68,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_icon_outlined"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -75,7 +76,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_icon_twotone"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
