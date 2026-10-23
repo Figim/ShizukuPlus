@@ -159,6 +159,7 @@ class SettingsActivity :
                 putString("highlight_key", item.key)
             }
 
+        applySharedAxis(fragment)
         supportFragmentManager
             .beginTransaction()
             .setReorderingAllowed(true)
@@ -176,6 +177,7 @@ class SettingsActivity :
         val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, fragmentName)
         fragment.arguments = pref.extras
 
+        applySharedAxis(fragment)
         supportFragmentManager
             .beginTransaction()
             .setReorderingAllowed(true)
@@ -185,6 +187,29 @@ class SettingsActivity :
 
         currentTitle = pref.title?.toString() ?: currentTitle
         return true
+    }
+
+    /**
+     * Experimental "Material screen transitions": settings pages slide on the shared X axis
+     * (forward in, back out) instead of cutting.
+     */
+    private fun applySharedAxis(next: androidx.fragment.app.Fragment) {
+        if (!af.shizuku.manager.ShizukuSettings.isExperimentalScreenTransitionsEnabled()) return
+        val axis = com.google.android.material.transition.MaterialSharedAxis.X
+        next.enterTransition =
+            com.google.android.material.transition
+                .MaterialSharedAxis(axis, true)
+        next.returnTransition =
+            com.google.android.material.transition
+                .MaterialSharedAxis(axis, false)
+        supportFragmentManager.findFragmentById(R.id.fragment_container)?.apply {
+            exitTransition =
+                com.google.android.material.transition
+                    .MaterialSharedAxis(axis, true)
+            reenterTransition =
+                com.google.android.material.transition
+                    .MaterialSharedAxis(axis, false)
+        }
     }
 
     fun updateTitle(title: String) {

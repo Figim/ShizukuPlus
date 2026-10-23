@@ -78,8 +78,18 @@ abstract class AppActivity : MaterialActivity() {
         if (!suppressTransitionOnCreate) {
             try {
                 window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-                window.enterTransition = android.transition.Explode()
-                window.exitTransition = android.transition.Explode()
+                if (materialScreenTransitions()) {
+                    // Experimental: M3 shared axis X - forward slides in from the end, back
+                    // reverses it. Replaces Explode, which isn't an M3 pattern.
+                    val axis = com.google.android.material.transition.platform.MaterialSharedAxis.X
+                    window.enterTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, true)
+                    window.exitTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, true)
+                    window.reenterTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, false)
+                    window.returnTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, false)
+                } else {
+                    window.enterTransition = android.transition.Explode()
+                    window.exitTransition = android.transition.Explode()
+                }
             } catch (_: Exception) {
             }
         }
@@ -197,10 +207,20 @@ abstract class AppActivity : MaterialActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         if (!super.onSupportNavigateUp()) {
-            finish()
+            // With Material screen transitions, toolbar back plays the same return transition as
+            // the system back gesture instead of cutting.
+            if (materialScreenTransitions()) finishAfterTransition() else finish()
         }
         return true
     }
+
+    /** Experimental > "Material screen transitions" (key must match ShizukuSettings.Keys). */
+    protected fun materialScreenTransitions(): Boolean =
+        runCatching {
+            createDeviceProtectedStorageContext()
+                .getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+                .getBoolean("experimental_screen_transitions", false)
+        }.getOrDefault(false)
 
     /**
      * [recreate] tears down and rebuilds the window; combined with the Explode

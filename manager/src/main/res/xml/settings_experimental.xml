@@ -42,6 +42,14 @@
             android:defaultValue="false"
             app:badgeType="experimental" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="experimental_screen_transitions"
+            android:title="@string/settings_experimental_screen_transitions_title"
+            android:summary="@string/settings_experimental_screen_transitions_summary"
+            android:icon="@drawable/ic_speed_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
