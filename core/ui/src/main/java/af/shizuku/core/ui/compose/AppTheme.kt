@@ -1,7 +1,10 @@
 package af.shizuku.core.ui.compose
 
 import android.content.Context
+import android.util.TypedValue
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -13,6 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.AbsoluteCornerSize
+import com.google.android.material.shape.CutCornerTreatment
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.R as MaterialR
 
 /**
@@ -118,18 +124,37 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
     }
 }
 
-// Mirrors ShapeAppearance.OneUI.Corner.{ExtraSmall,Small,Medium,Large,ExtraLarge}
-// (manager/src/main/res/values/themes_overlay.xml) so Compose screens match One UI's rounder
-// corner language exactly like the XML side does when ThemeOverlay.OneUI is applied. Only used
-// when the caller passes isOneUi = true (see ShizukuSettings.isOneUiThemeEnabled()) - Compose's
-// stock Material3 Shapes() is left untouched for every other Shape Style (Modern/Classic/Squircle).
-private val OneUiShapes = Shapes(
-    extraSmall = RoundedCornerShape(6.dp),
-    small = RoundedCornerShape(12.dp),
-    medium = RoundedCornerShape(18.dp),
-    large = RoundedCornerShape(26.dp),
-    extraLarge = RoundedCornerShape(36.dp),
-)
+/**
+ * Reads the corner scale from the hosting Activity's theme, like [androidColorScheme] does for
+ * colour. ThemeDelegateImpl has already applied the Shape Style, One UI, corner rounding and
+ * Rounded edges overlays, so XML and Compose components get the same corners. A token that
+ * doesn't resolve, or isn't an absolute size, keeps the Compose default for that slot.
+ */
+private fun androidShapes(context: Context): Shapes {
+    val defaults = Shapes()
+    val rect = android.graphics.RectF()
+    fun shape(attr: Int, fallback: CornerBasedShape): CornerBasedShape {
+        val tv = TypedValue()
+        if (!context.theme.resolveAttribute(attr, tv, true) || tv.resourceId == 0) return fallback
+        val model =
+            runCatching { ShapeAppearanceModel.builder(context, tv.resourceId, 0).build() }
+                .getOrNull() ?: return fallback
+        val size = model.topLeftCornerSize as? AbsoluteCornerSize ?: return fallback
+        val px = size.getCornerSize(rect)
+        return if (model.topLeftCorner is CutCornerTreatment) CutCornerShape(px) else RoundedCornerShape(px)
+    }
+    return Shapes(
+        extraSmall = shape(MaterialR.attr.shapeAppearanceCornerExtraSmall, defaults.extraSmall),
+        small = shape(MaterialR.attr.shapeAppearanceCornerSmall, defaults.small),
+        medium = shape(MaterialR.attr.shapeAppearanceCornerMedium, defaults.medium),
+        large = shape(MaterialR.attr.shapeAppearanceCornerLarge, defaults.large),
+        extraLarge = shape(MaterialR.attr.shapeAppearanceCornerExtraLarge, defaults.extraLarge),
+        largeIncreased = shape(MaterialR.attr.shapeAppearanceCornerLargeIncreased, defaults.largeIncreased),
+        extraLargeIncreased =
+            shape(MaterialR.attr.shapeAppearanceCornerExtraLargeIncreased, defaults.extraLargeIncreased),
+        extraExtraLarge = shape(MaterialR.attr.shapeAppearanceCornerExtraExtraLarge, defaults.extraExtraLarge),
+    )
+}
 
 private val OneUiTypography = Typography(
     headlineLarge = Typography().headlineLarge.copy(
@@ -226,13 +251,19 @@ private val BoldTypography = Typography(
     )
 )
 
-private val SharpShapes = Shapes(
-    extraSmall = RoundedCornerShape(0.dp),
-    small = RoundedCornerShape(0.dp),
-    medium = RoundedCornerShape(0.dp),
-    large = RoundedCornerShape(0.dp),
-    extraLarge = RoundedCornerShape(0.dp),
-)
+private val SharpShapes =
+    RoundedCornerShape(0.dp).let { sharp ->
+        Shapes(
+            extraSmall = sharp,
+            small = sharp,
+            medium = sharp,
+            large = sharp,
+            extraLarge = sharp,
+            largeIncreased = sharp,
+            extraLargeIncreased = sharp,
+            extraExtraLarge = sharp,
+        )
+    }
 
 @Composable
 fun AppTheme(
@@ -282,11 +313,8 @@ fun AppTheme(
         )
     }
 
-    val shapes = when {
-        !isRoundedEdges -> SharpShapes
-        isOneUi -> OneUiShapes
-        else -> Shapes()
-    }
+    val shapes =
+        if (!isRoundedEdges) SharpShapes else remember(context, themeVersion) { androidShapes(context) }
     val typography = when {
         isOneUi -> OneUiTypography
         isBoldTypography -> BoldTypography
