@@ -37,6 +37,7 @@ Effort: S = hours, M = a day or two, L = several days.
 | 2.6 | Sliders only for ordinal values, inactive track `secondary-container`, value applied while dragging (or live preview), TalkBack state description. Categorical choices (accent, shape style) become swatch/shape tile pickers with `selected` semantics. | M |
 | 2.7 | Home cards: drop `checkable`, clickable only with a root action, one card type (filled or outlined), no chips on a clickable card. | S |
 | 2.8 | Help: no tooltip on labelled rows; visible info affordance; help sheet with `BottomSheetDragHandleView` and a text-button close. Badges readable (11sp+) and in the accessible title. | M |
+| 2.9 | **About / Device info:** the update-settings card is narrower than the screen and boxed awkwardly; rebuild About and Device info as spec list sections (full-width segmented rows, one card treatment, connected button group for update channel, no 12sp text). | M |
 
 ## Phase 3 - app shell and motion between screens
 
