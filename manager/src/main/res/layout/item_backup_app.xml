@@ -111,11 +111,10 @@
 
     </LinearLayout>
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/busy_indicator"
-        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:indeterminate="true"
         android:visibility="gone" />
