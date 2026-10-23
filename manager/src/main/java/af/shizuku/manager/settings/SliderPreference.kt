@@ -267,7 +267,8 @@ private fun SliderPreferenceRow(
                 SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.primary,
                     activeTrackColor = MaterialTheme.colorScheme.primary,
-                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    // M3 spec role; surfaceVariant disappeared on AMOLED black.
+                    inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                     activeTickColor = MaterialTheme.colorScheme.onPrimary,
                     inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),

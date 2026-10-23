@@ -309,3 +309,15 @@ fun AppTheme(
         content = content
     )
 }
+
+/**
+ * Container for unselected controls (segments, shape tiles). On a pure-black (AMOLED) surface the
+ * whole surface-container ramp is black or near it, so those controls vanish; the tonal secondary
+ * container stays visible there.
+ */
+val ColorScheme.controlContainer: Color
+    get() = if (surface == Color.Black) secondaryContainer else surfaceContainerHighest
+
+/** Content colour for [controlContainer]. */
+val ColorScheme.onControlContainer: Color
+    get() = if (surface == Color.Black) onSecondaryContainer else onSurface

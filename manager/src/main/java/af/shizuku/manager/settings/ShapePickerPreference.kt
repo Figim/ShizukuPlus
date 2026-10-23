@@ -1,5 +1,6 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.core.ui.compose.controlContainer
 import af.shizuku.manager.R
 import af.shizuku.manager.utils.ExpressiveShapes
 import af.shizuku.manager.utils.HapticUtils
@@ -112,7 +113,7 @@ private fun ShapeTiles(
                 label = "tileMorph",
             )
             val fill by animateColorAsState(
-                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHighest,
+                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.controlContainer,
                 label = "tileFill",
             )
             val label = stringResource(names.getValue(key))

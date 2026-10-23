@@ -1,5 +1,7 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.core.ui.compose.controlContainer
+import af.shizuku.core.ui.compose.onControlContainer
 import af.shizuku.manager.R
 import android.content.Context
 import android.content.res.TypedArray
@@ -147,8 +149,8 @@ fun SegmentedChoiceRow(
                 // AMOLED cards; a tonal container keeps every option visibly tappable.
                 colors =
                     androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
-                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainerHighest,
-                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.controlContainer,
+                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onControlContainer,
                     ),
                 shapes = connectedMorphShapes(index, labels.size),
                 // Tighter than the M3E default so 3-way rows like "Always light / Always dark /
