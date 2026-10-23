@@ -94,10 +94,44 @@ class AppsViewModel(
         load()
     }
 
+    // Set while a load is parked until the binder arrives (see load()).
+    private val waitingForBinder =
+        java.util.concurrent.atomic
+            .AtomicBoolean(false)
+
+    @Volatile
+    private var parkedOnlyCount = true
+
+    private val binderArrived: rikka.shizuku.Shizuku.OnBinderReceivedListener =
+        object : rikka.shizuku.Shizuku.OnBinderReceivedListener {
+            override fun onBinderReceived() {
+                rikka.shizuku.Shizuku.removeBinderReceivedListener(this)
+                waitingForBinder.set(false)
+                load(parkedOnlyCount)
+            }
+        }
+
+    override fun onCleared() {
+        rikka.shizuku.Shizuku.removeBinderReceivedListener(binderArrived)
+        super.onCleared()
+    }
+
     fun load(onlyCount: Boolean = false) {
         val myGeneration = loadGeneration.incrementAndGet()
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // On a cold start the state machine already says RUNNING (restored from the last
+                // run) before the binder has arrived. Counting now makes every granted() check fail
+                // and shows - and caches - "0 authorized apps" until the next load. Count once the
+                // binder is here instead; the cached count stays on screen meanwhile.
+                if (!rikka.shizuku.Shizuku.pingBinder()) {
+                    parkedOnlyCount = parkedOnlyCount && onlyCount
+                    if (waitingForBinder.compareAndSet(false, true)) {
+                        rikka.shizuku.Shizuku.addBinderReceivedListenerSticky(binderArrived)
+                    }
+                    return@launch
+                }
+                parkedOnlyCount = true
                 val allPackages = AuthorizationManager.getPackages()
 
                 // getPackages() silently swallows IPC exceptions and returns [] — if the list is
@@ -124,6 +158,8 @@ class AppsViewModel(
                 // yet propagated) could post AFTER the correct count and wrongly show "0 authorized
                 // apps" on the home screen until the list is reopened (issue #317).
                 if (myGeneration != loadGeneration.get()) return@launch
+                // The binder dropped mid-count: the zeros are lookup failures, not revoked grants.
+                if (!rikka.shizuku.Shizuku.pingBinder()) return@launch
 
                 rawPackages = allPackages
                 if (!onlyCount || filterState != FilterState.ALL) {
@@ -137,7 +173,7 @@ class AppsViewModel(
                 // ignore
             } catch (e: Throwable) {
                 _packages.postValue(Resource.error(e, null))
-                _grantedCount.postValue(Resource.error(e, 0))
+                _grantedCount.postValue(Resource.error(e, _grantedCount.value?.data))
             }
         }
     }

@@ -138,7 +138,9 @@ open class ApplicationManagementActivity :
             toolbar?.title = ""
 
             viewModel.grantedCount.observe(this) { res ->
-                val count = res?.data ?: 0
+                // Unknown until the first count (null data while loading): keep the subtitle as is
+                // rather than flash "0 authorized apps".
+                val count = res?.data ?: return@observe
                 oneUiSubtitle?.text = resources.getQuantityString(R.plurals.home_app_management_authorized_apps_count, count, count)
             }
         }
