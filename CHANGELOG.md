@@ -6,7 +6,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ### 🌟 Highlights
 
-- **Material 3 Expressive look, done properly** — springy motion that follows the Elastic animations switch, a full corner scale that every Shape Style (and Compose screens) now share, a real type scale for Bold typography, morphing expressive icon shapes, and connected toggle-button groups in Settings.
+- **Material 3 Expressive look, done properly** — springy motion that follows the Elastic animations switch, a full corner scale that every Shape Style (and Compose screens) now share, a real type scale for Bold typography, opt-in full colour schemes for accents, morphing expressive icon shapes, and connected toggle-button groups in Settings.
 - **Easier wireless pairing** — the pairing code entry pops up over Settings again, the pairing screen shows live status with a Start button, and an opt-in helper can fill in the code for you.
 - **You decide what gets privileged access** — crash reports, automation apps (Tasker/Locale) and the AICore+ accessibility service now wait for your consent, and the server only trusts a second manager signed like this one.
 - **Faster server** — apps get their Shizuku connection about 3x sooner after the server starts, and the server needs much less memory.
@@ -42,8 +42,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Motion** — dragging Home cards, edit-mode buttons, section arrows and switch icons now move on springs that can be interrupted mid-way (fading never overshoots), and the Home header, System Hub and settings search use the theme's motion. With Elastic animations off, components use the calmer Standard springs, and the emphasized easing curves are correct.
 - **Expressive icon shapes** — pick Cookie, Clover, Sunny, Gem or Flower in Shapes. Switch rows can morph their icon when toggled, and the Home status icon morphs between running and stopped.
 - **AMOLED black** — segmented choices, slider tracks and shape tiles stay visible on pure black. Fixed black bars behind the floating nav bar and the grey block behind the Home top-right buttons.
-- **Custom accents are full colour schemes** — each accent now sets every colour role (surfaces, outlines, inverse and fixed colours) from its own colour instead of a dozen hand-picked ones, so backgrounds and cards match the accent and dark mode no longer uses neon primaries.
-- **Contrast** — with a custom accent or the default colours, High contrast mode switches to a real high-contrast scheme (stronger text, containers and outlines), and Android 14's Medium and High contrast settings are followed too. With system colours, Android 14 already applies its contrast setting and High contrast mode strengthens outlines. AMOLED black keeps the stronger outlines when contrast is raised.
+- **Full colour schemes (Experimental)** — opt in under Settings → System → Experimental features. Custom accents then colour every part of the app (backgrounds, cards, outlines) instead of a dozen hand-picked colours, dark mode drops the neon primaries, and High contrast mode and Android 14's Medium/High contrast setting switch to real high-contrast schemes. Off by default; accents look as before.
+- **High contrast mode** — now applies straight away, strengthens outlines correctly in light mode too, and keeps its stronger outlines with AMOLED black.
 - **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Floating, Docked or Compact styles, label options, and an option to hide it while scrolling. Snackbars sit above it.
 
 ### ⚙️ Settings
