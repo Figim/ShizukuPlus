@@ -703,7 +703,7 @@ open class ApplicationManagementActivity :
                 .animate()
                 .translationY(0f)
                 .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                 .start()
 
             // Bounce the right-swipe icon right to hint the gesture
@@ -713,13 +713,13 @@ open class ApplicationManagementActivity :
                     .animate()
                     .translationX(dpToPx(18f))
                     .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                    .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                     .withEndAction {
                         iconRight
                             .animate()
                             .translationX(0f)
                             .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                            .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                             .start()
                     }.start()
             }, 500)
@@ -731,13 +731,13 @@ open class ApplicationManagementActivity :
                     .animate()
                     .translationX(-dpToPx(18f))
                     .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                    .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                     .withEndAction {
                         iconLeft
                             .animate()
                             .translationX(0f)
                             .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                            .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                             .start()
                     }.start()
             }, 1000)
@@ -749,7 +749,7 @@ open class ApplicationManagementActivity :
                 .translationY(hint.height.toFloat())
                 .alpha(0f)
                 .setDuration(ShizukuSettings.scaledAnimationDuration(280))
-                .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                 .withEndAction { (hint.parent as? ViewGroup)?.removeView(hint) }
                 .start()
         }

@@ -518,7 +518,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                     .scaleX(1f)
                     .scaleY(1f)
                     .setDuration(ShizukuSettings.scaledAnimationDuration(500))
-                    .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                     .start()
             } else {
                 holder.itemView.alpha = restAlpha

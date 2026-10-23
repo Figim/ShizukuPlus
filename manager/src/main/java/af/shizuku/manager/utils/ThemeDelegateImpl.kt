@@ -18,7 +18,7 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled() +
             ShizukuSettings.isBoldTypographyEnabled() + ShizukuSettings.isExpandedHeadersEnabled() +
             ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled() +
-            ShizukuSettings.isHighContrastEnabled()
+            ShizukuSettings.isHighContrastEnabled() + ShizukuSettings.isExpressiveAnimationsEnabled()
     }
 
     override fun isUsingSystemColor(): Boolean = ThemeHelper.isUsingSystemColor()
@@ -105,6 +105,10 @@ class ThemeDelegateImpl : ThemeDelegate {
 
         if (ShizukuSettings.isHighContrastEnabled()) {
             theme.applyStyle(R.style.ThemeOverlay_HighContrast, true)
+        }
+
+        if (!ShizukuSettings.isExpressiveAnimationsEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Motion_Standard, true)
         }
 
         theme.applyStyle(ThemeHelper.getThemeStyleRes(context), true)

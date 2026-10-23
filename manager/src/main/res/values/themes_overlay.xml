@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="ThemeOverlay"/>
     <style name="ThemeOverlay.Accent" parent=""/>
 
@@ -599,6 +599,17 @@
     </style>
     <style name="ThemeOverlay.CornerRounding.Maximum" parent="">
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CornerRounding.Maximum.ExtraLarge</item>
+    </style>
+
+    <!-- "Expressive animations" off: MDC components move on the Standard springs (no bounce)
+         instead of the Expressive ones the base theme sets. -->
+    <style name="ThemeOverlay.Motion.Standard" parent="" tools:ignore="PrivateResource">
+        <item name="motionSpringFastSpatial">@style/Motion.Material3.Spring.Standard.Fast.Spatial</item>
+        <item name="motionSpringFastEffects">@style/Motion.Material3.Spring.Standard.Fast.Effects</item>
+        <item name="motionSpringDefaultSpatial">@style/Motion.Material3.Spring.Standard.Default.Spatial</item>
+        <item name="motionSpringDefaultEffects">@style/Motion.Material3.Spring.Standard.Default.Effects</item>
+        <item name="motionSpringSlowSpatial">@style/Motion.Material3.Spring.Standard.Slow.Spatial</item>
+        <item name="motionSpringSlowEffects">@style/Motion.Material3.Spring.Standard.Slow.Effects</item>
     </style>
 
 </resources>

@@ -184,7 +184,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             .alpha(1f)
             .translationY(0f)
             .setDuration(ShizukuSettings.scaledAnimationDuration(320))
-            .setInterpolator(android.view.animation.PathInterpolator(0.05f, 0.7f, 0.1f, 1f))
+            .setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
             .start()
     }
 
@@ -297,9 +297,9 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         val duration = ShizukuSettings.scaledAnimationDuration(if (hide) 200 else 280)
         val interpolator =
             if (hide) {
-                android.view.animation.PathInterpolator(0.3f, 0f, 0.8f, 0.15f)
+                af.shizuku.manager.utils.MotionUtils.EMPHASIZED_ACCELERATE
             } else {
-                android.view.animation.PathInterpolator(0.05f, 0.7f, 0.1f, 1f)
+                af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE
             }
         bar
             .animate()

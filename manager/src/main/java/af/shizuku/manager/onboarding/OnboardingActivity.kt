@@ -231,13 +231,13 @@ class OnboardingActivity : AppActivity() {
             .animate()
             .translationX(shift)
             .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+            .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
             .withEndAction {
                 iconRight
                     .animate()
                     .translationX(0f)
                     .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                    .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                     .start()
             }.start()
 
@@ -247,13 +247,13 @@ class OnboardingActivity : AppActivity() {
                 .animate()
                 .translationX(-shift)
                 .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                 .withEndAction {
                     iconLeft
                         .animate()
                         .translationX(0f)
                         .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                        .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                        .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                         .start()
                 }.start()
         }, 400)
