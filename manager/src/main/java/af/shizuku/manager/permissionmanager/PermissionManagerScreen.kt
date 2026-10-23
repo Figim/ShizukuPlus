@@ -8,7 +8,7 @@ import af.shizuku.manager.widget.AppSwitch
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
-import androidx.activity.compose.BackHandler
+import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -90,9 +91,17 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
     var appPerms by remember { mutableStateOf<List<PermItem>>(emptyList()) }
     var isLoadingPerms by remember { mutableStateOf(false) }
 
-    BackHandler(enabled = selectedApp != null) {
-        selectedApp = null
-        appPerms = emptyList()
+    // Predictive back out of an app's permissions: the pane shrinks and fades with the gesture
+    // (same feel as Home's edit mode) and snaps back if the gesture is cancelled.
+    var backProgress by remember { mutableStateOf(0f) }
+    PredictiveBackHandler(enabled = selectedApp != null) { events ->
+        try {
+            events.collect { backProgress = it.progress }
+            selectedApp = null
+            appPerms = emptyList()
+        } finally {
+            backProgress = 0f
+        }
     }
 
     // Load app list on open
@@ -157,35 +166,45 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
     ) { paddingValues ->
         if (selectedApp != null) {
             // ── Permission detail view ────────────────────────────────────────
-            PermissionDetailPane(
-                app = selectedApp!!,
-                perms = appPerms,
-                isLoading = isLoadingPerms,
-                paddingValues = paddingValues,
-                onToggle = { perm, grant ->
-                    val app = selectedApp
-                    if (app != null) {
-                        scope.launch(Dispatchers.IO) {
-                            val ok =
-                                if (grant) {
-                                    ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
+            Box(
+                modifier =
+                    Modifier.graphicsLayer {
+                        val scale = 1f - 0.08f * backProgress * backProgress
+                        scaleX = scale
+                        scaleY = scale
+                        alpha = 1f - 0.15f * backProgress
+                    },
+            ) {
+                PermissionDetailPane(
+                    app = selectedApp!!,
+                    perms = appPerms,
+                    isLoading = isLoadingPerms,
+                    paddingValues = paddingValues,
+                    onToggle = { perm, grant ->
+                        val app = selectedApp
+                        if (app != null) {
+                            scope.launch(Dispatchers.IO) {
+                                val ok =
+                                    if (grant) {
+                                        ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
+                                    } else {
+                                        ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
+                                    }
+                                if (ok) {
+                                    withContext(Dispatchers.Main) {
+                                        appPerms =
+                                            appPerms.map {
+                                                if (it.name == perm.name) it.copy(isGranted = grant) else it
+                                            }
+                                    }
                                 } else {
-                                    ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
+                                    Timber.w("PermissionManager: toggle failed for ${perm.name}")
                                 }
-                            if (ok) {
-                                withContext(Dispatchers.Main) {
-                                    appPerms =
-                                        appPerms.map {
-                                            if (it.name == perm.name) it.copy(isGranted = grant) else it
-                                        }
-                                }
-                            } else {
-                                Timber.w("PermissionManager: toggle failed for ${perm.name}")
                             }
                         }
-                    }
-                },
-            )
+                    },
+                )
+            }
         } else {
             // ── App list view ─────────────────────────────────────────────────
             AppListPane(

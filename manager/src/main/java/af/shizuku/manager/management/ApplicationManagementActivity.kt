@@ -108,7 +108,20 @@ open class ApplicationManagementActivity :
         // Predictive back support for selection mode
         backCallback =
             object : androidx.activity.OnBackPressedCallback(false) {
+                // Predictive back preview: the list eases back like Home's edit mode does.
+                override fun handleOnBackProgressed(backEvent: androidx.activity.BackEventCompat) {
+                    if (!ShizukuSettings.isExpressiveAnimationsEnabled()) return
+                    val p = backEvent.progress
+                    val scale = 1f - 0.08f * p * p
+                    recyclerView.scaleX = scale
+                    recyclerView.scaleY = scale
+                    recyclerView.alpha = 1f - 0.15f * p
+                }
+
+                override fun handleOnBackCancelled() = resetListPreview()
+
                 override fun handleOnBackPressed() {
+                    resetListPreview()
                     if (adapter.isSelectionMode) {
                         adapter.isSelectionMode = false
                         invalidateOptionsMenu()
@@ -340,6 +353,12 @@ open class ApplicationManagementActivity :
     }
 
     // ----- Options menu: sort -----
+
+    private fun resetListPreview() {
+        recyclerView.scaleX = 1f
+        recyclerView.scaleY = 1f
+        recyclerView.alpha = 1f
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (adapter.isSelectionMode) {
