@@ -4,9 +4,9 @@
     <string name="translation_contributors">thejaustin</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
     <!-- UI Settings - Expressive -->
-    <string name="settings_expressive_shapes">Expressive Icon Shapes</string>
+    <string name="settings_expressive_shapes">Expressive container shapes</string>
     <string name="settings_expressive_shapes_summary">Use asymmetrical leaf and droplet shapes for icons</string>
-    <string name="settings_expressive_animations">Elastic Animations</string>
+    <string name="settings_expressive_animations">Expressive animations</string>
     <string name="settings_expressive_animations_summary">Enable M3 elastic predictive back and drag scaling</string>
     <string name="settings_icon_style">Icon Style</string>
     <string name="settings_shape_style">Container Shape Style</string>
@@ -313,7 +313,7 @@
     <string name="settings_ai_core_plus_summary">Prioritized NPU and screen context APIs. Enhances Gemini and local LLMs with privileged screen awareness.</string>
     <string name="settings_window_manager_plus">Window Tuner</string>
     <string name="settings_window_manager_plus_summary">Control windowing and Bubble Bars. Used by Taskbar and MacroDroid to manage free-form windows and system overlays.</string>
-    <string name="settings_overlay_manager_plus">↳ System Theming Bridge</string>
+    <string name="settings_overlay_manager_plus">System theming bridge</string>
     <string name="settings_overlay_manager_plus_summary">Manage system RRO overlays. Required for Hex Installer and Substratum themes to function without root.</string>
     <string name="settings_network_governor_plus_summary">Privileged network control. Used by AFWall+ for robust system-wide filtering.</string>
     <string name="settings_activity_manager_plus_summary">Native process control. Allows MacroDroid, Tasker, and Naptime to deeply force-stop apps and set standby buckets.</string>
@@ -341,7 +341,7 @@
     <string name="help_activity_manager_plus_title">About Deep Process Control</string>
     <string name="help_activity_manager_plus_detail">Deep Process Control allows the server to bypass standard app-hibernation and standby restrictions. It can force apps into the RESTRICTED standby bucket or perform a true deepForceStop (killing all services and background jobs), which is essential for aggressive battery-saving tools.</string>
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_developer">Developer Options (Experimental)</string>
+    <string name="settings_plus_category_developer">Experimental tools</string>
     <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
     <string name="settings_root_magisk_mocking_summary">Fakes Magisk binaries, properties, and internal folders to fool root-detecting applications.</string>
     <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
@@ -361,9 +361,9 @@
     <string name="settings_vector_summary">Enable hardware-accelerated vector rendering for improved graphics performance</string>
     <string name="settings_experimental_root_summary">Enable compatibility layer for root-based operations via Shizuku</string>
     <string name="settings_spoof_device_summary">Report a different device model to apps for compatibility or testing purposes</string>
-    <string name="settings_vector_experimental">Vector Acceleration (Experimental)</string>
-    <string name="settings_experimental_root_experimental">Experimental Root Compatibility (Experimental)</string>
-    <string name="settings_spoof_device_experimental">Spoof Device Identity (Experimental)</string>
+    <string name="settings_vector_experimental">Vector acceleration</string>
+    <string name="settings_experimental_root_experimental">Extended root compatibility</string>
+    <string name="settings_spoof_device_experimental">Spoof device identity</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
     <string name="settings_open_source_licenses_summary">Open source libraries used by Shizuku+</string>
     <string name="settings_spoof_target">Target Device</string>

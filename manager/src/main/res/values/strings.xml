@@ -10,9 +10,9 @@
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
-    <string name="settings_expressive_shapes">Expressive icon shapes</string>
+    <string name="settings_expressive_shapes">Expressive container shapes</string>
     <string name="settings_expressive_shapes_summary">Use asymmetrical leaf and droplet shapes for icons</string>
-    <string name="settings_expressive_animations">Animations</string>
+    <string name="settings_expressive_animations">Expressive animations</string>
     <string name="settings_expressive_animations_summary">Springy, expressive motion across the app. Turn off for no in-app animation</string>
     <string name="settings_icon_style">Icon style</string>
     <string name="settings_shape_style">Container shape style</string>
@@ -555,7 +555,7 @@
     <string name="settings_ai_core_plus_summary">Prioritized NPU and screen context APIs. Enhances Gemini and local LLMs with privileged screen awareness.</string>
     <string name="settings_window_manager_plus">Window tuner</string>
     <string name="settings_window_manager_plus_summary">Control windowing and Bubble Bars. Used by Taskbar and MacroDroid to manage free-form windows and system overlays.</string>
-    <string name="settings_overlay_manager_plus">↳ System Theming Bridge</string>
+    <string name="settings_overlay_manager_plus">System theming bridge</string>
     <string name="settings_overlay_manager_plus_summary">Manage system RRO overlays. Required for Hex Installer and Substratum themes to function without root.</string>
     <string name="settings_network_governor_plus_summary">Privileged network control. Used by AFWall+ for robust system-wide filtering.</string>
     <string name="settings_activity_manager_plus_summary">Native process control. Allows MacroDroid, Tasker, and Naptime to deeply force-stop apps and set standby buckets.</string>
@@ -653,7 +653,7 @@
 
     <!-- Plus settings category titles -->
     <string name="settings_plus_category_core">Core</string>
-    <string name="settings_plus_category_developer">Developer options (experimental)</string>
+    <string name="settings_plus_category_developer">Experimental tools</string>
     <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
     <string name="settings_root_magisk_mocking_summary">Fakes Magisk binaries, properties, and internal folders to fool root-detecting applications.</string>
     <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
@@ -691,7 +691,7 @@
     <string name="settings_experimental_root_summary">Enable compatibility layer for root-based operations via Shizuku</string>
     <string name="settings_spoof_device_summary">Report a different device model to apps for compatibility or testing purposes</string>
     <string name="settings_vector_experimental">Vector acceleration</string>
-    <string name="settings_experimental_root_experimental">Experimental root compatibility</string>
+    <string name="settings_experimental_root_experimental">Extended root compatibility</string>
     <string name="settings_spoof_device_experimental">Spoof device identity</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
     <string name="settings_open_source_licenses_summary">Open source libraries used by Shizuku+</string>
@@ -1135,7 +1135,7 @@
     <string name="settings_floating_nav_tabs_title">Tabs</string>
     <string name="settings_floating_nav_tabs_summary">Home and Settings always show. %1$s</string>
     <string name="settings_experimental_summary">Try features that are still being polished</string>
-    <string name="settings_experimental_category_personalization">Personalization</string>
+    <string name="settings_experimental_category_personalization">Home &amp; app identity</string>
     <string name="settings_experimental_app_identity_title">App icon &amp; name customization</string>
     <string name="settings_experimental_app_identity_summary">Adds launcher icon, app name and Icon Studio options to Appearance. Turning it off restores the standard icon and name</string>
     <string name="settings_dark_style_title">Dark style</string>
