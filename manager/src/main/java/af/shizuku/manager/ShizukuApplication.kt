@@ -630,6 +630,8 @@ class ShizukuApplication :
         // One-time sync so the "Start on boot" toggle (Settings > Behavior) reflects reality from
         // the first time anyone looks at it - see syncStartOnBootDefaultIfNeeded()'s doc comment.
         ShizukuSettings.syncStartOnBootDefaultIfNeeded(this)
+        // Before any activity themes itself: Rounded edges / card corner styles -> Corner rounding.
+        ShizukuSettings.migrateCornerSettingsIfNeeded()
 
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
 

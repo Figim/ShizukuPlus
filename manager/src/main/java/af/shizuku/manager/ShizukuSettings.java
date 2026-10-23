@@ -296,12 +296,39 @@ public class ShizukuSettings {
         getPreferences().edit().putBoolean(Keys.KEY_HOME_NOTIF_PERMISSION_REQUESTED, requested).apply();
     }
 
+    /** Corners on unless Corner rounding is "sharp" (the legacy Rounded edges key still counts until migrated). */
     public static boolean isRoundedEdgesEnabled() {
-        return getPreferences().getBoolean(Keys.KEY_ROUNDED_EDGES, true);
+        SharedPreferences p = getPreferences();
+        if (p == null) return true;
+        if ("sharp".equals(p.getString(Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default"))) return false;
+        return p.getBoolean(Keys.KEY_ROUNDED_EDGES, true);
     }
 
-    public static void setRoundedEdgesEnabled(boolean enabled) {
-        getPreferences().edit().putBoolean(Keys.KEY_ROUNDED_EDGES, enabled).apply();
+    /**
+     * Folds the old corner settings into the one Corner rounding control: "Rounded edges" off
+     * becomes Corner rounding "sharp", and the per-surface Home / Settings card corner styles are
+     * dropped so every card follows the theme's corners. Runs at start-up and after a settings
+     * restore (old backups bring the legacy keys back).
+     */
+    public static void migrateCornerSettingsIfNeeded() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return;
+        SharedPreferences.Editor e = p.edit();
+        boolean changed = false;
+        if (p.contains(Keys.KEY_ROUNDED_EDGES)) {
+            if (!p.getBoolean(Keys.KEY_ROUNDED_EDGES, true)) {
+                e.putString(Keys.KEY_CORNER_ROUNDING_OVERRIDE, "sharp");
+            }
+            e.remove(Keys.KEY_ROUNDED_EDGES);
+            changed = true;
+        }
+        for (String key : new String[] {"home_card_corner_style", "settings_card_corner_style"}) {
+            if (p.contains(key)) {
+                e.remove(key);
+                changed = true;
+            }
+        }
+        if (changed) e.apply();
     }
 
     public static boolean isExpressiveShapesEnabled() {

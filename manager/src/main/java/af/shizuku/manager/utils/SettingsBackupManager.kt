@@ -201,12 +201,16 @@ object SettingsBackupManager {
                 editor.putBoolean(ShizukuSettings.Keys.KEY_WATCHDOG, false)
             }
             heldBack = held
-            if (synchronous) {
-                editor.commit()
-            } else {
-                editor.apply()
-                true
-            }
+            val written =
+                if (synchronous) {
+                    editor.commit()
+                } else {
+                    editor.apply()
+                    true
+                }
+            // Old backups carry the pre-merge corner keys.
+            ShizukuSettings.migrateCornerSettingsIfNeeded()
+            written
         } catch (e: Exception) {
             false
         }

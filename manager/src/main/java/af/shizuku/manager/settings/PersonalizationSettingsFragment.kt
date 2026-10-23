@@ -224,38 +224,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        val roundedEdgesPreference = findPreference<TwoStatePreference>("rounded_edges_enabled")
-        val cornerRoundingPreference = findPreference<Preference>("corner_rounding_override")
-        val homeCardCornerPreference = findPreference<Preference>("home_card_corner_style")
-        val settingsCardCornerPreference = findPreference<Preference>("settings_card_corner_style")
-
-        fun syncCornerRoundingAvailability(enabled: Boolean) {
-            cornerRoundingPreference?.let { setChildAvailable(it, enabled) }
-            homeCardCornerPreference?.let { setChildAvailable(it, enabled) }
-            settingsCardCornerPreference?.let { setChildAvailable(it, enabled) }
-        }
-        syncCornerRoundingAvailability(roundedEdgesPreference?.isChecked ?: true)
-
-        roundedEdgesPreference?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                syncCornerRoundingAvailability(newValue)
-            }
-            applyTheme(requiresRecreate = false)
-            true
-        }
-
-        homeCardCornerPreference?.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
-            true
-        }
-
-        settingsCardCornerPreference?.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
-            true
-        }
-
-        cornerRoundingPreference?.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
+        // One corner control (Sharp ... Maximum): Sharp swaps every shape token, which only a
+        // recreate re-applies; post so the new value is saved first.
+        findPreference<Preference>("corner_rounding_override")?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { applyTheme(requiresRecreate = true) }
             true
         }
 
@@ -425,17 +397,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         oneUiThemePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
-        }
-
-        findPreference<TwoStatePreference>(KEY_ROUNDED_EDGES)?.apply {
-            isChecked = ShizukuSettings.isRoundedEdgesEnabled()
-            setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) {
-                    ShizukuSettings.setRoundedEdgesEnabled(newValue)
-                    applyTheme(requiresRecreate = false)
-                }
-                true
-            }
         }
 
         findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->

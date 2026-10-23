@@ -39,6 +39,7 @@
         <item>@string/corner_style_extra_large</item>
     </string-array>
     <string-array name="corner_rounding_entries">
+        <item>@string/corner_style_sharp</item>
         <item>Zərif — 20dp</item>
         <item>Standart M3 — 28dp</item>
         <item>Təkmilləşdirilmiş — 32dp (Defolt)</item>

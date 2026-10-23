@@ -87,6 +87,7 @@
     </string-array>
 
     <string-array name="corner_rounding_entries">
+        <item>@string/corner_style_sharp</item>
         <item>Gentle — 20dp</item>
         <item>Standard — 28dp</item>
         <item>Enhanced — 32dp (Default)</item>
@@ -96,6 +97,7 @@
     </string-array>
 
     <string-array name="corner_rounding_values" translatable="false">
+        <item>sharp</item>
         <item>gentle</item>
         <item>standard</item>
         <item>default</item>

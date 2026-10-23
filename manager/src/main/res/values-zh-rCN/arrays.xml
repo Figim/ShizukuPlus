@@ -37,6 +37,7 @@
     </string-array>
 
     <string-array name="corner_rounding_entries">
+        <item>@string/corner_style_sharp</item>
         <item>柔和 — 20dp</item>
         <item>标准 M3 — 28dp</item>
         <item>增强 — 32dp（默认）</item>
