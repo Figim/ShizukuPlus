@@ -421,4 +421,6 @@
     <string name="legacy_rish_keepalive_channel_name">舊版 rish 相容</string>
     <string name="legacy_rish_keepalive_title">舊版 rish 相容已生效</string>
     <string name="legacy_rish_keepalive_text">正在背景保持 Shizuku+，以便舊版 rish 用戶端請求 Shell 權限。</string>
+    <string name="settings_about_category_app_info">應用程式資訊</string>
+    <string name="settings_about_category_project">專案資訊</string>
 </resources>

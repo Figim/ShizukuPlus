@@ -45,7 +45,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Reorganized** — compact section labels instead of header cards, a shorter expanded header, regrouped Personalization and Startup & behavior, and section jump chips on long screens.
 - **New controls** — sliders with haptic detents for corner rounding, animation intensity and shape options, and connected toggle groups that morph between segment and pill shapes.
 - **Experimental features screen** (Settings → System) — try options that are still being polished without opening Developer options. App icon & name customization, Device control and the floating nav bar live there.
-- **About** — the update controls are regular full-width rows like the rest of Settings (they sat in a narrower boxed card), with Stable / Dev as a connected button group, and they show up in settings search.
+- **About** — grouped into App info, Updates and Project info. The update controls are regular full-width rows like the rest of Settings (they sat in a narrower boxed card), with Stable / Dev as a connected button group, and they show up in settings search. Help and Report a bug moved here from Advanced & diagnostics.
 - **Live status banner** — says whether Shizuku+ is running and how it was started; tap it to open Service Doctor or Home.
 - Fixed: Trusted networks hiding while you're on a trusted Wi-Fi, the haptics control showing "Follow system" while haptics always played, the Expressive shapes switch not showing its options until you reopened the screen, Developer options switches sending the old value, peer-sync rows showing raw "Sync with %1$s", switch rows buzzing twice, and a crash showing some preference icons in search.
 

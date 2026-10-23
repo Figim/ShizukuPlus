@@ -1748,4 +1748,7 @@
     <string name="legacy_rish_keepalive_channel_name">Legacy rish compatibility</string>
     <string name="legacy_rish_keepalive_title">Legacy rish compatibility is active</string>
     <string name="legacy_rish_keepalive_text">Keeping Shizuku+ in the background so legacy rish clients can request the shell binder.</string>
+    <string name="settings_about_category_app_info">App info</string>
+    <string name="settings_about_category_project">Project info</string>
+    <string name="settings_check_for_update_title">Check for update</string>
 </resources>

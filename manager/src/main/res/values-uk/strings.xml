@@ -1319,4 +1319,5 @@
     <!-- Device Control home card (Feature Hub → Experimental) -->
     <string name="settings_device_control_home_title">Картка керування пристроєм</string>
     <string name="settings_device_control_home_summary">Показати картку керування пристроєм на головному екрані. Дозволяє привілейоване керування Wi-Fi, Bluetooth, мобільними даними, дисплеєм, звуком та живленням. Експериментальна функція — може спричинити непередбачувану поведінку на деяких пристроях.</string>
+    <string name="settings_check_for_update_title">Перевірити наявність оновлення</string>
 </resources>

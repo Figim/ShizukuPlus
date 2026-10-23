@@ -970,4 +970,5 @@
     <string name="settings_display_tuner_plus_summary">Display resolution اور DPI override کریں — بالکل adb shell wm size/density کی طرح — تاکہ ایپس اور automation خود ADB access کے بغیر screen layout ایڈجسٹ کر سکیں۔</string>
     <string name="help_display_tuner_plus_title">Display Tuner</string>
     <string name="help_display_tuner_plus_detail">wm shell tool کے ذریعے privileged display configuration فراہم کرتا ہے: resolution (wm size) اور density (wm density) کو on the fly override کریں، current اور physical values پڑھیں، اور overrides کو device defaults پر reset کریں۔ ایپ layout issues ٹھیک کرنے، screen recording کے لیے مخصوص aspect ratio نافذ کرنے، desktop mode tweaks اور accessibility scaling کے لیے مفید ہے — تاریخی طور پر root-only capability اب ADB shell process کے ذریعے دستیاب ہے۔</string>
+    <string name="settings_check_for_update_title">Update چیک کریں</string>
 </resources>

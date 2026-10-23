@@ -145,16 +145,6 @@
             android:summary="@string/scripting_summary"
             android:icon="@drawable/ic_code_24" />
 
-        <Preference
-            android:key="help"
-            android:title="@string/settings_help"
-            android:icon="@drawable/ic_help_outline_24" />
-
-        <Preference
-            android:key="report_bug"
-            android:title="@string/settings_report_bug"
-            android:icon="@drawable/ic_bug_report_24" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

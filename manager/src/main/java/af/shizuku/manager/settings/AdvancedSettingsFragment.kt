@@ -8,7 +8,6 @@ import af.shizuku.manager.backup.BackupRestoreManager
 import af.shizuku.manager.backup.CryptoUtils
 import af.shizuku.manager.database.AppContextManager
 import af.shizuku.manager.security.BiometricLock
-import af.shizuku.manager.utils.CustomTabsHelper
 import af.shizuku.manager.utils.EnvironmentUtils
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -241,16 +240,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
 
         findPreference<CollapsiblePreferenceCategory>("category_adb_tools")
             ?.setChildAvailable(KEY_LEGACY_PAIRING, !EnvironmentUtils.isTelevision())
-
-        findPreference<Preference>(KEY_HELP)?.setOnPreferenceClickListener {
-            CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.help_url))
-            true
-        }
-
-        findPreference<Preference>(KEY_REPORT_BUG)?.setOnPreferenceClickListener {
-            BugReportDialog().show(parentFragmentManager, "BugReportDialog")
-            true
-        }
 
         findPreference<Preference>("reset_adb_keys")?.setOnPreferenceClickListener {
             MaterialAlertDialogBuilder(context)

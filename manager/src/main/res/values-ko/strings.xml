@@ -1199,4 +1199,5 @@
     <string name="accessibility_sim_toggle_automation">자동화 카드 표시 토글</string>
     <string name="accessibility_sim_toggle_activity_log">활동 로그 카드 표시 토글</string>
     <string name="accessibility_sim_toggle_learn_more">자세히 알아보기 카드 표시 토글</string>
+    <string name="settings_check_for_update_title">업데이트 확인</string>
 </resources>

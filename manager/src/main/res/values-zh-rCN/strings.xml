@@ -1517,4 +1517,7 @@
     <string name="legacy_rish_keepalive_channel_name">旧版 rish 兼容</string>
     <string name="legacy_rish_keepalive_title">旧版 rish 兼容已生效</string>
     <string name="legacy_rish_keepalive_text">正在后台保持 Shizuku+，以便旧版 rish 客户端请求 Shell 权限。</string>
+    <string name="settings_about_category_app_info">应用信息</string>
+    <string name="settings_about_category_project">项目信息</string>
+    <string name="settings_check_for_update_title">检查更新</string>
 </resources>

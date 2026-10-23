@@ -1558,4 +1558,7 @@
     <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
     <string name="settings_tcp_add_network_dialog_title">Etibarlı şəbəkə əlavə et</string>
     <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
+    <string name="settings_about_category_app_info">Tətbiq məlumatı</string>
+    <string name="settings_about_category_project">Layihə &amp; hüquqi məlumat</string>
+    <string name="settings_check_for_update_title">Yeniləməni yoxla</string>
 </resources>

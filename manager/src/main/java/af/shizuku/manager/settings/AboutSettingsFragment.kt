@@ -106,6 +106,16 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_HELP)?.setOnPreferenceClickListener {
+            CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.help_url))
+            true
+        }
+
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_REPORT_BUG)?.setOnPreferenceClickListener {
+            BugReportDialog().show(parentFragmentManager, "BugReportDialog")
+            true
+        }
+
         findPreference<Preference>("open_source_licenses")?.setOnPreferenceClickListener {
             CustomTabsHelper.launchUrlOrCopy(
                 requireContext(),
