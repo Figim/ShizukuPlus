@@ -39,9 +39,9 @@
         <item>@string/corner_style_extra_large</item>
     </string-array>
     <string-array name="corner_rounding_entries">
-        <item>Təkmilləşdirilmiş — 32dp (Defolt)</item>
         <item>Zərif — 20dp</item>
         <item>Standart M3 — 28dp</item>
+        <item>Təkmilləşdirilmiş — 32dp (Defolt)</item>
         <item>Böyük — 36dp</item>
         <item>Maksimum — 44dp</item>
         <item>Sistem Standartı</item>

@@ -39,9 +39,9 @@
         <item>@string/corner_style_extra_large</item>
     </string-array>
     <string-array name="corner_rounding_entries">
-        <item>강조 — 32dp (기본값)</item>
         <item>은은하게 — 20dp</item>
         <item>표준 M3 — 28dp</item>
+        <item>강조 — 32dp (기본값)</item>
         <item>크게 — 36dp</item>
         <item>최대 — 44dp</item>
         <item>시스템 기본값</item>
