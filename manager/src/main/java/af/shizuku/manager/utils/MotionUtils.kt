@@ -1,10 +1,12 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.manager.R
 import android.content.Context
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.PathInterpolator
 import androidx.annotation.AttrRes
+import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.google.android.material.R as MaterialR
@@ -44,6 +46,69 @@ object MotionUtils {
                 .setStiffness(SpringForce.STIFFNESS_MEDIUM)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
         }
+
+    private class RunningSpring(
+        val animation: SpringAnimation,
+    ) {
+        var endAction: (() -> Unit)? = null
+    }
+
+    /**
+     * Springs [property] of this view to [target] on the theme spring [attr] (a Spatial spring for
+     * position/scale/rotation, an Effects spring for alpha). A spring already running on the same
+     * property is retargeted, keeping its velocity, and its [endAction] is replaced. Follows the
+     * app's animation scale: 0 (Expressive animations off, or system animations off) jumps to
+     * [target]; other scales lengthen or shorten the spring the way they scale a duration.
+     */
+    fun View.springTo(
+        property: FloatPropertyCompat<View>,
+        target: Float,
+        @AttrRes attr: Int,
+        endAction: (() -> Unit)? = null,
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        val springs =
+            (getTag(R.id.tag_motion_springs) as? HashMap<FloatPropertyCompat<View>, RunningSpring>)
+                ?: HashMap<FloatPropertyCompat<View>, RunningSpring>().also { setTag(R.id.tag_motion_springs, it) }
+        val scale =
+            af.shizuku.manager.ShizukuSettings
+                .getAnimationDurationScale()
+        if (scale <= 0f) {
+            springs[property]?.let {
+                it.endAction = null
+                it.animation.cancel()
+            }
+            property.setValue(this, target)
+            endAction?.invoke()
+            return
+        }
+        val running =
+            springs.getOrPut(property) {
+                val animation = SpringAnimation(this, property).setSpring(SpringForce())
+                RunningSpring(animation).also { entry ->
+                    animation.addEndListener { _, canceled, _, _ ->
+                        val action = entry.endAction
+                        entry.endAction = null
+                        if (!canceled) action?.invoke()
+                    }
+                }
+            }
+        val force = spring(context, attr)
+        running.animation.spring
+            .setStiffness(force.stiffness / (scale * scale))
+            .setDampingRatio(force.dampingRatio)
+        running.endAction = endAction
+        running.animation.animateToFinalPosition(target)
+    }
+
+    /** Stops a spring started by [springTo] on [property] without running its end action. */
+    fun View.cancelSpring(property: FloatPropertyCompat<View>) {
+        @Suppress("UNCHECKED_CAST")
+        (getTag(R.id.tag_motion_springs) as? HashMap<FloatPropertyCompat<View>, RunningSpring>)?.get(property)?.let {
+            it.endAction = null
+            it.animation.cancel()
+        }
+    }
 
     /**
      * Applies a spring-based scale down/up effect on touch.

@@ -13,6 +13,7 @@ import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.update.UpdateManager
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.MotionUtils.springTo
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
@@ -36,6 +37,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.dynamicanimation.animation.FloatPropertyCompat
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -57,6 +60,7 @@ import rikka.recyclerview.addItemSpacing
 import rikka.recyclerview.fixEdgeEffect
 import rikka.shizuku.Shizuku
 import timber.log.Timber
+import com.google.android.material.R as MaterialR
 
 open class HomeActivity :
     AppActivity(),
@@ -556,18 +560,11 @@ open class HomeActivity :
             val rest = (card.getTag(R.id.tag_card_rest_radius) as? Float) ?: card.radius.also { card.setTag(R.id.tag_card_rest_radius, it) }
             val density = resources.displayMetrics.density
             val target = if (lifted) maxOf(rest * 1.5f, rest + 12f * density).coerceAtMost(40f * density) else rest
-            if (!ShizukuSettings.isExpressiveAnimationsEnabled() ||
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !android.animation.ValueAnimator.areAnimatorsEnabled())
-            ) {
-                card.radius = target
-                return
-            }
-            android.animation.ValueAnimator.ofFloat(card.radius, target).apply {
-                duration = ShizukuSettings.scaledAnimationDuration(if (lifted) 180 else 260)
-                interpolator = if (lifted) android.view.animation.DecelerateInterpolator() else android.view.animation.OvershootInterpolator(1.6f)
-                addUpdateListener { card.radius = it.animatedValue as Float }
-                start()
-            }
+            card.springTo(
+                CardRadiusProperty,
+                target,
+                if (lifted) MaterialR.attr.motionSpringFastSpatial else MaterialR.attr.motionSpringDefaultSpatial,
+            )
         }
 
         val dragCallback =
@@ -620,19 +617,13 @@ open class HomeActivity :
                         }
                         viewHolder?.itemView?.let { HapticUtils.gestureStart(it) }
                         if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                            viewHolder?.itemView?.let { morphCardRadius(it, lifted = true) }
-                            viewHolder
-                                ?.itemView
-                                ?.animate()
-                                ?.scaleX(1.06f)
-                                ?.scaleY(1.06f)
-                                ?.alpha(0.96f)
-                                ?.translationZ(24f)
-                                ?.setDuration(ShizukuSettings.scaledAnimationDuration(180))
-                                ?.setInterpolator(
-                                    androidx.core.view.animation.PathInterpolatorCompat
-                                        .create(0.2f, 0f, 0f, 1f),
-                                )?.start()
+                            viewHolder?.itemView?.let { card ->
+                                morphCardRadius(card, lifted = true)
+                                card.springTo(SpringAnimation.SCALE_X, 1.06f, MaterialR.attr.motionSpringFastSpatial)
+                                card.springTo(SpringAnimation.SCALE_Y, 1.06f, MaterialR.attr.motionSpringFastSpatial)
+                                card.springTo(SpringAnimation.ALPHA, 0.96f, MaterialR.attr.motionSpringFastEffects)
+                                card.springTo(SpringAnimation.TRANSLATION_Z, 24f, MaterialR.attr.motionSpringFastEffects)
+                            }
                         }
                     } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
                         adapter.isDragging = false
@@ -652,26 +643,11 @@ open class HomeActivity :
                     adapter.isDragging = false
                     HapticUtils.gestureEnd(vh.itemView)
                     morphCardRadius(vh.itemView, lifted = false)
-                    if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                        val animator = vh.itemView.animate()
-                        if (animator != null) {
-                            animator
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .alpha(1f)
-                                .translationZ(0f)
-                                .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                                .setInterpolator(android.view.animation.OvershootInterpolator(2.2f))
-                                .start()
-                        } else {
-                            vh.itemView.scaleX = 1f
-                            vh.itemView.scaleY = 1f
-                            vh.itemView.alpha = 1f
-                            vh.itemView.translationZ = 0f
-                        }
-                    } else {
-                        vh.itemView.alpha = 1f
-                    }
+                    // Settles with the spatial spring's bounce; alpha and elevation never overshoot.
+                    vh.itemView.springTo(SpringAnimation.SCALE_X, 1f, MaterialR.attr.motionSpringDefaultSpatial)
+                    vh.itemView.springTo(SpringAnimation.SCALE_Y, 1f, MaterialR.attr.motionSpringDefaultSpatial)
+                    vh.itemView.springTo(SpringAnimation.ALPHA, 1f, MaterialR.attr.motionSpringDefaultEffects)
+                    vh.itemView.springTo(SpringAnimation.TRANSLATION_Z, 0f, MaterialR.attr.motionSpringDefaultEffects)
                     adapter.persistCardOrder()
                     adapter.updateData()
                 }
@@ -1028,5 +1004,17 @@ open class HomeActivity :
     companion object {
         const val EXTRA_SHOW_PAIRING_DIALOG = "show_pairing_dialog"
         const val EXTRA_START_SERVICE_VIA_WADB = "start_service_via_wadb"
+    }
+}
+
+/** MaterialCardView corner radius as a spring property (the drag lift/drop morph). */
+private object CardRadiusProperty : FloatPropertyCompat<android.view.View>("cardRadius") {
+    override fun getValue(view: android.view.View): Float = (view as? com.google.android.material.card.MaterialCardView)?.radius ?: 0f
+
+    override fun setValue(
+        view: android.view.View,
+        value: Float,
+    ) {
+        (view as? com.google.android.material.card.MaterialCardView)?.radius = value
     }
 }

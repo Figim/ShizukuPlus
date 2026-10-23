@@ -18,6 +18,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -1077,7 +1078,7 @@ private fun ActivityLogTimelineRow(
 
     val chevronRotation by animateFloatAsState(
         targetValue = if (isExpanded) 180f else 0f,
-        animationSpec = tween(if (ShizukuSettings.isExpressiveAnimationsEnabled()) 260 else 0),
+        animationSpec = if (ShizukuSettings.isExpressiveAnimationsEnabled()) MaterialTheme.motionScheme.defaultSpatialSpec() else snap(),
         label = "chevronRotation",
     )
 
@@ -1229,7 +1230,7 @@ private fun ActivityLogTimelineRow(
                     .weight(1f)
                     .padding(bottom = 10.dp)
                     .animateContentSize(
-                        animationSpec = tween(if (isExpressive) 260 else 0),
+                        animationSpec = if (isExpressive) MaterialTheme.motionScheme.defaultSpatialSpec() else snap(),
                     ).clickable {
                         HapticUtils.segmentTick(view)
                         onToggleExpand()

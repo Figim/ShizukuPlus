@@ -9,9 +9,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -434,14 +435,18 @@ fun SettingsScreen(
             }
 
             // Inline search results — appears below the search TopAppBar
-            val searchFadeMs =
-                af.shizuku.manager.ShizukuSettings
-                    .scaledAnimationDuration(200L)
-                    .toInt()
+            val searchFade: FiniteAnimationSpec<Float> =
+                if (af.shizuku.manager.ShizukuSettings
+                        .scaledAnimationDuration(200L) > 0
+                ) {
+                    MaterialTheme.motionScheme.fastEffectsSpec()
+                } else {
+                    snap()
+                }
             AnimatedVisibility(
                 visible = isSearchActive,
-                enter = fadeIn(tween(searchFadeMs)),
-                exit = fadeOut(tween(searchFadeMs)),
+                enter = fadeIn(searchFade),
+                exit = fadeOut(searchFade),
                 modifier =
                     Modifier
                         .fillMaxSize()

@@ -2,10 +2,13 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.MotionUtils.cancelSpring
+import af.shizuku.manager.utils.MotionUtils.springTo
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.core.view.ViewCompat
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceManager
@@ -19,7 +22,6 @@ class CollapsiblePreferenceCategory
         attrs: AttributeSet? = null,
     ) : PreferenceCategory(context, attrs) {
         private var expanded = false
-        private var isAnimating = false
         var onExpansionChanged: ((Boolean) -> Unit)? = null
 
         private var defaultExpanded = false
@@ -197,20 +199,13 @@ class CollapsiblePreferenceCategory
                 arrowContainer?.visibility = android.view.View.VISIBLE
             }
 
-            // Cancel any in-flight animator before snapping to current state on rebind —
-            // otherwise a running ViewPropertyAnimator takes priority over the direct rotation setter
-            // and can leave the arrow pointing the wrong way for the actual expanded state.
-            // ViewPropertyAnimator.cancel() does NOT fire withEndAction, so we must reset isAnimating
-            // manually here — otherwise a mid-animation rebind leaves it stuck at true forever.
-            arrow?.animate()?.cancel()
-            isAnimating = false
+            // Stop a running arrow spring before snapping to the current state on rebind, or it
+            // keeps writing its own rotation over the direct setter.
+            arrow?.cancelSpring(SpringAnimation.ROTATION)
             arrow?.rotation = if (expanded) 180f else 0f
             updateExpandedStateDescription(holder.itemView)
 
             holder.itemView.setOnClickListener {
-                // Guard against fast double-taps: a second tap before the arrow finishes rotating
-                // would flip `expanded` twice and leave the arrow snapped to the wrong angle.
-                if (isAnimating) return@setOnClickListener
                 expanded = !expanded
                 if (expanded) {
                     af.shizuku.manager.utils.HapticUtils
@@ -220,17 +215,12 @@ class CollapsiblePreferenceCategory
                         .toggleOff(holder.itemView)
                 }
                 if (shouldPersist()) persistBoolean(expanded)
-                // Animate arrow with M3E spring-style motion
-                arrow
-                    ?.animate()
-                    ?.rotation(if (expanded) 180f else 0f)
-                    ?.setDuration(
-                        af.shizuku.manager.ShizukuSettings
-                            .scaledAnimationDuration(260),
-                    )?.setInterpolator(android.view.animation.OvershootInterpolator(1.1f))
-                    ?.withStartAction { isAnimating = true }
-                    ?.withEndAction { isAnimating = false }
-                    ?.start()
+                // Arrow rotates on the spatial spring; a quick second tap just retargets it.
+                arrow?.springTo(
+                    SpringAnimation.ROTATION,
+                    if (expanded) 180f else 0f,
+                    com.google.android.material.R.attr.motionSpringDefaultSpatial,
+                )
                 // updateChildren() already notifies the adapter per child via Preference.setVisible();
                 // an additional notifyChanged() here used to schedule a rebind of this same header
                 // ViewHolder mid-animation, which snapped the arrow's rotation back and forth against

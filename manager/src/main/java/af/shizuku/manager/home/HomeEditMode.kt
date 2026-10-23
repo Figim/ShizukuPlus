@@ -1,20 +1,47 @@
 package af.shizuku.manager.home
 
 import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.databinding.HomeItemContainerBinding
+import af.shizuku.manager.utils.MotionUtils.cancelSpring
+import af.shizuku.manager.utils.MotionUtils.springTo
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.view.animation.OvershootInterpolator
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
 
 object HomeEditMode {
+    /** Drag handle / remove button appearing: grows in on the spatial spring, fades in without overshoot. */
+    private fun springIn(view: android.view.View) {
+        listOf(SpringAnimation.SCALE_X, SpringAnimation.SCALE_Y, SpringAnimation.ALPHA).forEach { view.cancelSpring(it) }
+        view.scaleX = 0.5f
+        view.scaleY = 0.5f
+        view.alpha = 0f
+        view.springTo(SpringAnimation.SCALE_X, 1f, com.google.android.material.R.attr.motionSpringFastSpatial)
+        view.springTo(SpringAnimation.SCALE_Y, 1f, com.google.android.material.R.attr.motionSpringFastSpatial)
+        view.springTo(SpringAnimation.ALPHA, 1f, com.google.android.material.R.attr.motionSpringFastEffects)
+    }
+
+    /** Leaving: shrinks and fades on the no-bounce effects spring, then hides and resets. */
+    private fun springOut(view: android.view.View) {
+        val effects = com.google.android.material.R.attr.motionSpringFastEffects
+        view.springTo(SpringAnimation.SCALE_X, 0.5f, effects)
+        view.springTo(SpringAnimation.SCALE_Y, 0.5f, effects)
+        view.springTo(SpringAnimation.ALPHA, 0f, effects) {
+            view.cancelSpring(SpringAnimation.SCALE_X)
+            view.cancelSpring(SpringAnimation.SCALE_Y)
+            view.isVisible = false
+            view.scaleX = 1f
+            view.scaleY = 1f
+            view.alpha = 1f
+        }
+    }
+
     var isActive: Boolean = false
         private set
 
@@ -58,42 +85,9 @@ object HomeEditMode {
             dragHandle.isVisible = true
         }
         if (isActive && !wasVisible) {
-            val dur = ShizukuSettings.scaledAnimationDuration(240)
-            val interp = android.view.animation.OvershootInterpolator(1.8f)
-            listOf(dragHandle, removeBtn).forEachIndexed { i, view ->
-                view.animate().cancel()
-                view.scaleX = 0.5f
-                view.scaleY = 0.5f
-                view.alpha = 0f
-                view
-                    .animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .alpha(1f)
-                    .setDuration(dur)
-                    .setStartDelay(ShizukuSettings.scaledAnimationDuration(i * 40L))
-                    .setInterpolator(interp)
-                    .start()
-            }
+            listOf(dragHandle, removeBtn).forEach(::springIn)
         } else if (!isActive && wasVisible) {
-            val dur = ShizukuSettings.scaledAnimationDuration(160)
-            val interp = android.view.animation.AccelerateInterpolator()
-            listOf(dragHandle, removeBtn).forEach { view ->
-                view.animate().cancel()
-                view
-                    .animate()
-                    .scaleX(0.5f)
-                    .scaleY(0.5f)
-                    .alpha(0f)
-                    .setDuration(dur)
-                    .setInterpolator(interp)
-                    .withEndAction {
-                        view.isVisible = false
-                        view.scaleX = 1f
-                        view.scaleY = 1f
-                        view.alpha = 1f
-                    }.start()
-            }
+            listOf(dragHandle, removeBtn).forEach(::springOut)
         } else if (!isActive) {
             removeBtn.isVisible = false
             dragHandle.isVisible = false
@@ -112,42 +106,9 @@ object HomeEditMode {
 
         // Spring-in when controls first appear; scale-out when they leave.
         if (isActive && !wasVisible) {
-            val dur = ShizukuSettings.scaledAnimationDuration(240)
-            val interp = OvershootInterpolator(1.8f)
-            listOf(binding.dragHandle, binding.removeBtn).forEachIndexed { i, view ->
-                view.animate().cancel()
-                view.scaleX = 0.5f
-                view.scaleY = 0.5f
-                view.alpha = 0f
-                view
-                    .animate()
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .alpha(1f)
-                    .setDuration(dur)
-                    .setStartDelay(ShizukuSettings.scaledAnimationDuration(i * 40L))
-                    .setInterpolator(interp)
-                    .start()
-            }
+            listOf(binding.dragHandle, binding.removeBtn).forEach(::springIn)
         } else if (!isActive && wasVisible) {
-            val dur = ShizukuSettings.scaledAnimationDuration(160)
-            val interp = android.view.animation.AccelerateInterpolator()
-            listOf(binding.dragHandle, binding.removeBtn).forEach { view ->
-                view.animate().cancel()
-                view
-                    .animate()
-                    .scaleX(0.5f)
-                    .scaleY(0.5f)
-                    .alpha(0f)
-                    .setDuration(dur)
-                    .setInterpolator(interp)
-                    .withEndAction {
-                        view.isVisible = false
-                        view.scaleX = 1f
-                        view.scaleY = 1f
-                        view.alpha = 1f
-                    }.start()
-            }
+            listOf(binding.dragHandle, binding.removeBtn).forEach(::springOut)
         } else if (!isActive) {
             binding.removeBtn.isVisible = false
             binding.dragHandle.isVisible = false

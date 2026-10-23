@@ -67,8 +67,10 @@ fun HomeScreen(
     val appDisplayName = remember(context) { ShizukuSettings.getCustomAppName(context) }
     val isDropIn = remember(context) { EnvironmentUtils.isDropIn(context) }
     val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
-    val motionDur = ShizukuSettings.scaledAnimationDuration(220).toInt()
-    val motionEasing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+    // Header motion runs on the theme's MotionScheme springs; 0 animation scale (Expressive
+    // animations or system animations off) snaps.
+    val motionOn = ShizukuSettings.scaledAnimationDuration(220) > 0
+    val motionScheme = MaterialTheme.motionScheme
 
     // Status bar height — must be included in the Surface height so content sits below it,
     // not behind it. The inner Box gets windowInsetsPadding(statusBars) to push all content
@@ -177,21 +179,21 @@ fun HomeScreen(
                         targetState = isEditMode,
                         transitionSpec = {
                             val enter =
-                                if (animationsEnabled) {
-                                    fadeIn(tween(motionDur, easing = motionEasing))
+                                if (motionOn) {
+                                    fadeIn(motionScheme.fastEffectsSpec())
                                 } else {
                                     EnterTransition.None
                                 }
                             val exit =
-                                if (animationsEnabled) {
-                                    fadeOut(tween((motionDur * 0.7f).toInt()))
+                                if (motionOn) {
+                                    fadeOut(motionScheme.fastEffectsSpec())
                                 } else {
                                     ExitTransition.None
                                 }
                             (enter togetherWith exit) using
                                 SizeTransform(
                                     clip = false,
-                                    sizeAnimationSpec = { _, _ -> tween(motionDur, easing = motionEasing) },
+                                    sizeAnimationSpec = { _, _ -> if (motionOn) motionScheme.defaultSpatialSpec() else snap() },
                                 )
                         },
                         contentAlignment = Alignment.CenterEnd,
@@ -257,7 +259,7 @@ fun HomeScreen(
                     val startPadding = lerp(start = 24.dp, stop = 20.dp, fraction = curvedFraction)
                     val endPaddingStop by animateDpAsState(
                         targetValue = if (isEditMode) 120.dp else 96.dp,
-                        animationSpec = tween(motionDur, easing = motionEasing),
+                        animationSpec = if (motionOn) motionScheme.defaultSpatialSpec() else snap(),
                         label = "titleEndPaddingStop",
                     )
                     val endPadding = lerp(start = 24.dp, stop = endPaddingStop, fraction = curvedFraction)
@@ -296,7 +298,7 @@ fun HomeScreen(
                         ) {
                             Crossfade(
                                 targetState = isEditMode,
-                                animationSpec = if (animationsEnabled) tween(motionDur, easing = motionEasing) else tween(0),
+                                animationSpec = if (motionOn) motionScheme.defaultEffectsSpec() else snap(),
                                 label = "titleContent",
                             ) { editMode ->
                                 if (editMode) {

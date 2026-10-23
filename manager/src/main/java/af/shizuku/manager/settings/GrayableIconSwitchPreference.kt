@@ -1,12 +1,15 @@
 package af.shizuku.manager.settings
 
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.MotionUtils.springTo
 import af.shizuku.manager.utils.springTo
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.ImageView
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreferenceCompat
+import com.google.android.material.R as MaterialR
 
 open class GrayableIconSwitchPreference
     @JvmOverloads
@@ -48,16 +51,13 @@ open class GrayableIconSwitchPreference
                             morph.springTo(if (isChecked) 1f else 0f)
                         }
                     }
-                    // Smooth icon alpha and spring scale transition on toggle.
-                    v
-                        .findViewById<ImageView>(android.R.id.icon)
-                        ?.animate()
-                        ?.alpha(if (isChecked) 1.0f else 0.38f)
-                        ?.scaleX(if (isChecked) 1.0f else 0.90f)
-                        ?.scaleY(if (isChecked) 1.0f else 0.90f)
-                        ?.setDuration(ShizukuSettings.scaledAnimationDuration(200))
-                        ?.setInterpolator(android.view.animation.OvershootInterpolator(1.2f))
-                        ?.start()
+                    // Icon scale springs (may bounce); its dimming fades without overshoot.
+                    v.findViewById<ImageView>(android.R.id.icon)?.let { icon ->
+                        val scale = if (isChecked) 1.0f else 0.90f
+                        icon.springTo(SpringAnimation.SCALE_X, scale, MaterialR.attr.motionSpringFastSpatial)
+                        icon.springTo(SpringAnimation.SCALE_Y, scale, MaterialR.attr.motionSpringFastSpatial)
+                        icon.springTo(SpringAnimation.ALPHA, if (isChecked) 1.0f else 0.38f, MaterialR.attr.motionSpringFastEffects)
+                    }
                 }
             }
         }
