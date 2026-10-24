@@ -61,6 +61,45 @@ jobs:
       - name: Run Lint
         run: ./gradlew :manager:lint
 
+  unit-tests:
+    needs: [pre-push-guard]
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: "/usr/local/lib/android/sdk"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Accept SDK Licenses
+        run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+
+      # JVM unit tests for every module that has them (MockK, kotest, Robolectric). Robolectric's
+      # native runtime only runs on x86, so these four Robolectric suites are CI-only.
+      - name: Run unit tests
+        run: ./gradlew --continue :manager:testShizukuplusDebugUnitTest :server:testDebugUnitTest :database:testDebugUnitTest
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: |
+            **/build/reports/tests/
+            **/build/test-results/
+          retention-days: 7
+
   build:
     needs: [pre-push-guard]
     runs-on: ubuntu-latest
@@ -311,7 +350,7 @@ jobs:
             # (candidates: connectedDropinDebugAndroidTest, connectedShizukuplusDebugAndroidTest) -
             # target the Shizukuplus flavor, the standard build this workflow otherwise treats as
             # primary (see the Plus-vs-Drop-In asset selection in the release job below).
-            ./gradlew :manager:connectedShizukuplusDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=af.shizuku.manager.JniSmokeTest --stacktrace 2>&1 | tee smoke-test.log
+            ./gradlew :manager:connectedShizukuplusDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=af.shizuku.manager.JniSmokeTest,af.shizuku.manager.ScreenSmokeTest --stacktrace 2>&1 | tee smoke-test.log
             grep -E "PASSED|FAILED|ERROR" smoke-test.log || true
 
       - name: Upload smoke test results
@@ -322,7 +361,9 @@ jobs:
           path: manager/build/outputs/androidTest-results/
 
   release:
-    needs: [build, lint]
+    # smoke-test only runs on workflow_dispatch (the stable path); on pushes it is skipped, which
+    # the !failure() condition below tolerates.
+    needs: [build, lint, unit-tests, smoke-test]
     # Skip releases for commits that are purely chore/docs/ci/style/refactor — those don't
     # change user-visible behaviour and shouldn't clutter the releases page. Use [force release]
     # in the commit message to override this check when needed. workflow_dispatch always proceeds.

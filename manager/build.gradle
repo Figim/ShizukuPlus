@@ -321,8 +321,14 @@ dependencies {
 
 android {
     testOptions {
-        unitTests.all {
-            useJUnitPlatform()
+        unitTests.all { t ->
+            t.useJUnitPlatform()
+            // MockK needs ByteBuddy's agent. Load it up front instead of self-attaching, which
+            // JDK 21 discourages and which fails outright on some JVMs (e.g. Termux on-device).
+            t.doFirst {
+                def bbAgent = t.classpath.find { it.name.startsWith("byte-buddy-agent") }
+                if (bbAgent != null) t.jvmArgs "-javaagent:${bbAgent}"
+            }
         }
         // Robolectric tests load the app's resources and manifest.
         unitTests.includeAndroidResources = true

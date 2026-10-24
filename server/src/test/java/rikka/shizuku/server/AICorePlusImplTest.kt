@@ -1,22 +1,26 @@
 package rikka.shizuku.server
 
+import android.util.Log
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import android.util.Log
+import java.io.ByteArrayOutputStream
 
 class AICorePlusImplTest {
-
-    private lateinit var aiCorePlusImpl: AICorePlusImpl
+    private lateinit var service: ShizukuService
     private lateinit var runtimeMock: Runtime
-    private lateinit var processMock: Process
+    private lateinit var shell: Process
+    private val shellInput = ByteArrayOutputStream()
+
+    private fun impl() = AICorePlusImpl(mockk<ShizukuClientManager>(relaxed = true), service)
 
     @Before
     fun setUp() {
@@ -25,13 +29,13 @@ class AICorePlusImplTest {
         every { Log.d(any(), any()) } returns 0
         every { Log.w(any(), any<String>()) } returns 0
 
-        val clientManagerMock = mockk<ShizukuClientManager>(relaxed = true)
-        val serviceMock = mockk<ShizukuService>(relaxed = true)
-        every { serviceMock.isPlusFeatureEnabled(any()) } returns true
-        aiCorePlusImpl = AICorePlusImpl(clientManagerMock, serviceMock)
-        runtimeMock = mockk(relaxed = true)
-        processMock = mockk(relaxed = true)
+        service = mockk(relaxed = true)
+        every { service.isPlusFeatureEnabled(any()) } returns true
 
+        shell = mockk(relaxed = true)
+        every { shell.outputStream } returns shellInput
+        runtimeMock = mockk(relaxed = true)
+        every { runtimeMock.exec("sh") } returns shell
         mockkStatic(Runtime::class)
         every { Runtime.getRuntime() } returns runtimeMock
     }
@@ -42,57 +46,34 @@ class AICorePlusImplTest {
     }
 
     @Test
-    fun `simulateTouch returns true when process exits with 0`() {
-        // Arrange
-        val x = 100.0f
-        val y = 200.0f
-        val expectedArgs = arrayOf("input", "tap", "100.0", "200.0")
-
-        every { runtimeMock.exec(expectedArgs) } returns processMock
-        every { processMock.waitFor() } returns 0
-
-        // Act
-        val result = aiCorePlusImpl.simulateTouch(x, y)
-
-        // Assert
-        assertTrue("simulateTouch should return true when process exits with 0", result)
-        verify { runtimeMock.exec(expectedArgs) }
-        verify { processMock.waitFor() }
+    fun `simulateTouch writes an input tap to the persistent shell`() {
+        assertTrue(impl().simulateTouch(100f, 200f))
+        assertEquals("input tap 100.0 200.0\n", shellInput.toString())
     }
 
     @Test
-    fun `simulateTouch returns false when process exits with non-zero`() {
-        // Arrange
-        val x = 100.0f
-        val y = 200.0f
-        val expectedArgs = arrayOf("input", "tap", "100.0", "200.0")
-
-        every { runtimeMock.exec(expectedArgs) } returns processMock
-        every { processMock.waitFor() } returns 1
-
-        // Act
-        val result = aiCorePlusImpl.simulateTouch(x, y)
-
-        // Assert
-        assertFalse("simulateTouch should return false when process exits with non-zero", result)
-        verify { runtimeMock.exec(expectedArgs) }
-        verify { processMock.waitFor() }
+    fun `simulateTouch returns false when the shell can't start`() {
+        every { runtimeMock.exec("sh") } throws java.io.IOException("no sh")
+        assertFalse(impl().simulateTouch(1f, 2f))
     }
 
     @Test
-    fun `simulateTouch returns false when an exception occurs`() {
-        // Arrange
-        val x = 100.0f
-        val y = 200.0f
-        val expectedArgs = arrayOf("input", "tap", "100.0", "200.0")
+    fun `simulateText passes untrusted text as one argv entry, never through sh`() {
+        val text = "a; rm -rf / #"
+        val proc = mockk<Process>(relaxed = true)
+        every { runtimeMock.exec(arrayOf("input", "text", text)) } returns proc
 
-        every { runtimeMock.exec(any<Array<String>>()) } throws RuntimeException("Mocked exception")
+        assertTrue(impl().simulateText(text))
+        verify { runtimeMock.exec(arrayOf("input", "text", text)) }
+        verify(exactly = 0) { runtimeMock.exec("sh") }
+    }
 
-        // Act
-        val result = aiCorePlusImpl.simulateTouch(x, y)
-
-        // Assert
-        assertFalse("simulateTouch should return false when an exception occurs", result)
-        verify { runtimeMock.exec(expectedArgs) }
+    @Test
+    fun `nothing is injected while experimental AI Core is off`() {
+        every { service.isPlusFeatureEnabled("ai_core_experimental") } returns false
+        assertFalse(impl().simulateTouch(1f, 2f))
+        assertFalse(impl().simulateText("x"))
+        verify(exactly = 0) { runtimeMock.exec(any<String>()) }
+        verify(exactly = 0) { runtimeMock.exec(any<Array<String>>()) }
     }
 }

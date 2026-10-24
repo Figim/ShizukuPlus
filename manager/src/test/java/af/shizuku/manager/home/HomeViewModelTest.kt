@@ -5,12 +5,23 @@ import com.airbnb.mvrx.test.MavericksTestRule
 import com.airbnb.mvrx.withState
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
 class HomeViewModelTest {
     @get:Rule
     val mavericksTestRule = MavericksTestRule()
+
+    @Before
+    fun setUp() {
+        // HomeViewModel reads ShizukuApplication.appContext, which only Application.onCreate sets.
+        // (private setter, so set the backing static field directly)
+        af.shizuku.manager.ShizukuApplication::class.java
+            .getDeclaredField("appContext")
+            .apply { isAccessible = true }
+            .set(null, io.mockk.mockk<android.content.Context>(relaxed = true))
+    }
 
     @Test
     fun `initial state is Loading and then Success or Fail`() {
