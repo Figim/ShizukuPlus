@@ -31,6 +31,9 @@ class SystemHubActivity : AppActivity() {
             ) {
                 SystemHubScreen(
                     onBackClick = { finish() },
+                    showBack =
+                        !af.shizuku.manager.widget.FloatingNavBar
+                            .isTopLevel(this),
                 )
             }
         }

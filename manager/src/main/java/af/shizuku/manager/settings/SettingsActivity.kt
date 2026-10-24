@@ -118,8 +118,8 @@ class SettingsActivity :
                     title = displayTitle,
                     showNavigateUp =
                         !(
-                            af.shizuku.manager.ShizukuSettings
-                                .isFloatingNavBarEnabled() &&
+                            af.shizuku.manager.widget.FloatingNavBar
+                                .isTopLevel(this@SettingsActivity) &&
                                 currentTitle == getString(R.string.settings_title)
                         ),
                     onNavigateUp = {

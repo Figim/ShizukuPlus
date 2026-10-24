@@ -93,6 +93,12 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
     fun isEnabled(): Boolean = runCatching { ShizukuSettings.getPreferences().getBoolean(KEY_ENABLED, false) }.getOrDefault(false)
 
+    /**
+     * True when this screen is a tab on the bar right now (bar on and its tab kept): it's then an
+     * M3 top-level destination and shows no back arrow. Same test sync() uses to attach the bar.
+     */
+    fun isTopLevel(activity: Activity): Boolean = isEnabled() && itemFor(activity)?.let { isTabShown(it) } == true
+
     private fun itemFor(activity: Activity): Int? =
         when (activity) {
             is MainActivity -> R.id.nav_home

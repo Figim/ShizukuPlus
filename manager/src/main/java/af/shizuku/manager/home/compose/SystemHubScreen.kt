@@ -33,6 +33,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun SystemHubScreen(
     onBackClick: () -> Unit,
+    // M3: no back arrow while System Hub is a tab on the floating nav bar.
+    showBack: Boolean = true,
 ) {
     val pagerState = rememberPagerState(pageCount = { 2 })
     val coroutineScope = rememberCoroutineScope()
@@ -49,10 +51,6 @@ fun SystemHubScreen(
     scrollBehavior.GuardHeightOffset()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 1, overflow = TextOverflow.Ellipsis) }
-    // M3: System Hub is a top-level tab when the floating nav bar is on - no back arrow then.
-    val showBack =
-        !af.shizuku.manager.ShizukuSettings
-            .isFloatingNavBarEnabled()
     val nav =
         @Composable {
             if (showBack) {
@@ -82,9 +80,8 @@ fun SystemHubScreen(
     ) { rawPadding ->
         val innerPadding = rawPadding.nonNegative()
         val navClearance =
-            if (af.shizuku.manager.ShizukuSettings
-                    .isFloatingNavBarEnabled()
-            ) {
+            // Bar attaches only while Hub is one of its tabs.
+            if (!showBack) {
                 112.dp
             } else {
                 0.dp

@@ -89,7 +89,10 @@ open class ApplicationManagementActivity :
         recyclerView = binding.list
 
         // No back arrow when Apps is a floating-nav tab (M3 top-level destination).
-        supportActionBar?.setDisplayHomeAsUpEnabled(!ShizukuSettings.isFloatingNavBarEnabled())
+        supportActionBar?.setDisplayHomeAsUpEnabled(
+            !af.shizuku.manager.widget.FloatingNavBar
+                .isTopLevel(this),
+        )
 
         // Empty state view — also used as "waiting for Shizuku" placeholder while STARTING.
         val emptyStateView = binding.emptyStateView
@@ -266,8 +269,8 @@ open class ApplicationManagementActivity :
                             .displayCutout(),
                 )
             val extraBottomPadding =
-                if (af.shizuku.manager.ShizukuSettings
-                        .isFloatingNavBarEnabled()
+                if (af.shizuku.manager.widget.FloatingNavBar
+                        .isTopLevel(this)
                 ) {
                     (112 * resources.displayMetrics.density).toInt()
                 } else {
