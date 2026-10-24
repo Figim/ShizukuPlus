@@ -73,6 +73,9 @@ object AppContextManager {
     fun initialize(settings: AppContextSettings) {
         this.settings = settings
         merged = null
+        // Build off the main thread now, so the first Apps-list row or settings summary doesn't
+        // read the asset and decode the JSON on the UI thread.
+        Thread({ runCatching { database() } }, "AppDbWarmup").start()
     }
 
     fun getMetadata(packageName: String): AppMetadata? = database()[packageName]

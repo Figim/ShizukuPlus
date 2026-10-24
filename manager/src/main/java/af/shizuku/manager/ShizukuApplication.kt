@@ -111,6 +111,9 @@ class ShizukuApplication :
         appContext = base
         // Initialize ShizukuSettings as early as possible
         ShizukuSettings.initialize(base)
+        // Before the AICore+ accessibility service can connect (it runs in this process).
+        af.shizuku.manager.automation.AICoreAccessibilityHealer
+            .recordBaseline(base)
     }
 
     /**
@@ -386,6 +389,16 @@ class ShizukuApplication :
                         }
                     } catch (_: Exception) {
                         // Ignore errors during state collection
+                    }
+
+                    // Same scrub as breadcrumbs: exception messages can carry addresses ("connect to
+                    // 192.168.1.5:5555 failed").
+                    event.message?.let { m ->
+                        m.formatted = af.shizuku.manager.utils.TelemetryScrubber.scrub(m.formatted)
+                        m.message = af.shizuku.manager.utils.TelemetryScrubber.scrub(m.message)
+                    }
+                    event.exceptions?.forEach { ex ->
+                        ex.value = af.shizuku.manager.utils.TelemetryScrubber.scrub(ex.value)
                     }
 
                     event

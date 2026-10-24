@@ -6,7 +6,10 @@ package af.shizuku.manager.utils
  */
 object TelemetryScrubber {
     private val ipv4 = Regex("""\b(?:\d{1,3}\.){3}\d{1,3}\b""")
-    private val ipv6 = Regex("""\b(?:[0-9a-fA-F]{1,4}:){2,7}[0-9a-fA-F]{1,4}\b""")
+    // Full form (8 groups), or compressed with "::" (fe80::1, ::1). Not 2-3 groups: that is a time.
+    private val ipv6Full = Regex("""\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b""")
+    private val ipv6Compressed =
+        Regex("""(?<![\w:])(?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){0,6})?::(?:[0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{1,4}){0,6})?(?![\w:])""")
     private val mac = Regex("""\b(?:[0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2}\b""")
     private val ssid = Regex("""(?i)(ssid[=:\s]+)("[^"]*"|\S+)""")
     private val email = Regex("""[\w.+-]+@[\w-]+\.[\w.]+""")
@@ -17,7 +20,8 @@ object TelemetryScrubber {
             .replace(email, "<email>")
             .replace(mac, "<mac>")
             .replace(ipv4, "<ip>")
-            .replace(ipv6, "<ip>")
+            .replace(ipv6Full, "<ip>")
+            .replace(ipv6Compressed) { if (it.value == "::") it.value else "<ip>" }
             .replace(ssid) { it.groupValues[1] + "<ssid>" }
     }
 }

@@ -63,6 +63,17 @@ object AICoreAccessibilityHealer {
         }
     }
 
+    /** See [ShizukuSettings.recordAICoreAccessibilityBaselineIfNeeded]; call from Application.onCreate. */
+    fun recordBaseline(context: Context) {
+        try {
+            ShizukuSettings.recordAICoreAccessibilityBaselineIfNeeded(
+                isServiceEnabled(context, ComponentName(context, AICorePlusService::class.java)),
+            )
+        } catch (e: Exception) {
+            Timber.w(e, "AICore+ accessibility baseline failed")
+        }
+    }
+
     private fun isServiceEnabled(
         context: Context,
         target: ComponentName,

@@ -179,6 +179,7 @@ public class ShizukuSettings {
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
         public static final String KEY_CUSTOM_APP_NAME_SEED_CLEARED = "custom_app_name_seed_cleared";
         public static final String KEY_AICORE_A11Y_USER_ENABLED = "aicore_a11y_user_enabled";
+        public static final String KEY_AICORE_A11Y_INHERITED = "aicore_a11y_inherited";
         public static final String KEY_ALLOW_AUTOMATION_PLUGIN = "allow_automation_plugin";
         public static final String KEY_SECURITY_DEFAULTS_DECIDED = "security_defaults_decided";
         public static final String KEY_CRASH_REPORTING = "crash_reporting_enabled";
@@ -1255,6 +1256,31 @@ public class ShizukuSettings {
     public static boolean isAICoreAccessibilityUserEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_AICORE_A11Y_USER_ENABLED, false);
+    }
+
+    /**
+     * Records once whether the AICore+ accessibility service was already on when this build first
+     * ran. Builds before it could turn the service on by themselves, so a connection in that
+     * inherited state is not the user's consent. Must run before the service can connect.
+     */
+    public static void recordAICoreAccessibilityBaselineIfNeeded(boolean enabledNow) {
+        SharedPreferences p = getPreferences();
+        if (p != null && !p.contains(Keys.KEY_AICORE_A11Y_INHERITED)) {
+            p.edit().putBoolean(Keys.KEY_AICORE_A11Y_INHERITED, enabledNow).apply();
+        }
+    }
+
+    /** The service was turned off (by the user or an OEM): its next connection is a fresh enable. */
+    public static void clearAICoreAccessibilityInherited() {
+        SharedPreferences p = getPreferences();
+        if (p != null && p.getBoolean(Keys.KEY_AICORE_A11Y_INHERITED, false)) {
+            p.edit().putBoolean(Keys.KEY_AICORE_A11Y_INHERITED, false).apply();
+        }
+    }
+
+    public static boolean isAICoreAccessibilityInherited() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_AICORE_A11Y_INHERITED, false);
     }
 
     public static void markAICoreAccessibilityUserEnabled() {

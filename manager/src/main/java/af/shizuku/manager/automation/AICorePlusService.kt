@@ -52,9 +52,12 @@ class AICorePlusService : AccessibilityService() {
         super.onServiceConnected()
         _instance = java.lang.ref.WeakReference(this)
         Timber.d("AICorePlusService connected")
-        // Connected means it is enabled; remembered as consent for the OEM-disable self-heal.
-        af.shizuku.manager.ShizukuSettings
-            .markAICoreAccessibilityUserEnabled()
+        // Connected means it is enabled; remembered as consent for the OEM-disable self-heal, unless
+        // it was already on from a build that could enable it by itself.
+        if (!af.shizuku.manager.ShizukuSettings.isAICoreAccessibilityInherited()) {
+            af.shizuku.manager.ShizukuSettings
+                .markAICoreAccessibilityUserEnabled()
+        }
         registerBridge()
     }
 
@@ -84,6 +87,9 @@ class AICorePlusService : AccessibilityService() {
     override fun onDestroy() {
         super.onDestroy()
         _instance = null
+        // Destroyed while the process lives = the service was turned off.
+        af.shizuku.manager.ShizukuSettings
+            .clearAICoreAccessibilityInherited()
     }
 
     /**
