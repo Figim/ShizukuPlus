@@ -120,6 +120,16 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-24 (late) — Claude (stable prep: issues, tests, CI, merge) [master, unpushed, 175 ahead / 0 behind]
+
+- **Issues filed** for the removed per-app enhancements: #631 (concept + "Plus upgrade available" badge reference text, what a revival needs), #632 DPM, #633 NPU, #634 AVF VM, #635 Window Tuner.
+- **Tests**: no workflow ever ran unit tests; server + database silently skipped their JUnit 4 tests (no vintage engine). Fixed + stale suites updated `6f9ccec7`; MockK now runs on-device (ByteBuddy via -javaagent). Local: 131/131 non-Robolectric pass; 4 Robolectric suites are x86/CI-only. New `unit-tests` job; release `needs: [build, lint, unit-tests, smoke-test]`. `ScreenSmokeTest` (androidTest, emulator job) opens every top-level screen + loads every settings-search icon.
+- `1f171b44` scheduleNPULoad() returns success=false/not_supported (was fake success).
+- **Merge** `3a4a1e04` origin/master (README + az #619): az kept local entirely - #619 was conflicts, duplicates, 2 orphans, and Turkish "için" in place of "üçün". 0 behind origin now.
+- **Release plan**: `docs/RELEASE_CHECKLIST.md` (blockers, P0-P2 device items, R8-only items). `scripts/dev/device-smoke.sh` = install -r + am instrument + cold launch + logcat FATAL check (never uses connected*AndroidTest, which uninstalls).
+- **Not done**: /code-review of the ~95 commits since the part-2 ultrareview base (`9f4287b4..HEAD`); device pass (ADB refused all day); release-build check on the phone (needs uninstall -> backup first); CHANGELOG fold + version; push (user's call; push = prerelease, stable = dispatch).
+- #623/#624 are fixed by `9a811eee` (unpushed) - close on release.
+
 ### 2026-10-22 — Claude (part-1 review fixes, pairing, security, M3 audit) [master, unpushed]
 
 - **Part-1 ultrareview fixes** `7a1cd1e8`: legacy rish keep-alive never `stopService()`s before `startForeground()` (cold-start crash), retries on activity start, live setting; prefs listeners held strongly; `legacy_rish_keepalive` excluded from sync; uninstall confirm; Server Metrics no longer forces `ai_core_plus`; Settings header re-expands; Personalization no longer seeds `custom_app_name`.
