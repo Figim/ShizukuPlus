@@ -218,7 +218,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     Android17Compat.grantRuntimePermission(pkg, "android.permission.DUMP", userId);
                     ApplicationInfo ai = Android17Compat.getApplicationInfo(pkg, 0, userId);
                     if (ai != null) {
-                        performAppOpsElevation(pkg, ai.uid);
+                        // Only the ops manager features use: usage stats (automation profiles,
+                        // standby-bucket check) and exact alarms (Watchdog). Doze / background
+                        // exemption belongs to the visible "Device hardening & keepalive" switch.
+                        // This used to set 11 ops by raw number (overlay, all-files access,
+                        // install packages...), numbers that differ between Android versions.
+                        setAppOpsAllowedByName(pkg, ai.uid, MANAGER_APP_OPS);
                     }
                 } catch (Throwable ignored) {
                 }
@@ -3149,6 +3154,50 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
 
         performAppOpsElevation(packageName, ai.uid);
+    }
+
+    /** AppOps the manager itself needs; see grantManagerEssentialPermissions(). */
+    private static final String[] MANAGER_APP_OPS = {
+        "android:get_usage_stats",
+        "android:schedule_exact_alarm",
+    };
+
+    /** Resolves an AppOps name ("android:...") to this Android version's op code, or -1. */
+    private static int appOpFromName(String name) {
+        try {
+            Object op = android.app.AppOpsManager.class.getMethod("strOpToOp", String.class).invoke(null, name);
+            return op instanceof Integer ? (Integer) op : -1;
+        } catch (Throwable t) {
+            return -1;
+        }
+    }
+
+    /**
+     * Sets each named op to MODE_ALLOWED for [uid]. Names, never numbers: op codes move between
+     * Android versions, so a hard-coded number can grant something else entirely.
+     */
+    private void setAppOpsAllowedByName(String packageName, int uid, String[] opNames) {
+        try {
+            IBinder binder = ServiceManager.getService("appops");
+            if (binder == null) return;
+            Object service = Class.forName("com.android.internal.app.IAppOpsService$Stub")
+                .getMethod("asInterface", IBinder.class).invoke(null, binder);
+            java.lang.reflect.Method setMode = service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class);
+            for (String name : opNames) {
+                int op = appOpFromName(name);
+                if (op < 0) {
+                    LOGGER.w("Plus: AppOps %s doesn't exist on this Android version, skipped", name);
+                    continue;
+                }
+                try {
+                    setMode.invoke(service, op, uid, packageName, 0); // 0 = MODE_ALLOWED
+                } catch (Exception e) {
+                    LOGGER.e(e, "Plus: Failed to allow %s for uid %d", name, uid);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.e(e, "Plus: AppOps update failed for " + packageName);
+        }
     }
 
     private void performAppOpsElevation(String packageName, int uid) {
