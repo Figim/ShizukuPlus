@@ -4,7 +4,6 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.AppContextManager
 import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
@@ -67,12 +66,12 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                         }
                     withContext(Dispatchers.Main) {
                         AppContextManager.updateDatabase(content)
-                        Toast.makeText(context, R.string.settings_update_app_database_success, Toast.LENGTH_SHORT).show()
+                        notifyUser(R.string.settings_update_app_database_success)
                     }
                 } catch (e: Exception) {
                     Timber.w("update app database failed", e)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, R.string.settings_update_app_database_error, Toast.LENGTH_SHORT).show()
+                        notifyUser(R.string.settings_update_app_database_error)
                     }
                 }
             }

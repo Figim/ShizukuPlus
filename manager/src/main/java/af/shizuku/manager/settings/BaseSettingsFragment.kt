@@ -248,6 +248,37 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     /**
      * Helper to show a dialog and track it for proper dismissal.
      */
+
+    /**
+     * Confirms an action with an M3 snackbar on this page; falls back to a toast if the page is
+     * gone by the time an async result arrives (or isn't showing).
+     */
+    protected fun notifyUser(
+        message: CharSequence?,
+        long: Boolean = false,
+    ) {
+        if (message.isNullOrEmpty()) return
+        val v = view
+        if (v != null && isAdded && v.isAttachedToWindow) {
+            af.shizuku.manager.app.SnackbarHelper.show(
+                v.context,
+                v,
+                message.toString(),
+                if (long) com.google.android.material.snackbar.Snackbar.LENGTH_LONG else com.google.android.material.snackbar.Snackbar.LENGTH_SHORT,
+            )
+        } else {
+            val ctx = context ?: return
+            android.widget.Toast
+                .makeText(ctx, message, if (long) android.widget.Toast.LENGTH_LONG else android.widget.Toast.LENGTH_SHORT)
+                .show()
+        }
+    }
+
+    protected fun notifyUser(
+        @androidx.annotation.StringRes message: Int,
+        long: Boolean = false,
+    ) = notifyUser(context?.getString(message), long)
+
     protected fun showDialog(builder: MaterialAlertDialogBuilder) {
         val dialog = builder.show()
         activeDialogs.add(dialog)

@@ -62,9 +62,9 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 ctx.contentResolver.openOutputStream(uri)?.use { os ->
                     OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
                 }
-                Toast.makeText(ctx, R.string.backup_plain_exported, Toast.LENGTH_LONG).show()
+                notifyUser(R.string.backup_plain_exported, long = true)
             } catch (e: Exception) {
-                Toast.makeText(ctx, ctx.getString(R.string.backup_failed_generic, e.message), Toast.LENGTH_LONG).show()
+                notifyUser(ctx.getString(R.string.backup_failed_generic, e.message), long = true)
             }
         }
 
@@ -82,9 +82,9 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                     ctx.contentResolver.openOutputStream(uri)?.use { os ->
                         OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
                     }
-                    Toast.makeText(ctx, R.string.backup_exported_success, Toast.LENGTH_SHORT).show()
+                    notifyUser(R.string.backup_exported_success)
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, backupErrorMessage("Backup failed", e), Toast.LENGTH_LONG).show()
+                    notifyUser(backupErrorMessage("Backup failed", e), long = true)
                 }
                 return@registerForActivityResult
             }
@@ -97,15 +97,15 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         ctx.contentResolver.openOutputStream(uri)?.use { os ->
                             OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
                         }
-                        Toast.makeText(ctx, R.string.backup_exported_success, Toast.LENGTH_SHORT).show()
+                        notifyUser(R.string.backup_exported_success)
                     } catch (e: Exception) {
-                        Toast.makeText(ctx, backupErrorMessage("Backup failed", e), Toast.LENGTH_LONG).show()
+                        notifyUser(backupErrorMessage("Backup failed", e), long = true)
                     }
                 }, onError = { errCode ->
-                    Toast.makeText(ctx, ctx.getString(R.string.backup_auth_failed, errCode), Toast.LENGTH_SHORT).show()
+                    notifyUser(ctx.getString(R.string.backup_auth_failed, errCode))
                 }, crypto = BiometricPrompt.CryptoObject(cipher))
             } catch (e: Exception) {
-                Toast.makeText(ctx, ctx.getString(R.string.backup_failed_generic, e.message), Toast.LENGTH_LONG).show()
+                notifyUser(ctx.getString(R.string.backup_failed_generic, e.message), long = true)
             }
         }
 
@@ -127,7 +127,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         BackupRestoreManager.restoreFromPlainPayload(ctx, payload)
                         onRestoreSuccess()
                     } catch (e: Exception) {
-                        Toast.makeText(ctx, ctx.getString(R.string.restore_failed_generic, e.message), Toast.LENGTH_LONG).show()
+                        notifyUser(ctx.getString(R.string.restore_failed_generic, e.message), long = true)
                     }
                     return@registerForActivityResult
                 }
@@ -140,7 +140,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         BackupRestoreManager.restoreFromPayload(ctx, payload, cipher)
                         onRestoreSuccess()
                     } catch (e: Exception) {
-                        Toast.makeText(ctx, backupErrorMessage("Restore failed", e), Toast.LENGTH_LONG).show()
+                        notifyUser(backupErrorMessage("Restore failed", e), long = true)
                     }
                     return@registerForActivityResult
                 }
@@ -151,13 +151,13 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         BackupRestoreManager.restoreFromPayload(ctx, payload, crypto?.cipher ?: cipher)
                         onRestoreSuccess()
                     } catch (e: Exception) {
-                        Toast.makeText(ctx, backupErrorMessage("Restore failed", e), Toast.LENGTH_LONG).show()
+                        notifyUser(backupErrorMessage("Restore failed", e), long = true)
                     }
                 }, onError = { errCode ->
-                    Toast.makeText(ctx, ctx.getString(R.string.backup_auth_failed, errCode), Toast.LENGTH_SHORT).show()
+                    notifyUser(ctx.getString(R.string.backup_auth_failed, errCode))
                 }, crypto = BiometricPrompt.CryptoObject(cipher))
             } catch (e: Exception) {
-                Toast.makeText(ctx, ctx.getString(R.string.restore_failed_generic, e.message), Toast.LENGTH_LONG).show()
+                notifyUser(ctx.getString(R.string.restore_failed_generic, e.message), long = true)
             }
         }
 
@@ -219,11 +219,11 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore")
                         keyStore.load(null)
                         keyStore.deleteEntry("_adbkey_encryption_key_")
-                        Toast.makeText(context, R.string.settings_reset_adb_keys_success, Toast.LENGTH_SHORT).show()
+                        notifyUser(R.string.settings_reset_adb_keys_success)
                         (activity as? SettingsActivity)?.onThemeChanged()
                     } catch (e: Exception) {
                         Timber.tag("AdvancedSettings").e(e, "Failed to reset ADB keys")
-                        Toast.makeText(context, R.string.settings_reset_adb_keys_error, Toast.LENGTH_LONG).show()
+                        notifyUser(R.string.settings_reset_adb_keys_error, long = true)
                     }
                 }.setNegativeButton(android.R.string.cancel, null)
                 .show()
@@ -257,7 +257,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                     .setNeutralButton(R.string.toast_copied_to_clipboard) { _, _ ->
                         val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboard.setPrimaryClip(ClipData.newPlainText("package", context.packageName))
-                        Toast.makeText(context, R.string.app_management_package_copied, Toast.LENGTH_SHORT).show()
+                        notifyUser(R.string.app_management_package_copied)
                     }.show()
                 true
             }
@@ -338,7 +338,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                             1 -> createPlainBackupLauncher.launch("ShizukuPlus_Settings_plain_$dateStr.json")
                         }
                     } catch (_: android.content.ActivityNotFoundException) {
-                        Toast.makeText(requireContext(), R.string.backup_no_file_manager_save, Toast.LENGTH_LONG).show()
+                        notifyUser(R.string.backup_no_file_manager_save, long = true)
                     }
                 }.show()
             true
@@ -349,7 +349,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             try {
                 restoreBackupLauncher.launch(arrayOf("application/json", "*/*"))
             } catch (_: android.content.ActivityNotFoundException) {
-                Toast.makeText(requireContext(), R.string.backup_no_file_manager_open, Toast.LENGTH_LONG).show()
+                notifyUser(R.string.backup_no_file_manager_open, long = true)
             }
             true
         }
@@ -475,7 +475,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
 
     private fun onRestoreSuccess() {
         if (!isAdded) return
-        Toast.makeText(requireContext(), R.string.backup_restored_success, Toast.LENGTH_SHORT).show()
+        notifyUser(R.string.backup_restored_success)
         confirmHeldBackPrivilegedSettings()
         Snackbar
             .make(

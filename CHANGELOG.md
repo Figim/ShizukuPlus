@@ -41,6 +41,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Switches show their state on the thumb** — a check when on and an X when off, on every switch in the app. The check used to be painted the same colour as the thumb, so it was invisible.
 - **M3 Expressive buttons and button groups** — buttons use the Expressive styles (their shape morphs when pressed), Start is the one filled button on its Home card, and the onboarding and automation choices are connected button groups.
 - **Loading** — the app picker, app profiles and backups show the M3 loading indicator instead of the old spinner.
+- **Confirmations show as snackbars** — backups, restores, ADB key resets, app database updates, device-owner and SU path actions, Device hardening, restoring Home cards and the like now confirm with a snackbar on the screen you're on instead of a toast.
 - **Snackbars** use the standard M3 look (inverse colours, corners from your Shape Style) instead of a pill that blended into cards.
 - **System Hub** uses proper container colours instead of see-through ones, follows your Shape Style, and badge colours match your accent. The RISKY and One UI badges and the status-card outline colours are tuned to the accent too.
 - **App bars** in Permission Manager and Device control shrink as you scroll, and long app names wrap instead of being cut off. System Hub's bar fills in when content scrolls under it.
@@ -54,7 +55,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **AMOLED black** — segmented choices, slider tracks and shape tiles stay visible on pure black. Fixed black bars behind the floating nav bar and the grey block behind the Home top-right buttons.
 - **Full colour schemes (Experimental)** — opt in under Settings → System → Experimental features. Custom accents then colour every part of the app (backgrounds, cards, outlines) instead of a dozen hand-picked colours, dark mode drops the neon primaries, and High contrast mode and Android 14's Medium/High contrast setting switch to real high-contrast schemes. Off by default; accents look as before.
 - **High contrast mode** — now applies straight away, strengthens outlines correctly in light mode too, and keeps its stronger outlines with AMOLED black.
-- **Floating navigation bar (Experimental)** — real frosted glass on Android 12+, Docked (now the default), Floating or Compact styles, labels shown by default, M3 colours, and tapping the current tab scrolls to the top. It can hide while scrolling (never while TalkBack is on), keeps at least 3 tabs, and snackbars sit above it.
+- **Floating navigation bar (Experimental)** — no back arrow on its tab screens, real frosted glass on Android 12+, Docked (now the default), Floating or Compact styles, labels shown by default, M3 colours, and tapping the current tab scrolls to the top. It can hide while scrolling (never while TalkBack is on), keeps at least 3 tabs, and snackbars sit above it.
 
 ### ⚙️ Settings
 - **Reorganized** — compact section labels instead of header cards, a shorter expanded header, regrouped Personalization and Startup & behavior, and section jump chips on long screens.

@@ -47,7 +47,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             setCustomSummary(BuildConfig.VERSION_NAME)
             setOnPreferenceClickListener {
                 if (ShizukuSettings.isDevOptionsUnlocked()) {
-                    Toast.makeText(context, R.string.settings_developer_options_revealed, Toast.LENGTH_SHORT).show()
+                    notifyUser(R.string.settings_developer_options_revealed)
                     return@setOnPreferenceClickListener true
                 }
 
@@ -56,7 +56,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                     ShizukuSettings.setDevOptionsUnlocked(true)
                     SettingsSearchEngine.reset()
                     navDevOptions?.isVisible = true
-                    Toast.makeText(context, R.string.settings_developer_options_revealed, Toast.LENGTH_SHORT).show()
+                    notifyUser(R.string.settings_developer_options_revealed)
                     versionClickCount = 0
                 } else if (versionClickCount > 2) {
                     Toast

@@ -587,7 +587,8 @@ open class ApplicationManagementActivity :
                 if (intent != null) {
                     startActivity(intent, opts)
                 } else {
-                    Toast.makeText(this, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
+                    af.shizuku.manager.app.SnackbarHelper
+                        .show(this, findViewById(android.R.id.content), getString(R.string.app_management_no_launcher))
                 }
             }
             "app_info" ->

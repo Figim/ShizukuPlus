@@ -18,7 +18,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
@@ -127,7 +126,7 @@ class BehaviorSettingsFragment :
                         lifecycleScope.launch {
                             val success = DeviceOptimizer.applyFixes(context)
                             if (success) {
-                                Toast.makeText(context, R.string.device_hardening_applied, Toast.LENGTH_SHORT).show()
+                                view?.let { SnackbarHelper.show(it.context, it, getString(R.string.device_hardening_applied)) }
                             }
                         }
                     }

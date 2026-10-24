@@ -28,7 +28,6 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -293,7 +292,7 @@ open class HomeActivity :
                             .setMessage(R.string.home_restore_default_dialog_message)
                             .setPositiveButton(R.string.empty_state_action_restore_home_cards) { _, _ ->
                                 adapter.restoreAllCards()
-                                Toast.makeText(this, R.string.home_restore_default_success, Toast.LENGTH_SHORT).show()
+                                SnackbarHelper.show(this, findViewById(android.R.id.content), getString(R.string.home_restore_default_success))
                             }.setNegativeButton(android.R.string.cancel, null)
                             .show()
                     },

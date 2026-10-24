@@ -106,10 +106,10 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 val dpm = ctx.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
                 val admin = ComponentName(ctx, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java)
                 dpm.setScreenCaptureDisabled(admin, enabled)
-                Toast.makeText(ctx, if (enabled) R.string.dpm_screen_capture_disabled else R.string.dpm_screen_capture_enabled, Toast.LENGTH_SHORT).show()
+                notifyUser(if (enabled) R.string.dpm_screen_capture_disabled else R.string.dpm_screen_capture_enabled)
                 true
             } catch (_: Exception) {
-                Toast.makeText(ctx, R.string.dpm_requires_device_owner, Toast.LENGTH_LONG).show()
+                notifyUser(R.string.dpm_requires_device_owner, long = true)
                 false
             }
         }
@@ -122,14 +122,14 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 val admin = ComponentName(ctx, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java)
                 if (enabled) {
                     dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_USB_FILE_TRANSFER)
-                    Toast.makeText(ctx, R.string.dpm_usb_locked, Toast.LENGTH_SHORT).show()
+                    notifyUser(R.string.dpm_usb_locked)
                 } else {
                     dpm.clearUserRestriction(admin, android.os.UserManager.DISALLOW_USB_FILE_TRANSFER)
-                    Toast.makeText(ctx, R.string.dpm_usb_unlocked, Toast.LENGTH_SHORT).show()
+                    notifyUser(R.string.dpm_usb_unlocked)
                 }
                 true
             } catch (_: Exception) {
-                Toast.makeText(ctx, R.string.dpm_requires_device_owner, Toast.LENGTH_LONG).show()
+                notifyUser(R.string.dpm_requires_device_owner, long = true)
                 false
             }
         }
@@ -160,11 +160,11 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                             }
                     }
                     withContext(Dispatchers.Main) {
-                        message?.let { Toast.makeText(ctx, it, Toast.LENGTH_SHORT).show() }
+                        message?.let { notifyUser(it) }
                     }
                 } catch (_: Exception) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(ctx, R.string.dpm_requires_device_owner, Toast.LENGTH_LONG).show()
+                        notifyUser(R.string.dpm_requires_device_owner, long = true)
                     }
                 }
             }
@@ -367,7 +367,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                         // so push the new path to the server explicitly.
                         suPathPref.text = chosen
                         ShizukuSettings.syncAllPlusFeaturesToServer()
-                        Toast.makeText(context, context?.getString(R.string.su_path_preset_applied, presets[which]), Toast.LENGTH_SHORT).show()
+                        notifyUser(context?.getString(R.string.su_path_preset_applied, presets[which]))
                     }
                 }.show()
             true // Intercept click to show presets dialog first
@@ -479,7 +479,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 val admin = ComponentName(ctx, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java)
                 dpm.clearProfileOwner(admin)
             }
-            Toast.makeText(ctx, R.string.dhizuku_clear_owner_success, Toast.LENGTH_LONG).show()
+            notifyUser(R.string.dhizuku_clear_owner_success, long = true)
             val dhizukuPref = findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE)
             if (dhizukuPref != null) {
                 ShizukuSettings.setDhizukuModeEnabled(false)
@@ -487,7 +487,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 updateDhizukuDeviceOwnerStatus(dhizukuPref)
             }
         } catch (_: Exception) {
-            Toast.makeText(ctx, R.string.dhizuku_clear_owner_failure, Toast.LENGTH_LONG).show()
+            notifyUser(R.string.dhizuku_clear_owner_failure, long = true)
         }
     }
 
@@ -501,7 +501,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             .setPositiveButton(R.string.dhizuku_setup_copy) { _, _ ->
                 val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 clipboard.setPrimaryClip(ClipData.newPlainText("dpm command", command))
-                Toast.makeText(ctx, R.string.dhizuku_setup_copied, Toast.LENGTH_SHORT).show()
+                notifyUser(R.string.dhizuku_setup_copied)
             }.setNegativeButton(android.R.string.cancel, null)
             .show()
     }
