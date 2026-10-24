@@ -19,6 +19,8 @@ that fails becomes an issue or a fix before the stable dispatch.
 - [ ] `api` submodule `e7d1773` is on its remote (verified 2026-10-24), so the parent push is safe.
 - [ ] Fold `## [Unreleased]` in `CHANGELOG.md` into the release section. Version follows the
       AGENTS.md fork-versioning rule (no upstream version bump without merging upstream).
+- [ ] **Code review** of everything since the part-2 ultrareview base: `/code-review medium`
+      on `9f4287b4..HEAD` (~95 commits). Fix or file what it finds.
 - [ ] Push only on explicit OK. Push to master = **prerelease**; stable = `workflow_dispatch` on
       master with `prerelease=false`.
 - [ ] After release: close #623 / #624 (fix `9a811eee` ships here), and reply on #626 (`ef092a45`).
@@ -78,6 +80,14 @@ that fails becomes an issue or a fix before the stable dispatch.
       colours on AMOLED; System Hub containers with an accent.
 - [ ] Home card drag lift/drop (re-pick mid-settle), edit-mode in/out, section header double-tap,
       switch-row icon dim/scale; feature badges at a large system font.
+
+## Tests to write next (highest regression risk this release)
+
+- [ ] Corner-settings migration `migrateCornerSettingsIfNeeded()`: at start-up and after an import.
+- [ ] One-time cleanups: `custom_app_name` seed, `clearLegacyEnhancementPrefs()`, haptics default.
+- [ ] Backup round trip: export → import, plus an old backup with `rounded_edges_enabled=false`.
+- [ ] Sync-key parity: every key `syncAllPlusFeaturesToServer()` sends is one the server reads.
+- [ ] Cross-flavor settings sync (`SettingsSharingProvider`) with both flavors installed (device, open since 2026-10-03).
 
 ## Known, not blocking
 

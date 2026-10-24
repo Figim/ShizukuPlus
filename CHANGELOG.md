@@ -88,6 +88,9 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Chinese (Simplified and Traditional) complete** and Azerbaijani updated, with thanks to the community translators. Screens that still showed English text are now translated.
 - **Fixed translated settings breaking options** — in az, pt-BR, uk, ur and zh some internal setting values were translated, which broke icon style, shape style, accent and swipe-action choices in those languages. Corner rounding labels in az, ko and zh-CN now point at the right sizes.
 
+### 🛠️ For app developers
+- `IAICorePlus.scheduleNPULoad()` now returns `success=false` with `reason="not_supported"` — it used to report success without doing anything. Real NPU scheduling is tracked in #633.
+
 ---
 
 ## [v13.7.0 — Major Stable Release] - 2026-10-19

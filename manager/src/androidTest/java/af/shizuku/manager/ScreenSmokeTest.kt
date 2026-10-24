@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -27,15 +28,23 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class ScreenSmokeTest {
+    // launch() waits for RESUMED (or DESTROYED, if the screen finishes itself); a crash fails it.
     private fun <A : Activity> opens(cls: Class<A>) {
         ActivityScenario.launch(cls).use { scenario ->
-            scenario.moveToState(Lifecycle.State.RESUMED)
-            // A screen may legitimately finish itself (e.g. onboarding redirect); crashing isn't.
             assertTrue(scenario.state == Lifecycle.State.RESUMED || scenario.state == Lifecycle.State.DESTROYED)
         }
     }
 
+    // On a fresh install MainActivity hands off to onboarding and finishes; mark it seen so Main
+    // actually renders Home, and cover onboarding on its own.
+    @Before
+    fun markOnboardingSeen() {
+        ShizukuSettings.getPreferences().edit().putBoolean("onboarding_seen", true).commit()
+    }
+
     @Test fun mainOpens() = opens(MainActivity::class.java)
+
+    @Test fun onboardingOpens() = opens(af.shizuku.manager.onboarding.OnboardingActivity::class.java)
 
     @Test fun appsOpens() = opens(ApplicationManagementActivity::class.java)
 
