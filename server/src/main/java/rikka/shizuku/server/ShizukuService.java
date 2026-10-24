@@ -380,18 +380,35 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // user already allowed (see the SU bridge), and turning it off revokes what it granted.
     }
 
-    /** Revokes every grant the auto-grant feature made (tracked as "package|permission"). */
+    /**
+     * Revokes every grant the auto-grant feature made, tracked as "package|permission|userId"
+     * ("package|permission" from older builds, which granted in the server's own user). The manager's
+     * own packages are skipped: older builds' proactive scan tracked them too, and the manager's
+     * essential permissions must stay.
+     */
     private void revokeAutoGrantedPermissions() {
         try {
             java.util.Set<String> granted = configManager.getAutoGrantedPermissions();
             if (granted.isEmpty()) return;
-            int userId = UserHandleCompat.getUserId(android.os.Process.myUid());
+            int defaultUserId = UserHandleCompat.getUserId(android.os.Process.myUid());
             int revoked = 0;
             for (String key : granted) {
-                int sep = key.indexOf('|');
-                if (sep <= 0) continue;
+                String[] parts = key.split("\\|");
+                if (parts.length < 2 || parts[0].isEmpty()) continue;
+                String pkg = parts[0];
+                if (MANAGER_APPLICATION_ID.equals(pkg) || ServerConstants.DROPIN_APPLICATION_ID.equals(pkg)
+                        || ServerConstants.PLUS_APPLICATION_ID.equals(pkg)) {
+                    continue;
+                }
+                int userId = defaultUserId;
+                if (parts.length > 2) {
+                    try {
+                        userId = Integer.parseInt(parts[2]);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
                 try {
-                    Android17Compat.revokeRuntimePermission(key.substring(0, sep), key.substring(sep + 1), userId);
+                    Android17Compat.revokeRuntimePermission(pkg, parts[1], userId);
                     revoked++;
                 } catch (Throwable ignored) {
                 }
@@ -684,7 +701,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // Accept either manager flavor's applicationId - see secondaryManagerAppId's declaration.
         // The other flavor's id only counts when it is the trusted secondary manager (same signing
         // certificate) - anyone can install an app under that package name.
-        isManager = MANAGER_APPLICATION_ID.equals(requestPackageName)
+        // When PackageManager returned no packages above, the uid→package check was skipped, so the
+        // primary id is only trusted if the uid is the manager's (re-resolved once if it looks stale).
+        int callingAppId = UserHandleCompat.getAppId(callingUid);
+        isManager = (MANAGER_APPLICATION_ID.equals(requestPackageName)
+                    && (!packages.isEmpty() || isManagerAppId(callingAppId)
+                        || (refreshManagerAppIdsThrottled() && isManagerAppId(callingAppId))))
                 || ((ServerConstants.DROPIN_APPLICATION_ID.equals(requestPackageName)
                         || ServerConstants.PLUS_APPLICATION_ID.equals(requestPackageName))
                     && isManagerAppId(UserHandleCompat.getAppId(callingUid)));
@@ -1111,10 +1133,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public void updatePlusFeatureEnabled(String key, boolean enabled) {
         enforceManagerPermission("updatePlusFeatureEnabled");
         LOGGER.i("Plus Feature Update: " + key + " -> " + enabled);
-        boolean wasAutoGrant = ("root_auto_grant".equals(key) || "root_auto_grant_enabled".equals(key))
-                && isFeatureEnabled("root_auto_grant");
+        boolean isAutoGrantKey = "root_auto_grant".equals(key) || "root_auto_grant_enabled".equals(key);
+        boolean wasAutoGrant = isAutoGrantKey && isFeatureEnabled("root_auto_grant");
         featureEnabledMap.put(key, enabled);
-        if (wasAutoGrant && !enabled) {
+        // Also when this server never saw it on (turned off while the server was down, or grants left
+        // from an older build): any tracked grant left over means it is still to be taken back.
+        if (isAutoGrantKey && !enabled && (wasAutoGrant || !configManager.getAutoGrantedPermissions().isEmpty())) {
             new Thread(this::revokeAutoGrantedPermissions, "AutoGrantRevoke").start();
         }
     }
@@ -1632,7 +1656,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                             // Primary: direct Binder IPC — works at shell UID, no exec/fork needed.
                             Android17Compat.grantRuntimePermission(targetPkg, perm, grantUserId);
                             // Tracked so turning auto-grant off can revoke it again.
-                            configManager.addAutoGrantedPermissions(java.util.Collections.singletonList(targetPkg + "|" + perm));
+                            configManager.addAutoGrantedPermissions(java.util.Collections.singletonList(targetPkg + "|" + perm + "|" + grantUserId));
                             return newProcessInternal(new String[]{"true"}, env, dir);
                         } catch (Exception e) {
                             LOGGER.w(e, "SUBridge: grantRuntimePermission IPC failed for %s/%s, falling back to exec", targetPkg, perm);
