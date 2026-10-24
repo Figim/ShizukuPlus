@@ -558,9 +558,31 @@ object RootCompatHelper {
         )
     }
 
-    /** Result of [selfTest]: [ok] is a coarse pass/fail; [report] is a human-readable multi-line
-     *  summary meant to be shown verbatim in a dialog. */
-    data class BridgeSelfTest(val ok: Boolean, val report: String)
+    /** Result of [selfTest]. [ok] is a coarse pass/fail; the manager turns the rest into localized
+     *  text (this module has no resources). [failure] set means the test stopped before the probes. */
+    data class BridgeSelfTest(
+        val ok: Boolean,
+        val failure: Failure? = null,
+        /** Why the deploy failed, from the deploy step (raw command output, not localized). */
+        val deployFailureDetail: String? = null,
+        /** Server runs as shell (uid 2000); changes the advice after a failed deploy. */
+        val shellMode: Boolean = false,
+        val tmpDir: String? = null,
+        val deployed: Boolean = false,
+        /** Real uid of the privileged process, from /proc/self/status. */
+        val uid: Int? = null,
+        val appExec: AppExec? = null,
+    ) {
+        enum class Failure { NOT_CONNECTED, DEPLOY_FAILED }
+
+        sealed class AppExec {
+            data class Ok(val uid: Int?) : AppExec()
+            /** Ran but didn't echo back; [output] is the trimmed stdout + stderr. */
+            data class NoRoundTrip(val output: String) : AppExec()
+            /** exec itself threw, most likely SELinux. */
+            data class Blocked(val message: String) : AppExec()
+        }
+    }
 
     /**
      * Diagnoses the SU Bridge on THIS device without needing a third-party app. Runs two probes:
@@ -580,23 +602,18 @@ object RootCompatHelper {
      */
     suspend fun selfTest(context: Context): BridgeSelfTest = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) {
-            return@withContext BridgeSelfTest(false,
-                "Shizuku isn't connected. Start the Shizuku service from the home screen, then try again.")
+            return@withContext BridgeSelfTest(false, BridgeSelfTest.Failure.NOT_CONNECTED)
         }
         val deployResult = deployBridgeToTmpDetailed(context)
         val tmpSu = deployResult.suPath
             ?: run {
                 val serverUid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
-                val detail = deployResult.failureDetail?.let { "Reason: $it\n\n" } ?: ""
-                val action = if (serverUid == 2000) {
-                    "ADB/shell mode detected. If your device restricts writes to /data/local/tmp from " +
-                        "the shell process, use the exported path instead. Tap \"Export\" in the " +
-                        "compatibility hub and direct root apps to that path, or switch to root mode for full access."
-                } else {
-                    "Make sure the Shizuku service is running, then retry."
-                }
-                return@withContext BridgeSelfTest(false,
-                    "❌ Could not deploy the bridge to /data/local/tmp.\n\n$detail$action")
+                return@withContext BridgeSelfTest(
+                    false,
+                    BridgeSelfTest.Failure.DEPLOY_FAILED,
+                    deployFailureDetail = deployResult.failureDetail,
+                    shellMode = serverUid == 2000,
+                )
             }
         val tmpDir = tmpSu.substringBeforeLast('/')
 
@@ -606,16 +623,6 @@ object RootCompatHelper {
                 "echo '---'; grep -m1 '^Uid:' /proc/self/status"))
         val deployed = lsOut.isNotBlank() && !lsOut.contains("No such file")
         val uid = Regex("Uid:\\s+(\\d+)").find(lsOut)?.groupValues?.get(1)?.toIntOrNull()
-        val privLabel = when (uid) {
-            0 -> "root (uid 0) — full privileges"
-            2000 -> "shell / ADB (uid 2000)"
-            null -> "unknown"
-            else -> "uid $uid"
-        }
-
-        val sb = StringBuilder()
-        sb.append(if (deployed) "✅ Bridge deployed to $tmpDir\n" else "❌ Bridge files missing under $tmpDir\n")
-        sb.append("• Privilege level: $privLabel\n")
 
         // Probe B — real app-exec flow (best-effort).
         val appExec = try {
@@ -627,29 +634,18 @@ object RootCompatHelper {
                 p.waitFor()
                 if (out.contains("APP_OK")) {
                     val auid = Regex("Uid:\\s+(\\d+)").find(out)?.groupValues?.get(1)?.toIntOrNull()
-                    "✅ ran end-to-end (uid ${auid ?: "?"})"
+                    BridgeSelfTest.AppExec.Ok(auid)
                 } else {
-                    "⚠️ didn't round-trip — an exec-style app may fail here:\n${(out + err).trim().take(220)}"
+                    BridgeSelfTest.AppExec.NoRoundTrip((out + err).trim().take(220))
                 }
             } finally {
                 p.destroy()
             }
         } catch (e: Exception) {
-            "⚠️ blocked on this device (likely SELinux): ${e.message?.take(160)}"
+            BridgeSelfTest.AppExec.Blocked(e.message?.take(160).orEmpty())
         }
-        sb.append("• App-exec test: $appExec\n\n")
 
-        if (uid == 0) {
-            sb.append("Root-level bridge: apps needing true root can work through it.")
-        } else {
-            sb.append("Shell-level bridge (like ADB): app features needing only shell/ADB will work; " +
-                "features that require true root — e.g. reading another app's private data — cannot, " +
-                "even though the app may detect \"root\".")
-        }
-        sb.append("\n\nRemember: the calling app must be authorized in Shizuku+ before its own commands " +
-            "through the bridge succeed.")
-
-        BridgeSelfTest(deployed && uid != null, sb.toString())
+        BridgeSelfTest(deployed && uid != null, tmpDir = tmpDir, deployed = deployed, uid = uid, appExec = appExec)
     }
 
     /** Runs a privileged command and returns (exitCode, stdout, stderr) via the shared

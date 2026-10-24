@@ -20,13 +20,15 @@ class ActivityLogSettingsImpl : ActivityLogSettings {
     ) {
         if (!ShizukuSettings.isActivityLogEnabled()) return
         if (!ShizukuSettings.isLiveActivityEnabled()) return
+        val context = af.shizuku.manager.ShizukuApplication.appContext
+        val shown = af.shizuku.manager.activitylog.ActivityLogText.localize(context, action)
         val text =
             when {
-                appName.isNotBlank() && action.isNotBlank() -> "$appName: $action"
+                appName.isNotBlank() && shown.isNotBlank() -> "$appName: $shown"
                 appName.isNotBlank() -> appName
-                else -> action
+                else -> shown
             }.removePrefix(":").trim()
-        LiveActivityNotificationManager.show(af.shizuku.manager.ShizukuApplication.appContext, text)
+        LiveActivityNotificationManager.show(context, text)
     }
 
     override fun showWarningNotification(

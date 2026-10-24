@@ -410,6 +410,7 @@ class RootCompatibilityActivity : AppBarActivity() {
         lifecycleScope.launch {
             val result = RootCompatHelper.selfTest(this@RootCompatibilityActivity)
             if (isFinishing) return@launch
+            val report = selfTestReport(result)
             val heading =
                 if (result.ok) {
                     getString(R.string.su_bridge_self_test_ok)
@@ -418,13 +419,54 @@ class RootCompatibilityActivity : AppBarActivity() {
                 }
             MaterialAlertDialogBuilder(this@RootCompatibilityActivity)
                 .setTitle(getString(R.string.su_bridge_self_test_title))
-                .setMessage("$heading\n\n${result.report}")
+                .setMessage("$heading\n\n$report")
                 .setPositiveButton(android.R.string.ok, null)
                 .setNeutralButton(R.string.su_bridge_self_test_copy) { _, _ ->
                     val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    cm.setPrimaryClip(ClipData.newPlainText("SU Bridge self-test", result.report))
+                    cm.setPrimaryClip(ClipData.newPlainText("SU Bridge self-test", report))
                     Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_self_test_copied, Toast.LENGTH_SHORT).show()
                 }.show()
+        }
+    }
+
+    private fun selfTestReport(result: RootCompatHelper.BridgeSelfTest): String {
+        when (result.failure) {
+            RootCompatHelper.BridgeSelfTest.Failure.NOT_CONNECTED ->
+                return getString(R.string.su_bridge_report_not_connected)
+            RootCompatHelper.BridgeSelfTest.Failure.DEPLOY_FAILED -> {
+                val reason = result.deployFailureDetail?.let { getString(R.string.su_bridge_report_deploy_reason, it) + "\n\n" }.orEmpty()
+                val hint =
+                    getString(
+                        if (result.shellMode) R.string.su_bridge_report_deploy_hint_shell else R.string.su_bridge_report_deploy_hint_retry,
+                    )
+                return getString(R.string.su_bridge_report_deploy_failed) + "\n\n" + reason + hint
+            }
+            null -> Unit
+        }
+        val dir = result.tmpDir.orEmpty()
+        val privilege =
+            when (result.uid) {
+                0 -> getString(R.string.su_bridge_report_privilege_root)
+                2000 -> getString(R.string.su_bridge_report_privilege_shell)
+                null -> getString(R.string.su_bridge_report_privilege_unknown)
+                else -> getString(R.string.su_bridge_report_privilege_uid, result.uid)
+            }
+        val appExec =
+            when (val e = result.appExec) {
+                is RootCompatHelper.BridgeSelfTest.AppExec.Ok ->
+                    getString(R.string.su_bridge_report_app_exec_ok, e.uid?.toString() ?: "?")
+                is RootCompatHelper.BridgeSelfTest.AppExec.NoRoundTrip ->
+                    getString(R.string.su_bridge_report_app_exec_no_round_trip, e.output)
+                is RootCompatHelper.BridgeSelfTest.AppExec.Blocked ->
+                    getString(R.string.su_bridge_report_app_exec_blocked, e.message)
+                null -> "?"
+            }
+        return buildString {
+            appendLine(getString(if (result.deployed) R.string.su_bridge_report_deployed else R.string.su_bridge_report_missing, dir))
+            appendLine(getString(R.string.su_bridge_report_privilege, privilege))
+            append(getString(R.string.su_bridge_report_app_exec, appExec)).append("\n\n")
+            append(getString(if (result.uid == 0) R.string.su_bridge_report_root_level else R.string.su_bridge_report_shell_level))
+            append("\n\n").append(getString(R.string.su_bridge_report_authorize_reminder))
         }
     }
 

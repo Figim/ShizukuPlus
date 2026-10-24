@@ -329,8 +329,8 @@ class AppViewHolder(
         val appInfo = ai ?: return
         val capturedPackage = packageName
         val appLabel = AppIconCache.getLabel(context, appInfo)
-        val revokeLabel = context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_revoke))
-        val grantLabel = context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_grant))
+        val revokeLabel = af.shizuku.manager.activitylog.ActivityLogText.TOGGLE_REVOKE
+        val grantLabel = af.shizuku.manager.activitylog.ActivityLogText.TOGGLE_GRANT
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val wasGranted = AuthorizationManager.granted(capturedPackage, appInfo.uid)

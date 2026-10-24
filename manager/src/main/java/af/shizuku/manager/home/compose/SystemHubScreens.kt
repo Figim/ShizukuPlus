@@ -2,6 +2,7 @@ package af.shizuku.manager.home.compose
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.activitylog.ActivityLogText
 import af.shizuku.manager.database.ActivityEventType
 import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.database.ActivityLogRecord
@@ -539,6 +540,7 @@ fun ActivityLogScreen(
                     filtered.filter { record ->
                         record.packageName.lowercase().contains(q) ||
                             record.action.lowercase().contains(q) ||
+                            ActivityLogText.localize(context, record.action).lowercase().contains(q) ||
                             record.appName.lowercase().contains(q) ||
                             (appLabels[record.packageName]?.lowercase()?.contains(q) == true)
                     }
@@ -1322,7 +1324,7 @@ private fun ActivityLogTimelineRow(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = record.action,
+                    text = ActivityLogText.localize(LocalContext.current, record.action),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

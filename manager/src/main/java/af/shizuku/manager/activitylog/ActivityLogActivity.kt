@@ -336,7 +336,7 @@ class ActivityLogFragment : Fragment() {
             val capturedPackage = record.packageName
 
             binding.packageName.text = record.packageName
-            binding.action.text = record.action
+            binding.action.text = ActivityLogText.localize(context, record.action)
             binding.timestamp.text = dateFormat.format(Date(record.timestamp))
 
             binding.appName.text = record.appName.ifEmpty { record.packageName }
@@ -376,7 +376,7 @@ class ActivityLogFragment : Fragment() {
                     group.stackedRecords.forEach { stacked ->
                         val subRow =
                             TextView(context).apply {
-                                text = "• ${timeOnlyFormat.format(Date(stacked.timestamp))} — ${stacked.action}"
+                                text = "• ${timeOnlyFormat.format(Date(stacked.timestamp))} — ${ActivityLogText.localize(context, stacked.action)}"
                                 setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
                                 setTextColor(resolveAttrColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant))
                                 setPadding(0, (2 * resources.displayMetrics.density).toInt(), 0, (2 * resources.displayMetrics.density).toInt())
@@ -393,7 +393,7 @@ class ActivityLogFragment : Fragment() {
             }
 
             binding.root.contentDescription =
-                "${binding.appName.text}, ${binding.eventChip.text}, ${record.action}, ${binding.timestamp.text}"
+                "${binding.appName.text}, ${binding.eventChip.text}, ${binding.action.text}, ${binding.timestamp.text}"
 
             lookupJob?.cancel()
             lookupJob =
