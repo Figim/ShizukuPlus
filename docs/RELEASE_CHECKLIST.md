@@ -13,19 +13,22 @@ that fails becomes an issue or a fix before the stable dispatch.
 - [ ] **On-device smoke pass:** `bash scripts/dev/device-smoke.sh` (keeps your data).
 - [ ] **Release (R8) build on the phone:** see §2. Needs an uninstall if the phone has a debug build,
       so **export a backup first**.
-- [ ] **Merge origin/master** (`212d3a2a` README, `5c0a0716` az #619). Resolve values-az with the
+- [x] **Merge origin/master** (`212d3a2a` README, `5c0a0716` az #619). Resolve values-az with the
       LOCAL side, then confirm no `*_value`/`*_values` arrays came back in any locale and none of
       the strings removed in `ef5bfa82` returned.
+      Done in `3a4a1e04`; 2026-10-24: `check_arrays.py` OK, only the 3 About strings restored on purpose (`f212640b`) came back.
 - [ ] `api` submodule `e7d1773` is on its remote (verified 2026-10-24), so the parent push is safe.
 - [ ] Fold `## [Unreleased]` in `CHANGELOG.md` into the release section. Version follows the
       AGENTS.md fork-versioning rule (no upstream version bump without merging upstream).
-- [ ] **Code review** of everything since the part-2 ultrareview base: `/code-review medium`
+- [x] **Code review** of everything since the part-2 ultrareview base: `/code-review medium`
       on `9f4287b4..HEAD` (~95 commits). Fix or file what it finds.
-- [ ] **Hard-coded English → strings.xml** (promised to Figim on #619/#622, then ping them):
+      2026-10-24: 10 findings. Fixed: `38c2738a` (auto-grant revoke user/leftovers/manager keys, manager id uid check), `c31a8e48` (privileged keys on trusted imports), `4d1262e4` (scrubber, AICore+ consent baseline, app DB warm-up), `a25529ff` (smoke gate). Not fixed, low impact: `RemoteDbSyncWorker` sends no conditional headers while the bundled revision is current (daily full download of a small file), and a pre-rework `app-context-db.json` blob stays in prefs.
+- [x] **Hard-coded English → strings.xml** (promised to Figim on #619/#622, then ping them):
       SU Bridge self-test report (`database/.../RootCompatHelper.kt` ~:600-650); manager activity-log /
       watchdog lines (`AdbStarter.kt` ~:170, `ShizukuStateMachine.kt` ~:363, `ReconnectTrigger.kt` ~:57).
       Server-side log text ("Connected to Shizuku", `ShizukuService.java` ~:759) can't use manager
       resources: log a key and render it in the manager, or leave English and say so.
+      Done in `fe82a9f9`: log stores English, `ActivityLogText` maps it when shown (server lines too); self-test report built in the manager. Ping Figim on #622 after the push.
 - [ ] Decide on #622 (Figim's open PR, waiting since 2026-10-23 for those strings).
 - [ ] Push only on explicit OK. Push to master = **prerelease**; stable = `workflow_dispatch` on
       master with `prerelease=false`.
@@ -73,6 +76,11 @@ that fails becomes an issue or a fix before the stable dispatch.
 - [ ] Verified installation: VirusTotal key flow + Pithus. Package governor toggle reaches the server.
 - [ ] Predictive back in Apps selection and Permission Manager detail (cancel mid-gesture resets).
 - [ ] TalkBack: slider step names, badge readout, "Help" long-press action.
+- [ ] App language set to e.g. Deutsch: Activity log rows, the live activity notification and the
+      SU Bridge self-test dialog are in German (older entries too); Copy/Export stays English.
+- [ ] Auto-grant off with a granted app: its grant is revoked; the manager keeps WRITE_SECURE_SETTINGS/DUMP.
+- [ ] AICore+: on an update where the service was already on, the self-heal does not re-enable it
+      after an OEM/user disable until it has been switched on again by hand.
 
 ## 4. Visual pass (P2, screenshots)
 
