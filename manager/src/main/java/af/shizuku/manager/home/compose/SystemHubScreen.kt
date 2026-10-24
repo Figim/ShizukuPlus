@@ -49,10 +49,16 @@ fun SystemHubScreen(
     scrollBehavior.GuardHeightOffset()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+    // M3: System Hub is a top-level tab when the floating nav bar is on - no back arrow then.
+    val showBack =
+        !af.shizuku.manager.ShizukuSettings
+            .isFloatingNavBarEnabled()
     val nav =
         @Composable {
-            IconButton(onClick = onBackClick) {
-                Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = stringResource(R.string.cd_navigate_back))
+            if (showBack) {
+                IconButton(onClick = onBackClick) {
+                    Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = stringResource(R.string.cd_navigate_back))
+                }
             }
         }
 

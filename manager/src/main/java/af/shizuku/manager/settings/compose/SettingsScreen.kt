@@ -54,6 +54,8 @@ fun SettingsScreen(
     title: String,
     subtitle: String? = null,
     onNavigateUp: () -> Unit,
+    // M3: no back arrow on a top-level destination (the floating nav bar's Settings tab root).
+    showNavigateUp: Boolean = true,
     onNavigateToSetting: (SettingsSearchEngine.SettingItem) -> Unit,
     searchResults: List<SettingsSearchEngine.SettingItem>,
     onSearchQueryChanged: (String) -> Unit,
@@ -354,11 +356,13 @@ fun SettingsScreen(
                                 Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             },
                             navigationIcon = {
-                                IconButton(onClick = { onNavigateUp() }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_back_24),
-                                        contentDescription = stringResource(R.string.cd_navigate_back),
-                                    )
+                                if (showNavigateUp) {
+                                    IconButton(onClick = { onNavigateUp() }) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_back_24),
+                                            contentDescription = stringResource(R.string.cd_navigate_back),
+                                        )
+                                    }
                                 }
                             },
                             actions = {

@@ -88,7 +88,8 @@ open class ApplicationManagementActivity :
         // and the observer references recyclerView, so it must be ready first.
         recyclerView = binding.list
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // No back arrow when Apps is a floating-nav tab (M3 top-level destination).
+        supportActionBar?.setDisplayHomeAsUpEnabled(!ShizukuSettings.isFloatingNavBarEnabled())
 
         // Empty state view — also used as "waiting for Shizuku" placeholder while STARTING.
         val emptyStateView = binding.emptyStateView
