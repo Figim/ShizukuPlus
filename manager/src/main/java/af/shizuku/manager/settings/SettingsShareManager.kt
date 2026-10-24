@@ -95,7 +95,7 @@ object SettingsShareManager {
             val reply = context.contentResolver.call(uri, SettingsSharingProvider.METHOD_GET_SETTINGS, null, null)
             val json = reply?.getString(SettingsSharingProvider.EXTRA_SETTINGS_JSON) ?: return false
             val lastMod = reply.getLong(SettingsSharingProvider.EXTRA_LAST_MODIFIED, System.currentTimeMillis())
-            val success = SettingsBackupManager.import(context, json)
+            val success = SettingsBackupManager.import(context, json, trustPrivileged = true)
             if (success) {
                 ShizukuSettings.setSettingsLastModified(lastMod)
                 ShizukuSettings

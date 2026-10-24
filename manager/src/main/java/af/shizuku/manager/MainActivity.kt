@@ -84,7 +84,7 @@ class MainActivity : HomeActivity() {
                 try {
                     val json = backupFile.readText()
                     if (af.shizuku.manager.utils.SettingsBackupManager
-                            .import(this@MainActivity, json)
+                            .import(this@MainActivity, json, trustPrivileged = true)
                     ) {
                         Timber.i("Successfully auto-restored settings from force-update backup")
                         backupFile.delete()

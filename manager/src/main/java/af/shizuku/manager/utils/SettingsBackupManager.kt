@@ -138,11 +138,17 @@ object SettingsBackupManager {
         heldBack = emptyMap()
     }
 
+    /**
+     * @param trustPrivileged applies [PRIVILEGED_KEYS] as stored instead of holding them back. Only
+     * for settings that are already this user's on this device: the app's own force-update backup
+     * and the signature-checked other flavor. A file the user picks, or a cloud restore, still asks.
+     */
     fun import(
         @Suppress("UNUSED_PARAMETER") context: Context,
         json: String,
+        trustPrivileged: Boolean = false,
     ): Boolean =
-        importInternal(json, synchronous = false)
+        importInternal(json, synchronous = false, trustPrivileged = trustPrivileged)
 
     /**
      * Like [import] but uses [SharedPreferences.Editor.commit] (synchronous disk write). Use this
@@ -158,6 +164,7 @@ object SettingsBackupManager {
     private fun importInternal(
         json: String,
         synchronous: Boolean,
+        trustPrivileged: Boolean = false,
     ): Boolean {
         return try {
             val obj = JSONObject(json)
@@ -172,7 +179,7 @@ object SettingsBackupManager {
             while (keys.hasNext()) {
                 val key = keys.next()
                 if (key == VERSION_KEY || key in EXCLUDED_KEYS) continue
-                if (key in PRIVILEGED_KEYS) {
+                if (key in PRIVILEGED_KEYS && !trustPrivileged) {
                     // Switching one off is safe to apply; switching one on (or pointing the su path
                     // somewhere) waits for the user's confirmation.
                     when (val v = obj.get(key)) {
