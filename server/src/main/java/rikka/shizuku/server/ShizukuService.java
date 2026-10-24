@@ -3200,27 +3200,25 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    /**
+     * What elevateApp() (an authorized client elevating its own package) and the SU Bridge's
+     * SELinux mapping grant - the ops the old numeric list documented, by name. 107, 111 and 119
+     * had no documented meaning and are gone.
+     */
+    private static final String[] CLIENT_ELEVATION_APP_OPS = {
+        "android:system_alert_window",
+        "android:get_usage_stats",
+        "android:write_settings",
+        "android:request_install_packages",
+        "android:manage_external_storage",
+        "android:access_restricted_settings",
+        "android:schedule_exact_alarm",
+    };
+
     private void performAppOpsElevation(String packageName, int uid) {
         LOGGER.i("Plus: elevating AppOps and permissions for " + packageName + " (UID " + uid + ")");
         try {
-            IBinder binder = ServiceManager.getService("appops");
-            if (binder != null) {
-                Object service = Class.forName("com.android.internal.app.IAppOpsService$Stub")
-                    .getMethod("asInterface", IBinder.class).invoke(null, binder);
-                java.lang.reflect.Method setMode = service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class);
-                // 24 = OP_SYSTEM_ALERT_WINDOW, 43 = OP_GET_USAGE_STATS, 63 = OP_WRITE_SETTINGS,
-                // 65 = OP_SYSTEM_ALERT_WINDOW (fallback), 66 = OP_REQUEST_INSTALL_PACKAGES,
-                // 100 = OP_MANAGE_EXTERNAL_STORAGE, 103 = OP_ACCESS_RESTRICTED_SETTINGS, 
-                // 121 = OP_SCHEDULE_EXACT_ALARM (privileged)
-                int[] opsToElevate = {24, 43, 63, 65, 66, 100, 103, 107, 111, 119, 121};
-                for (int op : opsToElevate) {
-                    try {
-                        setMode.invoke(service, op, uid, packageName, 0); // 0 = MODE_ALLOWED
-                    } catch (Exception e) {
-                        LOGGER.e(e, "Plus: Failed to set AppOps mode %d for uid %d", op, uid);
-                    }
-                }
-            }
+            setAppOpsAllowedByName(packageName, uid, CLIENT_ELEVATION_APP_OPS);
             // Also grant WRITE_SECURE_SETTINGS and DUMP via Binder IPC — no exec/fork required.
             for (String perm : new String[]{"android.permission.WRITE_SECURE_SETTINGS", "android.permission.DUMP"}) {
                 try {
