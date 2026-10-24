@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">لون الإطار</string>
     <string name="settings_update_app_database">تحديث قاعدة بيانات التطبيقات</string>
     <string name="settings_update_app_database_summary">جلب أحدث أوصاف التطبيقات واقتراحات التحسين من GitHub.</string>
-    <string name="settings_update_app_database_success">تم تحديث قاعدة البيانات بنجاح</string>
     <string name="settings_update_app_database_error">فشل تحديث قاعدة البيانات</string>
     <string name="home_edit_mode_title">ترتيب البطاقات</string>
     <string name="home_edit_mode_done">تم</string>

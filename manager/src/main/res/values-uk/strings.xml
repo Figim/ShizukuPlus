@@ -338,7 +338,6 @@
     <string name="settings_show_activity_log_home">Показувати Журнал активності</string>
     <string name="settings_update_app_database">Оновити базу даних додатків</string>
     <string name="settings_update_app_database_summary">Завантажити найсвіжіші описи додатків та рекомендації з покращень із GitHub.</string>
-    <string name="settings_update_app_database_success">Базу даних успішно оновлено</string>
     <string name="settings_update_app_database_error">Не вдалося оновити базу даних</string>
     <string name="settings_legacy_pairing">Старе створення пари</string>
     <string name="settings_legacy_pairing_summary">Вводити код створення пари в діалозі замість сповіщення</string>

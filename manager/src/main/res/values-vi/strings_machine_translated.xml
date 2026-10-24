@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Màu viền</string>
     <string name="settings_update_app_database">Cập nhật cơ sở dữ liệu ứng dụng</string>
     <string name="settings_update_app_database_summary">Tải mô tả ứng dụng và đề xuất nâng cao mới nhất từ GitHub.</string>
-    <string name="settings_update_app_database_success">Đã cập nhật cơ sở dữ liệu thành công</string>
     <string name="settings_update_app_database_error">Cập nhật cơ sở dữ liệu thất bại</string>
     <string name="home_edit_mode_title">Sắp xếp thẻ</string>
     <string name="home_edit_mode_done">Xong</string>

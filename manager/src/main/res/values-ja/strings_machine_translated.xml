@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">輪郭の色</string>
     <string name="settings_update_app_database">アプリデータベースを更新</string>
     <string name="settings_update_app_database_summary">最新のアプリ説明と拡張の提案をGitHubから取得します。</string>
-    <string name="settings_update_app_database_success">データベースを更新しました</string>
     <string name="settings_update_app_database_error">データベースの更新に失敗しました</string>
     <string name="home_edit_mode_title">カードを並べ替え</string>
     <string name="home_edit_mode_done">完了</string>

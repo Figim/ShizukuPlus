@@ -316,7 +316,6 @@
     <string name="settings_show_activity_log_home">Exibir Registro de Atividades</string>
     <string name="settings_update_app_database">Atualizar banco de dados de aplicativos</string>
     <string name="settings_update_app_database_summary">Buscar as descrições de aplicativos e sugestões de aprimoramento mais recentes do GitHub.</string>
-    <string name="settings_update_app_database_success">Banco de dados atualizado com sucesso</string>
     <string name="settings_update_app_database_error">Falha ao atualizar o banco de dados</string>
     <string name="settings_legacy_pairing">Pareamento legado</string>
     <string name="settings_legacy_pairing_summary">Digitar o código de pareamento em uma caixa de diálogo em vez de uma notificação</string>

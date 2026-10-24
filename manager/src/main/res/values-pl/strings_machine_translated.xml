@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Kolor obrysu</string>
     <string name="settings_update_app_database">Aktualizuj bazę aplikacji</string>
     <string name="settings_update_app_database_summary">Pobierz z GitHub najnowsze opisy aplikacji i sugestie ulepszeń.</string>
-    <string name="settings_update_app_database_success">Baza danych zaktualizowana</string>
     <string name="settings_update_app_database_error">Nie udało się zaktualizować bazy danych</string>
     <string name="home_edit_mode_title">Rozmieść karty</string>
     <string name="home_edit_mode_done">Gotowe</string>

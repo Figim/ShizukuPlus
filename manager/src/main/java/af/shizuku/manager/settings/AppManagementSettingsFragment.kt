@@ -7,12 +7,25 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class AppManagementSettingsFragment : BaseSettingsFragment() {
+    private var checkingDatabase = false
+
+    private fun updateDatabaseSummary(pref: Preference) {
+        val last = ShizukuSettings.getLastDbUpdate()
+        val count = AppContextManager.appCount()
+        pref.summary =
+            if (last > 0) {
+                val checked =
+                    android.text.format.DateUtils
+                        .getRelativeTimeSpanString(last, System.currentTimeMillis(), android.text.format.DateUtils.MINUTE_IN_MILLIS)
+                getString(R.string.settings_update_app_database_status, count, checked)
+            } else {
+                getString(R.string.settings_update_app_database_status_never, count)
+            }
+    }
+
     override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_app_interactions_title)
 
     override fun onCreateSettingsPreferences(
@@ -42,40 +55,31 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                 }
         }
 
-        // App descriptions and enhancement suggestions shown in the Apps list.
-        findPreference<Preference>("update_app_database")?.setOnPreferenceClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                try {
-                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/database/apps.json")
-                    val connection = url.openConnection() as java.net.HttpURLConnection
-                    val content =
-                        try {
-                            connection.instanceFollowRedirects = true
-                            connection.requestMethod = "GET"
-                            connection.connectTimeout = 10_000
-                            connection.readTimeout = 10_000
-
-                            val responseCode = connection.responseCode
-                            if (responseCode != java.net.HttpURLConnection.HTTP_OK) {
-                                throw java.io.IOException("HTTP $responseCode from GitHub")
-                            }
-
-                            connection.inputStream.use { it.bufferedReader().readText() }
-                        } finally {
-                            connection.disconnect()
-                        }
-                    withContext(Dispatchers.Main) {
-                        AppContextManager.updateDatabase(content)
-                        notifyUser(R.string.settings_update_app_database_success)
-                    }
-                } catch (e: Exception) {
-                    Timber.w("update app database failed", e)
-                    withContext(Dispatchers.Main) {
-                        notifyUser(R.string.settings_update_app_database_error)
+        // App descriptions and SU-path tips shown in Apps and Root compatibility; edited on GitHub.
+        findPreference<Preference>("update_app_database")?.let { pref ->
+            updateDatabaseSummary(pref)
+            pref.setOnPreferenceClickListener {
+                if (checkingDatabase) return@setOnPreferenceClickListener true
+                checkingDatabase = true
+                pref.summary = getString(R.string.settings_update_app_database_checking)
+                lifecycleScope.launch {
+                    val result =
+                        af.shizuku.manager.worker.RemoteDbSyncWorker
+                            .sync()
+                    checkingDatabase = false
+                    if (!isAdded) return@launch
+                    updateDatabaseSummary(pref)
+                    when (result) {
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Updated ->
+                            notifyUser(resources.getQuantityString(R.plurals.settings_update_app_database_updated, result.apps, result.apps))
+                        af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.UpToDate ->
+                            notifyUser(R.string.settings_update_app_database_up_to_date)
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Failed ->
+                            notifyUser(R.string.settings_update_app_database_error, long = true)
                     }
                 }
+                true
             }
-            true
         }
     }
 }

@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Umrissfarbe</string>
     <string name="settings_update_app_database">App-Datenbank aktualisieren</string>
     <string name="settings_update_app_database_summary">Aktuelle App-Beschreibungen und Verbesserungsvorschläge von GitHub abrufen.</string>
-    <string name="settings_update_app_database_success">Datenbank erfolgreich aktualisiert</string>
     <string name="settings_update_app_database_error">Datenbank konnte nicht aktualisiert werden</string>
     <string name="home_edit_mode_title">Karten anordnen</string>
     <string name="home_edit_mode_done">Fertig</string>

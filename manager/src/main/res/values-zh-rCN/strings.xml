@@ -371,7 +371,6 @@
     <string name="settings_status_card_outline_style">描边颜色</string>
     <string name="settings_update_app_database">更新应用数据库</string>
     <string name="settings_update_app_database_summary">从 GitHub 获取最新的应用描述与增强建议。</string>
-    <string name="settings_update_app_database_success">数据库更新成功</string>
     <string name="settings_update_app_database_error">数据库更新失败</string>
     <string name="home_edit_mode_title">排列卡片</string>
     <string name="home_edit_mode_done">完成</string>

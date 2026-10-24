@@ -184,7 +184,6 @@
     <string name="settings_status_card_outline_style">外框顏色</string>
     <string name="settings_update_app_database">更新應用程式資料庫</string>
     <string name="settings_update_app_database_summary">從 GitHub 取得最新的應用程式說明與增強建議。</string>
-    <string name="settings_update_app_database_success">資料庫已成功更新</string>
     <string name="settings_update_app_database_error">無法更新資料庫</string>
     <string name="home_edit_mode_title">排列卡片</string>
     <string name="home_edit_mode_done">完成</string>

@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Cor do contorno</string>
     <string name="settings_update_app_database">Atualizar base de dados de aplicações</string>
     <string name="settings_update_app_database_summary">Obtém do GitHub as descrições de aplicações e sugestões de melhorias mais recentes.</string>
-    <string name="settings_update_app_database_success">Base de dados atualizada com sucesso</string>
     <string name="settings_update_app_database_error">Falha ao atualizar a base de dados</string>
     <string name="home_edit_mode_title">Organizar cartões</string>
     <string name="home_edit_mode_done">Concluído</string>

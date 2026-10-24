@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Цвет контура</string>
     <string name="settings_update_app_database">Обновить базу приложений</string>
     <string name="settings_update_app_database_summary">Загрузить с GitHub актуальные описания приложений и рекомендации по улучшениям.</string>
-    <string name="settings_update_app_database_success">База данных успешно обновлена</string>
     <string name="settings_update_app_database_error">Не удалось обновить базу данных</string>
     <string name="home_edit_mode_title">Расположение карточек</string>
     <string name="home_edit_mode_done">Готово</string>

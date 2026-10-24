@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Warna garis tepi</string>
     <string name="settings_update_app_database">Perbarui basis data aplikasi</string>
     <string name="settings_update_app_database_summary">Ambil deskripsi aplikasi dan saran peningkatan terbaru dari GitHub.</string>
-    <string name="settings_update_app_database_success">Basis data berhasil diperbarui</string>
     <string name="settings_update_app_database_error">Gagal memperbarui basis data</string>
     <string name="home_edit_mode_title">Atur Kartu</string>
     <string name="home_edit_mode_done">Selesai</string>

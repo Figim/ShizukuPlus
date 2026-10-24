@@ -345,7 +345,6 @@
     <string name="settings_status_card_outline_style">외곽선 색상</string>
     <string name="settings_update_app_database">앱 데이터베이스 업데이트</string>
     <string name="settings_update_app_database_summary">GitHub에서 최신 앱 설명과 개선 제안을 가져옵니다.</string>
-    <string name="settings_update_app_database_success">데이터베이스가 성공적으로 업데이트되었습니다</string>
     <string name="settings_update_app_database_error">데이터베이스 업데이트에 실패했습니다</string>
     <string name="home_edit_mode_title">카드 정렬</string>
     <string name="home_edit_mode_done">완료</string>

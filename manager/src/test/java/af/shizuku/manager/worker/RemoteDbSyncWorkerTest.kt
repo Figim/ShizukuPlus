@@ -25,6 +25,9 @@ class RemoteDbSyncWorkerTest :
         beforeTest {
             mockkStatic(ShizukuSettings::class)
             mockkObject(AppContextManager)
+            every { ShizukuSettings.setLastDbUpdate(any()) } just runs
+            every { ShizukuSettings.setRemoteDbEtag(any()) } just runs
+            every { ShizukuSettings.setRemoteDbLastModified(any()) } just runs
         }
 
         afterTest {
@@ -55,7 +58,7 @@ class RemoteDbSyncWorkerTest :
 
         test("doWork updates the database when the fetch returns data") {
             every { ShizukuSettings.getLastDbUpdate() } returns 0L
-            every { AppContextManager.updateDatabase(any()) } just runs
+            every { AppContextManager.updateDatabase(any()) } returns 3
             RemoteDbSyncWorker.fetchForTesting = { "{}" }
 
             val worker = RemoteDbSyncWorker(context, workerParams)
@@ -63,5 +66,20 @@ class RemoteDbSyncWorkerTest :
 
             result shouldBe Result.success()
             verify(exactly = 1) { AppContextManager.updateDatabase("{}") }
+        }
+
+        test("sync reports a parse failure without retrying or saving the version") {
+            every { AppContextManager.updateDatabase(any()) } throws IllegalArgumentException("bad json")
+            RemoteDbSyncWorker.fetchForTesting = { "nope" }
+
+            RemoteDbSyncWorker.sync() shouldBe RemoteDbSyncWorker.Companion.SyncResult.Failed(retry = false)
+            verify(exactly = 0) { ShizukuSettings.setLastDbUpdate(any()) }
+        }
+
+        test("sync says up to date when the download isn't newer") {
+            every { AppContextManager.updateDatabase(any()) } returns null
+            RemoteDbSyncWorker.fetchForTesting = { "{}" }
+
+            RemoteDbSyncWorker.sync() shouldBe RemoteDbSyncWorker.Companion.SyncResult.UpToDate
         }
     })

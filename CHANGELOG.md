@@ -41,7 +41,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Switches show their state on the thumb** — a check when on and an X when off, on every switch in the app. The check used to be painted the same colour as the thumb, so it was invisible.
 - **M3 Expressive buttons and button groups** — buttons use the Expressive styles (their shape morphs when pressed), Start is the one filled button on its Home card, and the onboarding and automation choices are connected button groups.
 - **Loading** — the app picker, app profiles and backups show the M3 loading indicator instead of the old spinner.
-- **Confirmations show as snackbars** — backups, restores, ADB key resets, app database updates, device-owner and SU path actions, Device hardening, restoring Home cards and the like now confirm with a snackbar on the screen you're on instead of a toast.
+- **Confirmations show as snackbars** — backups, restores, ADB key resets, app database updates, device-owner and SU path actions, Device hardening, restoring Home cards, freezing apps from the Apps list and the like now confirm with a snackbar on the screen you're on instead of a toast.
 - **Snackbars** use the standard M3 look (inverse colours, corners from your Shape Style) instead of a pill that blended into cards.
 - **System Hub** uses proper container colours instead of see-through ones, follows your Shape Style, and badge colours match your accent. The RISKY and One UI badges and the status-card outline colours are tuned to the accent too.
 - **App bars** in Permission Manager and Device control shrink as you scroll, and long app names wrap instead of being cut off. System Hub's bar fills in when content scrolls under it.
@@ -76,6 +76,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ### 🏠 Home & Apps
 - **No more "0 authorized apps" flash on launch.**
+- **App info that actually updates** — the descriptions and SU-path tips in Apps and Root compatibility now refresh from GitHub daily (the automatic check never worked before), and *Update app database* no longer wipes SU-path tips and "works with Shizuku natively" labels. Its row now says how many apps it covers and when it last checked, and tapping it tells you whether anything changed.
 - Home cards no longer have a hidden checked state, and Learn more's report link is a button instead of a chip inside the card.
 - Home card titles match the status card. The status card's version is labelled "Service API". The Wireless debugging card no longer says "Start via Wireless debugging" while Shizuku+ is already running over it.
 - The app enhancement badge reads as a badge instead of "[Plus upgrade available]".

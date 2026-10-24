@@ -181,7 +181,6 @@
     <string name="settings_status_card_outline_style">Çerçeve rengi</string>
     <string name="settings_update_app_database">Uygulama veritabanını güncelle</string>
     <string name="settings_update_app_database_summary">En son uygulama açıklamalarını ve geliştirme önerilerini GitHub\'dan al.</string>
-    <string name="settings_update_app_database_success">Veritabanı başarıyla güncellendi</string>
     <string name="settings_update_app_database_error">Veritabanı güncellenemedi</string>
     <string name="home_edit_mode_title">Kartları Düzenle</string>
     <string name="home_edit_mode_done">Bitti</string>

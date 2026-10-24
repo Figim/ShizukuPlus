@@ -318,7 +318,6 @@
     <string name="settings_show_activity_log_home">Activity Log دکھائیں</string>
     <string name="settings_update_app_database">ایپ ڈیٹا بیس اپ ڈیٹ کریں</string>
     <string name="settings_update_app_database_summary">GitHub سے تازہ ترین app descriptions اور enhancement suggestions حاصل کریں۔</string>
-    <string name="settings_update_app_database_success">ڈیٹا بیس کامیابی سے اپ ڈیٹ ہو گیا</string>
     <string name="settings_update_app_database_error">ڈیٹا بیس اپ ڈیٹ کرنے میں ناکامی</string>
     <string name="settings_legacy_pairing">Legacy pairing</string>
     <string name="settings_legacy_pairing_summary">pairing code کو notification کے بجائے dialog میں درج کریں</string>

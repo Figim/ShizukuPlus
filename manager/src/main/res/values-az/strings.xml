@@ -416,7 +416,6 @@
     <string name="settings_status_card_outline_style">Kontur rəngi</string>
     <string name="settings_update_app_database">Tətbiq verilənlər bazasını yenilə</string>
     <string name="settings_update_app_database_summary">GitHub-dan ən son tətbiq təsvirlərini və təkmilləşdirmə təkliflərini əldə edin.</string>
-    <string name="settings_update_app_database_success">Verilənlər bazası uğurla yeniləndi</string>
     <string name="settings_update_app_database_error">Verilənlər bazası yenilənə bilmədi</string>
     <string name="home_edit_mode_title">Kartları Səliqəyə Sal</string>
     <string name="home_edit_mode_done">Hazır</string>

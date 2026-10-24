@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Colore del contorno</string>
     <string name="settings_update_app_database">Aggiorna database app</string>
     <string name="settings_update_app_database_summary">Scarica da GitHub le descrizioni delle app e i suggerimenti di miglioramento più recenti.</string>
-    <string name="settings_update_app_database_success">Database aggiornato correttamente</string>
     <string name="settings_update_app_database_error">Impossibile aggiornare il database</string>
     <string name="home_edit_mode_title">Disponi schede</string>
     <string name="home_edit_mode_done">Fine</string>

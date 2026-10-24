@@ -186,7 +186,6 @@
     <string name="settings_status_card_outline_style">Omlijningskleur</string>
     <string name="settings_update_app_database">Appdatabase bijwerken</string>
     <string name="settings_update_app_database_summary">Haal de nieuwste appbeschrijvingen en verbeteringssuggesties op van GitHub.</string>
-    <string name="settings_update_app_database_success">Database succesvol bijgewerkt</string>
     <string name="settings_update_app_database_error">Database bijwerken mislukt</string>
     <string name="home_edit_mode_title">Kaarten indelen</string>
     <string name="home_edit_mode_done">Gereed</string>

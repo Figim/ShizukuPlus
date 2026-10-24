@@ -522,8 +522,15 @@
     <string name="settings_status_card_outline_style">Outline color</string>
     <string name="settings_update_app_database">Update app database</string>
     <string name="settings_update_app_database_summary">Fetch latest app descriptions and enhancement suggestions from GitHub.</string>
-    <string name="settings_update_app_database_success">Database updated successfully</string>
     <string name="settings_update_app_database_error">Failed to update database</string>
+    <string name="settings_update_app_database_status">Descriptions and setup tips for %1$d apps, shown in Apps and Root compatibility. Last checked %2$s.</string>
+    <string name="settings_update_app_database_status_never">Descriptions and setup tips for %1$d apps, shown in Apps and Root compatibility. Not checked yet.</string>
+    <string name="settings_update_app_database_checking">Checking GitHub…</string>
+    <string name="settings_update_app_database_up_to_date">App info is already up to date</string>
+    <plurals name="settings_update_app_database_updated">
+        <item quantity="one">App info updated (%d app)</item>
+        <item quantity="other">App info updated (%d apps)</item>
+    </plurals>
     <string name="home_edit_mode_title">Arrange Cards</string>
     <string name="home_edit_mode_done">Done</string>
     <string name="brand_shizuku_plus" translatable="false">Shizuku+</string>

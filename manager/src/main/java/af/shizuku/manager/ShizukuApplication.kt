@@ -608,7 +608,7 @@ class ShizukuApplication :
                     }
                 }
         }
-        AppContextManager.initialize(AppContextSettingsImpl())
+        AppContextManager.initialize(AppContextSettingsImpl(applicationContext))
         LocaleDelegate.defaultLocale = ShizukuSettings.getLocale()
 
         // #429: one-time migration — push the legacy custom locale into AppCompat's
