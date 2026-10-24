@@ -129,7 +129,6 @@
     <string name="adb_pairing_status_failed">Falha no pareamento.</string>
 
     <!--Gerenciamento de aplicativos-->
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;%2$s&lt;/font&gt;&lt;/b&gt; · %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Ative o serviço de acessibilidade para iniciar o processo de pareamento. Isso permite que o Shizuku detecte o código de pareamento.\n\nO serviço de acessibilidade será desligado quando o código for encontrado ou após 1 minuto para economizar energia.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Por favor, inicie o pareamento seguindo estas etapas:\n- Acesse "Opções do desenvolvedor"\n- Ative "Depuração USB" e "Depuração sem fio"\n- Toque no lado esquerdo de "Depuração sem fio"\n- Toque em "Parear dispositivo com código de pareamento." O Shizuku detectará automaticamente o código de pareamento.</string>
     <string name="adb_pairing_requires_multi_window">Por favor, entre primeiro no modo de tela dividida (multi-janela).</string>
@@ -218,10 +217,6 @@
     <string name="app_management_item_summary_requires_root">* requer que o Shizuku seja executado com root</string>
     <string name="app_management_item_summary_partial_root">⚠ Suporte parcial — algumas funções ainda precisam do Shizuku com root</string>
     <string name="app_management_item_summary_requires_plus">* requer a API Avançada do Shizuku+</string>
-    <string name="app_management_enhancements">Aprimoramentos</string>
-    <string name="app_management_enhancements_desc">Ative os recursos Plus para este aplicativo para melhorar o desempenho e a compatibilidade.</string>
-    <string name="app_management_badge_enhanced">Aprimorado</string>
-    <string name="app_management_badge_upgrade">Atualização Plus disponível</string>
     <string name="app_management_toggle_all">Alternar todos</string>
     <string name="app_management_bulk_grant">Conceder aos selecionados</string>
     <string name="app_management_bulk_revoke">Revogar dos selecionados</string>

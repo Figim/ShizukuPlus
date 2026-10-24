@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">Ricerca del servizio di associazione…</string>
     <string name="adb_pairing_status_pairing">Associazione con il dispositivo…</string>
     <string name="adb_pairing_status_failed">Associazione non riuscita.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Per usare l\'intent di avvio sul tuo dispositivo, devi prima abilitare ADB su TCP eseguendo %1$s da un PC.</string>
     <string name="home_automation_bottom_sheet_intents">Intent</string>
     <string name="home_automation_bottom_sheet_label_action">Azione</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Ultimo aggiornamento</string>
     <string name="app_management_item_summary_partial_root">⚠ Supporto parziale: alcune funzioni richiedono ancora Shizuku con root</string>
     <string name="app_management_item_summary_requires_plus">* richiede l\'API avanzata di Shizuku+</string>
-    <string name="app_management_enhancements">Miglioramenti</string>
-    <string name="app_management_enhancements_desc">Abilita le funzioni Plus per questa app per migliorare prestazioni e compatibilità.</string>
-    <string name="app_management_badge_enhanced">Potenziata</string>
-    <string name="app_management_badge_upgrade">Upgrade Plus disponibile</string>
     <string name="app_management_bulk_grant">Concedi selezionate</string>
     <string name="app_management_bulk_revoke">Revoca selezionate</string>
     <string name="app_management_bulk_hide">Nascondi selezionate</string>

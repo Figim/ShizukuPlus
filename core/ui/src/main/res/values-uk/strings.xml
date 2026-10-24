@@ -88,7 +88,6 @@
     <string name="adb_pairing_searching">Пошук служби створення пари…</string>
     <string name="adb_pairing_status_pairing">Створення пари з пристроєм…</string>
     <string name="adb_pairing_status_failed">Не вдалося створити пару.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Увімкніть службу спеціальних можливостей, щоб почати процес створення пари. Це дозволяє Shizuku виявити код пари.\n\nСлужба спеціальних можливостей вимкнеться, коли код буде знайдено, або через 1 хвилину для економії заряду.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Розпочніть створення пари, виконавши такі кроки:\n- Перейдіть до «Параметрів розробника»\n- Увімкніть «Налагодження USB» та «Бездротове налагодження»\n- Натисніть на ліву частину пункту «Бездротове налагодження»\n- Натисніть «Пара пристрою за кодом». Shizuku автоматично виявить код пари.</string>
     <string name="adb_pairing_requires_multi_window">Спочатку перейдіть у режим розділеного екрана (кілька вікон).</string>
@@ -163,10 +162,6 @@
     <string name="app_management_item_summary_partial_root">⚠ Частково підтримується — деякі функції все ще потребують Shizuku з root</string>
     <string name="app_management_item_summary_requires_plus">* потребує розширеного API Shizuku+</string>
     <string name="app_management_item_summary_shizuku_aware">Підтримує Shizuku: працює з Shizuku нативно</string>
-    <string name="app_management_enhancements">Покращення</string>
-    <string name="app_management_enhancements_desc">Увімкніть функції Plus для цього додатка, щоб покращити продуктивність і сумісність.</string>
-    <string name="app_management_badge_enhanced">Покращено</string>
-    <string name="app_management_badge_upgrade">Доступне оновлення Plus</string>
     <string name="app_management_toggle_all">Перемкнути всі</string>
     <string name="app_management_bulk_grant">Надати вибраним</string>
     <string name="app_management_bulk_revoke">Скасувати вибраним</string>

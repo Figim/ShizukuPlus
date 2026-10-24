@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">ペアリングサービスを検索中…</string>
     <string name="adb_pairing_status_pairing">デバイスとペアリング中…</string>
     <string name="adb_pairing_status_failed">ペアリングに失敗しました。</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">お使いのデバイスで開始インテントを使用するには、まずPCから %1$s を実行してTCP経由のADBを有効にする必要があります。</string>
     <string name="home_automation_bottom_sheet_intents">インテント</string>
     <string name="home_automation_bottom_sheet_label_action">アクション</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">更新日が新しい順</string>
     <string name="app_management_item_summary_partial_root">⚠ 一部のみ対応 — 一部の機能にはrootでのShizukuが必要です</string>
     <string name="app_management_item_summary_requires_plus">* Shizuku+ 拡張APIが必要です</string>
-    <string name="app_management_enhancements">拡張機能</string>
-    <string name="app_management_enhancements_desc">このアプリでPlus機能を有効にすると、パフォーマンスと互換性が向上します。</string>
-    <string name="app_management_badge_enhanced">拡張済み</string>
-    <string name="app_management_badge_upgrade">Plusアップグレードあり</string>
     <string name="app_management_bulk_grant">選択したものを許可</string>
     <string name="app_management_bulk_revoke">選択したものを取り消す</string>
     <string name="app_management_bulk_hide">選択したものを非表示</string>

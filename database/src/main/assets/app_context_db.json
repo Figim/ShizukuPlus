@@ -18,57 +18,32 @@
     },
     "com.vipercn.viper4android_v2": {
       "description": "ViPER4Android FX: Audio effects engine. Driver installation requires real root, but basic setup is mockable.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true,
       "root_support": "required"
     },
     "org.adaway": {
       "description": "AdAway: Open-source ad blocker. SU path auto-configured; use 'Network Governor' in Shizuku+ for rootless DNS blocking.",
-      "enhancements": [
-        "shell_interceptor",
-        "network_governor_plus"
-      ],
       "verified": true
     },
     "dev.ukanth.ufirewall": {
       "description": "AFWall+: Firewall app. Fully functional rootless under Shizuku+ via automatic local iptables fallback mocking.",
-      "enhancements": [
-        "shell_interceptor",
-        "network_governor_plus"
-      ],
       "verified": true,
       "su_path_nav": "Menu > Preferences > SU path"
     },
     "com.ramdaas.ramexe": {
       "description": "RamExe: RAM manager and process killer. SU path auto-configured via Android global settings (no root needed).",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "me.piebridge.prevent": {
       "description": "Prevent: Blocks apps from auto-starting to reduce memory and data leakage. SU path auto-configured via Android global settings.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.samsung.android.hexinstall": {
       "description": "Hex Installer: Theming engine for Samsung. Shizuku+ provides the necessary Overlay Bridge for OneUI 8+.",
-      "enhancements": [
-        "win_plus",
-        "overlay_manager_plus"
-      ],
       "verified": true
     },
     "com.samsung.android.themepark": {
       "description": "Theme Park: Official Samsung customization. Enhanced by Shizuku+ Overlay API.",
-      "enhancements": [
-        "win_plus",
-        "overlay_manager_plus"
-      ],
       "verified": true
     },
     "com.keramidas.TitaniumBackup": {
@@ -83,41 +58,25 @@
     },
     "com.speedsoftware.rootexplorer": {
       "description": "Root Explorer: File manager with elevated access. SU path auto-configured; Storage Bridge handles deep system browsing.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Settings > Root access > SU path"
     },
     "com.speedsoftware.explorer": {
       "description": "Speed Explorer: File manager by Speed Software.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true
     },
     "com.jrummy.root.browserfree": {
       "description": "Root Browser: File manager with elevated access. SU path auto-configured; Storage Bridge handles system browsing.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Settings > Superuser > SU binary path"
     },
     "com.estrongs.android.pop": {
       "description": "ES File Explorer: All-in-one file manager. SU path auto-configured via shared_prefs when running as root.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Tools > Root Explorer > su path"
     },
     "com.github.machiav3lli.backup": {
       "description": "OAndBackupX: Open-source backup for root users. SU path auto-configured via shared_prefs.",
-      "enhancements": [
-        "storage_proxy",
-        "shell_interceptor"
-      ],
       "verified": true,
       "su_path_nav": "Preferences > Advanced > Custom shell",
       "root_support": "required"
@@ -128,383 +87,212 @@
     },
     "com.machiav3lli.backup": {
       "description": "Neo Backup: Modern open-source backup solution.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Preferences > Advanced > Custom shell"
     },
     "projekt.substratum.lite": {
       "description": "Substratum Lite: Theming engine for Android.",
-      "enhancements": [
-        "win_plus"
-      ],
       "verified": true
     },
     "com.oasisfeng.greenify": {
       "description": "Greenify: Maximize battery savings by hibernating apps.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.franco.doze": {
       "description": "Naptime: Aggressive Doze for better battery life.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.uzumapps.wakelockdetector": {
       "description": "Wakelock Detector: Find apps draining your battery.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.asksven.betterbatterystats": {
       "description": "BetterBatteryStats: Deep dive into battery drain.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "org.swiftapps.swiftbackup": {
       "description": "Swift Backup: Uses native Shizuku integration — no SU Bridge path needed. Grant access in App Management, then use its own \"Grant with Root or Shizuku\" option.",
-      "enhancements": [
-        "storage_proxy",
-        "shell_interceptor"
-      ],
       "verified": true,
       "su_path_nav": "Shizuku-native: no SU path setting. Use Swift Backup's \"Grant with Root or Shizuku\" flow.",
       "shizuku_aware": true
     },
     "thejaustin.hexodus": {
       "description": "Hexodus: Spiritual successor to Hex Installer for OneUI 8.",
-      "enhancements": [
-        "shell_interceptor",
-        "win_plus"
-      ],
       "verified": true
     },
     "thejaustin.afdroid": {
       "description": "afdroid: Expressive F-Droid client.",
-      "enhancements": [
-        "shell_interceptor",
-        "storage_proxy"
-      ],
       "verified": true
     },
     "thejaustin.pearity": {
       "description": "Pearity: iOS parity settings for OneUI.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "thejaustin.termux_ai": {
       "description": "Termux AI: AI-powered terminal with NPU integration.",
-      "enhancements": [
-        "npu_plus",
-        "vm_plus",
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "thejaustin.appmanager": {
       "description": "AppManager: Advanced package manager with archiving.",
-      "enhancements": [
-        "shell_interceptor",
-        "storage_proxy"
-      ],
       "verified": true
     },
     "thejaustin.simweather": {
       "description": "SimWeather: Material You weather tool.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "thejaustin.contactsplus": {
       "description": "ContactsPlus: Fossify Contacts fork with M3 design.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "thejaustin.obtainiumplus": {
       "description": "ObtainiumPlus: AI-assisted Obtainium fork.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "thejaustin.snapback": {
       "description": "SnapBack: Secure Snapchat Backup Viewer.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true
     },
     "com.aistra.hail": {
       "description": "Hail: Modern app freezer.",
-      "enhancements": [
-        "shell_interceptor",
-        "dpm_plus"
-      ],
       "verified": true
     },
     "samolego.canta": {
       "description": "Canta: Powerful system app debloater.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "rikka.appops": {
       "description": "App Ops: Manage hidden app permissions.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.catchingnow.icebox": {
       "description": "Ice Box: Freeze apps to save battery.",
-      "enhancements": [
-        "shell_interceptor",
-        "dpm_plus"
-      ],
       "verified": true
     },
     "com.zacharee.installwithoptions": {
       "description": "InstallWithOptions: Advanced APK installer.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "cf.playhi.freezeyou": {
       "description": "FreezeYou: Battery and speed optimizer.",
-      "enhancements": [
-        "shell_interceptor",
-        "dpm_plus"
-      ],
       "verified": true
     },
     "com.oasisfeng.island": {
       "description": "Island: App isolation and cloning.",
-      "enhancements": [
-        "dpm_plus",
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.oasisfeng.island.fdroid": {
       "description": "Insular: Island fork for F-Droid.",
-      "enhancements": [
-        "dpm_plus",
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "bin.mt.plus": {
       "description": "MT Manager: Sophisticated file manager.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true
     },
     "pl.solidexplorer2": {
       "description": "Solid Explorer: Powerful file manager. SU path auto-configured via shared_prefs when running as root.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Settings > Root access > Root binary"
     },
     "com.ghisler.android.TotalCommander": {
       "description": "Total Commander: Desktop-class file explorer. SU path auto-configured via shared_prefs when running as root.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Config > Root path"
     },
     "com.lonelycatgames.Xplore": {
       "description": "X-Plore: Dual-pane file manager.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true
     },
     "ru.zdevs.zarchiver": {
       "description": "ZArchiver: Comprehensive archive manager.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true
     },
     "com.alphainventor.filemanager": {
       "description": "File Manager Plus: Cloud and local explorer.",
-      "enhancements": [
-        "storage_proxy"
-      ],
       "verified": true
     },
     "net.dinglisch.android.taskerm": {
       "description": "Tasker: Advanced Android automation.",
-      "enhancements": [
-        "shell_interceptor",
-        "storage_proxy"
-      ],
       "verified": true
     },
     "com.arlosoft.macrodroid": {
       "description": "MacroDroid: User-friendly automation.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "henrichg.phoneprofilesplus": {
       "description": "PhoneProfilesPlus: Contextual device config.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "eu.toneiv.ubktouch": {
       "description": "UbikiTouch: Global swipe gestures.",
-      "enhancements": [
-        "shell_interceptor",
-        "win_plus"
-      ],
       "verified": true
     },
     "com.kieronquinn.ambientmusicmod": {
       "description": "Ambient Music Mod: Now Playing for everyone.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.kieronquinn.darq": {
       "description": "DarQ: Per-app force dark mode.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.zacharee.tweaker": {
       "description": "System UI Tuner: Hidden system settings.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "dev.lexip.hecate": {
       "description": "Adaptive-Theme: Smart dark mode.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "mahmud0808.colorblendr": {
       "description": "ColorBlendr: Material You color editor.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.kieronquinn.smartspacer": {
       "description": "Smartspacer: Enhanced 'At a Glance' widget.",
-      "enhancements": [
-        "shell_interceptor",
-        "win_plus"
-      ],
       "verified": true
     },
     "com.ysy.app.firewall": {
       "description": "NetWall: Rootless app firewall.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.deltazefiro.amarokhider": {
       "description": "Amarok: Hide private files and apps.",
-      "enhancements": [
-        "shell_interceptor",
-        "storage_proxy"
-      ],
       "verified": true
     },
     "ahmetcanarslan.shizuwall": {
       "description": "ShizuWall: Open-source app firewall.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "tk.zwander.wifilist": {
       "description": "WiFiList: View saved WiFi passwords.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.termux": {
       "description": "Termux: Powerful terminal emulator and Linux environment. Export Shizuku files or use PATH=\"/data/local/tmp:$PATH\" to invoke 'su'.",
-      "enhancements": [
-        "shell_interceptor",
-        "storage_proxy"
-      ],
       "verified": true,
       "su_path_nav": "Export Shizuku files to Termux or prepend /data/local/tmp to PATH"
     },
     "p.shashank.ashellyou": {
       "description": "aShell You: Material local ADB shell.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "rohitkushvaha01.reterminal": {
       "description": "ReTerminal: Material 3 terminal emulator.",
-      "enhancements": [
-        "shell_interceptor",
-        "vm_plus"
-      ],
       "verified": true
     },
     "com.imranr98.obtainium": {
       "description": "Obtainium: App updates from source.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.aurora.store": {
       "description": "Aurora Store: Privacy Play Store client.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.looker.droidify": {
       "description": "Droid-ify: Material F-Droid client.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "eu.darken.sdmse": {
       "description": "SD Maid SE: System cleaning tool.",
-      "enhancements": [
-        "shell_interceptor",
-        "storage_proxy"
-      ],
       "verified": true
     },
     "com.paget96.chargemonitor": {
@@ -514,17 +302,11 @@
     },
     "com.mihonapp.mihon": {
       "description": "Mihon: Manga reader and extension manager.",
-      "enhancements": [
-        "shell_interceptor"
-      ],
       "verified": true
     },
     "com.rosan.dhizuku": {
       "description": "Dhizuku: Device Owner sharing bridge.",
-      "verified": true,
-      "enhancements": [
-        "dpm_plus"
-      ]
+      "verified": true
     }
   }
 }

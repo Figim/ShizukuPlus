@@ -115,10 +115,6 @@
     <string name="app_management_sort_last_updated">Son güncellenen</string>
     <string name="app_management_item_summary_partial_root">⚠ Kısmen destekleniyor: bazı işlevler için hâlâ root\'lu Shizuku gerekir</string>
     <string name="app_management_item_summary_requires_plus">* Shizuku+ Gelişmiş API gerektirir</string>
-    <string name="app_management_enhancements">Geliştirmeler</string>
-    <string name="app_management_enhancements_desc">Performansı ve uyumluluğu artırmak için bu uygulamada Plus özelliklerini etkinleştirin.</string>
-    <string name="app_management_badge_enhanced">Geliştirildi</string>
-    <string name="app_management_badge_upgrade">Plus yükseltmesi mevcut</string>
     <string name="app_management_bulk_grant">Seçilenlere izin ver</string>
     <string name="app_management_bulk_revoke">Seçilenlerin iznini kaldır</string>
     <string name="app_management_bulk_hide">Seçilenleri gizle</string>
@@ -924,5 +920,4 @@
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
     <string name="terminal_tutorial_run_command">sh /path/to/%1$s</string>
     <string name="terminal_tutorial_run_plus_command">sh /path/to/plus [command]</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
 </resources>

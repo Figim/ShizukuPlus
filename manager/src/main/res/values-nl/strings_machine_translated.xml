@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">Zoeken naar koppelingsservice…</string>
     <string name="adb_pairing_status_pairing">Koppelen met apparaat…</string>
     <string name="adb_pairing_status_failed">Koppelen mislukt.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Om de startintent op je apparaat te gebruiken, moet je eerst ADB via TCP inschakelen door %1$s vanaf een pc uit te voeren.</string>
     <string name="home_automation_bottom_sheet_intents">Intents</string>
     <string name="home_automation_bottom_sheet_label_action">Actie</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Laatst bijgewerkt</string>
     <string name="app_management_item_summary_partial_root">⚠ Gedeeltelijk ondersteund — sommige functies vereisen nog Shizuku met root</string>
     <string name="app_management_item_summary_requires_plus">* vereist Shizuku+ Enhanced API</string>
-    <string name="app_management_enhancements">Verbeteringen</string>
-    <string name="app_management_enhancements_desc">Schakel Plus-functies in voor deze app om prestaties en compatibiliteit te verbeteren.</string>
-    <string name="app_management_badge_enhanced">Verbeterd</string>
-    <string name="app_management_badge_upgrade">Plus-upgrade beschikbaar</string>
     <string name="app_management_bulk_grant">Geselecteerde toestaan</string>
     <string name="app_management_bulk_revoke">Geselecteerde intrekken</string>
     <string name="app_management_bulk_hide">Geselecteerde verbergen</string>

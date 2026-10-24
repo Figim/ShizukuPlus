@@ -183,7 +183,6 @@
     <string name="adb_pairing_status_failed">Cütləşmə uğursuz oldu.</string>
 
     <!-- App Management -->
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Cütləşmə prosesinə başlamaq üçün əlçatanlıq xidmətini aktivləşdirin. Bu, Shizuku-ya cütləşmə kodunu aşkar etməyə imkan verir.\n\nKod tapıldıqdan sonra və ya enerjiyə qənaət etmək üçün 1 dəqiqədən sonra əlçatanlıq xidməti söndürüləcək.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Zəhmət olmasa, aşağıdakı addımları yerinə yetirərək cütləşməni başladın:\n- \"Tərtibatçı Seçimləri\"nə keçin\n- \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin\n- \"Simsiz sazlama\"nın sol tərəfinə toxunun\n- \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Shizuku cütləşmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
@@ -274,10 +273,6 @@
     <string name="app_management_item_summary_requires_root">* Shizuku-nun root ilə işləməsini tələb edir</string>
     <string name="app_management_item_summary_partial_root">⚠ Qismən dəstəklənir — bəzi funksiyalar hələ də root ilə Shizuku tələb edir</string>
     <string name="app_management_item_summary_requires_plus">* Shizuku+ Təkmilləşdirilmiş API tələb edir</string>
-    <string name="app_management_enhancements">Təkmilləşdirmələr</string>
-    <string name="app_management_enhancements_desc">Performans və uyğunluğu yaxşılaşdırmaq üçün bu tətbiq üçün Plus xüsusiyyətlərini aktivləşdirin.</string>
-    <string name="app_management_badge_enhanced">Təkmilləşdirilib</string>
-    <string name="app_management_badge_upgrade">Plus yüksəltməsi mövcuddur</string>
     <string name="app_management_toggle_all">Hamısını dəyiş</string>
     <string name="app_management_bulk_grant">Seçilənlərə icazə ver</string>
     <string name="app_management_bulk_revoke">Seçilənlərin icazəsini ləğv et</string>

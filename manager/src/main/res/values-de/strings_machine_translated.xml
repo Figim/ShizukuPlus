@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">Suche nach Kopplungsdienst …</string>
     <string name="adb_pairing_status_pairing">Kopplung mit Gerät …</string>
     <string name="adb_pairing_status_failed">Kopplung fehlgeschlagen.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Um den Start-Intent auf deinem Gerät zu verwenden, musst du zuerst ADB über TCP aktivieren, indem du %1$s von einem PC aus ausführst.</string>
     <string name="home_automation_bottom_sheet_intents">Intents</string>
     <string name="home_automation_bottom_sheet_label_action">Aktion</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Zuletzt aktualisiert</string>
     <string name="app_management_item_summary_partial_root">⚠ Teilweise unterstützt – einige Funktionen benötigen weiterhin Shizuku mit Root</string>
     <string name="app_management_item_summary_requires_plus">* erfordert die erweiterte Shizuku+-API</string>
-    <string name="app_management_enhancements">Erweiterungen</string>
-    <string name="app_management_enhancements_desc">Plus-Funktionen für diese App aktivieren, um Leistung und Kompatibilität zu verbessern.</string>
-    <string name="app_management_badge_enhanced">Erweitert</string>
-    <string name="app_management_badge_upgrade">Plus-Upgrade verfügbar</string>
     <string name="app_management_bulk_grant">Auswahl erteilen</string>
     <string name="app_management_bulk_revoke">Auswahl entziehen</string>
     <string name="app_management_bulk_hide">Auswahl ausblenden</string>

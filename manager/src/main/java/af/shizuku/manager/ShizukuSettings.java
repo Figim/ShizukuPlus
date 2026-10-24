@@ -1130,14 +1130,15 @@ public class ShizukuSettings {
         getPreferences().edit().putString(Keys.KEY_REMOTE_DB_LAST_MODIFIED, lastModified).apply();
     }
 
-    public static boolean isAppEnhancementEnabled(String packageName, String enhancementKey) {
+    /** Drops the per-app enhancement toggles (enh_*): they were saved but never read by anything. */
+    public static void clearLegacyEnhancementPrefs() {
         SharedPreferences p = getPreferences();
-        return p != null && p.getBoolean("enh_" + packageName + "_" + enhancementKey, false);
-    }
-
-    public static void setAppEnhancementEnabled(String packageName, String enhancementKey, boolean enabled) {
-        SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putBoolean("enh_" + packageName + "_" + enhancementKey, enabled).apply();
+        if (p == null || p.getBoolean("enh_prefs_cleared", false)) return;
+        SharedPreferences.Editor e = p.edit();
+        for (String key : p.getAll().keySet()) {
+            if (key.startsWith("enh_")) e.remove(key);
+        }
+        e.putBoolean("enh_prefs_cleared", true).apply();
     }
 
     public static boolean isOnboardingSeen() {

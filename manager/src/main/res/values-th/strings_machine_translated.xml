@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">กำลังค้นหาบริการจับคู่…</string>
     <string name="adb_pairing_status_pairing">กำลังจับคู่กับอุปกรณ์…</string>
     <string name="adb_pairing_status_failed">การจับคู่ล้มเหลว</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">หากต้องการใช้ intent เริ่มต้นบนอุปกรณ์ของคุณ ก่อนอื่นต้องเปิดใช้ ADB ผ่าน TCP โดยรัน %1$s จากพีซี</string>
     <string name="home_automation_bottom_sheet_intents">Intent</string>
     <string name="home_automation_bottom_sheet_label_action">การดำเนินการ</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">อัปเดตล่าสุด</string>
     <string name="app_management_item_summary_partial_root">⚠ รองรับบางส่วน — บางฟังก์ชันยังต้องใช้ Shizuku ร่วมกับ root</string>
     <string name="app_management_item_summary_requires_plus">* ต้องใช้ Shizuku+ Enhanced API</string>
-    <string name="app_management_enhancements">การปรับปรุงประสิทธิภาพ</string>
-    <string name="app_management_enhancements_desc">เปิดใช้ฟีเจอร์ Plus สำหรับแอปนี้เพื่อปรับปรุงประสิทธิภาพและความเข้ากันได้</string>
-    <string name="app_management_badge_enhanced">ปรับปรุงแล้ว</string>
-    <string name="app_management_badge_upgrade">มีการอัปเกรด Plus</string>
     <string name="app_management_bulk_grant">ให้สิทธิ์ที่เลือก</string>
     <string name="app_management_bulk_revoke">เพิกถอนสิทธิ์ที่เลือก</string>
     <string name="app_management_bulk_hide">ซ่อนที่เลือก</string>

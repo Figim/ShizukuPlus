@@ -562,8 +562,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                     }
                     else -> holder.binding.requiresRoot.visibility = View.GONE
                 }
-                // "Requires Plus" badge: shown when app has Plus enhancements that benefit it
-                holder.binding.requiresPlus.visibility = if (metadata != null && metadata.potentialEnhancements.isNotEmpty()) View.VISIBLE else View.GONE
+                holder.binding.requiresPlus.visibility = View.GONE
 
                 // "Shizuku-aware" badge: shown for apps that support Shizuku natively
                 holder.binding.shizukuAware.visibility = if (metadata?.supportsShizukuNatively == true) View.VISIBLE else View.GONE

@@ -7,13 +7,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class AppEnhancement(
-    val key: String,
-    val title: String,
-    val description: String
-)
-
-@Serializable
 enum class RootSupportLevel {
     FULL,
     PARTIAL,
@@ -43,7 +36,6 @@ object AppContextManager {
     @Serializable
     data class AppMetadata(
         val description: String,
-        val potentialEnhancements: List<AppEnhancement> = emptyList(),
         val isVerified: Boolean = false,
         val suPathSettingNav: String? = null,
         val rootSupportLevel: RootSupportLevel = RootSupportLevel.FULL,
@@ -60,7 +52,6 @@ object AppContextManager {
     @Serializable
     private data class DbEntry(
         val description: String? = null,
-        val enhancements: List<String>? = null,
         val verified: Boolean? = null,
         @SerialName("su_path_nav") val suPathNav: String? = null,
         @SerialName("root_support") val rootSupport: String? = null,
@@ -71,17 +62,6 @@ object AppContextManager {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
-
-    private val ENHANCEMENTS = listOf(
-        AppEnhancement("shell_interceptor", "Shell Acceleration", "Intercepts pm/am commands for native speed."),
-        AppEnhancement("storage_proxy", "Storage Bridge", "Bypasses Android 16/17 storage restrictions."),
-        AppEnhancement("dpm_plus", "Enhanced DPM", "Direct DevicePolicyManager access for better freezing."),
-        AppEnhancement("npu_plus", "NPU Accelerator", "Prioritized Neural Processing Unit scheduling."),
-        AppEnhancement("vm_plus", "AVF Linux VM", "Spawns an isolated Microdroid VM for this task."),
-        AppEnhancement("win_plus", "Window Tuner", "Forces free-form and advanced window control."),
-        AppEnhancement("overlay_manager_plus", "Overlay Bridge", "Installs and manages runtime overlays for theming."),
-        AppEnhancement("network_governor_plus", "Network Governor", "DNS-based firewall and traffic control without raw iptables.")
-    ).associateBy { it.key }
 
     private var settings: AppContextSettings? = null
 
@@ -204,7 +184,6 @@ object AppContextManager {
         val desc = description ?: base?.description ?: return null
         return AppMetadata(
             description = desc,
-            potentialEnhancements = enhancements?.mapNotNull { ENHANCEMENTS[it] } ?: base?.potentialEnhancements.orEmpty(),
             isVerified = verified ?: base?.isVerified ?: false,
             suPathSettingNav = suPathNav ?: base?.suPathSettingNav,
             rootSupportLevel = rootSupport?.let {

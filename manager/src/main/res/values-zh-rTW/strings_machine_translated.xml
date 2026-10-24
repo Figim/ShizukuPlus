@@ -86,7 +86,6 @@
     <string name="adb_pairing_searching">正在搜尋配對服務…</string>
     <string name="adb_pairing_status_pairing">正在與裝置配對…</string>
     <string name="adb_pairing_status_failed">配對失敗。</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">若要在您的裝置上使用啟動 Intent，必須先從電腦執行 %1$s 以啟用 ADB over TCP。</string>
     <string name="home_automation_bottom_sheet_intents">Intent</string>
     <string name="home_automation_bottom_sheet_label_action">動作</string>
@@ -119,10 +118,6 @@
     <string name="app_management_sort_last_updated">最近更新</string>
     <string name="app_management_item_summary_partial_root">⚠ 部分支援——部分功能仍需要具備 root 的 Shizuku</string>
     <string name="app_management_item_summary_requires_plus">* 需要 Shizuku+ 增強 API</string>
-    <string name="app_management_enhancements">增強功能</string>
-    <string name="app_management_enhancements_desc">為此應用程式啟用 Plus 功能，以提升效能與相容性。</string>
-    <string name="app_management_badge_enhanced">已增強</string>
-    <string name="app_management_badge_upgrade">可升級為 Plus</string>
     <string name="app_management_bulk_grant">授予所選項目</string>
     <string name="app_management_bulk_revoke">撤銷所選項目</string>
     <string name="app_management_bulk_hide">隱藏所選項目</string>

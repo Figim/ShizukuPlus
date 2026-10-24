@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">Đang tìm dịch vụ ghép nối…</string>
     <string name="adb_pairing_status_pairing">Đang ghép nối với thiết bị…</string>
     <string name="adb_pairing_status_failed">Ghép nối thất bại.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Để dùng intent khởi động trên thiết bị của bạn, trước tiên bạn cần bật ADB qua TCP bằng cách chạy %1$s từ máy tính.</string>
     <string name="home_automation_bottom_sheet_intents">Intent</string>
     <string name="home_automation_bottom_sheet_label_action">Hành động</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Cập nhật gần nhất</string>
     <string name="app_management_item_summary_partial_root">⚠ Hỗ trợ một phần — một số chức năng vẫn cần Shizuku với root</string>
     <string name="app_management_item_summary_requires_plus">* yêu cầu API nâng cao của Shizuku+</string>
-    <string name="app_management_enhancements">Tính năng nâng cao</string>
-    <string name="app_management_enhancements_desc">Bật các tính năng Plus cho ứng dụng này để cải thiện hiệu năng và khả năng tương thích.</string>
-    <string name="app_management_badge_enhanced">Nâng cao</string>
-    <string name="app_management_badge_upgrade">Có bản nâng cấp Plus</string>
     <string name="app_management_bulk_grant">Cấp quyền cho mục đã chọn</string>
     <string name="app_management_bulk_revoke">Thu hồi quyền của mục đã chọn</string>
     <string name="app_management_bulk_hide">Ẩn mục đã chọn</string>

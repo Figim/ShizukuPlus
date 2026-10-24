@@ -150,7 +150,6 @@
     <string name="adb_pairing_status_failed">Не вдалося створити пару.</string>
 
     <!-- App Management -->
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;%2$s&lt;/font&gt;&lt;/b&gt; · %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Будь ласка, увімкніть службу доступності, щоб розпочати процес створення пари. Це дозволить Shizuku виявити код.\n\nСлужба доступності вимкнеться після знаходження коду або через 1 хвилину для економії енергії.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Будь ласка, розпочніть створення пари, виконавши такі кроки:\n- Перейдіть до розділу \"Параметри розробника\"\n- Увімкніть \"Налагодження USB\" та \"Бездротове налагодження\"\n- Натисніть ліву частину \"Бездротове налагодження\"\n- Натисніть \"Створити пару з пристроєм за допомогою коду\". Shizuku автоматично виявить код створення пари.</string>
     <string name="adb_pairing_requires_multi_window">Будь ласка, спершу увійдіть у режим розділеного екрана (багатовіконний режим).</string>
@@ -241,10 +240,6 @@
     <string name="app_management_item_summary_requires_root">* вимагає запуску Shizuku з root-правами</string>
     <string name="app_management_item_summary_partial_root">⚠ Частково підтримується — деякі функції все ще потребують Shizuku з root</string>
     <string name="app_management_item_summary_requires_plus">* вимагає Shizuku+ Enhanced API</string>
-    <string name="app_management_enhancements">Покращення</string>
-    <string name="app_management_enhancements_desc">Увімкніть функції Plus для цього додатка, щоб покращити продуктивність та сумісність.</string>
-    <string name="app_management_badge_enhanced">Покращено</string>
-    <string name="app_management_badge_upgrade">Доступне Plus оновлення</string>
     <string name="app_management_toggle_all">Перемкнути все</string>
     <string name="app_management_bulk_grant">Надати вибраним</string>
     <string name="app_management_bulk_revoke">Відкликати у вибраних</string>

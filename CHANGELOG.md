@@ -79,7 +79,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **App info that actually updates** — the descriptions and SU-path tips in Apps and Root compatibility now refresh from GitHub daily (the automatic check never worked before), and *Update app database* no longer wipes SU-path tips and "works with Shizuku natively" labels. Its row now says how many apps it covers and when it last checked, and tapping it tells you whether anything changed.
 - Home cards no longer have a hidden checked state, and Learn more's report link is a button instead of a chip inside the card.
 - Home card titles match the status card. The status card's version is labelled "Service API". The Wireless debugging card no longer says "Start via Wireless debugging" while Shizuku+ is already running over it.
-- The app enhancement badge reads as a badge instead of "[Plus upgrade available]".
+- **No more "Plus upgrade available" on apps** — the badge and its per-app enhancement switches did nothing (several of the listed features don't exist), so they're gone. Apps keep their one-line description, and Root compatibility no longer tags apps as "requires Plus".
 
 ### 📰 Changelog
 - The Close button no longer truncates, and README-only entries and releases without user-facing changes are hidden.

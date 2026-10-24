@@ -132,7 +132,6 @@
     <string name="adb_pairing_status_failed">جوڑا بنانے میں ناکامی۔</string>
 
     <!-- App Management -->
-    <string name="app_management_badge_format"><![CDATA[<b><font color="%1$s">%2$s</font></b> %3$s]]></string>
     <string name="dialog_adb_pairing_accessibility_enable">جوڑا بنانے کا عمل شروع کرنے کے لیے accessibility service فعال کریں۔ اس سے Shizuku کو pairing code معلوم کرنے میں مدد ملتی ہے۔\n\nکوڈ ملنے یا 1 منٹ بعد توانائی بچانے کے لیے accessibility service خودکار طور پر بند ہو جائے گی۔</string>
     <string name="dialog_adb_pairing_accessibility_navigate">براہِ کرم درج ذیل مراحل کے ذریعے pairing شروع کریں:\n- "Developer Options" کھولیں\n- "USB debugging" اور "Wireless debugging" فعال کریں\n- "Wireless debugging" کے بائیں حصے پر ٹیپ کریں\n- "Pair device with pairing code." پر ٹیپ کریں۔ Shizuku خودکار طور پر pairing code معلوم کر لے گا۔</string>
     <string name="adb_pairing_requires_multi_window">پہلے split-screen (multi-window) موڈ میں جائیں۔</string>
@@ -221,10 +220,6 @@
     <string name="app_management_item_summary_requires_root">* Shizuku کا root کے ساتھ چلنا ضروری ہے</string>
     <string name="app_management_item_summary_partial_root">⚠ جزوی معاونت — کچھ functions کے لیے اب بھی Shizuku کا root کے ساتھ چلنا ضروری ہے</string>
     <string name="app_management_item_summary_requires_plus">* Shizuku+ Enhanced API درکار ہے</string>
-    <string name="app_management_enhancements">Enhancements</string>
-    <string name="app_management_enhancements_desc">کارکردگی اور مطابقت بہتر بنانے کے لیے اس ایپ کے لیے Plus فیچرز فعال کریں۔</string>
-    <string name="app_management_badge_enhanced">Enhanced</string>
-    <string name="app_management_badge_upgrade">Plus upgrade دستیاب ہے</string>
     <string name="app_management_toggle_all">سب کو ٹوگل کریں</string>
     <string name="app_management_bulk_grant">منتخب کو اجازت دیں</string>
     <string name="app_management_bulk_revoke">منتخب کی اجازت واپس لیں</string>

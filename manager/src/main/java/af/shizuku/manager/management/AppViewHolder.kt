@@ -22,7 +22,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.method.LinkMovementMethod
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -423,31 +422,6 @@ class AppViewHolder(
         runCatching { dialog.show() }
     }
 
-    private fun showEnhancementSettings(
-        context: Context,
-        metadata: AppContextManager.AppMetadata,
-    ) {
-        val enhancements = metadata.potentialEnhancements
-        val checkedItems =
-            BooleanArray(enhancements.size) { i ->
-                ShizukuSettings.isAppEnhancementEnabled(packageName, enhancements[i].key)
-            }
-
-        MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.app_management_enhancements)
-            .setMessage(R.string.app_management_enhancements_desc)
-            .setMultiChoiceItems(enhancements.map { "${it.title}: ${it.description}" }.toTypedArray(), checkedItems) { _, which, isChecked ->
-                ShizukuSettings.setAppEnhancementEnabled(packageName, enhancements[which].key, isChecked)
-                val appLabel = ai?.let { AppIconCache.getLabel(context, it) } ?: packageName
-                ActivityLogManager.log(appLabel, packageName, "Toggle Enhancement: ${enhancements[which].key} -> $isChecked")
-            }.setPositiveButton(android.R.string.ok) { _, _ ->
-                val pos = adapterPosition
-                if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
-                    adapter.notifyItemChanged(pos)
-                }
-            }.show()
-    }
-
     /** Snackbar on the Apps screen; toast if this row was recycled before an async result came back. */
     private fun notifyUser(message: String) {
         if (itemView.isAttachedToWindow) {
@@ -523,15 +497,7 @@ class AppViewHolder(
         val metadata = AppContextManager.getMetadata(capturedPackage)
         if (metadata != null) {
             appContextView.visibility = View.VISIBLE
-            val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(capturedPackage, it.key) }
-            val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
-            val colorAttr = if (enabledAny) com.google.android.material.R.attr.colorTertiary else com.google.android.material.R.attr.colorSecondary
-            val tv = TypedValue()
-            context.theme.resolveAttribute(colorAttr, tv, true)
-            val color = String.format("#%06X", tv.data and 0xFFFFFF)
-
-            appContextView.text = context.getString(R.string.app_management_badge_format, color, badge, metadata.description).toHtml()
-            appContextView.setOnClickListener { showEnhancementSettings(context, metadata) }
+            appContextView.text = metadata.description
         } else {
             appContextView.visibility = View.GONE
             appContextView.setOnClickListener(null)

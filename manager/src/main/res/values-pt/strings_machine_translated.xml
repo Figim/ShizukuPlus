@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">A procurar o serviço de emparelhamento…</string>
     <string name="adb_pairing_status_pairing">A emparelhar com o dispositivo…</string>
     <string name="adb_pairing_status_failed">O emparelhamento falhou.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Para usar a intent de arranque no seu dispositivo, primeiro tem de ativar o ADB sobre TCP executando %1$s a partir de um PC.</string>
     <string name="home_automation_bottom_sheet_intents">Intents</string>
     <string name="home_automation_bottom_sheet_label_action">Ação</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Atualizadas recentemente</string>
     <string name="app_management_item_summary_partial_root">⚠ Suporte parcial — algumas funções ainda necessitam do Shizuku com root</string>
     <string name="app_management_item_summary_requires_plus">* requer a API melhorada do Shizuku+</string>
-    <string name="app_management_enhancements">Melhorias</string>
-    <string name="app_management_enhancements_desc">Ative as funcionalidades Plus para esta aplicação para melhorar o desempenho e a compatibilidade.</string>
-    <string name="app_management_badge_enhanced">Melhorada</string>
-    <string name="app_management_badge_upgrade">Melhoria Plus disponível</string>
     <string name="app_management_bulk_grant">Conceder selecionadas</string>
     <string name="app_management_bulk_revoke">Revogar selecionadas</string>
     <string name="app_management_bulk_hide">Ocultar selecionadas</string>

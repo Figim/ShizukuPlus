@@ -99,7 +99,6 @@
     <string name="adb_pairing_status_pairing">正在与设备配对…</string>
     <string name="adb_pairing_status_failed">配对失败。</string>
     <!-- App Management -->
-    <string name="app_management_badge_format"><b><font color="%1$s">[%2$s]</font></b> %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">请启用辅助功能服务以开始配对过程。这将使 Shizuku 能够检测到配对码。\n\n辅助功能服务将在找到配对码后或1分钟后关闭以节省电量。</string>
     <string name="dialog_adb_pairing_accessibility_navigate">请按照以下步骤开始配对：\n- 进入“开发者选项”\n- 启用“USB调试”和“无线调试”\n- 点击“无线调试”左侧\n- 点击“使用配对码配对设备”。Shizuku 将自动检测配对码。</string>
     <string name="adb_pairing_requires_multi_window">请先进入分屏（多窗口）模式。</string>
@@ -180,10 +179,6 @@
     <string name="app_management_item_summary_partial_root">⚠ 部分支持 — 部分功能仍需带 root 的 Shizuku</string>
     <string name="app_management_item_summary_requires_plus">* 需要 Shizuku+ 增强 API</string>
     <string name="app_management_item_summary_shizuku_aware">支持 Shizuku：原生支持 Shizuku</string>
-    <string name="app_management_enhancements">增强功能</string>
-    <string name="app_management_enhancements_desc">为此应用启用 Plus 功能，以提升性能与兼容性。</string>
-    <string name="app_management_badge_enhanced">已增强</string>
-    <string name="app_management_badge_upgrade">可升级到 Plus</string>
     <string name="app_management_toggle_all">切换全部</string>
     <string name="app_management_bulk_grant">授予所选</string>
     <string name="app_management_bulk_revoke">撤销所选</string>

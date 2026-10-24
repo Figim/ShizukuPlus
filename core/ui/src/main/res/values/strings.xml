@@ -115,7 +115,6 @@
     <string name="adb_pairing_status_pairing">Pairing with device…</string>
     <string name="adb_pairing_status_failed">Pairing failed.</string>
     <!-- App Management -->
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Please enable the accessibility service to start the pairing process. This allows Shizuku to detect the pairing code.\n\nThe accessibility service will be turned off when the code is found or after 1 minute to save energy.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Please start pairing by performing the following steps:\n- Navigate to \"Developer Options\"\n- Enable \"USB debugging\" and \"Wireless debugging\"\n- Tap the left side of \"Wireless debugging\"\n- Tap \"Pair device with pairing code.\" Shizuku will automatically detect the pairing code.</string>
     <string name="adb_pairing_requires_multi_window">Please enter split-screen (multi-window) mode first.</string>
@@ -196,10 +195,6 @@
     <string name="app_management_item_summary_partial_root">⚠ Partially supported — some functions still need Shizuku with root</string>
     <string name="app_management_item_summary_requires_plus">* requires Shizuku+ Enhanced API</string>
     <string name="app_management_item_summary_shizuku_aware">Shizuku-aware: Supports Shizuku natively</string>
-    <string name="app_management_enhancements">Enhancements</string>
-    <string name="app_management_enhancements_desc">Enable Plus features for this app to improve performance and compatibility.</string>
-    <string name="app_management_badge_enhanced">Enhanced</string>
-    <string name="app_management_badge_upgrade">Plus upgrade available</string>
     <string name="app_management_toggle_all">Toggle all</string>
     <string name="app_management_bulk_grant">Grant selected</string>
     <string name="app_management_bulk_revoke">Revoke selected</string>

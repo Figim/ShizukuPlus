@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">Wyszukiwanie usługi parowania…</string>
     <string name="adb_pairing_status_pairing">Parowanie z urządzeniem…</string>
     <string name="adb_pairing_status_failed">Parowanie nie powiodło się.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Aby użyć intencji startowej na tym urządzeniu, musisz najpierw włączyć ADB przez TCP, uruchamiając %1$s z komputera.</string>
     <string name="home_automation_bottom_sheet_intents">Intencje</string>
     <string name="home_automation_bottom_sheet_label_action">Akcja</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Ostatnio zaktualizowane</string>
     <string name="app_management_item_summary_partial_root">⚠ Częściowo obsługiwane — niektóre funkcje nadal wymagają Shizuku z root</string>
     <string name="app_management_item_summary_requires_plus">* wymaga Shizuku+ Enhanced API</string>
-    <string name="app_management_enhancements">Ulepszenia</string>
-    <string name="app_management_enhancements_desc">Włącz funkcje Plus dla tej aplikacji, aby poprawić wydajność i zgodność.</string>
-    <string name="app_management_badge_enhanced">Ulepszona</string>
-    <string name="app_management_badge_upgrade">Dostępne ulepszenie Plus</string>
     <string name="app_management_bulk_grant">Przyznaj wybranym</string>
     <string name="app_management_bulk_revoke">Cofnij wybranym</string>
     <string name="app_management_bulk_hide">Ukryj wybrane</string>

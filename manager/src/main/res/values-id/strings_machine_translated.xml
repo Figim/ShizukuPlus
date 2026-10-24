@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">Mencari layanan pairing…</string>
     <string name="adb_pairing_status_pairing">Melakukan pairing dengan perangkat…</string>
     <string name="adb_pairing_status_failed">Pairing gagal.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">Untuk menggunakan intent mulai di perangkat Anda, Anda harus terlebih dahulu mengaktifkan ADB melalui TCP dengan menjalankan %1$s dari PC.</string>
     <string name="home_automation_bottom_sheet_intents">Intent</string>
     <string name="home_automation_bottom_sheet_label_action">Aksi</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">Terakhir diperbarui</string>
     <string name="app_management_item_summary_partial_root">⚠ Didukung sebagian — beberapa fungsi masih memerlukan Shizuku dengan root</string>
     <string name="app_management_item_summary_requires_plus">* memerlukan API Lanjutan Shizuku+</string>
-    <string name="app_management_enhancements">Peningkatan</string>
-    <string name="app_management_enhancements_desc">Aktifkan fitur Plus untuk aplikasi ini guna meningkatkan performa dan kompatibilitas.</string>
-    <string name="app_management_badge_enhanced">Ditingkatkan</string>
-    <string name="app_management_badge_upgrade">Peningkatan Plus tersedia</string>
     <string name="app_management_bulk_grant">Berikan yang dipilih</string>
     <string name="app_management_bulk_revoke">Cabut yang dipilih</string>
     <string name="app_management_bulk_hide">Sembunyikan yang dipilih</string>

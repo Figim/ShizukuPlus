@@ -87,7 +87,6 @@
     <string name="adb_pairing_searching">جارٍ البحث عن خدمة الاقتران…</string>
     <string name="adb_pairing_status_pairing">جارٍ الاقتران بالجهاز…</string>
     <string name="adb_pairing_status_failed">فشل الاقتران.</string>
-    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="home_automation_description_device_restriction">لاستخدام intent البدء على جهازك، عليك أولًا تفعيل ADB عبر TCP بتشغيل %1$s من كمبيوتر.</string>
     <string name="home_automation_bottom_sheet_intents">Intents</string>
     <string name="home_automation_bottom_sheet_label_action">الإجراء</string>
@@ -120,10 +119,6 @@
     <string name="app_management_sort_last_updated">آخر تحديث</string>
     <string name="app_management_item_summary_partial_root">⚠ مدعوم جزئيًا — بعض الوظائف ما زالت تحتاج Shizuku مع root</string>
     <string name="app_management_item_summary_requires_plus">* يتطلب واجهة Shizuku+ Enhanced API</string>
-    <string name="app_management_enhancements">التحسينات</string>
-    <string name="app_management_enhancements_desc">فعّل ميزات Plus لهذا التطبيق لتحسين الأداء والتوافق.</string>
-    <string name="app_management_badge_enhanced">محسّن</string>
-    <string name="app_management_badge_upgrade">ترقية Plus متاحة</string>
     <string name="app_management_bulk_grant">منح المحدد</string>
     <string name="app_management_bulk_revoke">سحب المحدد</string>
     <string name="app_management_bulk_hide">إخفاء المحدد</string>
