@@ -52,6 +52,7 @@
         <item>İki Rəngli</item>
     </string-array>
 
+
     <string name="icon_style_filled">Dolu</string>
     <string name="icon_style_outlined">Konturlu</string>
     <string name="icon_style_twotone">İkirəngli</string>
