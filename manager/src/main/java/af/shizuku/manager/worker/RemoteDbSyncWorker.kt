@@ -37,7 +37,7 @@ class RemoteDbSyncWorker(
         internal var fetchForTesting: ((String) -> String?)? = null
 
         sealed interface SyncResult {
-            /** A newer revision was applied; [apps] entries changed. */
+            /** A newer revision was applied and [apps] apps' info changed. */
             data class Updated(
                 val apps: Int,
             ) : SyncResult
@@ -71,7 +71,7 @@ class RemoteDbSyncWorker(
                             f.etag?.let { ShizukuSettings.setRemoteDbEtag(it) }
                             f.lastModified?.let { ShizukuSettings.setRemoteDbLastModified(it) }
                             ShizukuSettings.setLastDbUpdate(System.currentTimeMillis())
-                            if (applied == null) SyncResult.UpToDate else SyncResult.Updated(applied)
+                            if (applied == null || applied == 0) SyncResult.UpToDate else SyncResult.Updated(applied)
                         }
                         is Fetched.Error -> SyncResult.Failed(retry = f.code >= 500)
                     }

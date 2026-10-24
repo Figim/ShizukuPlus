@@ -58,6 +58,15 @@ class AppContextManagerTest :
             (s.lastUpdate > 0) shouldBe true
         }
 
+        test("an older download after a newer one is ignored, and unchanged apps aren't counted") {
+            val s = FakeSettings(bundled)
+            AppContextManager.initialize(s)
+            AppContextManager.updateDatabase("""{"revision": 4, "apps": {"a.swift": {"description": "Swift v4"}, "b.other": {"description": "Other"}}}""") shouldBe 1
+            AppContextManager.updateDatabase("""{"revision": 3, "apps": {"a.swift": {"description": "Swift v3"}}}""") shouldBe null
+            AppContextManager.getMetadata("a.swift")?.description shouldBe "Swift v4"
+            AppContextManager.revision() shouldBe 4
+        }
+
         test("a download that isn't newer than the APK is ignored and not stored") {
             val s = FakeSettings(bundled)
             AppContextManager.initialize(s)

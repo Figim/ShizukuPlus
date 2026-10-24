@@ -149,19 +149,19 @@ object AppContextManager {
     fun getDescription(packageName: String): String? = getMetadata(packageName)?.description
 
     /**
-     * Applies a downloaded database. Returns the number of apps it changes, or null when it is
-     * not newer than what the APK ships (then it isn't stored). Throws on invalid JSON, before
-     * anything is stored.
+     * Applies a downloaded database. Returns how many apps' info actually changed, or null when
+     * it is not newer than the revision in use (then it isn't stored - a stale CDN copy can't roll
+     * the data back). Throws on invalid JSON, before anything is stored.
      */
     fun updateDatabase(json: String): Int? {
         val remote = jsonConfig.decodeFromString<DbFile>(json)
-        database()
-        if (remote.revision <= bundledRevision) return null
+        val before = database()
+        if (remote.revision <= activeRevision) return null
         settings?.setRemoteDbJson(json)
         settings?.setLastDbUpdate(System.currentTimeMillis())
         merged = null
-        database()
-        return remote.apps.size
+        val after = database()
+        return (before.keys + after.keys).count { before[it] != after[it] }
     }
 
     private fun database(): Map<String, AppMetadata> {
