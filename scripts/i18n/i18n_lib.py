@@ -38,10 +38,15 @@ def missing(loc):
     have = locale_keys(loc)
     return {k: v for k, v in base.items() if k not in have}
 
+CDATA = re.compile(r'<!\[CDATA\[(.*?)\]\]>', re.S)
+
 def placeholders(s):
-    return sorted(PH.findall(s))
+    # Compare what is inside a CDATA wrapper; the wrapper itself would match PH as one big "tag".
+    return sorted(PH.findall(CDATA.sub(lambda m: m.group(1), s)) + ['CDATA'] * len(CDATA.findall(s)))
 
 def fix_escapes(v):
+    # A doubled backslash before an escape (s\\'il) is a literal backslash plus a bare quote to aapt.
+    v = re.sub(r"\\\\(['\"n])", r"\\\1", v)
     if v.lstrip().startswith('<![CDATA['):
         # aapt still processes escapes inside CDATA: apostrophes must be backslash-escaped.
         return re.sub(r"(?<!\\)'", r"\\'", v)
