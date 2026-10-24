@@ -17,6 +17,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Automation apps need permission** — Tasker/Locale can start or stop Shizuku+ only with "Allow automation apps" on. It stays on after an update and is off for new installs.
 - **AICore+ accessibility service is never switched on behind your back** — its self-repair only runs once you've enabled the service yourself in Android's settings.
 - **Only a manager signed like this one is trusted** — the side-by-side Plus/Drop-In manager and the manager-only grants were decided by package name, so another app using that name could get them. Root apps are no longer granted automatically, and grants Shizuku+ made are taken back when you turn the feature off.
+- **Shizuku+ no longer grants itself extra access** — on every start the server used to switch on 11 app permissions for the app by internal number, including drawing over other apps, all-files access and installing apps, and those numbers mean different things on different Android versions. It now only allows what the app uses (usage access for automation, exact alarms for the Watchdog), by name. Battery and Doze exemption stays with Device hardening & keepalive. Permissions already granted on your device are left as they are.
 - **Safer defaults for new installs** — TCP mode starts off, and root-bridge features stay off on the server until your settings reach it.
 - **Imported settings never switch privileged features on** — restoring a backup asks before it turns on anything that grants access.
 
