@@ -500,7 +500,6 @@ class AppViewHolder(
             appContextView.text = metadata.description
         } else {
             appContextView.visibility = View.GONE
-            appContextView.setOnClickListener(null)
         }
 
         root.visibility =
