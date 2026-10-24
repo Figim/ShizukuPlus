@@ -120,7 +120,7 @@ class AppViewHolder(
             }
             val clipboard = v.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("package_name", packageName))
-            Toast.makeText(v.context, R.string.app_management_package_copied, Toast.LENGTH_SHORT).show()
+            notifyUser(v.context.getString(R.string.app_management_package_copied))
         }
     }
 
@@ -199,7 +199,7 @@ class AppViewHolder(
                         if (intent != null) {
                             launchActivity(context, intent)
                         } else {
-                            Toast.makeText(context, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
+                            notifyUser(context.getString(R.string.app_management_no_launcher))
                         }
                     },
                 )
@@ -294,17 +294,17 @@ class AppViewHolder(
                                         val success = if (isFrozen) amPlus.unfreezeApp(capturedPackage) else amPlus.freezeApp(capturedPackage)
                                         withContext(Dispatchers.Main) {
                                             if (success) {
-                                                Toast.makeText(context, if (isFrozen) R.string.toast_app_unfrozen else R.string.toast_app_frozen, Toast.LENGTH_SHORT).show()
+                                                notifyUser(context.getString(if (isFrozen) R.string.toast_app_unfrozen else R.string.toast_app_frozen))
                                                 ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
                                                 val pos = adapterPosition
                                                 if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
                                             } else {
-                                                Toast.makeText(context, R.string.toast_operation_failed, Toast.LENGTH_SHORT).show()
+                                                notifyUser(context.getString(R.string.toast_operation_failed))
                                             }
                                         }
                                     } catch (e: Exception) {
                                         withContext(Dispatchers.Main) {
-                                            Toast.makeText(context, context.getString(R.string.toast_error_with_message, e.message), Toast.LENGTH_SHORT).show()
+                                            notifyUser(context.getString(R.string.toast_error_with_message, e.message))
                                         }
                                     }
                                 }
@@ -446,6 +446,16 @@ class AppViewHolder(
                     adapter.notifyItemChanged(pos)
                 }
             }.show()
+    }
+
+    /** Snackbar on the Apps screen; toast if this row was recycled before an async result came back. */
+    private fun notifyUser(message: String) {
+        if (itemView.isAttachedToWindow) {
+            af.shizuku.manager.app.SnackbarHelper
+                .show(itemView.context, itemView, message)
+        } else {
+            Toast.makeText(itemView.context.applicationContext, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onBind() {

@@ -65,10 +65,18 @@
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
-    <Preference
-        android:key="update_app_database"
-        android:title="@string/settings_update_app_database"
-        android:summary="@string/settings_update_app_database_summary"
-        android:icon="@drawable/ic_autorenew" />
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_app_database"
+        android:title="@string/settings_app_management_category_data"
+        android:icon="@drawable/ic_autorenew"
+        app:collapsible="false">
+
+        <Preference
+            android:key="update_app_database"
+            android:title="@string/settings_update_app_database"
+            android:summary="@string/settings_update_app_database_summary"
+            android:icon="@drawable/ic_autorenew" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
 </PreferenceScreen>

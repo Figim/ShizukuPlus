@@ -126,7 +126,7 @@ class BehaviorSettingsFragment :
                         lifecycleScope.launch {
                             val success = DeviceOptimizer.applyFixes(context)
                             if (success) {
-                                view?.let { SnackbarHelper.show(it.context, it, getString(R.string.device_hardening_applied)) }
+                                notifyUser(R.string.device_hardening_applied)
                             }
                         }
                     }

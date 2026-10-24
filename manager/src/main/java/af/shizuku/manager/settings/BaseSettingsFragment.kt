@@ -246,10 +246,6 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     }
 
     /**
-     * Helper to show a dialog and track it for proper dismissal.
-     */
-
-    /**
      * Confirms an action with an M3 snackbar on this page; falls back to a toast if the page is
      * gone by the time an async result arrives (or isn't showing).
      */
@@ -279,6 +275,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         long: Boolean = false,
     ) = notifyUser(context?.getString(message), long)
 
+    /**
+     * Helper to show a dialog and track it for proper dismissal.
+     */
     protected fun showDialog(builder: MaterialAlertDialogBuilder) {
         val dialog = builder.show()
         activeDialogs.add(dialog)
