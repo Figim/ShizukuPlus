@@ -26,6 +26,14 @@
             app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_swipe_24" />
 
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_long_press"
+        android:title="@string/settings_app_management_category_long_press"
+        android:icon="@drawable/ic_outline_play_arrow_24"
+        android:defaultValue="true">
+
         <Preference
             android:key="lp_category_info"
             style="?preferenceInformationStyle"
@@ -55,12 +63,12 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_visibility_24" />
 
-            <Preference
-            android:key="update_app_database"
-            android:title="@string/settings_update_app_database"
-            android:summary="@string/settings_update_app_database_summary"
-            android:icon="@drawable/ic_autorenew" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <Preference
+        android:key="update_app_database"
+        android:title="@string/settings_update_app_database"
+        android:summary="@string/settings_update_app_database_summary"
+        android:icon="@drawable/ic_autorenew" />
 
 </PreferenceScreen>

@@ -339,6 +339,7 @@
     <string name="settings_action_hide_from_list">Hide from list</string>
 
     <!-- Settings — long-press customisation -->
+    <string name="settings_app_management_category_long_press">Long-press actions</string>
     <string name="settings_lp_category_summary">Choose which actions appear when you long-press an app in the management list. If only one is enabled it triggers directly — no menu shown.</string>
     <string name="settings_lp_open_app">Open app</string>
     <string name="settings_lp_app_info">App info</string>
