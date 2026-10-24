@@ -21,6 +21,12 @@ that fails becomes an issue or a fix before the stable dispatch.
       AGENTS.md fork-versioning rule (no upstream version bump without merging upstream).
 - [ ] **Code review** of everything since the part-2 ultrareview base: `/code-review medium`
       on `9f4287b4..HEAD` (~95 commits). Fix or file what it finds.
+- [ ] **Hard-coded English → strings.xml** (promised to Figim on #619/#622, then ping them):
+      SU Bridge self-test report (`database/.../RootCompatHelper.kt` ~:600-650); manager activity-log /
+      watchdog lines (`AdbStarter.kt` ~:170, `ShizukuStateMachine.kt` ~:363, `ReconnectTrigger.kt` ~:57).
+      Server-side log text ("Connected to Shizuku", `ShizukuService.java` ~:759) can't use manager
+      resources: log a key and render it in the manager, or leave English and say so.
+- [ ] Decide on #622 (Figim's open PR, waiting since 2026-10-23 for those strings).
 - [ ] Push only on explicit OK. Push to master = **prerelease**; stable = `workflow_dispatch` on
       master with `prerelease=false`.
 - [ ] After release: close #623 / #624 (fix `9a811eee` ships here), and reply on #626 (`ef092a45`).
