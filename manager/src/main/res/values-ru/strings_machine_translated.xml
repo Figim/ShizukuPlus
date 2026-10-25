@@ -1321,4 +1321,5 @@
     <string name="compat_hub_progress_preparing">Подготовка Compat Hub…</string>
     <string name="compat_hub_progress_uninstalling">Удаление Compat Hub…</string>
     <string name="compat_hub_progress_finishing">Завершение…</string>
+    <string name="home_adb_description_active"><![CDATA[Shizuku+ активен через ADB с компьютера. После перезагрузки устройства выполните команду снова, чтобы переподключиться. Пожалуйста, <b><a href=\"%1$s\">прочтите справку</a></b>.]]></string>
 </resources>
