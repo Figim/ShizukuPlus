@@ -6,6 +6,7 @@ package af.shizuku.manager.utils
  */
 object TelemetryScrubber {
     private val ipv4 = Regex("""\b(?:\d{1,3}\.){3}\d{1,3}\b""")
+
     // Full form (8 groups), or compressed with "::" (fe80::1, ::1). Not 2-3 groups: that is a time.
     private val ipv6Full = Regex("""\b(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\b""")
     private val ipv6Compressed =

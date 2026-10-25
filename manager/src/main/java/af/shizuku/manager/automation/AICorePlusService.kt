@@ -54,7 +54,9 @@ class AICorePlusService : AccessibilityService() {
         Timber.d("AICorePlusService connected")
         // Connected means it is enabled; remembered as consent for the OEM-disable self-heal, unless
         // it was already on from a build that could enable it by itself.
-        if (!af.shizuku.manager.ShizukuSettings.isAICoreAccessibilityInherited()) {
+        if (!af.shizuku.manager.ShizukuSettings
+                .isAICoreAccessibilityInherited()
+        ) {
             af.shizuku.manager.ShizukuSettings
                 .markAICoreAccessibilityUserEnabled()
         }

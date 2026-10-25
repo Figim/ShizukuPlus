@@ -394,11 +394,17 @@ class ShizukuApplication :
                     // Same scrub as breadcrumbs: exception messages can carry addresses ("connect to
                     // 192.168.1.5:5555 failed").
                     event.message?.let { m ->
-                        m.formatted = af.shizuku.manager.utils.TelemetryScrubber.scrub(m.formatted)
-                        m.message = af.shizuku.manager.utils.TelemetryScrubber.scrub(m.message)
+                        m.formatted =
+                            af.shizuku.manager.utils.TelemetryScrubber
+                                .scrub(m.formatted)
+                        m.message =
+                            af.shizuku.manager.utils.TelemetryScrubber
+                                .scrub(m.message)
                     }
                     event.exceptions?.forEach { ex ->
-                        ex.value = af.shizuku.manager.utils.TelemetryScrubber.scrub(ex.value)
+                        ex.value =
+                            af.shizuku.manager.utils.TelemetryScrubber
+                                .scrub(ex.value)
                     }
 
                     event

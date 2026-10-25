@@ -21,7 +21,9 @@ class ActivityLogSettingsImpl : ActivityLogSettings {
         if (!ShizukuSettings.isActivityLogEnabled()) return
         if (!ShizukuSettings.isLiveActivityEnabled()) return
         val context = af.shizuku.manager.ShizukuApplication.appContext
-        val shown = af.shizuku.manager.activitylog.ActivityLogText.localize(context, action)
+        val shown =
+            af.shizuku.manager.activitylog.ActivityLogText
+                .localize(context, action)
         val text =
             when {
                 appName.isNotBlank() && shown.isNotBlank() -> "$appName: $shown"

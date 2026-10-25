@@ -39,7 +39,11 @@ class ScreenSmokeTest {
     // actually renders Home, and cover onboarding on its own.
     @Before
     fun markOnboardingSeen() {
-        ShizukuSettings.getPreferences().edit().putBoolean("onboarding_seen", true).commit()
+        ShizukuSettings
+            .getPreferences()
+            .edit()
+            .putBoolean("onboarding_seen", true)
+            .commit()
     }
 
     @Test fun mainOpens() = opens(MainActivity::class.java)
