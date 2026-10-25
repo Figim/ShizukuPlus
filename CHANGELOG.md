@@ -87,6 +87,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🌐 Localization
 - **Chinese (Simplified and Traditional) complete** and Azerbaijani updated, with thanks to the community translators. Screens that still showed English text are now translated.
 - **Fixed translated settings breaking options** — in az, pt-BR, uk, ur and zh some internal setting values were translated, which broke icon style, shape style, accent and swipe-action choices in those languages. Corner rounding labels in az, ko and zh-CN now point at the right sizes.
+- **Activity log, live activity notification and SU Bridge self-test follow your language** — their text was always English. Log entries are translated when shown, so entries written before an update or a language change show in the current language too.
+- **Newer strings translated in 20 languages** — screens added this release no longer fall back to English in German, French, Spanish, Italian, Portuguese (Portugal and Brazil), Russian, Ukrainian, Arabic, Urdu, Korean, Japanese, Turkish, Chinese (Simplified and Traditional), Indonesian, Polish, Dutch, Vietnamese and Thai. These are machine-assisted and marked for review by native speakers (see TRANSLATING.md).
 
 ### 🛠️ For app developers
 - `IAICorePlus.scheduleNPULoad()` now returns `success=false` with `reason="not_supported"` — it used to report success without doing anything. Real NPU scheduling is tracked in #633.
