@@ -216,7 +216,7 @@
     <string name="dialog_adb_pairing_accessibility_navigate">Zəhmət olmasa, aşağıdakı addımları yerinə yetirərək cütləşməni başladın:\n- \"Tərtibatçı Seçimləri\"nə keçin\n- \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin\n- \"Simsiz sazlama\"nın sol tərəfinə toxunun\n- \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Shizuku cütləşmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinin yeganə yoludur.</string>
-    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizмініn zədələnməsi ola bilər.</string>
+    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizminin zədələnməsi ola bilər.</string>
     <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
     <string name="adb_pair_required">Zəhmət olmasa, əvvəlcə cütləşmə addımını tamamlayın.</string>
     <string name="enable">Aktivləşdir</string>
@@ -348,7 +348,7 @@
     <string name="onboarding_welcome_title">Shizuku+ tətbiqinə xoş gəlmisiniz</string>
     <string name="onboarding_welcome_desc">Güclü tətbiq idarəetmə xüsusiyyətlərinə malik təkmilləşdirilmiş Shizuku. Sürüşdürmə jestləri, sürətli əməliyyatlar və fərdiləşdirilə bilən təcrübələr — hamısı bir yerdə.</string>
     <string name="onboarding_swipe_title">İlkin Jestlər</string>
-    <string name="onboarding_swipe_desc">İlkin olaraq, tətbiq idarəetmə siyahısında tətbiqi açmaq uchun sağa, sistem tənzimləmələri səhifəsinə baxmaq üçün sola sürüşdürün.</string>
+    <string name="onboarding_swipe_desc">İlkin olaraq, tətbiq idarəetmə siyahısında tətbiqi açmaq üçün sağa, sistem tənzimləmələri səhifəsinə baxmaq üçün sola sürüşdürün.</string>
     <string name="onboarding_gestures_title">Fərdi Jestlər</string>
     <string name="onboarding_gestures_desc">Tənzimləmələrdə bu sürüşdürmə əməliyyatlarını tamamilə fərdiləşdirə bilərsiniz. Tətbiqi Aç, Tətbiq Məlumatı, İcazəni Dəyiş və ya Siyahıdan Gizlət seçimlərindən birini seçin.</string>
     <string name="onboarding_longpress_title">Təcrübəni Fərdiləşdirin</string>
@@ -357,7 +357,7 @@
     <string name="onboarding_skip">Keç</string>
     <string name="onboarding_get_started">Başlat</string>
     <string name="onboarding_setup_title">Shizuku+-ı Başlat</string>
-    <string name="onboarding_setup_desc">Bu cihazda Shizuku+-ın necə başladılacağını seçin. Bunu sonradan əsas ekran edə bilərsiniz.</string>
+    <string name="onboarding_setup_desc">Bu cihazda Shizuku+-ın necə başladılacağını seçin. Bunu sonradan əsas ekranda edə bilərsiniz.</string>
     <string name="onboarding_setup_running">Shizuku+ işləyir</string>
     <string name="onboarding_setup_later">Bunu sonra edəcəyəm</string>
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
@@ -599,9 +599,9 @@
     <string name="settings_keystore_fallback">Proqram təminatı KeyStore Ehtiyat Nüsxəsi</string>
     <string name="settings_keystore_fallback_summary">Aparat KeyStore xəta verdikdə proqram təminatı AES açarı ilə şifrələnmiş ADB RSA açarını keşləyin (məsələn, Samsung Knox). Cütləşmə sorğularını azaldır, lakin təhlükəsizliyi aşağı salır.</string>
     <string name="settings_samsung_uid_escalation">Samsung Sistem UID Eskalasiyası</string>
-    <string name="settings_samsung_uid_escalation_summary">Yamaqlanmamış Samsung cihazlarına xüsusi zəiflikdən (pascua28 tərəfindən) istifadə edərək UID 1000 (sistem) səviyyəsinə yüksəlməyə cəhd edin. Root tələb olunmur. Qeyd: Samsung bunu müasir One UI (Android 12+) versiylarında yamaqlayıb.</string>
+    <string name="settings_samsung_uid_escalation_summary">Yamaqlanmamış Samsung cihazlarına xüsusi zəiflikdən (pascua28 tərəfindən) istifadə edərək UID 1000 (sistem) səviyyəsinə yüksəlməyə cəhd edin. Root tələb olunmur. Qeyd: Samsung bunu müasir One UI (Android 12+) versiyalarında yamaqlayıb.</string>
     <string name="settings_display_tuner_plus_title">Ekran Tənzimləyicisi</string>
-    <string name="settings_device_control_home_title">Cihaz Nəzarəti Əsas ekran Kartı</string>
+    <string name="settings_device_control_home_title">Cihaz Nəzarəti Əsas Ekran Kartı</string>
     <string name="settings_device_control_home_summary">Əsas ekranda Cihaz Nəzarəti kartını göstərin. Wi-Fi, Bluetooth, Mobil İnternet, ekran, səs və enerjiyə imtiyazlı nəzarətə imkan verir. Eksperimental — bəzi cihazlarda gözlənilməz davranışa səbəb ola bilər.</string>
 
     <string name="settings_plus_learn_more">Ətraflı öyrən</string>
@@ -640,7 +640,7 @@
     <string name="help_storage_proxy_detail">Yaddaş Körpüsü /data/data/ (tətbiq məlumatı) və /data/app/ (APK faylları) kimi məhdud fayl sistemi yollarına autentifikasiya olunmuş, yüksək sürətli giriş təmin edir. Bu, Shizuku-nun icazə modeli vasitəsilə təhlükəsizliyi qoruyarkən, Neo Backup kimi ehtiyat nüsxə alətlərinin tam root girişi olmadan işləməsinə imkan verir.</string>
 
     <string name="help_continuity_bridge_title">Çox-Cihaz Davamlılığı Haqqında</string>
-    <string name="help_continuity_bridge_detail">Davamlılıq Körpüsü eyni şəbəkədəki Shizuku+ cihazlarına tapşırıqları ötürməyə və mübadilə buferini/tətbiq vəziyyətini sinxronlaşdırmağa imkan verir. Bu, telefonunuzla planşetiniz arasında avtomatlaşdırma tapşırıqlarının qüsursuz keçidini təmin etmək için Android 17 Handoff API-lərindən (mümkün olduqda geriyə uyğunlaşdırılmış) istifadə edir.</string>
+    <string name="help_continuity_bridge_detail">Davamlılıq Körpüsü eyni şəbəkədəki Shizuku+ cihazlarına tapşırıqları ötürməyə və mübadilə buferini/tətbiq vəziyyətini sinxronlaşdırmağa imkan verir. Bu, telefonunuzla planşetiniz arasında avtomatlaşdırma tapşırıqlarının qüsursuz keçidini təmin etmək üçün Android 17 Handoff API-lərindən (mümkün olduqda geriyə uyğunlaşdırılmış) istifadə edir.</string>
 
     <string name="help_ai_core_plus_title">Süni İntellekt Körpüsü Haqqında</string>
     <string name="help_ai_core_plus_detail">Süni İntellekt Körpüsü süni intellekt köməkçilərinə ekran məzmununa və NPU planlaşdırmasına imtiyazlı giriş hüququ verir. O, standart Android ekran yazma məhdudiyyətlərindən yan keçən yüksək performanslı, pəncərə məlumatlı kadr çəkilişi təmin etməklə yerli LLM-lər üçün \"Dairə ilə Axtar\" və ya ekran məlumatlı kontekst kimi xüsusiyyətləri aktivləşdirir.</string>
@@ -688,7 +688,7 @@
     <string name="help_root_auto_grant_detail">Köhnə root tətbiqləri tez-tez shell vasitəsilə özlərinə icazə verməyə çalışırlar. Bu körpü bu \'pm grant\' çağırışlarını dinləyir və əl ilə icazə idarəçiliyindən qaçaraq dərhal təsdiqləmək üçün Shizuku-nun yüksək imtiyazlarından istifadə edir.</string>
 
     <string name="help_root_file_interceptor_title">Fayl Tutucusu Haqqında</string>
-    <string name="help_root_file_interceptor_detail">Tətbiqlər standart shell istifadə edərək /data/data/ qovluğuna fayl kopyaladılarqda, onlar çox vaxt sahiblik və SELinux kontekstlərini itirirlər. Bu modul fayl bütövlüyünü qorumaq və tətbiq qəzalarının qarşısını almaq üçün avtomatik olaraq --preserve=all kimi bayraqlar əlavə edir.</string>
+    <string name="help_root_file_interceptor_detail">Tətbiqlər standart shell istifadə edərək /data/data/ qovluğuna fayl kopyaladıqlarında, onlar çox vaxt sahiblik və SELinux kontekstlərini itirirlər. Bu modul fayl bütövlüyünü qorumaq və tətbiq qəzalarının qarşısını almaq üçün avtomatik olaraq --preserve=all kimi bayraqlar əlavə edir.</string>
 
     <string name="help_root_busybox_title">BusyBox Simulyasiyası Haqqında</string>
     <string name="help_root_busybox_detail">BusyBox root edilmiş cihazlarda ümumi olan Unix utilitlər dəstidir. Bəzi köhnə root tətbiqləri işləməzdən əvvəl onun mövcudluğunu yoxlayır. Bu modul \'busybox\' əmri üçün simulyasiya edilmiş uğurlu cavab qaytarır.</string>
@@ -713,7 +713,7 @@
     <string name="settings_usb_phone_switch_notify">USB bağlantısı və keçid bildirişi</string>
     <string name="settings_usb_phone_switch_notify_summary">Telefon və ya USB cihazına qoşulduqda sürətli tənzimləmələr və alət qısayolları olan bildirişi sabitlə</string>
     <string name="settings_fake_su">Root Tətbiq Tərcüməçisi (SU Körpüsü)</string>
-    <string name="settings_fake_su_summary">Standard yalnız-root tətbiqlərünün (NeoBackup, AdAway və Swift Backup kimi) telefonunuzu həmişəlik root etmədən Shizuku+ vasitəsilə işləməsinə icazə verin.</string>
+    <string name="settings_fake_su_summary">Standard yalnız-root tətbiqlərinin (NeoBackup, AdAway və Swift Backup kimi) telefonunuzu həmişəlik root etmədən Shizuku+ vasitəsilə işləməsinə icazə verin.</string>
     <string name="settings_root_integration_hub">Root Uyğunluq Mərkəzi</string>
     <string name="settings_root_integration_hub_summary">Root tətbiqlərini Shizuku+ imtiyazları ilə işləmək üçün konfiqurasiya edin və idarə edin.</string>
     <string name="su_bridge_title">SU Körpüsü</string>
@@ -1010,7 +1010,7 @@
     <string name="vendor_battery_restriction_standby_bucket">Az istifadə olunan tətbiqlər üçün Android məhdudiyyətləri</string>
     <string name="vendor_battery_restriction_samsung_deep_sleep">Samsung Dərin yuxu rejimi tətbiqləri</string>
     <string name="vendor_battery_restriction_xiaomi_autostart">Xiaomi avto-başlatma parametri</string>
-    <string name="vendor_battery_restriction_xiaomi_no_restrict">Xiaomi batareya qənaəti (İlkin olaraq təyin edilməyib)</string>
+    <string name="vendor_battery_restriction_xiaomi_no_restrict">Xiaomi batareya qənaəti (Heç bir məhdudiyyət yoxduya təyin edilməyib)</string>
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Veb-brauzer açıla bilmir</string>
@@ -1022,13 +1022,13 @@
     <string name="dialog_legacy_not_support_title">%1$s müasir Shizuku-nu dəstəkləmir</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur. Həmçinin, köhnə Shizuku yeni Android sistemlərində işləmir.<p>Zəhmət olmasa <b>%1$s</b> tətbiqinin tərtibatçısından yeniləməsini xahiş edin.]]></string>
     <string name="dialog_requesting_legacy_title">%1$s köhnə Shizuku tələb edir</string>
-    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdır, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
+    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> müasir Shizuku dəstəyinə malikdir, lakin o, köhnə Shizuku tələb edir. Bu, Shizuku işləmədiyi üçün ola bilər, zəhmət olmasa Shizuku tətbiqində yoxlayın.<p>Köhnə Shizuku 2019-cu ilin mart ayından bəri köhnəlmiş hesab olunur.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku-nu Aç</string>
     <string name="wadb_notification_attempt_now">İndi cəhd et</string>
     <string name="wadb_notification_ask_again">Yenidən soruş</string>
     <string name="wadb_notification_awaiting_auth">Bu telefonda \"USB sazlamasına icazə verilsin\" sorğusunu qəbul etməyiniz gözlənilir</string>
     <string name="wadb_notification_ask_again_from">Əgər İmtina et düyməsinə toxunmusunuzsa, Yenidən soruş %1$s dən sorğunu bir daha göstərir</string>
-    <string name="wadb_notification_ask_again_ready">Əgər İmtina et düyməsinə toxunmusunuzsa, sorğunu bir daha göstərmək için Yenidən soruş düyməsinə toxunun</string>
+    <string name="wadb_notification_ask_again_ready">Əgər İmtina et düyməsinə toxunmusunuzsa, sorğunu bir daha göstərmək üçün Yenidən soruş düyməsinə toxunun</string>
     <string name="wadb_notification_ask_again_used">Bu, %1$s vaxtında başa çatan gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_ask_again_used_untimed">Bu, bu gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_wait_ends">Bu gözləmə %1$s vaxtında başa çatır</string>
@@ -1122,7 +1122,7 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiığın imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə meta verilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
@@ -1301,7 +1301,7 @@
     <string name="changelog_all_new_updates">Bütün yeni yeniləmələr (%d)</string>
     <string name="changelog_tag_new">Yeni</string>
     <string name="settings_changelog_style">Dəyişiklik qeydi stili</string>
-    <string name="changelog_style_classic">İlkin</string>
+    <string name="changelog_style_classic">Klassik</string>
     <string name="changelog_style_classic_desc">Versiya nişanları ilə hər dəfə bir buraxılış</string>
     <string name="changelog_style_timeline_desc">Bütün buraxılışlar xətt üzərində, qruplaşdırılmış və filtrlənə bilən</string>
     <string name="changelog_style_sheet_title">Dəyişiklik qeydi stilinizi seçin</string>
