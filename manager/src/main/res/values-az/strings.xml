@@ -14,7 +14,7 @@
     <string name="settings_expressive_shapes">Ekspressiv İkon Formaları</string>
     <string name="settings_expressive_shapes_summary">İkonlar üçün asimmetrik yarpaq və damcı formalarından istifadə edin</string>
     <string name="settings_expressive_animations">Elastik Animasiyalar</string>
-    <string name="settings_expressive_animations_summary">M3 elastik prediktiv geri qayıtma və sürükləmə miqyaslamasını aktivləşdirin</string>
+    <string name="settings_expressive_animations_summary">Tətbiq daxilində elastik və ifadəli hərəkətlər. Daxili animasiyaları söndürmək üçün bağlayın</string>
     <string name="settings_icon_style">İkon Üslubu</string>
     <string name="settings_shape_style">Konteyner Forması Üslubu</string>
     <string name="settings_rounded_edges">Dairəvi Künclər</string>
@@ -29,7 +29,7 @@
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI Üslubu</string>
-    <string name="settings_oneui_theme_summary">Samsung One UI-ın dizayn dilinə uyğunlaşdırın — böyük dairəvi künclər və qalın şriftlər. Rəngə təsir etmir; bunun üçün yuxarıdakı Material You və ya xüsusi vurğu rəngindən istifadə edin.</string>
+    <string name="settings_oneui_theme_summary">Samsung üslubunda böyük başlıqlar, daha dairəvi künclər və qalın şriftlər. Rəngləriniz yuxarıda təyin edildiyi kimi qalır.</string>
     <string name="settings_one_handed_mode">Bir Əllə İdarəetmə Rejimi</string>
     <string name="settings_one_handed_mode_summary">Baş barmağınızla rahat çata bilməyiniz üçün interaktiv məzmunu ekranın aşağı hissəsinə doğru sürüşdürün</string>
 
@@ -51,7 +51,11 @@
         <item>Konturlu</item>
         <item>İki Rəngli</item>
     </string-array>
-
+    <string-array name="icon_styles_value" translatable="false">
+        <item>standard</item>
+        <item>outlined</item>
+        <item>twotone</item>
+    </string-array>
 
     <string name="icon_style_filled">Dolu</string>
     <string name="icon_style_outlined">Konturlu</string>
@@ -65,6 +69,11 @@
         <item>Eynilik</item>
         <item>Dinamik</item>
     </string-array>
+    <string-array name="icon_color_modes_value" translatable="false">
+        <item>none</item>
+        <item>uniform</item>
+        <item>per_icon</item>
+    </string-array>
 
     <string-array name="shape_styles">
         <item>Zen (Yarpaq/Damcı)</item>
@@ -73,17 +82,34 @@
         <item>Üzvi (Dairəvi)</item>
         <item>Kəsilmiş (Bucaqlı)</item>
     </string-array>
+    <string-array name="shape_styles_value" translatable="false">
+        <item>zen</item>
+        <item>modern</item>
+        <item>classic</item>
+        <item>squircle</item>
+        <item>cut</item>
+    </string-array>
 
     <string-array name="animation_intensities">
-        <item>Yoxdur</item>
+        <item>Azaldılmış</item>
         <item>Zərif</item>
         <item>Standart</item>
         <item>Ekspressiv</item>
+    </string-array>
+    <string-array name="animation_intensities_value" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="status_card_outline_styles">
         <item>Material (tema rəngi)</item>
         <item>Yaşıl / Qırmızı (status rəngi)</item>
+    </string-array>
+    <string-array name="status_card_outline_styles_value" translatable="false">
+        <item>material</item>
+        <item>status</item>
     </string-array>
 
 
@@ -93,8 +119,9 @@
     <string name="home_status_service_not_running_summary">%1$s dayandırılıb</string>
     <string name="home_status_service_user_root">root</string>
     <string name="home_status_service_user_adb">adb</string>
-    <string name="home_status_service_version">Versiya %2$s, %1$s</string>
-    <string name="home_status_service_version_update"><![CDATA[Versiya %2$s, %1$s<br>Versiya %3$s-ə yeniləmək üçün yenidən başladın]]></string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
+    <string name="home_status_service_version">Xidmət API %2$s · %1$s</string>
+    <string name="home_status_service_version_update"><![CDATA[Xidmət API %2$s · %1$s<br>API %3$s versiyasına yeniləmək üçün Shizuku+-ı yenidən başladın]]></string>
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Kompüterə qoşulmaqla başlayın]]></string>
@@ -108,6 +135,7 @@
 
     <!-- Home - Wireless Adb -->
     <string name="home_wireless_adb_title"><![CDATA[Simsiz sazlama vasitəsilə başladın]]></string>
+    <string name="home_wireless_adb_title_active">Simsiz sazlama</string>
     <string name="home_wireless_adb_description"><![CDATA[Android 11 və ya daha yuxarı versiyalarda kompüterə qoşulmadan birbaşa cihazınızdan simsiz sazlamanı aktivləşdirə və Shizuku-nu işə sala bilərsiniz.<p>Zəhmət olmasa, əvvəlcə addım-addım bələdçiyə baxın.]]></string>
     <string name="home_wireless_adb_description_pre_11"><![CDATA[Android 11-dən əvvəl simsiz sazlamanı aktivləşdirmək üçün kompüterə qoşulmaq tələb olunur.]]></string>
     <string name="home_wireless_adb_view_guide_button">Addım-addım bələdçi</string>
@@ -197,12 +225,16 @@
     <string name="adb_pairing_tutorial_content_notification">Shizuku-dan gələn bildiriş cütləşməni tamamlamağa kömək edəcək.</string>
     <string name="adb_pairing_tutorial_content_steps">\"Tərtibatçı Seçimləri\"nə keçin, sonra \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin.</string>
     <string name="adb_pairing_tutorial_content_enter_pairing_code">\"Simsiz sazlama\"nın sol tərəfinə toxunun, sonra \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Cütləşməni tamamlamaq üçün kodu bildirişə daxil edin.</string>
+    <string name="adb_pairing_status_searching_text">Simsiz sazlamada \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun.</string>
+    <string name="adb_pairing_status_found_text">Parametrlərdə göstərilən kodu Shizuku bildirişinə daxil edin.</string>
+    <string name="adb_pairing_tutorial_autofill">Kodu mənim üçün daxil et</string>
+    <string name="adb_pairing_tutorial_autofill_ready">İndi \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Kod ekrandan oxunacaq və sizin üçün daxil ediləcək.</string>
     <string name="adb_pairing_tutorial_content_notification_blocked">Cütləşmə prosesi üçün Shizuku bildirişi ilə qarşılıqlı əlaqədə olmalısınız. Zəhmət olmasa, Shizuku-ya bildiriş göndərməyə icazə verin.</string>
     <string name="adb_pairing_tutorial_content_miui">MIUI istifadəçiləri sistem parametrlərində \"Bildiriş\" - \"Bildiriş paneli\" bölməsindən bildiriş üslubunu \"Android\" olaraq dəyişməli ola bilərlər.</string>
     <string name="adb_pairing_tutorial_content_miui_2">Əks halda, bildirişdən cütləşmə kodunu daxil edə bilməyə bilərsiniz.</string>
     <string name="adb_pairing_tutorial_content_finish">Shizuku-ya qayıdın və Shizuku-nu başladın.</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku yerli şəbəkəyə daxil olmalıdır. O, şəbəkə icazəsi ilə idarə olunur.</string>
-    <string name="adb_pairing_tutorial_content_network_limation_not_foreground">Bəzi sistemlər (məsələn, MIUI) tətbiq ön planda xidmətdən istifadə etsə belə, görünmədikdə şəbəkəyə daxil olmağına icazə vermir. Belə sistemlərdə Shizuku üçün batareya optimizasiya xüsusiyyətlərini söndürün.</string>
+    <string name="adb_pairing_tutorial_content_network_limation_not_foreground">Bəzi sistemlər (məsələn, MIUI) tətbiq ön planda xidmətdən istifadə etsə belə, görünmədikdə şəbəkəyə daxil olmağa icazə vermir. Belə sistemlərdə Shizuku üçün batareya optimizasiyası xüsusiyyətlərini söndürün.</string>
 
     <!-- Home - Root -->
     <string name="home_root_title"><![CDATA[Başlat (root edilmiş cihazlar üçün)]]></string>
@@ -296,6 +328,7 @@
     <!-- Settings — swipe customisation -->
     <string name="settings_swipe_right">Sola sürüşdürmə əməliyyatı</string>
     <string name="settings_swipe_left">Sağa sürüşdürmə əməliyyatı</string>
+    <string name="settings_swipe_preview_hint">Əməliyyatları sınamaq üçün kartı sürüşdürün</string>
     <string name="settings_action_none">Heç biri</string>
     <string name="settings_action_open_app">Tətbiqi aç</string>
     <string name="settings_action_app_info">Tətbiq məlumatı</string>
@@ -303,6 +336,8 @@
     <string name="settings_action_hide_from_list">Siyahıdan gizlət</string>
 
     <!-- Settings — long-press customisation -->
+    <string name="settings_app_management_category_long_press">Uzun basma əməliyyatları</string>
+    <string name="settings_app_management_category_data">Məlumat</string>
     <string name="settings_lp_category_summary">İdarəetmə siyahısındakı tətbiqə uzun basdıqda hansı əməliyyatların görünəcəyini seçin. Yalnız biri aktivdirsə, o, birbaşa işə düşür — heç bir menyu göstərilmir.</string>
     <string name="settings_lp_open_app">Tətbiqi aç</string>
     <string name="settings_lp_app_info">Tətbiq məlumatı</string>
@@ -366,6 +401,77 @@
     <string name="settings_app_icon_name_summary">Başlatıcı ikonunu və tətbiq adını fərdiləşdirin</string>
     <string name="settings_show_home_cards_outline">Əsas səhifə kart haşiyələri</string>
     <string name="settings_show_home_cards_outline_summary">Əsas ekran kartlarının ətrafında incə kontur xətti göstər</string>
+    <string name="settings_custom_icon_studio_title">Xüsusi İkon Studiyası</string>
+    <string name="settings_custom_icon_studio_summary">Öz şəklinizi yükləyin, formanı, boşluqları və fonu fərdiləşdirin və başlatıcı ikonu olaraq təyin edin</string>
+    <string name="custom_icon_studio_shape"> Forma</string>
+    <string name="custom_icon_studio_bg">Fon</string>
+    <string name="custom_icon_studio_pin_shortcut">Ana ekrana əlavə et</string>
+    <string name="custom_icon_studio_pinned_success">Xüsusi ikon Ana Ekranınıza əlavə edildi!</string>
+    <string name="custom_icon_studio_pinned_error">İkon qısayolunu əlavə etmək mümkün olmadı</string>
+    <string name="custom_icon_studio_shape_circle">Dairə</string>
+    <string name="custom_icon_studio_shape_squircle">Dairəvi</string>
+    <string name="custom_icon_studio_shape_rounded">Dairəvi künclü</string>
+    <string name="custom_icon_studio_shape_oneui">One UI</string>
+    <string name="custom_icon_studio_shape_hexagon">Altıbucaqlı</string>
+    <string name="custom_icon_studio_shape_teardrop">Damcı</string>
+    <string name="custom_icon_studio_app_label">Qısayol adı</string>
+    <string name="custom_icon_studio_glyph_preset">İkon seçin</string>
+    <string name="custom_icon_studio_pick_gallery">Başqa şəkil seçin</string>
+    <string name="custom_icon_studio_rotation">Fırlanma</string>
+    <string name="settings_custom_app_name_title">Tətbiqin Görünən Adı</string>
+    <string name="settings_custom_app_name_summary">Tətbiq başlığını və qısayol adını fərdiləşdirin (%s)</string>
+    <string name="settings_custom_app_name_dialog_title">Tətbiqin Görünən Adı</string>
+    <string name="settings_floating_nav_label_mode">Naviqasiya paneli etiketinin görünüşü</string>
+    <string name="settings_floating_nav_label_mode_summary">Naviqasiya paneli ikonlarının altında mətn etiketlərinin nə vaxt görünəcəyini konfiqurasiya edin</string>
+    <string name="settings_floating_nav_autohide">Sürüşdürərkən avtomatik gizlət</string>
+    <string name="settings_floating_nav_autohide_summary">Aşağı sürüşdürərkən üzən paneli rəvan şəkildə yığın və yuxarı sürüşdürərkən bərpa edin</string>
+    <string name="settings_high_contrast_title">Yüksək kontrast rejimi</string>
+    <string name="settings_high_contrast_summary">Görmə dəqiqliyini artırmaq üçün kart sərhədlərini və konteyner ayrılmasını kəskinləşdirin</string>
+    <string name="settings_high_contrast_summary_full">Mətn, düymələr, kartlar və sərhədlər üçün daha güclü kontrast</string>
+    <string name="settings_experimental_color_schemes_title">Tam rəng sxemləri</string>
+    <string name="settings_experimental_color_schemes_summary">Xüsusi vurğular tətbiqin hər hissəsini rəngləndirir, Yüksək kontrast və Android-in kontrast parametri uyğun yüksək kontrastlı sxemlərə keçir</string>
+    <string name="settings_experimental_category_color">Görünüş &amp; hərəkət</string>
+    <string name="settings_experimental_screen_transitions_title">Material ekran keçidləri</string>
+    <string name="settings_experimental_screen_transitions_summary">Ekranlar və tənzimləmələr səhifələri partlamaq və ya kəsilmək əvəzinə irəli və geri sürüşür</string>
+    <string name="custom_icon_studio_saved_success">İkon Yükləmələr/ShizukuPlus/Icons qovluğuna saxlandı</string>
+    <string name="custom_icon_studio_save_png_short">PNG kimi saxla</string>
+    <string name="custom_icon_studio_saved_to">İkon %1$s ünvanına saxlandı</string>
+    <string name="custom_icon_studio_saved_error">İkonu saxlamaq mümkün olmadı</string>
+    <string name="custom_icon_studio_image_error">Həmin şəkli açmaq mümkün olmadı</string>
+    <string name="custom_icon_studio_reset">Sıfırla</string>
+    <string name="custom_icon_studio_tab_icon">İkon</string>
+    <string name="custom_icon_studio_tab_colors">Rənglər</string>
+    <string name="custom_icon_studio_tab_adjust">Tənzimlə</string>
+    <string name="custom_icon_studio_preset_cd">İkon şablonu %1$d</string>
+    <string name="custom_icon_studio_source_photo">Şəkil</string>
+    <string name="custom_icon_studio_source_text">Hərflər</string>
+    <string name="custom_icon_studio_monogram">Hərflər (3-ə qədər)</string>
+    <string name="custom_icon_studio_photo_fill">Formanı doldur</string>
+    <string name="custom_icon_studio_photo_fit">İçəriyə uyğunlaşdır</string>
+    <string name="custom_icon_studio_shape_cookie">Perpec</string>
+    <string name="custom_icon_studio_shape_square">Kvadrat</string>
+    <string name="custom_icon_studio_bg_solid">Bütöv</string>
+    <string name="custom_icon_studio_bg_gradient">Qradiyent</string>
+    <string name="custom_icon_studio_bg_theme">Tema rəngi</string>
+    <string name="custom_icon_studio_bg_none">Fon yoxdur</string>
+    <string name="custom_icon_studio_custom_color">Xüsusi rəng</string>
+    <string name="custom_icon_studio_gradient_end">Qradiyent son rəngi</string>
+    <string name="custom_icon_studio_gradient_angle">Qradiyent bucağı</string>
+    <string name="custom_icon_studio_glyph_color">İkon rəngi</string>
+    <string name="custom_icon_studio_gc_auto">Avtomatik</string>
+    <string name="custom_icon_studio_gc_original">Orijinal</string>
+    <string name="custom_icon_studio_gc_white">Ağ</string>
+    <string name="custom_icon_studio_gc_black">Qara</string>
+    <string name="custom_icon_studio_gc_accent">Vurğu</string>
+    <string name="custom_icon_studio_size">Ölçü</string>
+    <string name="custom_icon_studio_shadow">Yumşaq kölgə</string>
+    <string name="custom_icon_studio_off">Söndürülüb</string>
+    <string name="custom_icon_studio_preview_light">İşıqlı divar kağızı</string>
+    <string name="custom_icon_studio_preview_dark">Tünd divar kağızı</string>
+    <string name="custom_icon_studio_border">Sərhəd</string>
+    <string name="custom_icon_studio_border_width">Genişlik</string>
+    <string name="custom_icon_studio_nudge_x">Üfüqi Mövqe</string>
+    <string name="custom_icon_studio_nudge_y">Şaquli Mövqe</string>
 
     <!-- Settings -->
     <string name="settings_title">Tənzimləmələr</string>
@@ -377,6 +483,7 @@
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
     <string name="settings_watchdog_crash_alerts">Xəta bildirişləri</string>
     <string name="settings_watchdog_crash_alerts_summary">Gözətçi xətadan sonra xidməti yenidən başlatdıqda səssiz bildiriş göstər</string>
+    <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, başladıcı binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
@@ -413,6 +520,14 @@
     <string name="settings_update_app_database">Tətbiq verilənlər bazasını yenilə</string>
     <string name="settings_update_app_database_summary">GitHub-dan ən son tətbiq təsvirlərini və təkmilləşdirmə təkliflərini əldə edin.</string>
     <string name="settings_update_app_database_error">Verilənlər bazası yenilənə bilmədi</string>
+    <string name="settings_update_app_database_status">%1$d tətbiq üçün təsvirlər və quraşdırma ipuçları, Tətbiqlər və Root uyğunluğunda göstərilir. Son yoxlanış %2$s.</string>
+    <string name="settings_update_app_database_status_never">%1$d tətbiq üçün təsvirlər və quraşdırma ipuçları, Tətbiqlər və Root uyğunluğunda göstərilir. Hələ yoxlanılmayıb.</string>
+    <string name="settings_update_app_database_checking">GitHub yoxlanılır…</string>
+    <string name="settings_update_app_database_up_to_date">Tətbiq məlumatı onsuz da ən son versiyadadır</string>
+    <plurals name="settings_update_app_database_updated">
+        <item quantity="one">Tətbiq məlumatı yeniləndi (%d tətbiq)</item>
+        <item quantity="other">Tətbiq məlumatı yeniləndi (%d tətbiq)</item>
+    </plurals>
     <string name="home_edit_mode_title">Kartları Səliqəyə Sal</string>
     <string name="home_edit_mode_done">Hazır</string>
     <string name="brand_shizuku_plus" translatable="false">Shizuku+</string>
@@ -446,7 +561,7 @@
     <string name="settings_ai_core_plus_summary">Prioritetləşdirilmiş NPU və ekran kontekst API-ləri. Ekran məlumatlılığı ilə Gemini və yerli LLM-ləri təkmilləşdirir.</string>
     <string name="settings_window_manager_plus">Pəncərə Tənzimləyicisi</string>
     <string name="settings_window_manager_plus_summary">Pəncərələşdirmə və Balon Panellərini idarə edin. Sərbəst pəncərələri və sistem örtüklərini idarə etmək üçün Taskbar və MacroDroid tərəfindən istifadə olunur.</string>
-    <string name="settings_overlay_manager_plus">↳ Sistem Tematika Körpüsü</string>
+    <string name="settings_overlay_manager_plus">Sistem Tematika Körpüsü</string>
     <string name="settings_overlay_manager_plus_summary">Sistem RRO örtüklərini idarə edin. Hex Installer və Substratum temalarının root tələb etmədən işləməsi üçün tələb olunur.</string>
     <string name="settings_network_governor_plus_summary">İmtiyazlı şəbəkə nəzarəti. Sistem miqyasında etibarlı filtrləmə üçün AFWall+ tərəfindən istifadə olunur.</string>
     <string name="settings_activity_manager_plus_summary">Yerli proses nəzarəti. MacroDroid, Tasker və Naptime-a tətbiqləri zorla dayandırmağa və gözləmə səviyyələrini təyin etməyə imkan verir.</string>
@@ -544,11 +659,24 @@
 
     <!-- Plus settings category titles -->
     <string name="settings_plus_category_core">Nüvə</string>
-    <string name="settings_plus_category_developer">Tərtibatçı Seçimləri (Eksperimental)</string>
+    <string name="settings_plus_category_developer">Eksperimental alətlər</string>
     <string name="settings_root_magisk_mocking">Magisk Mühitinin Saxtalaşdırılması</string>
     <string name="settings_root_magisk_mocking_summary">Root-u aşkar edən tətbiqləri aldatmaq üçün Magisk binar fayllarını, xüsusiyyətlərini və daxili qovluqlarını saxtalaşdırır.</string>
     <string name="settings_root_auto_grant">Avtomatik Təsdiq Körpüsü</string>
-    <string name="settings_root_auto_grant_summary">WRITE_SECURE_SETTINGS kimi həssas icazələr üçün \'pm grant\' sorğularını avtomatik təsdiqləyir.</string>
+    <string name="settings_crash_reporting_title">Qəza hesabatlarını göndər</string>
+    <string name="settings_crash_reporting_summary">Shizuku+ qəzaya uğradıqda xətanı, cihaz modelini, Android versiyasını və son tətbiq jurnalı sətirlərini (IP ünvanları və şəbəkə adları silinmiş şəkildə) tərtibatçıya göndərin. Heç bir ekran şəkli və ya şəxsi məlumat göndərilmir.</string>
+    <string name="crash_reporting_prompt_title">Qəzaları düzəltməyə kömək edək?</string>
+    <string name="crash_reporting_prompt_message">Shizuku+ qəzaya uğradıqda xətanı, cihaz modelinizi, Android versiyanızı və tətbiqin son jurnal sətirlərini tərtibatçıya göndərə bilər. IP ünvanları və şəbəkə adları silinir və siz razılaşana qədər heç nə göndərilmir. Bunu istənilən vaxt Qabaqcıl və diaqnostika bölməsindən dəyişə bilərsiniz.</string>
+    <string name="crash_reporting_prompt_yes">Hesabatları göndər</string>
+    <string name="crash_reporting_prompt_no">Göndərmə</string>
+    <string name="privileged_setting_tcp_mode">TCP rejimi (ADB portu açıq saxlanılır)</string>
+    <string name="restore_privileged_title">Bunları da yandıraq?</string>
+    <string name="restore_privileged_message">Ehtiyat nüsxədə bu həssas parametrlər aktivdir. Onlar söndürülmüş saxlanıldı ki, ehtiyat nüsxə Shizuku+-ın səlahiyyətlərini səssizcə genişləndirə bilməsin:\n\n%1$s</string>
+    <string name="restore_privileged_turn_on">Aktivləşdir</string>
+    <string name="restore_privileged_keep_off">Söndürülmüş saxla</string>
+    <string name="settings_allow_automation_plugin_title">Avtomatlaşdırma tətbiqlərinə icazə ver</string>
+    <string name="settings_allow_automation_plugin_summary">Tasker və digər Locale ilə uyğun tətbiqlərə Shizuku+-ı başladıb dayandırmağa icazə verir. Quraşdırılmış istənilən tətbiq bundan istifadə edə bilər, ona görə də yalnız bu cür avtomatlaşdırmalardan istifadə edirsinizsə aktivləşdirin.</string>
+    <string name="settings_root_auto_grant_summary">WRITE_SECURE_SETTINGS kimi həssas icazələr daxil olmaqla, əvvəlcədən icazə verdiyiniz tətbiqlərdən gələn \'pm grant\' sorğularını təsdiqləyir. Onu söndürmək verdiyi icazələri ləğv edir.</string>
     <string name="settings_root_file_interceptor">Ağıllı Fayl Tutucusu</string>
     <string name="settings_root_file_interceptor_summary">Həssas sistem yollarını hədəf alan fayl əməliyyatlarına icazə qorunması bayraqlarını avtomatik əlavə edir.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulyasiyası</string>
@@ -619,6 +747,25 @@
     <string name="su_bridge_self_test_fail">Körpü işləmir</string>
     <string name="su_bridge_self_test_copy">Nəticəni kopyala</string>
     <string name="su_bridge_self_test_copied">Özünü-yoxlama nəticəsi kopyalandı</string>
+    <string name="su_bridge_report_not_connected">Shizuku qoşulmayıb. Ana ekrandan Shizuku xidmətini başladın və yenidən cəhd edin.</string>
+    <string name="su_bridge_report_deploy_failed">❌ Körpünü /data/local/tmp qovluğuna yerləşdirmək mümkün olmadı.</string>
+    <string name="su_bridge_report_deploy_reason">Səbəb: %1$s</string>
+    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İxrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
+    <string name="su_bridge_report_deploy_hint_retry">Shizuku xidmətinin işlədiyinə əmin olun və yenidən cəhd edin.</string>
+    <string name="su_bridge_report_deployed">✅ Körpü %1$s ünvanına yerləşdirildi</string>
+    <string name="su_bridge_report_missing">❌ Körpü faylları %1$s altında tapılmadı</string>
+    <string name="su_bridge_report_privilege">• İmtiyaz səviyyəsi: %1$s</string>
+    <string name="su_bridge_report_privilege_root">root (uid 0), tam imtiyazlar</string>
+    <string name="su_bridge_report_privilege_shell">shell / ADB (uid 2000)</string>
+    <string name="su_bridge_report_privilege_unknown">naməlum</string>
+    <string name="su_bridge_report_privilege_uid">uid %1$d</string>
+    <string name="su_bridge_report_app_exec">• Tətbiq-icra testi: %1$s</string>
+    <string name="su_bridge_report_app_exec_ok">✅ əvvəldən-axıra işlədi (uid %1$s)</string>
+    <string name="su_bridge_report_app_exec_no_round_trip">⚠️ geridönüş etmədi, ona görə də birbaşa su-nu işlədən tətbiq burada uğursuz ola bilər:\n%1$s</string>
+    <string name="su_bridge_report_app_exec_blocked">⚠️ bu cihazda bloklanıb (çox ehtimal ki, SELinux): %1$s</string>
+    <string name="su_bridge_report_root_level">Root səviyyəli körpü: əsl root tələb edən tətbiqlər bunun vasitəsilə işləyə bilər.</string>
+    <string name="su_bridge_report_shell_level">Shell səviyyəli körpü (ADB kimi): yalnız shell/ADB tələb edən tətbiq xüsusiyyətləri işləyəcək. Əsl root tələb edən xüsusiyyətlər, məsələn, başqa tətbiqin şəxsi məlumatlarını oxumaq, tətbiq \"root\" aşkar etsə belə işləyə bilməz.</string>
+    <string name="su_bridge_report_authorize_reminder">Unutmayın: çağırış edən tətbiq körpü vasitəsilə olan əmrləri uğurlu olmamışdan əvvəl Shizuku+-da səlahiyyətləndirilməlidir.</string>
     <string name="su_bridge_terminal_profile_title">Terminal və mühit quraşdırması</string>
     <string name="su_bridge_terminal_profile_desc">Termux və shell skriptləri üçün SU Bridge-i PATH-ın əvvəlinə əlavə edin və ya \'su\' əmrinin root olmadan problemsiz işləməsi üçün ləqəb təyin edin.</string>
     <string name="su_bridge_copy_termux_setup">Termux profil əmrini kopyala</string>
@@ -643,6 +790,7 @@
     <string name="manual_report_last_crash_summary">Davamlı qəza aşkarlandı. Saxlanılan stacktrace ilə hesabat yaratmaq üçün toxunun.</string>
     <string name="manual_report_clipboard_label">Qəza Hesabatı</string>
     <string name="manual_report_copied_dialog_share">Faylı Paylaş</string>
+    <string name="manual_report_pick_crashes_title">Daxil ediləcək qəzalar</string>
     <string name="crash_detected_dialog_message">Shizuku+ son sessiyanızdan bir qəza aşkar etdi. Onu düzəltməyimizə kömək etmək üçün hesabat yaratmaq istəyirsinizmi?</string>
     <string name="crash_detected_dialog_ignore">Məhəl qoyma</string>
     <string name="shortcut_open_terminal">Terminalı Aç</string>
@@ -744,8 +892,8 @@
     <string name="toast_app_unfrozen">Tətbiqin dondurulması açıldı</string>
     <string name="toast_operation_failed">Əməliyyat uğursuz oldu</string>
     <string name="toast_error_with_message">Xəta: %1$s</string>
-    <string name="lp_action_freeze_app">Tətbiqi Dondur</string>
-    <string name="lp_action_unfreeze_app">Tətbiqin Dondurulmasını Aç</string>
+    <string name="lp_action_freeze_app">Tətbiqi Dondur (Deaktiv et)</string>
+    <string name="lp_action_unfreeze_app">Tətbiqin Dondurulmasını Aç (Aktiv et)</string>
     <string name="su_path_preset_applied">SU yolu əvvəlcədən təyini tətbiq edildi: %1$s</string>
     <string name="su_path_invalid">Yanlış yol. Yalnız həriflərdən, rəqəmlərdən, əyri xətlərdən (/), aşağı xətlərdən (_), nöqtələrdən və defislərdən istifadə edən mütləq yol olmalıdır (/ ilə başlayır).</string>
     <string name="stock_shizuku_conflict_title">Uyğunsuz Server Aşkarlandı</string>
@@ -803,6 +951,7 @@
     <string name="notification_adb_pairing_working_title">Cütləşmə gedir</string>
     <string name="notification_adb_pairing_succeed_title">Cütləşmə uğurludur</string>
     <string name="notification_adb_pairing_succeed_text">İndi Shizuku xidmətini başlada bilərsiniz.</string>
+    <string name="notification_adb_pairing_succeed_starting">Shizuku xidməti başladılır…</string>
     <string name="notification_adb_pairing_failed_title">Cütləşmə uğursuz oldu</string>
     <string name="notification_adb_pairing_retry">Yenidən cəhd et</string>
     <string name="notification_auth_missing_title">Avtorizasiya tokeni tələb olunur</string>
@@ -861,7 +1010,7 @@
     <string name="vendor_battery_restriction_standby_bucket">Az istifadə olunan tətbiqlər üçün Android məhdudiyyətləri</string>
     <string name="vendor_battery_restriction_samsung_deep_sleep">Samsung Dərin yuxu rejimi tətbiqləri</string>
     <string name="vendor_battery_restriction_xiaomi_autostart">Xiaomi avto-başlatma parametri</string>
-    <string name="vendor_battery_restriction_xiaomi_no_restrict">Xiaomi batareya qənaəti</string>
+    <string name="vendor_battery_restriction_xiaomi_no_restrict">Xiaomi batareya qənaəti (Heç bir məhdudiyyət yoxdur olaraq təyin edilməyib)</string>
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Veb-brauzer açıla bilmir</string>
@@ -878,12 +1027,13 @@
     <string name="wadb_notification_attempt_now">İndi cəhd et</string>
     <string name="wadb_notification_ask_again">Yenidən soruş</string>
     <string name="wadb_notification_awaiting_auth">Bu telefonda \"USB sazlamasına icazə verilsin\" sorğusunu qəbul etməyiniz gözlənilir</string>
-    <string name="wadb_notification_ask_again_from">Əgər İmtina et düyməsinə toxunmusunuzsa, Yenidən soruş %1$s dən sorğunu bir daha göstərər</string>
+    <string name="wadb_notification_ask_again_from">Əgər İmtina et düyməsinə toxunmusunuzsa, Yenidən soruş %1$s dən sorğunu bir daha göstərir</string>
     <string name="wadb_notification_ask_again_ready">Əgər İmtina et düyməsinə toxunmusunuzsa, sorğunu bir daha göstərmək üçün Yenidən soruş düyməsinə toxunun</string>
     <string name="wadb_notification_ask_again_used">Bu, %1$s vaxtında başa çatan gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_ask_again_used_untimed">Bu, bu gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_wait_ends">Bu gözləmə %1$s vaxtında başa çatır</string>
     <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək üçün İndi cəhd et düyməsinə toxunun</string>
+
 
 
     <!-- Settings navigation summaries -->
@@ -892,15 +1042,15 @@
     <string name="settings_main_category_personalization">Fərdiləşdirmə</string>
     <string name="settings_main_category_system">Sistem</string>
     <string name="settings_main_nav_root_compat_title">Root və Uyğunluq</string>
-    <string name="settings_main_nav_root_compat_summary">SU bridge, Cihaz Sahibi alətləri, təhlükəsizlik girişi və stok uyğunluğu</string>
+    <string name="settings_main_nav_root_compat_summary">SU bridge, Cihaz Sahibi alətləri və stok tətbiq uyğunluğu</string>
     <string name="settings_main_nav_appearance_summary">Tema, formalar, ikonlar, hərəkət, əsas ekran düzəni və dil</string>
     <string name="settings_main_nav_app_interactions_title">Tətbiq Qarşılıqlı Əlaqələri</string>
-    <string name="settings_main_nav_app_interactions_summary">Jestlər, uzun basma əməliyyatları, Paket idarəçisi və quraşdırma doğrulaması</string>
+    <string name="settings_main_nav_app_interactions_summary">Jestlər, uzun basma əməliyyatları və tətbiq verilənlər bazası</string>
     <string name="settings_main_nav_startup_behavior_title">Başlanğıc və Davranış</string>
-    <string name="settings_main_nav_startup_behavior_summary">Açılış seçimləri, nəzarətçi, TCP/ADB portları, şəbəkə ekranı və aktiv saxlama</string>
+    <string name="settings_main_nav_startup_behavior_summary">Açılış seçimləri, nəzarətçi, ADB, firewall və quraşdırma yoxlamaları</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Qabaqcıl və Diaqnostika</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Təkmilləşdirilmiş API, sistem nizamlayıcıları, diaqnostika paneli və ehtiyat nüsxə</string>
-    <string name="settings_main_nav_about_summary">Versiya, buraxılış dəyişiklik qeydi, lisenziyalar və tərtibatçı tənzimləmələri</string>  
+    <string name="settings_main_nav_advanced_diagnostics_summary">Təkmilləşdirilmiş API, diaqnostika və ehtiyat nüsxə</string>
+    <string name="settings_main_nav_about_summary">Versiya, buraxılış dəyişiklik qeydi, lisenziyalar və tərtibatçı tənzimləmələri</string>
     <string name="settings_accent_violet_applied">Gecə Bənövşəyi tətbiq edildi</string>
     <string name="settings_accent_green_applied">Meşə Yaşılı tətbiq edildi</string>
     <string name="settings_accent_crimson_applied">Tünd Qırmızı Qızılgül tətbiq edildi</string>
@@ -908,7 +1058,7 @@
     <string name="settings_accent_amber_applied">Kəhrəba Qürubu tətbiq edildi</string>
     <string name="settings_accent_rose_applied">Qızılgül Ləçəyi tətbiq edildi</string>
     <string name="settings_accent_slate_applied">Gecə Şist rəngi tətbiq edildi</string>
-    <string name="settings_accent_default_applied">Standart Mavi</string>
+    <string name="settings_accent_default_applied">Standart Mavi (Defolt)</string>
     <string name="fake_adb_pairing_title">Saxta ADB bağlantısına icazə verilsin?</string>
     <string name="fake_adb_pairing_message">Bir tətbiq Saxta Yerli ADB serveri vasitəsilə Shizuku+-a qoşulmağa çalışır.\n\nRSA açarının barmaq izi:\n%1$s</string>
     <string name="fake_adb_pairing_allow">İcazə ver</string>
@@ -994,9 +1144,53 @@
     <string name="settings_app_management_category_gestures">Jestlər və Əməliyyatlar</string>
     <string name="settings_app_management_category_verified_install">Təsdiqlənmiş Quraşdırma</string>
     <string name="settings_personalization_category_color_theme">Rəng və Tema</string>
-    <string name="settings_personalization_category_shape_style"> Forma və İkon Üslubu</string>
+    <string name="settings_personalization_category_shape_style">Forma və İkon Üslubu</string>
     <string name="settings_personalization_category_home_screen">Əsas Ekran</string>
     <string name="settings_personalization_category_language">Dil</string>
+    <string name="settings_behavior_category_wireless_adb">Simsiz və ADB</string>
+    <string name="settings_behavior_category_network_security">Şəbəkə təhlükəsizliyi</string>
+    <string name="settings_behavior_category_notifications">Bildirişlər</string>
+    <string name="settings_behavior_category_compat">Uyğunluq</string>
+    <string name="settings_experimental_title">Eksperimental xüsusiyyətlər</string>
+    <string name="settings_experimental_category_nav">Üzən naviqasiya paneli</string>
+    <string name="settings_floating_nav_style_title">Panel üslubu</string>
+    <string name="settings_floating_nav_style_floating">Üzən</string>
+    <string name="settings_floating_nav_style_docked">Bərkidilmiş</string>
+    <string name="settings_floating_nav_style_compact">Kompakt</string>
+    <string name="settings_floating_nav_style_capsule">İfadəli Kapsul</string>
+    <string name="settings_toggle_style_title">Keçid düyməsi üslubu</string>
+    <string name="settings_toggle_style_summary">Parametr keçidlərinin vizual təqdimatını, skan edilə bilməsini və rəyini fərdiləşdirin</string>
+    <string name="settings_toggle_style_expressive">İfadəli (İkon Başlığı)</string>
+    <string name="settings_toggle_style_card">Kart Vurğusu (Skan edilə bilən)</string>
+    <string name="settings_toggle_style_vibrant">Canlı Vurğu</string>
+    <string name="settings_toggle_style_minimal">Minimal Təmiz</string>
+    <string name="settings_floating_nav_tabs_title">Pəncərələr (Tablar)</string>
+    <string name="settings_floating_nav_tabs_summary">Əsas səhifə və Tənzimləmələr həmişə görünür. %1$s</string>
+    <string name="settings_experimental_summary">Hələ də cilalanmaqda olan xüsusiyyətləri sınayın</string>
+    <string name="settings_experimental_category_personalization">Əsas səhifə &amp; tətbiq kimliyi</string>
+    <string name="settings_experimental_app_identity_title">Tətbiq ikonu &amp; adı fərdiləşdirməsi</string>
+    <string name="settings_experimental_app_identity_summary">Görünüşə başlatıcı ikonu, tətbiq adı və İkon Studiyası seçimlərini əlavə edir. Onu söndürmək standart ikon və adı bərpa edir</string>
+    <string name="settings_dark_style_title">Tünd üslub</string>
+    <string name="settings_icon_morph_shape_title">İfadəli ikon forması</string>
+    <string name="settings_icon_morph_shape_off">Söndürülüb</string>
+    <string name="settings_icon_morph_shape_clover">Yonca</string>
+    <string name="settings_icon_morph_shape_sunny">Günəşli</string>
+    <string name="settings_icon_morph_shape_gem">Almaz</string>
+    <string name="settings_icon_morph_shape_flower">Çiçək</string>
+    <string name="settings_icon_morph_shape_star">Ulduz</string>
+    <string name="settings_icon_morph_shape_burst">Partlayış</string>
+    <string name="settings_icon_morph_on_toggle_title">Aktivləşdirildikdə dəyiş</string>
+    <string name="settings_icon_morph_on_toggle_summary">Keçid ikonları açıldıqda dairədən bu formaya keçir</string>
+    <string name="settings_dark_style_standard">Standart</string>
+    <string name="settings_dark_style_black">Qara</string>
+    <string name="settings_dark_style_amoled">AMOLED+</string>
+    <string name="settings_haptics_mode_title">Toxunma əks-sədası (Haptik)</string>
+    <string name="settings_haptics_off">Söndürülüb</string>
+    <string name="settings_haptics_system">Sistemi izlə</string>
+    <string name="settings_haptics_always">Həmişə aktiv</string>
+    <string name="settings_personalization_category_app_identity">Tətbiq ikonu &amp; adı</string>
+    <string name="settings_personalization_category_motion_haptics">Hərəkət &amp; haptika</string>
+    <string name="settings_personalization_category_layout_nav"> Mətn &amp; tərtibat</string>
     <string name="settings_plus_category_system_performance">Sistem və Performans</string>
     <string name="settings_plus_category_security_access">Təhlükəsizlik və Giriş</string>
     <string name="settings_plus_category_backup_restore">Ehtiyat Nüsxə və Bərpa</string>
@@ -1013,7 +1207,7 @@
     <!-- Root modules — Rootless Bridges -->
     <string name="settings_root_build_prop_redirect">build.prop Yenidən Yönləndirilməsi</string>
     <string name="settings_root_build_prop_redirect_summary">Sistem build xüsusiyyət dəyişikliklərini rootsuz yazıla bilən proksi faylına yönləndirin</string>
-    <string name="help_root_build_prop_title">build.prop Yenidən Yönləndirilməsi Haqqında</string>
+    <string name="help_root_build_prop_title">About build.prop Redirection</string>
     <string name="help_root_build_prop_detail">Bu modul orijinal build.prop-u istifadəçi tərəfindən yazıla bilən yola avtomatik kölgə surətini çıxarır və bütün yazıları ora yönləndirir, bu da tweaker-lərə sistem dəyərlərini rootsuz şəkildə təhlükəsiz dəyişməyə imkan verir.</string>
     <string name="settings_root_iptables_mocking">Firewall Uğur Simulyasiyası</string>
     <string name="settings_root_iptables_mocking_summary">Yerli netfilter icazələri uğursuz olduqda iptables qaydaları üçün uğuru tutun və saxtalaşdırın</string>
@@ -1165,7 +1359,7 @@
 
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Cihaz Sahibini Quraşdır</string>
-    <string name="dhizuku_setup_message">Dhizuku Rejimi Shizuku+-ın Cihaz Sahibi kimi təyin olunmasını tələb edir. USB sazlama aktiv olarkən PC-dən bir dəfə bu əmri icra edin:\n\n%1$s\n\nƏmri işlətdikdən sonra Shizuku-nu yenidən başladın.</string>
+    <string name="dhizuku_setup_message">Dhizuku Rejimi Shizuku+-ın Cihaz Sahibi kimi təyin olunmasını tələb edir. USB sazlama aktiv olarkən PC-dən bir dəfə bu əmri işlədin:\n\n%1$s\n\nƏmri işlətdikdən sonra Shizuku-nu yenidən başladın.</string>
     <string name="dhizuku_setup_copy">Əmri Kopyala</string>
     <string name="dhizuku_setup_copied">Əmr mübadilə buferinə kopyalandı</string>
     <string name="dhizuku_status_active">Cihaz Sahibi: Aktiv</string>
@@ -1315,6 +1509,9 @@
 
     <!-- Peer Settings Sharing / Drop-In Sync -->
     <string name="settings_sync_peer_title">%1$s ilə Sinxronlaşdır</string>
+    <string name="settings_sync_peer_title_generic">Digər Shizuku+ tətbiqi ilə sinxronlaşdır</string>
+    <string name="settings_sync_peer_summary_generic">Shizuku+ və onun drop-in versiyası arasında parametrləri idxal və ya ixrac edin</string>
+    <string name="settings_auto_sync_peer_title_generic">Digər Shizuku+ tətbiqi ilə avtomatik sinxronlaşdır</string>
     <string name="settings_sync_peer_summary_installed">%1$s quraşdırılıb • Tənzimləmələri sinxronlaşdırmaq üçün toxunun</string>
     <string name="settings_sync_peer_import">Tənzimləmələri %1$s-dən idxal et</string>
     <string name="settings_sync_peer_export">Tənzimləmələri %1$s-ə ixrac et</string>
@@ -1492,6 +1689,9 @@
     <string name="settings_tcp_protection_trusted">Yalnız etibarlılar</string>
     <string name="settings_tcp_trusted_networks_label">Etibarlı Wi-Fi şəbəkələri</string>
     <string name="settings_tcp_add_network">+ Şəbəkə əlavə et</string>
+    <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
+    <string name="settings_tcp_add_network_dialog_title">Etibarlı şəbəkə əlavə et</string>
+    <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s şəbəkəsini sil</string>
     <string name="tcp_protection_off">Söndürülüb</string>
     <string name="tcp_protection_open">Açıq və ictimai Wi-Fi</string>
@@ -1500,6 +1700,11 @@
     <string name="nav_home">Əsas səhifə</string>
     <string name="nav_apps">Tətbiqlər</string>
     <string name="nav_hub">Mərkəz</string>
+    <string name="settings_category_active_count">%1$s / %2$s aktiv</string>
+    <string name="settings_category_active_single">%1$s aktiv</string>
+    <string name="system_hub_title">Sistem Mərkəzi</string>
+    <string name="system_hub_tab_metrics">Metrikalar</string>
+    <string name="server_memory_used_of">%2$s-dən %1$s</string>
     <string name="nav_settings">Tənzimləmələr</string>
     <string name="settings_floating_nav">Üzən naviqasiya paneli</string>
     <string name="settings_floating_nav_summary">Məzmunun üzərində üzən paneldən Əsas səhifə, Tətbiqlər, Mərkəz və Tənzimləmələr arasında keçid edin</string>
@@ -1536,24 +1741,94 @@
     <string name="activity_log_copied">%1$s mübadilə buferinə kopyalandı</string>
     <string name="activity_log_clear_confirm_title">Fəaliyyət qeydləri təmizlənsin?</string>
     <string name="activity_log_clear_confirm_message">Qeydə alınmış bütün fəaliyyət qeydi hadisələri həmişəlik silinəcək.</string>
+    <string name="activity_log_group_by_date">Tarixə görə qruplaşdır</string>
+    <string name="activity_log_group_by_app">Tətbiqə görə qruplaşdır</string>
+    <string name="activity_log_group_by_type">Növə görə qruplaşdır</string>
+    <string name="activity_log_group_none">Qruplaşdırma yoxdur</string>
+    <string name="activity_log_search_hint">Jurnallarda axtar…</string>
+    <string name="activity_log_export">Jurnalları ixrac et</string>
+    <string name="activity_log_export_copied">%d jurnal mübadilə buferinə kopyalandı</string>
+    <string name="activity_log_date_today">Bu gün</string>
+    <string name="activity_log_date_yesterday">Dünən</string>
+    <string name="activity_log_date_earlier_week">Bu həftənin əvvəli</string>
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <string name="log_entry_connected">Shizuku-ya qoşuldu</string>
+    <string name="log_entry_bound_user_service">Bağlı istifadəçi xidməti</string>
+    <string name="log_entry_requested_permission">İcazə tələb olundu</string>
+    <string name="log_entry_started_root">Xidmət root vasitəsilə başladıldı</string>
+    <string name="log_entry_started_adb">Xidmət %1$s portunda ADB vasitəsilə başladıldı</string>
+    <string name="log_entry_started_tcp">Xidmət birbaşa %1$s TCP portu vasitəsilə başladıldı (Wi-Fi tələb olunmur)</string>
+    <string name="log_entry_started_tcp_probe">Xidmət %1$s portundakı TCP sınağı vasitəsilə başladıldı</string>
+    <string name="log_entry_adb_start_failed">Bağlantı: %1$s portunda ADB başlatması uğursuz oldu (%2$s)</string>
+    <string name="log_entry_connecting_via">Bağlantı: %2$s portunda %1$s vasitəsilə qoşulur</string>
+    <string name="log_entry_service_dropped">Bağlantı: Shizuku xidməti gözlənilmədən dayandırıldı (proses və ya binder öldü)</string>
+    <string name="log_entry_service_stopped_by_user">Bağlantı: Shizuku xidməti sizin tərəfinizdən dayandırıldı</string>
+    <string name="log_entry_service_stopping">Bağlantı: Shizuku xidməti dayandırılır</string>
+    <string name="log_entry_service_stopped">Bağlantı: Shizuku xidməti dayandırıldı</string>
+    <string name="log_entry_start_incomplete_stopped">Bağlantı: başlatma tamamlanmadı (dayandırıldı)</string>
+    <string name="log_entry_start_incomplete_crashed">Bağlantı: başlatma tamamlanmadı (qəzaya uğradı)</string>
+    <string name="log_entry_restored">Bağlantı: %1$s saniyə sonra bərpa edildi</string>
+    <string name="log_entry_wifi_lost">Bağlantı: Wi-Fi əlaqəsi kəsildi</string>
+    <string name="log_entry_wifi_lost_running">Bağlantı: Shizuku işləyərkən Wi-Fi əlaqəsi kəsildi</string>
+    <string name="log_entry_wifi_retry">Bağlantı: Wi-Fi mövcuddur, başlatma yenidən cəhd edilir</string>
+    <string name="log_entry_tcp_closed_untrusted">Etibarsız şəbəkədə ADB portu və simsiz sazlama bağlandı</string>
+    <string name="log_entry_watchdog_default_on">Gözətçi: ilk server işə düşməsi ilə aktivləşdirildi (yeni quraşdırma üçün defolt)</string>
+    <string name="log_entry_watchdog_restarting">Gözətçi: #%1$s qəzasından sonra yenidən başladılır</string>
+    <string name="log_entry_watchdog_recovered">Gözətçi: ilk yenidən başlatmadan sonra server geri qayıtdı</string>
+    <string name="log_entry_watchdog_undid_background">Gözətçi: batareya məhdudiyyətinin blokladığı arxa fon fəaliyyəti yenidən aktivləşdirildi</string>
+    <string name="log_entry_watchdog_undid_standby">Gözətçi: tətbiqi arxa fon işini məhdudlaşdıran batareya gözləmə qrupundan çıxardı</string>
+    <string name="log_entry_watchdog_undid_samsung">Gözətçi: Samsungun \"Dərin yuxu rejimi tətbiqləri\"nə qoyduğu tətbiqi yenidən aktivləşdirdi</string>
+    <string name="log_entry_watchdog_undid_xiaomi">Gözətçi: tətbiq üçün Xiaomi avtomatik başlatmanı yenidən aktivləşdirdi</string>
+    <string name="log_entry_watchdog_restricted_background">Gözətçi: arxa fon fəaliyyəti məhdudlaşdırılıb və Gözətçini dayandıra bilər</string>
+    <string name="log_entry_watchdog_restricted_standby">Gözətçi: batareya gözləmə qrupu tətbiqi məhdudlaşdırır və Gözətçini dayandıra bilər</string>
+    <string name="log_entry_watchdog_restricted_samsung">Gözətçi: Samsung Dərin yuxu rejimi tətbiqi məhdudlaşdırır və Gözətçini dayandıra bilər</string>
+    <string name="log_entry_watchdog_restricted_xiaomi">Gözətçi: Xiaomi avtomatik başlatma söndürülüb və Gözətçini dayandıra bilər</string>
+    <string name="log_entry_watchdog_xiaomi_whitelist">Gözətçi: tətbiq Xiaomi batareya qənaəti ağ siyahısında yoxdur</string>
+    <string name="log_entry_watchdog_battery_optimization">Gözətçi: batareya optimizasiyası hələ də tətbiqi məhdudlaşdırır. Gözətçinin işləməsi üçün onu istisna edin.</string>
+    <string name="log_entry_permission_granted">İcazə: sizin tərəfinizdən verildi</string>
+    <string name="log_entry_permission_denied">İcazə: sizin tərəfinizdən rədd edildi</string>
+    <string name="log_entry_swipe">Sürüşdürmə: %1$s</string>
+    <string name="log_entry_long_press">Uzun basma: %1$s</string>
+    <string name="server_metrics_server_not_running">Shizuku işləmir</string>
+    <string name="server_metrics_server_not_running_summary">Canlı server işləmə müddətini, yaddaş istifadəsini və aktiv bağlantıları görmək üçün Shizuku-nu başladın.</string>
+    <string name="server_metrics_stock_server">Orijinal Shizuku serverinə qoşulub</string>
+    <string name="server_metrics_stock_server_summary">Server metrikaları və qabaqcıl diaqnostika imkanları Shizuku+ serverini tələb edir.</string>
+    <string name="server_metrics_server_running">Shizuku+ Serveri Aktivdir</string>
+    <string name="server_metrics_patch_label">Yamaq v%d</string>
 
     <!-- Adaptive settings & tiered complexity -->
-    <string name="settings_status_banner_title">Xidmət statusu</string>
+    <string name="settings_status_banner_title">Xidmət Statusu</string>
+    <string name="settings_status_banner_running_title">%1$s işləyir</string>
+    <string name="settings_status_banner_root_hint">Root ilə başladıldı · Xidmət Həkimini işlətmək üçün toxunun</string>
+    <string name="settings_status_banner_adb_hint">ADB ilə başladıldı · Xidmət Həkimini işlətmək üçün toxunun</string>
+    <string name="settings_status_banner_stopped_hint">Onu ana ekrandan başlatmaq üçün toxunun</string>
+    <string name="settings_main_nav_about_version">Versiya %1$s</string>
+    <string name="settings_summary_dynamic_color">Dinamik rəng</string>
+    <string name="settings_summary_custom_accent">Xüsusi vurğu</string>
+    <string name="settings_summary_starts_on_boot">Yüklənmədə başlayır</string>
+    <string name="settings_summary_watchdog_on">Gözətçi aktivdir</string>
+    <string name="settings_summary_firewall_on">Bağlayıcı firewall aktivdir</string>
+    <string name="settings_summary_manual_start">Əl ilə başlatma</string>
 
     <!-- In-App Knowledgebase & Consumer-friendly settings -->
     <string name="open_in_browser">Brauzerdə aç</string>
     <string name="knowledgebase_title">Bilik bazası</string>
 
+    <string name="widget_status_running">İşləyir</string>
+    <string name="widget_status_stopped">Dayandırılıb</string>
+    <string name="home_layout_sim_title">İdarə Paneli Düzəni Simulyatoru</string>
+    <string name="home_layout_sim_terminal_apps">Terminal Tətbiqləri</string>
+    <string name="home_layout_sim_automation">Avtomatlaşdırma</string>
+    <string name="home_layout_sim_activity_logs">Fəaliyyət Jurnalları</string>
+    <string name="home_layout_sim_developer_guide">Tərtibatçı Bələdçisi</string>
+    <string name="home_layout_sim_hint">Əsas ana ekranda onların görünürlüyünü dərhal dəyişmək üçün maket cihazdakı simulyasiya edilmiş bloklara toxunun.</string>
     <string name="settings_legacy_rish_keepalive">Köhnə rish uyğunluğu</string>
     <string name="settings_legacy_rish_keepalive_summary">MT Manager kimi köhnə rish klientlərinin shell binder sorğusu göndərə bilməsi üçün server işləyərkən Shizuku+ menecerini arxa fonda saxlayın. Aşağı prioritetli bildiriş göstərir.</string>
     <string name="legacy_rish_keepalive_channel_name">Köhnə rish uyğunluğu</string>
     <string name="legacy_rish_keepalive_title">Köhnə rish uyğunluğu aktivdir</string>
     <string name="legacy_rish_keepalive_text">Köhnə rish klientlərinin shell binder sorğusu göndərə bilməsi üçün Shizuku+ arxa fonda saxlanılır.</string>
-    <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
-    <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
-    <string name="settings_tcp_add_network_dialog_title">Etibarlı şəbəkə əlavə et</string>
-    <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_about_category_app_info">Tətbiq məlumatı</string>
-    <string name="settings_about_category_project">Layihə &amp; hüquqi məlumat</string>
+    <string name="settings_about_category_project">Layihə məlumatı</string>
     <string name="settings_check_for_update_title">Yeniləməni yoxla</string>
 </resources>
