@@ -26,9 +26,12 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/floating_nav"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:paddingHorizontal="4dp"
+            android:paddingHorizontal="6dp"
+            app:itemPaddingTop="4dp"
+            app:itemPaddingBottom="6dp"
+            app:itemHorizontalTranslationEnabled="false"
             app:elevation="0dp"
             app:labelVisibilityMode="selected"
             app:menu="@menu/floating_nav_menu" />

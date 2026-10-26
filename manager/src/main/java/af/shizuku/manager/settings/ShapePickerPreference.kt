@@ -101,6 +101,8 @@ private fun ShapeTiles(
             "sunny" to R.string.settings_icon_morph_shape_sunny,
             "gem" to R.string.settings_icon_morph_shape_gem,
             "flower" to R.string.settings_icon_morph_shape_flower,
+            "star" to R.string.settings_icon_morph_shape_star,
+            "burst" to R.string.settings_icon_morph_shape_burst,
         )
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),

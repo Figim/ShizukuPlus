@@ -23,7 +23,7 @@ object ExpressiveShapes {
     const val OFF = "off"
 
     /** Picker order; [OFF] means "use the regular Shape style". */
-    val KEYS = listOf(OFF, "cookie", "clover", "sunny", "gem", "flower")
+    val KEYS = listOf(OFF, "cookie", "clover", "sunny", "gem", "flower", "star", "burst")
 
     private val cache = HashMap<String, RoundedPolygon>()
 
@@ -38,6 +38,8 @@ object ExpressiveShapes {
                 "sunny" -> RoundedPolygon.star(8, innerRadius = 0.86f, rounding = CornerRounding(0.12f))
                 "gem" -> RoundedPolygon(6, rounding = CornerRounding(0.3f, smoothing = 0.6f))
                 "flower" -> RoundedPolygon.star(6, innerRadius = 0.62f, rounding = CornerRounding(0.36f, smoothing = 0.4f))
+                "star" -> RoundedPolygon.star(5, innerRadius = 0.52f, rounding = CornerRounding(0.18f, smoothing = 0.2f))
+                "burst" -> RoundedPolygon.star(12, innerRadius = 0.84f, rounding = CornerRounding(0.12f, smoothing = 0.2f))
                 else -> RoundedPolygon.circle(numVertices = 12)
             }.normalized()
         }

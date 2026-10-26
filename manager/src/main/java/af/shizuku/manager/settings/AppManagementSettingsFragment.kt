@@ -60,6 +60,10 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
             updateDatabaseSummary(pref)
             pref.setOnPreferenceClickListener {
                 if (checkingDatabase) return@setOnPreferenceClickListener true
+                view?.let {
+                    af.shizuku.manager.utils.HapticUtils
+                        .segmentTick(it)
+                }
                 checkingDatabase = true
                 pref.summary = getString(R.string.settings_update_app_database_checking)
                 lifecycleScope.launch {
@@ -70,10 +74,20 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                     if (!isAdded) return@launch
                     updateDatabaseSummary(pref)
                     when (result) {
-                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Updated ->
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Updated -> {
+                            view?.let {
+                                af.shizuku.manager.utils.HapticUtils
+                                    .success(it)
+                            }
                             notifyUser(resources.getQuantityString(R.plurals.settings_update_app_database_updated, result.apps, result.apps))
-                        af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.UpToDate ->
+                        }
+                        af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.UpToDate -> {
+                            view?.let {
+                                af.shizuku.manager.utils.HapticUtils
+                                    .success(it)
+                            }
                             notifyUser(R.string.settings_update_app_database_up_to_date)
+                        }
                         is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Failed ->
                             notifyUser(R.string.settings_update_app_database_error, long = true)
                     }

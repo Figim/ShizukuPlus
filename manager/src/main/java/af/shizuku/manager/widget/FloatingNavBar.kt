@@ -80,7 +80,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 key == KEY_STYLE ||
                 key == KEY_TABS ||
                 key == ShizukuSettings.Keys.KEY_FLOATING_NAV_LABEL_MODE ||
-                key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE
+                key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE ||
+                key == ShizukuSettings.Keys.KEY_SHAPE_STYLE
             ) {
                 current?.let { sync(it) }
             }
@@ -178,21 +179,48 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         selected: Int,
     ) {
         // Tapping the current tab again scrolls its page back to the top (M3 reselect).
-        nav.setOnItemReselectedListener {
+        nav.setOnItemReselectedListener { item ->
+            af.shizuku.manager.utils.HapticUtils
+                .tap(nav)
+            animateTabSelection(nav, item.itemId)
             val content = activity.findViewById<ViewGroup>(android.R.id.content) ?: return@setOnItemReselectedListener
             findRecyclerView(content)?.smoothScrollToPosition(0)
             findNestedScrollView(content)?.smoothScrollTo(0, 0)
+            findScrollView(content)?.smoothScrollTo(0, 0)
         }
         nav.setOnItemSelectedListener { item ->
             if (item.itemId != selected) {
                 af.shizuku.manager.utils.HapticUtils
                     .segmentTick(nav)
+                animateTabSelection(nav, item.itemId)
                 navigate(activity, item.itemId, selected)
                 true
             } else {
                 false
             }
         }
+    }
+
+    private fun animateTabSelection(
+        nav: BottomNavigationView,
+        itemId: Int,
+    ) {
+        val itemView = nav.findViewById<View>(itemId) ?: return
+        itemView
+            .animate()
+            .scaleX(1.15f)
+            .scaleY(1.15f)
+            .setDuration(120)
+            .setInterpolator(android.view.animation.DecelerateInterpolator())
+            .withEndAction {
+                itemView
+                    .animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(220)
+                    .setInterpolator(android.view.animation.OvershootInterpolator(2.4f))
+                    .start()
+            }.start()
     }
 
     /** First appearance: rise from below with a short fade. Respects the system animation scale. */
@@ -335,6 +363,14 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         return null
     }
 
+    private fun findScrollView(view: View): ScrollView? {
+        if (view is ScrollView) return view
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) findScrollView(view.getChildAt(i))?.let { return it }
+        }
+        return null
+    }
+
     private fun layoutBar(
         activity: Activity,
         root: View,
@@ -347,6 +383,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 // Docked: edge to edge along the bottom, like a classic navigation bar.
                 "docked" -> screenWidth
                 "compact" -> min((COMPACT_MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
+                "capsule" -> min((330 * density).toInt(), screenWidth - (2 * 16 * density).toInt())
                 else -> min((MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
             }
         val lp = root.layoutParams as FrameLayout.LayoutParams
@@ -420,7 +457,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         .setBottomRightCornerSize(0f)
                         .build()
             } else {
-                val r = card.radius
+                val r = if (barStyle == "capsule") 38f * density else card.radius
                 card.shapeAppearanceModel =
                     card.shapeAppearanceModel
                         .toBuilder()
@@ -448,11 +485,52 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 }
 
             val navLp = nav.layoutParams
-            val desiredHeight = if (labelMode == "unlabeled") (64 * density).toInt() else (78 * density).toInt()
+            val desiredHeight = if (labelMode == "unlabeled") (64 * density).toInt() else (80 * density).toInt()
             if (navLp != null && navLp.height != desiredHeight) {
                 navLp.height = desiredHeight
                 nav.layoutParams = navLp
             }
+
+            // Material 3 Expressive active indicator shape morphing
+            val shapeStyle = ShizukuSettings.getShapeStyle()
+            val indicatorShape =
+                when (shapeStyle) {
+                    "squircle" ->
+                        com.google.android.material.shape.ShapeAppearanceModel
+                            .builder()
+                            .setAllCornerSizes(16f * density)
+                            .build()
+                    "cut" ->
+                        com.google.android.material.shape.ShapeAppearanceModel
+                            .builder()
+                            .setAllCorners(com.google.android.material.shape.CornerFamily.CUT, 10f * density)
+                            .build()
+                    "zen" ->
+                        com.google.android.material.shape.ShapeAppearanceModel
+                            .builder()
+                            .setTopLeftCornerSize(
+                                com.google.android.material.shape
+                                    .RelativeCornerSize(0.5f),
+                            ).setBottomRightCornerSize(
+                                com.google.android.material.shape
+                                    .RelativeCornerSize(0.5f),
+                            ).setTopRightCornerSize(8f * density)
+                            .setBottomLeftCornerSize(8f * density)
+                            .build()
+                    "classic" ->
+                        com.google.android.material.shape.ShapeAppearanceModel
+                            .builder()
+                            .setAllCornerSizes(6f * density)
+                            .build()
+                    else ->
+                        com.google.android.material.shape.ShapeAppearanceModel
+                            .builder()
+                            .setAllCornerSizes(
+                                com.google.android.material.shape
+                                    .RelativeCornerSize(0.5f),
+                            ).build()
+                }
+            nav.itemActiveIndicatorShapeAppearance = indicatorShape
 
             // M3 navigation bar roles: secondaryContainer indicator, onSecondaryContainer active
             // icon, secondary active label, onSurfaceVariant inactive (was primary at 22-35% alpha).

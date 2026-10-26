@@ -327,6 +327,7 @@
     <!-- Settings — swipe customisation -->
     <string name="settings_swipe_right">Swipe right action</string>
     <string name="settings_swipe_left">Swipe left action</string>
+    <string name="settings_swipe_preview_hint">Drag card to test actions</string>
     <string name="settings_action_none">None</string>
     <string name="settings_action_open_app">Open app</string>
     <string name="settings_action_app_info">App info</string>
@@ -1155,6 +1156,7 @@
     <string name="settings_floating_nav_style_floating">Floating</string>
     <string name="settings_floating_nav_style_docked">Docked</string>
     <string name="settings_floating_nav_style_compact">Compact</string>
+    <string name="settings_floating_nav_style_capsule">Expressive Capsule</string>
     <string name="settings_floating_nav_tabs_title">Tabs</string>
     <string name="settings_floating_nav_tabs_summary">Home and Settings always show. %1$s</string>
     <string name="settings_experimental_summary">Try features that are still being polished</string>
@@ -1168,6 +1170,8 @@
     <string name="settings_icon_morph_shape_sunny">Sunny</string>
     <string name="settings_icon_morph_shape_gem">Gem</string>
     <string name="settings_icon_morph_shape_flower">Flower</string>
+    <string name="settings_icon_morph_shape_star">Star</string>
+    <string name="settings_icon_morph_shape_burst">Burst</string>
     <string name="settings_icon_morph_on_toggle_title">Morph when toggled</string>
     <string name="settings_icon_morph_on_toggle_summary">Switch icons morph from a circle into this shape when turned on</string>
     <string name="settings_dark_style_standard">Standard</string>

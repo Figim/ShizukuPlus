@@ -226,6 +226,58 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_opacity_24" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="floating_nav_enabled"
+            android:title="@string/settings_floating_nav"
+            android:summary="@string/settings_floating_nav_summary"
+            android:icon="@drawable/ic_nav_apps_24"
+            android:defaultValue="false"
+            app:infoTitle="@string/settings_floating_nav"
+            app:infoDetail="@string/settings_floating_nav_info"
+            app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="floating_nav_style"
+            android:title="@string/settings_floating_nav_style_title"
+            android:icon="@drawable/ic_space_dashboard_24"
+            android:entries="@array/floating_nav_styles"
+            android:entryValues="@array/floating_nav_styles_value"
+            android:defaultValue="docked"
+            android:dependency="floating_nav_enabled" />
+
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="floating_nav_label_mode"
+            android:title="@string/settings_floating_nav_label_mode"
+            android:summary="@string/settings_floating_nav_label_mode_summary"
+            android:defaultValue="labeled"
+            android:entries="@array/floating_nav_label_modes"
+            android:entryValues="@array/floating_nav_label_modes_value"
+            android:dependency="floating_nav_enabled"
+            android:icon="@drawable/ic_label_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="floating_nav_autohide"
+            android:title="@string/settings_floating_nav_autohide"
+            android:summary="@string/settings_floating_nav_autohide_summary"
+            android:defaultValue="true"
+            android:dependency="floating_nav_enabled"
+            android:icon="@drawable/ic_vertical_align_bottom_24" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_app_interactions"
+        android:title="@string/settings_main_nav_app_interactions_title"
+        android:icon="@drawable/ic_swipe_24"
+        android:defaultValue="false">
+
+        <Preference
+            android:key="nav_personalization_interactions"
+            android:title="@string/settings_main_nav_app_interactions_title"
+            android:summary="@string/settings_main_nav_app_interactions_summary"
+            android:icon="@drawable/ic_swipe_24"
+            android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
