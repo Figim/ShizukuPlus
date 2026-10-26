@@ -11,23 +11,8 @@
         <af.shizuku.manager.settings.GesturePreviewPreference
             android:key="gesture_interactive_preview" />
 
-        <rikka.preference.SimpleMenuPreference
-            android:key="swipe_right_action"
-            android:title="@string/settings_swipe_right"
-            android:entries="@array/swipe_actions"
-            android:entryValues="@array/swipe_actions_values"
-            android:defaultValue="open_app"
-            app:useSimpleSummaryProvider="true"
-            android:icon="@drawable/ic_swipe_24" />
-
-        <rikka.preference.SimpleMenuPreference
-            android:key="swipe_left_action"
-            android:title="@string/settings_swipe_left"
-            android:entries="@array/swipe_actions"
-            android:entryValues="@array/swipe_actions_values"
-            android:defaultValue="app_info"
-            app:useSimpleSummaryProvider="true"
-            android:icon="@drawable/ic_swipe_24" />
+        <af.shizuku.manager.settings.SwipeActionsConnectedPreference
+            android:key="swipe_actions_connected" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
