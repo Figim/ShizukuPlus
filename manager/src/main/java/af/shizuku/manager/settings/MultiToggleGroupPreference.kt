@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -25,7 +26,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -186,9 +186,24 @@ private fun MultiToggleContent(
                     val checked = states[item.key] ?: item.defaultVal
 
                     val scale by animateFloatAsState(
-                        targetValue = if (checked) 1.0f else 0.96f,
+                        targetValue = if (checked) 1.0f else 0.95f,
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                         label = "pillScale",
+                    )
+                    val pillCorner by animateDpAsState(
+                        targetValue = if (checked) 22.dp else 10.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "pillCorner",
+                    )
+                    val iconBgCorner by animateDpAsState(
+                        targetValue = if (checked) 6.dp else 12.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "iconBgCorner",
+                    )
+                    val hPadding by animateDpAsState(
+                        targetValue = if (checked) 14.dp else 11.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "hPadding",
                     )
                     val bgColor by animateColorAsState(
                         targetValue =
@@ -209,21 +224,22 @@ private fun MultiToggleContent(
                         label = "pillContent",
                     )
 
+                    val pillShape = RoundedCornerShape(pillCorner)
                     Row(
                         modifier =
                             Modifier
                                 .scale(scale)
-                                .clip(RoundedCornerShape(14.dp))
+                                .clip(pillShape)
                                 .background(bgColor)
                                 .border(
                                     width = 1.dp,
                                     color =
                                         if (checked) {
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
                                         } else {
                                             Color.Transparent
                                         },
-                                    shape = RoundedCornerShape(14.dp),
+                                    shape = pillShape,
                                 ).clickable {
                                     val next = !checked
                                     if (next) {
@@ -232,15 +248,15 @@ private fun MultiToggleContent(
                                         HapticUtils.toggleOff(view)
                                     }
                                     onToggle(item.key, next)
-                                }.padding(horizontal = 12.dp, vertical = 9.dp),
+                                }.padding(horizontal = hPadding, vertical = 9.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
                             modifier =
                                 Modifier
                                     .size(24.dp)
-                                    .clip(CircleShape)
-                                    .background(contentColor.copy(alpha = 0.12f)),
+                                    .clip(RoundedCornerShape(iconBgCorner))
+                                    .background(contentColor.copy(alpha = if (checked) 0.16f else 0.08f)),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(

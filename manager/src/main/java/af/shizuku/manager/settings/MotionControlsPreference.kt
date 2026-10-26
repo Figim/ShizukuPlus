@@ -8,6 +8,7 @@ import android.content.ContextWrapper
 import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -19,6 +20,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -154,14 +156,29 @@ private fun MotionCardContent(
 ) {
     val view = LocalView.current
 
+    val masterBorderColor by animateColorAsState(
+        targetValue =
+            if (enabled) {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+            } else {
+                androidx.compose.ui.graphics.Color.Transparent
+            },
+        label = "masterBorder",
+    )
+
     Surface(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+                .border(
+                    width = 1.dp,
+                    color = masterBorderColor,
+                    shape = RoundedCornerShape(22.dp),
+                ),
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        tonalElevation = 1.dp,
+        tonalElevation = if (enabled) 2.dp else 1.dp,
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -301,6 +318,16 @@ private fun MotionCardContent(
                             ),
                         label = "pulseScale",
                     )
+                    val pulseCorner by infiniteTransition.animateFloat(
+                        initialValue = 4f,
+                        targetValue = 12f,
+                        animationSpec =
+                            infiniteRepeatable(
+                                animation = tween(durationMs, easing = FastOutSlowInEasing),
+                                repeatMode = RepeatMode.Reverse,
+                            ),
+                        label = "pulseCorner",
+                    )
 
                     Row(
                         modifier =
@@ -315,7 +342,7 @@ private fun MotionCardContent(
                                 Modifier
                                     .size(24.dp)
                                     .scale(pulseScale)
-                                    .clip(CircleShape)
+                                    .clip(RoundedCornerShape((pulseCorner * 1.5f).dp))
                                     .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -323,13 +350,13 @@ private fun MotionCardContent(
                                 modifier =
                                     Modifier
                                         .size(10.dp)
-                                        .clip(CircleShape)
+                                        .clip(RoundedCornerShape(pulseCorner.dp))
                                         .background(MaterialTheme.colorScheme.primary),
                             )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Live motion preview",
+                            text = "Live motion & shape morph preview",
                             fontSize = 11.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

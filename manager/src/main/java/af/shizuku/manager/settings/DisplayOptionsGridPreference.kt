@@ -11,9 +11,11 @@ import android.os.Build
 import android.util.AttributeSet
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
@@ -179,9 +181,19 @@ private fun DisplayGridContent(
                     val checked = states[option.key] ?: option.defaultVal
 
                     val scale by animateFloatAsState(
-                        targetValue = if (checked) 1.0f else 0.97f,
+                        targetValue = if (checked) 1.0f else 0.96f,
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                         label = "cardScale",
+                    )
+                    val cardCorner by animateDpAsState(
+                        targetValue = if (checked) 24.dp else 14.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "cardCorner",
+                    )
+                    val iconCorner by animateDpAsState(
+                        targetValue = if (checked) 8.dp else 16.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "iconCorner",
                     )
                     val bgColor by animateColorAsState(
                         targetValue =
@@ -202,13 +214,23 @@ private fun DisplayGridContent(
                         label = "cardContent",
                     )
 
+                    val cardShape = RoundedCornerShape(cardCorner)
                     Surface(
                         modifier =
                             Modifier
                                 .weight(1f)
                                 .scale(scale)
-                                .clip(RoundedCornerShape(18.dp))
-                                .clickable {
+                                .clip(cardShape)
+                                .border(
+                                    width = 1.5.dp,
+                                    color =
+                                        if (checked) {
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+                                        } else {
+                                            Color.Transparent
+                                        },
+                                    shape = cardShape,
+                                ).clickable {
                                     val next = !checked
                                     if (next) {
                                         HapticUtils.toggleOn(view)
@@ -217,7 +239,7 @@ private fun DisplayGridContent(
                                     }
                                     onToggle(option.key, next)
                                 },
-                        shape = RoundedCornerShape(18.dp),
+                        shape = cardShape,
                         color = bgColor,
                         tonalElevation = if (checked) 3.dp else 1.dp,
                     ) {
@@ -232,7 +254,7 @@ private fun DisplayGridContent(
                                 modifier =
                                     Modifier
                                         .size(32.dp)
-                                        .clip(CircleShape)
+                                        .clip(RoundedCornerShape(iconCorner))
                                         .background(contentColor.copy(alpha = if (checked) 0.16f else 0.09f)),
                                 contentAlignment = Alignment.Center,
                             ) {
@@ -254,18 +276,29 @@ private fun DisplayGridContent(
                                     color = contentColor,
                                     maxLines = 1,
                                 )
-                                Text(
-                                    text = if (checked) "ON" else "OFF",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.SemiBold,
+                                Surface(
+                                    shape = RoundedCornerShape(if (checked) 8.dp else 4.dp),
                                     color =
                                         if (checked) {
-                                            MaterialTheme.colorScheme.primary
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                                         } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                            Color.Transparent
                                         },
-                                )
+                                ) {
+                                    Text(
+                                        text = if (checked) "✓ ON" else "OFF",
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 10.sp,
+                                        fontWeight = if (checked) FontWeight.Bold else FontWeight.Medium,
+                                        color =
+                                            if (checked) {
+                                                MaterialTheme.colorScheme.primary
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                            },
+                                    )
+                                }
                             }
                         }
                     }
