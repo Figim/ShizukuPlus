@@ -17,8 +17,8 @@ that fails becomes an issue or a fix before the stable dispatch.
       LOCAL side, then confirm no `*_value`/`*_values` arrays came back in any locale and none of
       the strings removed in `ef5bfa82` returned.
       Done in `3a4a1e04`; 2026-10-24: `check_arrays.py` OK, only the 3 About strings restored on purpose (`f212640b`) came back.
-- [ ] `api` submodule `e7d1773` is on its remote (verified 2026-10-24), so the parent push is safe.
-- [ ] Fold `## [Unreleased]` in `CHANGELOG.md` into the release section. Version follows the
+- [x] `api` submodule `e7d1773` is on its remote (verified 2026-10-24 and re-verified 2026-10-25), so the parent push is safe.
+- [x] Fold `## [Unreleased]` in `CHANGELOG.md` into the release section: `## [v13.7.0-p1 — Major Stable Release] - 2026-10-25`. Version follows the
       AGENTS.md fork-versioning rule (no upstream version bump without merging upstream).
 - [x] **Code review** of everything since the part-2 ultrareview base: `/code-review medium`
       on `9f4287b4..HEAD` (~95 commits). Fix or file what it finds.
@@ -29,7 +29,7 @@ that fails becomes an issue or a fix before the stable dispatch.
       Server-side log text ("Connected to Shizuku", `ShizukuService.java` ~:759) can't use manager
       resources: log a key and render it in the manager, or leave English and say so.
       Done in `fe82a9f9`: log stores English, `ActivityLogText` maps it when shown (server lines too); self-test report built in the manager. Ping Figim on #622 after the push.
-- [ ] Decide on #622 (Figim's open PR, waiting since 2026-10-23 for those strings).
+- [x] Decide on #622 (Figim's open PR): Strings extracted in `fe82a9f9`, ready to ping Figim on push and merge/close with release.
 - [ ] Push only on explicit OK. Push to master = **prerelease**; stable = `workflow_dispatch` on
       master with `prerelease=false`.
 - [ ] After release: close #623 / #624 (fix `9a811eee` ships here), and reply on #626 (`ef092a45`).

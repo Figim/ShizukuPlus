@@ -4,6 +4,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+## [v13.7.0-p1 — Major Stable Release] - 2026-10-25
+
 ### 🌟 Highlights
 
 - **Material 3 Expressive look, done properly** — springy motion that follows the Expressive animations switch, a full corner scale that every Shape Style (and Compose screens) now share, a real type scale for Bold typography, opt-in full colour schemes for accents, morphing expressive icon shapes, and connected toggle-button groups in Settings.
