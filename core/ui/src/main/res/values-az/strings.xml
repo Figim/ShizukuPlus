@@ -94,7 +94,7 @@
     <string name="doctor_status_detected">Aşkar edildi</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Avto Bloklayıcı</b>: Söndürüldüyündən və ya \'Maksimum Məhdudiyyətlər\' seçiminin ləğv edildiyindən əmin olun. One UI 7/8+ versiyalarında ADB əmrlərini səssizcə bloklayır.</string>
     <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Qoşulması</b>: Naqilsiz cütləşdirmə alınmırsa, Shizuku və Tərtibatçı seçimlərini eyni vaxtda açaraq <b>Bölünmüş ekran rejimindən</b> istifadə etməyə çalışın.</string>
-    <string name="doctor_tip_s22_ultra"><b>S22 Ultra məsləhəti</b>: Stabil ADB uchun `*#0808#` yığın və bağlantı kəsilmələri ilə qarşılaşdıqda `MTP + ADB` rejimini seçin.</string>
+    <string name="doctor_tip_s22_ultra"><b>S22 Ultra məsləhəti</b>: Stabil ADB üçün `*#0808#` yığın və bağlantı kəsilmələri ilə qarşılaşdıqda `MTP + ADB` rejimini seçin.</string>
     <string name="doctor_tip_secure_folder"><b>Təhlükəsiz Qovluq Aşkar Edildi</b>: Shizuku ən yaxşı Əsas İstifadəçidə (Sahibkar) işləyir. Təhlükəsiz Qovluq və ya İş Profilində işlətmək üçün əvvəlcə serveri Əsas İstifadəçidən başlatmaq tələb oluna bilər.</string>
     <string name="doctor_tip_phantom_process"><b>Fantom Proses Söndürücüsü</b>: Android 12-15+ həddən artıq əmr icra edildikdə Shizuku-nu dayandıra bilər. \'Düzəlt\' düyməsi bu məhdudiyyəti söndürməyə çalışır.</string>
     <string name="doctor_tip_samsung_optimization"><b>Samsung Avto-Optimallaşdırma</b>: Cihaz Qayğısında \'Avtomatik Yenidən Başlatma\' funksiyasını söndürün ki, Shizuku gecə vaxtı bağlanmasın.</string>
