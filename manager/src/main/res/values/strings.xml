@@ -1157,6 +1157,12 @@
     <string name="settings_floating_nav_style_docked">Docked</string>
     <string name="settings_floating_nav_style_compact">Compact</string>
     <string name="settings_floating_nav_style_capsule">Expressive Capsule</string>
+    <string name="settings_toggle_style_title">Toggle switch style</string>
+    <string name="settings_toggle_style_summary">Customize the visual presentation, scannability and feedback of setting toggles</string>
+    <string name="settings_toggle_style_expressive">Expressive (Icon Thumb)</string>
+    <string name="settings_toggle_style_card">Card Highlight (Scannable)</string>
+    <string name="settings_toggle_style_vibrant">Vibrant Accent</string>
+    <string name="settings_toggle_style_minimal">Minimal Clean</string>
     <string name="settings_floating_nav_tabs_title">Tabs</string>
     <string name="settings_floating_nav_tabs_summary">Home and Settings always show. %1$s</string>
     <string name="settings_experimental_summary">Try features that are still being polished</string>

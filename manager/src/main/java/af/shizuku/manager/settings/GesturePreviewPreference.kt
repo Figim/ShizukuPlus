@@ -201,11 +201,12 @@ private fun GesturePreviewContent(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(68.dp)
-                        .clip(RoundedCornerShape(18.dp)),
+                        .height(72.dp)
+                        .clip(RoundedCornerShape(20.dp)),
             ) {
                 // Background action reveal
                 val currentOffset = offsetX.value
+                val isPastThreshold = kotlin.math.abs(currentOffset) >= 100f
                 val revealColor =
                     when {
                         currentOffset > 20f -> MaterialTheme.colorScheme.primaryContainer
@@ -221,20 +222,64 @@ private fun GesturePreviewContent(
                             .padding(horizontal = 16.dp),
                     contentAlignment = if (currentOffset > 0) Alignment.CenterStart else Alignment.CenterEnd,
                 ) {
-                    if (currentOffset > 30f) {
-                        Text(
-                            text = rightLabel,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                        )
-                    } else if (currentOffset < -30f) {
-                        Text(
-                            text = leftLabel,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                        )
+                    if (currentOffset > 25f) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .size(38.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (isPastThreshold) 0.25f else 0.12f)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    painter = painterResource(actionIcon(swipeRight)),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                            if (isPastThreshold) {
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = rightLabel,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                )
+                            }
+                        }
+                    } else if (currentOffset < -25f) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            if (isPastThreshold) {
+                                Text(
+                                    text = leftLabel,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .size(38.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = if (isPastThreshold) 0.25f else 0.12f)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    painter = painterResource(actionIcon(swipeLeft)),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -247,8 +292,8 @@ private fun GesturePreviewContent(
                             .pointerInput(Unit) {
                                 detectHorizontalDragGestures(
                                     onDragEnd = {
-                                        if (kotlin.math.abs(offsetX.value) > 100f) {
-                                            HapticUtils.segmentTick(view)
+                                        if (kotlin.math.abs(offsetX.value) >= 100f) {
+                                            HapticUtils.gestureEnd(view)
                                         }
                                         coroutineScope.launch {
                                             offsetX.animateTo(
@@ -263,13 +308,21 @@ private fun GesturePreviewContent(
                                     },
                                     onHorizontalDrag = { _, dragAmount ->
                                         coroutineScope.launch {
-                                            val newOffset = (offsetX.value + dragAmount).coerceIn(-240f, 240f)
-                                            offsetX.snapTo(newOffset)
+                                            val prev = offsetX.value
+                                            val next = (prev + dragAmount).coerceIn(-240f, 240f)
+                                            val wasPast = kotlin.math.abs(prev) >= 100f
+                                            val isNowPast = kotlin.math.abs(next) >= 100f
+                                            if (isNowPast && !wasPast) {
+                                                HapticUtils.gestureThreshold(view)
+                                            } else if (!isNowPast && wasPast) {
+                                                HapticUtils.tick(view)
+                                            }
+                                            offsetX.snapTo(next)
                                         }
                                     },
                                 )
                             },
-                    shape = RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     tonalElevation = 2.dp,
                 ) {
@@ -323,4 +376,13 @@ private fun actionName(actionKey: String): String =
         "toggle_permission" -> stringResource(R.string.settings_action_toggle_permission)
         "hide_from_list" -> stringResource(R.string.settings_action_hide_from_list)
         else -> stringResource(R.string.settings_action_none)
+    }
+
+private fun actionIcon(actionKey: String): Int =
+    when (actionKey) {
+        "open_app" -> R.drawable.ic_outline_play_arrow_24
+        "app_info" -> R.drawable.ic_outline_info_24
+        "toggle_permission" -> R.drawable.ic_shield_24
+        "hide_from_list" -> R.drawable.ic_visibility_off_24
+        else -> R.drawable.ic_swipe_24
     }

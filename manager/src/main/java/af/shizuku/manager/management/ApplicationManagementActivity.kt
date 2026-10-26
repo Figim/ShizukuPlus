@@ -16,10 +16,13 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.TextPaint
 import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
@@ -31,12 +34,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.CoroutineScope
@@ -499,6 +504,22 @@ open class ApplicationManagementActivity :
 
     // ----- Swipe gestures -----
 
+    private val swipePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val swipeBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val swipeTextPaint =
+        TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+    private val swipeRect = RectF()
+    private val swipeBadgeRect = RectF()
+
+    private data class SwipeActionConfig(
+        val bgAttr: Int,
+        val onAttr: Int,
+        val iconRes: Int,
+        val labelRes: Int,
+    )
+
     private fun setupSwipe(rv: RecyclerView) {
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
         swipeLeftAction = ShizukuSettings.getSwipeLeftAction()
@@ -508,6 +529,14 @@ open class ApplicationManagementActivity :
                 0,
                 ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT,
             ) {
+                private var thresholdActivated = false
+
+                override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.38f
+
+                override fun getSwipeEscapeVelocity(defaultValue: Float): Float = defaultValue * 1.4f
+
+                override fun getSwipeVelocityThreshold(defaultValue: Float): Float = defaultValue * 0.8f
+
                 override fun getSwipeDirs(
                     r: RecyclerView,
                     vh: RecyclerView.ViewHolder,
@@ -529,6 +558,8 @@ open class ApplicationManagementActivity :
                     vh: RecyclerView.ViewHolder,
                     direction: Int,
                 ) {
+                    thresholdActivated = false
+                    HapticUtils.gestureEnd(vh.itemView)
                     val pos = vh.adapterPosition
                     val items = adapter.getItems<Any>()
                     val item = items.getOrNull(pos) as? PackageInfo
@@ -551,7 +582,23 @@ open class ApplicationManagementActivity :
                     val v = vh.itemView
                     val action = if (dX > 0) swipeRightAction else swipeLeftAction
                     if (action != "none") {
-                        drawSwipeBackground(c, v, dX, action)
+                        val threshold = 0.38f * v.width
+                        val absDx = kotlin.math.abs(dX)
+                        val pastThreshold = absDx >= threshold
+
+                        if (isCurrentlyActive) {
+                            if (pastThreshold && !thresholdActivated) {
+                                thresholdActivated = true
+                                HapticUtils.gestureThreshold(v)
+                            } else if (!pastThreshold && thresholdActivated) {
+                                thresholdActivated = false
+                                HapticUtils.tick(v)
+                            }
+                        } else {
+                            thresholdActivated = false
+                        }
+
+                        drawSwipeBackground(c, v, dX, action, pastThreshold)
                     }
                     super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive)
                 }
@@ -646,63 +693,144 @@ open class ApplicationManagementActivity :
         v: android.view.View,
         dX: Float,
         action: String,
+        isPastThreshold: Boolean = false,
     ) {
-        val (bgAttr, onAttr, iconRes) =
+        val absDx = kotlin.math.abs(dX)
+        if (absDx < 4f) return
+
+        val config =
             when (action) {
                 "open_app" ->
-                    Triple(
-                        android.R.attr.colorPrimary,
-                        com.google.android.material.R.attr.colorOnPrimary,
+                    SwipeActionConfig(
+                        com.google.android.material.R.attr.colorPrimaryContainer,
+                        com.google.android.material.R.attr.colorOnPrimaryContainer,
                         R.drawable.ic_outline_play_arrow_24,
+                        R.string.settings_action_open_app,
                     )
                 "app_info" ->
-                    Triple(
-                        com.google.android.material.R.attr.colorSecondary,
-                        com.google.android.material.R.attr.colorOnSecondary,
+                    SwipeActionConfig(
+                        com.google.android.material.R.attr.colorSecondaryContainer,
+                        com.google.android.material.R.attr.colorOnSecondaryContainer,
                         R.drawable.ic_outline_info_24,
+                        R.string.settings_action_app_info,
                     )
                 "toggle_permission" ->
-                    Triple(
-                        com.google.android.material.R.attr.colorTertiary,
-                        com.google.android.material.R.attr.colorOnTertiary,
+                    SwipeActionConfig(
+                        com.google.android.material.R.attr.colorTertiaryContainer,
+                        com.google.android.material.R.attr.colorOnTertiaryContainer,
                         R.drawable.ic_shield_24,
+                        R.string.settings_action_toggle_permission,
                     )
                 "hide_from_list" ->
-                    Triple(
-                        android.R.attr.colorError,
-                        com.google.android.material.R.attr.colorOnError,
+                    SwipeActionConfig(
+                        com.google.android.material.R.attr.colorErrorContainer,
+                        com.google.android.material.R.attr.colorOnErrorContainer,
                         R.drawable.ic_visibility_off_24,
+                        R.string.settings_action_hide_from_list,
                     )
                 else ->
-                    Triple(
-                        com.google.android.material.R.attr.colorSecondary,
-                        com.google.android.material.R.attr.colorOnSecondary,
+                    SwipeActionConfig(
+                        com.google.android.material.R.attr.colorSecondaryContainer,
+                        com.google.android.material.R.attr.colorOnSecondaryContainer,
                         R.drawable.ic_outline_info_24,
+                        R.string.settings_action_none,
                     )
             }
-        val tv = TypedValue()
-        theme.resolveAttribute(bgAttr, tv, true)
-        val bgColor = tv.data
-        theme.resolveAttribute(onAttr, tv, true)
-        val iconTint = tv.data
 
-        val bg = ColorDrawable(bgColor)
-        val icon = AppCompatResources.getDrawable(this, iconRes)?.mutate()?.also { it.setTint(iconTint) }
-        val margin = v.height / 4
-        val intrinsicHeight = icon?.intrinsicHeight ?: 0
-        val intrinsicWidth = icon?.intrinsicWidth ?: 0
-        val top = v.top + (v.height - intrinsicHeight) / 2
+        val bgColor = MaterialColors.getColor(v, config.bgAttr)
+        val onColor = MaterialColors.getColor(v, config.onAttr)
+        val density = resources.displayMetrics.density
+        val threshold = 0.38f * v.width
+        val progress = (absDx / threshold).coerceIn(0f, 1f)
+
+        // Rounded container background
+        val cornerRadius = 16f * density
+        swipePaint.color = bgColor
+        if (dX > 0) {
+            swipeRect.set(v.left.toFloat(), v.top.toFloat() + 2f * density, v.left + dX, v.bottom.toFloat() - 2f * density)
+        } else {
+            swipeRect.set(v.right + dX, v.top.toFloat() + 2f * density, v.right.toFloat(), v.bottom.toFloat() - 2f * density)
+        }
+        c.drawRoundRect(swipeRect, cornerRadius, cornerRadius, swipePaint)
+
+        // Dynamic badge size with spring pop when threshold reached
+        val scale = if (isPastThreshold) 1.15f else (0.75f + 0.25f * progress)
+        val badgeSize = 44f * density * scale
+        val iconSize = 24f * density * scale
+        val centerY = v.top + v.height / 2f
+        val margin = 20f * density
+
+        val icon = AppCompatResources.getDrawable(this, config.iconRes)?.mutate()
+        icon?.setTint(onColor)
+        icon?.alpha = (255 * (0.35f + 0.65f * progress)).toInt()
+
+        val label = getString(config.labelRes)
+        swipeTextPaint.textSize = 13f * density * resources.configuration.fontScale
+        val textBaseline = centerY - (swipeTextPaint.descent() + swipeTextPaint.ascent()) / 2f
 
         if (dX > 0) {
-            bg.setBounds(v.left, v.top, v.left + dX.toInt(), v.bottom)
-            bg.draw(c)
-            icon?.setBounds(v.left + margin, top, v.left + margin + intrinsicWidth, top + intrinsicHeight)
+            val badgeCenterX =
+                if (absDx < margin * 2 + badgeSize) {
+                    v.left + absDx / 2f
+                } else {
+                    v.left + margin + badgeSize / 2f
+                }
+            swipeBadgeRect.set(
+                badgeCenterX - badgeSize / 2f,
+                centerY - badgeSize / 2f,
+                badgeCenterX + badgeSize / 2f,
+                centerY + badgeSize / 2f,
+            )
+            swipeBadgePaint.color = ColorUtils.setAlphaComponent(onColor, if (isPastThreshold) 50 else 25)
+            c.drawRoundRect(swipeBadgeRect, badgeSize / 2f, badgeSize / 2f, swipeBadgePaint)
+
+            icon?.setBounds(
+                (badgeCenterX - iconSize / 2f).toInt(),
+                (centerY - iconSize / 2f).toInt(),
+                (badgeCenterX + iconSize / 2f).toInt(),
+                (centerY + iconSize / 2f).toInt(),
+            )
             icon?.draw(c)
+
+            if (isPastThreshold) {
+                swipeTextPaint.color = onColor
+                val textX = badgeCenterX + badgeSize / 2f + 12f * density
+                if (textX + swipeTextPaint.measureText(label) < v.left + dX - 8f * density) {
+                    c.drawText(label, textX, textBaseline, swipeTextPaint)
+                }
+            }
         } else {
-            bg.setBounds(v.right + dX.toInt(), v.top, v.right, v.bottom)
-            bg.draw(c)
-            icon?.setBounds(v.right - margin - intrinsicWidth, top, v.right - margin, top + intrinsicHeight)
+            val badgeCenterX =
+                if (absDx < margin * 2 + badgeSize) {
+                    v.right - absDx / 2f
+                } else {
+                    v.right - margin - badgeSize / 2f
+                }
+            swipeBadgeRect.set(
+                badgeCenterX - badgeSize / 2f,
+                centerY - badgeSize / 2f,
+                badgeCenterX + badgeSize / 2f,
+                centerY + badgeSize / 2f,
+            )
+            swipeBadgePaint.color = ColorUtils.setAlphaComponent(onColor, if (isPastThreshold) 50 else 25)
+            c.drawRoundRect(swipeBadgeRect, badgeSize / 2f, badgeSize / 2f, swipeBadgePaint)
+
+            icon?.setBounds(
+                (badgeCenterX - iconSize / 2f).toInt(),
+                (centerY - iconSize / 2f).toInt(),
+                (badgeCenterX + iconSize / 2f).toInt(),
+                (centerY + iconSize / 2f).toInt(),
+            )
             icon?.draw(c)
+
+            if (isPastThreshold) {
+                swipeTextPaint.color = onColor
+                val textWidth = swipeTextPaint.measureText(label)
+                val textX = badgeCenterX - badgeSize / 2f - 12f * density - textWidth
+                if (textX > v.right + dX + 8f * density) {
+                    c.drawText(label, textX, textBaseline, swipeTextPaint)
+                }
+            }
         }
     }
 

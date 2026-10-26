@@ -191,6 +191,7 @@ public class ShizukuSettings {
         public static final String KEY_EXPERIMENTAL_SCREEN_TRANSITIONS = "experimental_screen_transitions";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
+        public static final String KEY_TOGGLE_STYLE = "toggle_style";
         public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
 
         // Migration (Shizuku+ additions)
@@ -2090,6 +2091,18 @@ public class ShizukuSettings {
     public static void setFloatingNavAutohideEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_FLOATING_NAV_AUTOHIDE, enabled).apply();
+    }
+
+    @NonNull
+    public static String getToggleStyle() {
+        SharedPreferences p = getPreferences();
+        String style = p != null ? p.getString(Keys.KEY_TOGGLE_STYLE, "expressive") : "expressive";
+        return style != null ? style : "expressive";
+    }
+
+    public static void setToggleStyle(String style) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_TOGGLE_STYLE, style).apply();
     }
 
     public static boolean isHighContrastEnabled() {

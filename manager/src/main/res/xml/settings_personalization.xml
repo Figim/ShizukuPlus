@@ -137,6 +137,15 @@
             android:icon="@drawable/ic_animation_24"
             android:defaultValue="true" />
 
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="toggle_style"
+            android:title="@string/settings_toggle_style_title"
+            android:summary="@string/settings_toggle_style_summary"
+            android:defaultValue="expressive"
+            android:entries="@array/toggle_styles"
+            android:entryValues="@array/toggle_styles_value"
+            android:icon="@drawable/ic_animation_24" />
+
         <af.shizuku.manager.settings.SliderPreference
             android:key="corner_rounding_override"
             android:title="@string/settings_corner_rounding_override"
