@@ -3,6 +3,7 @@ package af.shizuku.manager.widget
 import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.home.HomeActivity
 import af.shizuku.manager.home.SystemHubActivity
 import af.shizuku.manager.management.ApplicationManagementActivity
 import af.shizuku.manager.settings.SettingsActivity
