@@ -19,17 +19,34 @@
         <item>Xətli (Konturlu)</item>
         <item>İki çalarlı</item>
     </string-array>
+    <string-array name="icon_styles_value" translatable="false">
+        <item>standard</item>
+        <item>outlined</item>
+        <item>twotone</item>
+    </string-array>
     <string-array name="shape_styles">
         <item>Zen (Bədii)</item>
         <item>Müasir (Material 3)</item>
         <item>Klassik (Material 2)</item>
         <item>Üzvi (Dairəvi)</item>
     </string-array>
+    <string-array name="shape_styles_value" translatable="false">
+        <item>zen</item>
+        <item>modern</item>
+        <item>classic</item>
+        <item>squircle</item>
+    </string-array>
     <string-array name="animation_intensities">
         <item>Yoxdur</item>
         <item>Yüngül</item>
         <item>Standart</item>
         <item>Ekspressiv</item>
+    </string-array>
+    <string-array name="animation_intensities_value" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s işləyir</string>
@@ -77,7 +94,7 @@
     <string name="doctor_status_detected">Aşkar edildi</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Avto Bloklayıcı</b>: Söndürüldüyündən və ya \'Maksimum Məhdudiyyətlər\' seçiminin ləğv edildiyindən əmin olun. One UI 7/8+ versiyalarında ADB əmrlərini səssizcə bloklayır.</string>
     <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Qoşulması</b>: Naqilsiz cütləşdirmə alınmırsa, Shizuku və Tərtibatçı seçimlərini eyni vaxtda açaraq <b>Bölünmüş ekran rejimindən</b> istifadə etməyə çalışın.</string>
-    <string name="doctor_tip_s22_ultra"><b>S22 Ultra məsləhəti</b>: Stabil ADB üçün `*#0808#` yığın və bağlantı kəsilmələri ilə qarşılaşdıqda `MTP + ADB` rejimini seçin.</string>
+    <string name="doctor_tip_s22_ultra"><b>S22 Ultra məsləhəti</b>: Stabil ADB uchun `*#0808#` yığın və bağlantı kəsilmələri ilə qarşılaşdıqda `MTP + ADB` rejimini seçin.</string>
     <string name="doctor_tip_secure_folder"><b>Təhlükəsiz Qovluq Aşkar Edildi</b>: Shizuku ən yaxşı Əsas İstifadəçidə (Sahibkar) işləyir. Təhlükəsiz Qovluq və ya İş Profilində işlətmək üçün əvvəlcə serveri Əsas İstifadəçidən başlatmaq tələb oluna bilər.</string>
     <string name="doctor_tip_phantom_process"><b>Fantom Proses Söndürücüsü</b>: Android 12-15+ həddən artıq əmr icra edildikdə Shizuku-nu dayandıra bilər. \'Düzəlt\' düyməsi bu məhdudiyyəti söndürməyə çalışır.</string>
     <string name="doctor_tip_samsung_optimization"><b>Samsung Avto-Optimallaşdırma</b>: Cihaz Qayğısında \'Avtomatik Yenidən Başlatma\' funksiyasını söndürün ki, Shizuku gecə vaxtı bağlanmasın.</string>
@@ -592,7 +609,7 @@
     <string name="no_file_picker">Bu cihazda fayl seçici tətbiq tapılmadı</string>
     <string name="shell_export_success">Fayllar uğurla ixrac edildi</string>
     <string name="shell_export_failed">İxrac uğursuz oldu — heç bir fayl yazıla bilmədi</string>
-    <string name="shell_export_partial">%1$d / %2$d fayl ixrac edildi (bəziləri uğursuz oldu)</string>
+    <string name="shell_export_partial">%1$s / %2$s fayl ixrac edildi (bəziləri uğursuz oldu)</string>
     <!-- Settings backup/restore -->
     <string name="adb_native_unavailable">Naqilsiz ADB cütləşdirməsi bu cihazda mövcud deyil</string>
     <string name="changelog_title">Yeniliklər</string>
