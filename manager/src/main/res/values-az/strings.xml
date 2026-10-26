@@ -149,7 +149,7 @@
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Axtarış davam edərsə, \"Simsiz sazlama\"nı söndürüb yenidən aktivləşdirməyə çalışın.</string>
     <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi bağlantısı kəsilib.</b><br>Android mobil internet (5G/LTE) üzərindən Simsiz Sazlamanı tapa bilmir.]]></string>
     <string name="dialog_adb_hotspot_tip"><![CDATA[💡 İpucu: Wi-Fi şəbəkəsi olmadan Simsiz Sazlamanı aktivləşdirmək üçün telefonunuzun <b>Mobil Hotspot</b>-unu yandırın və ya yerli 5555 portu vasitəsilə qoşulun.]]></string>
-    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 Samsung Qeydi: Mobil Hotspot aktiv olarkən One UI Simsiz Sazlamanı söndürür. Başqa cihazın Wi-Fi nöqtəsinə qoşulun (oflayn olması da olar) və ya USB vasitəsilə bir dəfə <code>adb tcpip 5555</code> işlədin.]]></string>
+    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 </b>Samsung Qeydi:</b> Mobil Hotspot aktiv olarkən One UI Simsiz Sazlamanı söndürür. Başqa cihazın Wi-Fi nöqtəsinə qoşulun (oflayn olması da olar) və ya USB vasitəsilə bir dəfə <code>adb tcpip 5555</code> işlədin.]]></string>
     <string name="dialog_adb_open_hotspot">Mobil Hotspot Tənzimləmələri</string>
     <string name="dialog_adb_probing_loopback">Yerli port yoxlanılır (127.0.0.1:5555)...</string>
     <string name="dialog_adb_loopback_found">%1$d portunda aktiv ADB xidməti tapıldı! Qoşulur...</string>
