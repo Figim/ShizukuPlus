@@ -36,7 +36,16 @@ class MainActivity : HomeActivity() {
             Timber.d("Checking onboarding status")
             Sentry.addBreadcrumb(Breadcrumb("Checking onboarding status"))
             if (!ShizukuSettings.isOnboardingSeen()) {
-                startActivity(Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java))
+                val intent = Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java)
+                val isExistingUser =
+                    ShizukuSettings.isReturningUser() ||
+                        ShizukuSettings.getLastSeenChangelogVersion() != -1 ||
+                        ShizukuSettings.getLastLaunchMode() != ShizukuSettings.LaunchMethod.UNKNOWN ||
+                        ShizukuStateMachine.isRunning()
+                if (isExistingUser) {
+                    intent.putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_NEW_FEATURES_ONLY, true)
+                }
+                startActivity(intent)
                 finish()
                 return
             }

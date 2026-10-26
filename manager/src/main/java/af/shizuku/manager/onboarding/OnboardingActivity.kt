@@ -262,7 +262,7 @@ class OnboardingActivity : AppActivity() {
     private fun completeOnboarding() {
         ShizukuSettings.setOnboardingSeen()
         ShizukuSettings.setOnboardingV2Seen()
-        if (!isNewFeaturesOnly) {
+        if (isTaskRoot || !isNewFeaturesOnly) {
             startActivity(Intent(this, MainActivity::class.java))
         }
         finish()

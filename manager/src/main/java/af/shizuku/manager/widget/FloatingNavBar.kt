@@ -101,7 +101,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
     private fun itemFor(activity: Activity): Int? =
         when (activity) {
-            is MainActivity -> R.id.nav_home
+            is MainActivity, is HomeActivity -> R.id.nav_home
             is ApplicationManagementActivity -> R.id.nav_apps
             is SystemHubActivity -> R.id.nav_hub
             is SettingsActivity -> R.id.nav_settings
@@ -133,6 +133,12 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 content.addView(it)
                 it.applySpringTouch(scale = 0.98f)
             }
+        if (!isNew) {
+            root.animate().cancel()
+            root.alpha = 1f
+            root.translationY = 0f
+            root.visibility = View.VISIBLE
+        }
         val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav)
         ORDER.forEach { id -> nav.menu.findItem(id)?.isVisible = isTabShown(id) }
 
@@ -181,8 +187,10 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 af.shizuku.manager.utils.HapticUtils
                     .segmentTick(nav)
                 navigate(activity, item.itemId, selected)
+                true
+            } else {
+                false
             }
-            false // the destination screen shows its own selected state
         }
     }
 
@@ -410,6 +418,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         .setBottomLeftCornerSize(0f)
                         .setBottomRightCornerSize(0f)
                         .build()
+            } else {
+                val r = card.radius
+                card.shapeAppearanceModel =
+                    card.shapeAppearanceModel
+                        .toBuilder()
+                        .setAllCornerSizes(r)
+                        .build()
             }
             // No elevation: the shadow of a translucent card renders *through* its fill as a
             // dark band under the bar (the recurring "black bar"). The rim defines the edge.
@@ -430,6 +445,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     "unlabeled" -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_UNLABELED
                     else -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
                 }
+
+            val navLp = nav.layoutParams
+            val desiredHeight = if (labelMode == "unlabeled") (64 * density).toInt() else (78 * density).toInt()
+            if (navLp != null && navLp.height != desiredHeight) {
+                navLp.height = desiredHeight
+                nav.layoutParams = navLp
+            }
 
             // M3 navigation bar roles: secondaryContainer indicator, onSecondaryContainer active
             // icon, secondary active label, onSurfaceVariant inactive (was primary at 22-35% alpha).
@@ -569,13 +591,6 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
         fun visit(view: View) {
             if (view === bar) return
-            if (view is androidx.compose.ui.platform.AbstractComposeView) {
-                // Do NOT pad Compose root views. Compose manages its own internal padding
-                // (e.g. contentPadding on LazyColumn) and clipping, allowing backgrounds and
-                // gradients to draw edge-to-edge behind the floating dock without exposing the
-                // solid windowBackground letterbox.
-                return
-            }
             val scrollable = view is RecyclerView || view is NestedScrollView || view is ScrollView || view is AbsListView
             if (scrollable && view.paddingBottom < needed) {
                 view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, needed)
