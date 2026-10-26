@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
@@ -262,10 +263,26 @@ private fun ActionRowSection(
         actions.forEach { action ->
             val isSelected = action.value == selectedValue
 
+            // Material 3 Expressive spring-driven shape morphing & size physics
             val scale by animateFloatAsState(
-                targetValue = if (isSelected) 1.0f else 0.95f,
+                targetValue = if (isSelected) 1.0f else 0.94f,
                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                 label = "pillScale",
+            )
+            val pillCorner by animateDpAsState(
+                targetValue = if (isSelected) 22.dp else 10.dp,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                label = "pillCorner",
+            )
+            val iconBgCorner by animateDpAsState(
+                targetValue = if (isSelected) 6.dp else 12.dp,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                label = "iconBgCorner",
+            )
+            val hPadding by animateDpAsState(
+                targetValue = if (isSelected) 13.dp else 9.dp,
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                label = "hPadding",
             )
             val bgColor by animateColorAsState(
                 targetValue =
@@ -286,11 +303,12 @@ private fun ActionRowSection(
                 label = "pillContent",
             )
 
+            val shape = RoundedCornerShape(pillCorner)
             Row(
                 modifier =
                     Modifier
                         .scale(scale)
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(shape)
                         .background(bgColor)
                         .border(
                             width = 1.dp,
@@ -300,21 +318,30 @@ private fun ActionRowSection(
                                 } else {
                                     Color.Transparent
                                 },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = shape,
                         ).clickable {
                             if (!isSelected) {
                                 HapticUtils.segmentTick(view)
                                 onSelect(action.value)
                             }
-                        }.padding(horizontal = 10.dp, vertical = 8.dp),
+                        }.padding(horizontal = hPadding, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    painter = painterResource(action.iconRes),
-                    contentDescription = null,
-                    tint = contentColor,
-                    modifier = Modifier.size(14.dp),
-                )
+                Box(
+                    modifier =
+                        Modifier
+                            .size(22.dp)
+                            .clip(RoundedCornerShape(iconBgCorner))
+                            .background(contentColor.copy(alpha = if (isSelected) 0.16f else 0.08f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        painter = painterResource(action.iconRes),
+                        contentDescription = null,
+                        tint = contentColor,
+                        modifier = Modifier.size(13.dp),
+                    )
+                }
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(action.labelRes),
@@ -322,6 +349,15 @@ private fun ActionRowSection(
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                     color = contentColor,
                 )
+                if (isSelected) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "✓",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = contentColor,
+                    )
+                }
             }
         }
     }

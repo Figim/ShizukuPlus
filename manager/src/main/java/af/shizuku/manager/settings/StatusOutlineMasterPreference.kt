@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
@@ -220,25 +221,39 @@ private fun StatusOutlineContent(
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                 ) {
-                    // Live Mini-Card Preview
-                    val activeStrokeColor =
-                        if (style == "status") {
-                            Color(0xFF4CAF50) // Material Green running color
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        }
+                    // Live Mini-Card Preview with shape and stroke morphing
+                    val activeStrokeColor by animateColorAsState(
+                        targetValue =
+                            if (style == "status") {
+                                Color(0xFF4CAF50) // Material Green running color
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            },
+                        label = "previewStrokeColor",
+                    )
+                    val previewCorner by animateDpAsState(
+                        targetValue = if (style == "status") 20.dp else 14.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "previewCorner",
+                    )
+                    val previewStrokeWidth by animateDpAsState(
+                        targetValue = if (style == "status") 2.5.dp else 1.5.dp,
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                        label = "previewStrokeWidth",
+                    )
 
+                    val previewShape = RoundedCornerShape(previewCorner)
                     Surface(
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
+                                .clip(previewShape)
                                 .border(
-                                    width = 2.dp,
+                                    width = previewStrokeWidth,
                                     color = activeStrokeColor,
-                                    shape = RoundedCornerShape(16.dp),
+                                    shape = previewShape,
                                 ),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = previewShape,
                         color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ) {
                         Row(
@@ -280,7 +295,7 @@ private fun StatusOutlineContent(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    // Connected Style Buttons
+                    // Connected Style Buttons with shape morphing
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -295,9 +310,19 @@ private fun StatusOutlineContent(
                             val isSelected = style == key
 
                             val scale by animateFloatAsState(
-                                targetValue = if (isSelected) 1.0f else 0.97f,
+                                targetValue = if (isSelected) 1.0f else 0.96f,
                                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                                 label = "btnScale",
+                            )
+                            val btnCorner by animateDpAsState(
+                                targetValue = if (isSelected) 20.dp else 10.dp,
+                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                                label = "btnCorner",
+                            )
+                            val iconCorner by animateDpAsState(
+                                targetValue = if (isSelected) 6.dp else 12.dp,
+                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                                label = "iconCorner",
                             )
                             val bgColor by animateColorAsState(
                                 targetValue =
@@ -318,19 +343,29 @@ private fun StatusOutlineContent(
                                 label = "btnContent",
                             )
 
+                            val btnShape = RoundedCornerShape(btnCorner)
                             Surface(
                                 modifier =
                                     Modifier
                                         .weight(1f)
                                         .scale(scale)
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .clickable {
+                                        .clip(btnShape)
+                                        .border(
+                                            width = 1.dp,
+                                            color =
+                                                if (isSelected) {
+                                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
+                                                } else {
+                                                    Color.Transparent
+                                                },
+                                            shape = btnShape,
+                                        ).clickable {
                                             if (!isSelected) {
                                                 HapticUtils.segmentTick(view)
                                                 onSelectStyle(key)
                                             }
                                         },
-                                shape = RoundedCornerShape(14.dp),
+                                shape = btnShape,
                                 color = bgColor,
                             ) {
                                 Row(
@@ -338,12 +373,21 @@ private fun StatusOutlineContent(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Center,
                                 ) {
-                                    Icon(
-                                        painter = painterResource(iconRes),
-                                        contentDescription = null,
-                                        tint = contentColor,
-                                        modifier = Modifier.size(16.dp),
-                                    )
+                                    Box(
+                                        modifier =
+                                            Modifier
+                                                .size(24.dp)
+                                                .clip(RoundedCornerShape(iconCorner))
+                                                .background(contentColor.copy(alpha = if (isSelected) 0.16f else 0.08f)),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(iconRes),
+                                            contentDescription = null,
+                                            tint = contentColor,
+                                            modifier = Modifier.size(14.dp),
+                                        )
+                                    }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = label,
@@ -351,6 +395,15 @@ private fun StatusOutlineContent(
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                         color = contentColor,
                                     )
+                                    if (isSelected) {
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = "✓",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = contentColor,
+                                        )
+                                    }
                                 }
                             }
                         }
