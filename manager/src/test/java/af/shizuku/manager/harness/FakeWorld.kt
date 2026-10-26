@@ -12,6 +12,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Binder
 import android.os.Looper
+import android.os.UserManager
 import android.provider.Settings
 import androidx.work.Configuration
 import androidx.work.Data
@@ -88,6 +89,10 @@ class FakeWorld(
         ShizukuStateMachine.resetForTesting()
 
         shadowOf(app).grantPermissions(Manifest.permission.WRITE_SECURE_SETTINGS)
+        val um = app.getSystemService(UserManager::class.java)
+        if (um != null) {
+            shadowOf(um).setUserUnlocked(true)
+        }
         // Skips the worker's post-boot settling delay.
         Settings.Global.putInt(app.contentResolver, Settings.Global.ADB_ENABLED, 1)
         // A saved port that answers the starter's probe routes the worker straight to adbd, with
@@ -96,6 +101,7 @@ class FakeWorld(
             .edit()
             .putInt("mode", ShizukuSettings.LaunchMethod.ADB)
             .putInt("last_adb_port", adbd.port)
+            .putBoolean("force_start_wadb", true)
             .commit()
 
         val config =
