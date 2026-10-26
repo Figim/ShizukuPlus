@@ -37,34 +37,8 @@
         android:icon="@drawable/ic_outline_play_arrow_24"
         android:defaultValue="true">
 
-        <Preference
-            android:key="lp_category_info"
-            style="?preferenceInformationStyle"
-            android:summary="@string/settings_lp_category_summary" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="lp_open_app"
-            android:title="@string/settings_lp_open_app"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_outline_play_arrow_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="lp_app_info"
-            android:title="@string/settings_lp_app_info"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_outline_info_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="lp_toggle_permission"
-            android:title="@string/settings_lp_toggle_permission"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_shield_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="lp_hide_from_list"
-            android:title="@string/settings_lp_hide_from_list"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_visibility_24" />
+        <af.shizuku.manager.settings.MultiToggleGroupPreference
+            android:key="lp_actions_group" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

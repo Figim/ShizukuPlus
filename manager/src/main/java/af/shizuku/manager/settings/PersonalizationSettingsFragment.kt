@@ -51,13 +51,13 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private lateinit var languagePreference: ListPreference
     private lateinit var translationPreference: Preference
     private lateinit var expressiveShapesPreference: TwoStatePreference
-    private lateinit var expressiveAnimationsPreference: TwoStatePreference
+    private var expressiveAnimationsPreference: TwoStatePreference? = null
     private lateinit var iconStylePreference: SegmentedControlPreference
     private lateinit var iconColorModePreference: SegmentedControlPreference
     private lateinit var shapeStylePreference: Preference
-    private lateinit var animationIntensityPreference: SliderPreference
-    private lateinit var edgeToEdgePreference: TwoStatePreference
-    private lateinit var blurUiPreference: TwoStatePreference
+    private var animationIntensityPreference: SliderPreference? = null
+    private var edgeToEdgePreference: TwoStatePreference? = null
+    private var blurUiPreference: TwoStatePreference? = null
     private lateinit var oneUiThemePreference: TwoStatePreference
 
     override fun onCreateSettingsPreferences(
@@ -157,17 +157,19 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // 2. M3 Expressive Controls
         expressiveShapesPreference = requireNotNull(findPreference(KEY_EXPRESSIVE_SHAPES))
-        expressiveAnimationsPreference = requireNotNull(findPreference(KEY_EXPRESSIVE_ANIMATIONS))
+        expressiveAnimationsPreference = findPreference(KEY_EXPRESSIVE_ANIMATIONS)
         iconStylePreference = requireNotNull(findPreference(KEY_ICON_STYLE))
         iconColorModePreference = requireNotNull(findPreference(KEY_ICON_COLOR_MODE))
         shapeStylePreference = requireNotNull(findPreference(KEY_SHAPE_STYLE))
-        animationIntensityPreference = requireNotNull(findPreference(KEY_ANIMATION_INTENSITY))
+        animationIntensityPreference = findPreference(KEY_ANIMATION_INTENSITY)
 
         // Only meaningful for the Two-Tone icon style — updated dynamically below so the
         // color-mode row appears/disappears without requiring a fragment recreate.
         setChildAvailable(iconColorModePreference, iconStylePreference.value == "twotone")
         setChildAvailable(shapeStylePreference, expressiveShapesPreference.isChecked)
-        setChildAvailable(animationIntensityPreference, expressiveAnimationsPreference.isChecked)
+        animationIntensityPreference?.let { animInt ->
+            setChildAvailable(animInt, expressiveAnimationsPreference?.isChecked ?: ShizukuSettings.isExpressiveAnimationsEnabled())
+        }
 
         // M3E morph shapes: only meaningful with expressive shapes on; the toggle-morph switch
         // only matters once a shape is picked.
@@ -238,14 +240,14 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        expressiveAnimationsPreference.setOnPreferenceChangeListener { _, _ ->
+        expressiveAnimationsPreference?.setOnPreferenceChangeListener { _, _ ->
             // isChecked updates after this returns; re-sync once it has.
             view?.post { syncIntensityAvailability() }
             applyTheme(requiresRecreate = false)
             true
         }
 
-        animationIntensityPreference.setOnPreferenceChangeListener { _, _ ->
+        animationIntensityPreference?.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
         }
@@ -378,24 +380,28 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
 
         // 3. Display settings (edge-to-edge, blur)
-        edgeToEdgePreference = requireNotNull(findPreference(KEY_EDGE_TO_EDGE))
-        edgeToEdgePreference.isChecked = ShizukuSettings.isEdgeToEdgeEnabled()
-        // Android 15+ (API 35) enforces E2E for targetSdk-35 apps — the toggle has no effect
-        // there, so hide it to avoid confusing users (#483).
-        setChildAvailable(edgeToEdgePreference, Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM)
-        edgeToEdgePreference.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
-            true
+        edgeToEdgePreference = findPreference(KEY_EDGE_TO_EDGE)
+        edgeToEdgePreference?.let { pref ->
+            pref.isChecked = ShizukuSettings.isEdgeToEdgeEnabled()
+            // Android 15+ (API 35) enforces E2E for targetSdk-35 apps — the toggle has no effect
+            // there, so hide it to avoid confusing users (#483).
+            setChildAvailable(pref, Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM)
+            pref.setOnPreferenceChangeListener { _, _ ->
+                applyTheme(requiresRecreate = false)
+                true
+            }
         }
 
-        blurUiPreference = requireNotNull(findPreference(KEY_BLUR_UI))
-        blurUiPreference.isChecked = ShizukuSettings.isBlurUiEnabled()
-        setChildAvailable(blurUiPreference, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-        blurUiPreference.setOnPreferenceChangeListener { _, _ ->
-            // window.setBackgroundBlurRadius is set in onCreate; a recreate is needed for it to take
-            // effect. The AppBar translucency also needs onPostCreate to re-run (#449).
-            applyTheme(requiresRecreate = true)
-            true
+        blurUiPreference = findPreference(KEY_BLUR_UI)
+        blurUiPreference?.let { pref ->
+            pref.isChecked = ShizukuSettings.isBlurUiEnabled()
+            setChildAvailable(pref, Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            pref.setOnPreferenceChangeListener { _, _ ->
+                // window.setBackgroundBlurRadius is set in onCreate; a recreate is needed for it to take
+                // effect. The AppBar translucency also needs onPostCreate to re-run (#449).
+                applyTheme(requiresRecreate = true)
+                true
+            }
         }
 
         oneUiThemePreference = requireNotNull(findPreference(KEY_ONEUI_THEME))
@@ -464,9 +470,11 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
     /** Intensity needs animations on and isn't used while following the system speed. */
     private fun syncIntensityAvailability() {
-        val animationsOn = expressiveAnimationsPreference.isChecked
+        val animationsOn = expressiveAnimationsPreference?.isChecked ?: ShizukuSettings.isExpressiveAnimationsEnabled()
         val followSystem = findPreference<TwoStatePreference>("follow_system_animations")
-        setChildAvailable(animationIntensityPreference, animationsOn && followSystem?.isChecked != true)
+        animationIntensityPreference?.let {
+            setChildAvailable(it, animationsOn && followSystem?.isChecked != true)
+        }
         followSystem?.let { setChildAvailable(it, animationsOn) }
     }
 

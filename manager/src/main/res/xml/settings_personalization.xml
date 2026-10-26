@@ -162,20 +162,8 @@
         android:icon="@drawable/ic_vibration_24"
         android:defaultValue="false">
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="expressive_animations"
-            android:title="@string/settings_expressive_animations"
-            android:summary="@string/settings_expressive_animations_summary"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_animation_24" />
-
-        <af.shizuku.manager.settings.SliderPreference
-            android:key="animation_intensity"
-            android:title="@string/settings_animation_intensity"
-            android:defaultValue="2"
-            android:entries="@array/animation_intensities"
-            android:entryValues="@array/animation_intensities_value"
-            android:icon="@drawable/ic_speed_24" />
+        <af.shizuku.manager.settings.MotionControlsPreference
+            android:key="motion_controls_card" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="follow_system_animations"
@@ -199,12 +187,8 @@
         android:icon="@drawable/ic_smartphone_24"
         android:defaultValue="false">
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="bold_typography"
-            android:title="@string/settings_bold_typography"
-            android:summary="@string/settings_bold_typography_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_format_bold_24" />
+        <af.shizuku.manager.settings.DisplayOptionsGridPreference
+            android:key="display_options_grid" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="one_handed_mode"
@@ -213,27 +197,6 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_smartphone_24"
             app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="expanded_headers_enabled"
-            android:title="@string/settings_expanded_headers"
-            android:summary="@string/settings_expanded_headers_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_outline_expand_more_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="edge_to_edge_enabled"
-            android:title="@string/settings_edge_to_edge"
-            android:summary="@string/settings_edge_to_edge_summary"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_fullscreen_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="blur_ui_enabled"
-            android:title="@string/settings_blur_ui"
-            android:summary="@string/settings_blur_ui_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_opacity_24" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="floating_nav_enabled"
