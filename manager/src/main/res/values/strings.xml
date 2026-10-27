@@ -1151,6 +1151,8 @@
     <string name="settings_verify_engines_posture">%1$d of %2$d Security Engines Active</string>
     <string name="settings_verify_key_required_hint">Key required · Tap to set</string>
     <string name="settings_verify_key_saved_hint">Key active · Hold to edit</string>
+    <string name="settings_plus_governors_posture">%1$d of %2$d Governors Active</string>
+    <string name="settings_plus_governors_help_hint">Hold any governor for architecture details</string>
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Custom Accent Color</string>
