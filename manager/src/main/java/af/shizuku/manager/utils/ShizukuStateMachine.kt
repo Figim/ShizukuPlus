@@ -200,6 +200,16 @@ object ShizukuStateMachine {
                     }
                 }
 
+                if ((newState == State.STOPPED || newState == State.CRASHED) && (oldState == State.RUNNING || oldState == State.STARTING)) {
+                    try {
+                        val context = ShizukuApplication.appContext
+                        af.shizuku.manager.doctor.ServiceDoctor
+                            .triggerAdaptiveAutoHealAsync(context)
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to trigger adaptive auto-heal")
+                    }
+                }
+
                 if ((newState == State.STOPPED || newState == State.CRASHED) &&
                     ShizukuSettings.isAutoCloseTcpPortEnabled()
                 ) {

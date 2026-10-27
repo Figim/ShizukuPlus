@@ -14,6 +14,7 @@ import af.shizuku.manager.databinding.PageOnboardingSecurityDoctorBinding
 import af.shizuku.manager.databinding.PageOnboardingSetupBinding
 import af.shizuku.manager.databinding.PageOnboardingSwipeBinding
 import af.shizuku.manager.databinding.PageOnboardingWelcomeBinding
+import af.shizuku.manager.databinding.PageOnboardingWelcomeReturningBinding
 import af.shizuku.manager.home.StartWirelessAdbViewHolder
 import af.shizuku.manager.home.showAccessibilityDialog
 import af.shizuku.manager.ktx.themeColor
@@ -50,6 +51,7 @@ class OnboardingActivity : AppActivity() {
 
     enum class PageType {
         WELCOME,
+        WELCOME_RETURNING,
         SETUP,
         M3E,
         LAYOUT_NAV,
@@ -67,9 +69,12 @@ class OnboardingActivity : AppActivity() {
     private val pages: List<PageType> by lazy {
         if (isNewFeaturesOnly) {
             listOf(
+                PageType.WELCOME_RETURNING,
                 PageType.M3E,
                 PageType.LAYOUT_NAV,
                 PageType.SECURITY_DOCTOR,
+                PageType.SWIPE,
+                PageType.GESTURES,
                 PageType.LONG_PRESS,
             )
         } else {
@@ -286,6 +291,7 @@ class OnboardingActivity : AppActivity() {
             val inflater = LayoutInflater.from(parent.context)
             return when (PageType.values()[viewType]) {
                 PageType.WELCOME -> OnboardingPageViewHolder.Welcome(PageOnboardingWelcomeBinding.inflate(inflater, parent, false))
+                PageType.WELCOME_RETURNING -> OnboardingPageViewHolder.WelcomeReturning(PageOnboardingWelcomeReturningBinding.inflate(inflater, parent, false))
                 PageType.SETUP -> OnboardingPageViewHolder.Setup(PageOnboardingSetupBinding.inflate(inflater, parent, false))
                 PageType.M3E -> OnboardingPageViewHolder.M3E(PageOnboardingM3eBinding.inflate(inflater, parent, false))
                 PageType.LAYOUT_NAV -> OnboardingPageViewHolder.LayoutNav(PageOnboardingLayoutNavBinding.inflate(inflater, parent, false))
@@ -301,6 +307,7 @@ class OnboardingActivity : AppActivity() {
             position: Int,
         ) {
             when (holder) {
+                is OnboardingPageViewHolder.WelcomeReturning -> bindWelcomeReturningPage(holder.binding)
                 is OnboardingPageViewHolder.Setup -> bindSetupPage(holder.binding)
                 is OnboardingPageViewHolder.M3E -> bindM3ePage(holder.binding)
                 is OnboardingPageViewHolder.LayoutNav -> bindLayoutNavPage(holder.binding)
@@ -311,6 +318,37 @@ class OnboardingActivity : AppActivity() {
                 }
                 is OnboardingPageViewHolder.LongPress -> bindLongPressPage(holder.binding)
                 else -> {}
+            }
+        }
+
+        private fun bindWelcomeReturningPage(binding: PageOnboardingWelcomeReturningBinding) {
+            binding.heroIcon.applySpringTouch()
+            binding.cardFeatM3e.applySpringTouch()
+            binding.cardFeatGestures.applySpringTouch()
+            binding.cardFeatDoctor.applySpringTouch()
+            binding.btnJumpToApp.applySpringTouch()
+
+            binding.btnJumpToApp.setOnClickListener {
+                HapticUtils.tap(it)
+                completeOnboarding()
+            }
+
+            binding.cardFeatM3e.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.M3E)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+            }
+
+            binding.cardFeatGestures.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.GESTURES)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+            }
+
+            binding.cardFeatDoctor.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.SECURITY_DOCTOR)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
             }
         }
 
@@ -583,6 +621,10 @@ class OnboardingActivity : AppActivity() {
     ) : RecyclerView.ViewHolder(root) {
         class Welcome(
             val binding: PageOnboardingWelcomeBinding,
+        ) : OnboardingPageViewHolder(binding.root)
+
+        class WelcomeReturning(
+            val binding: PageOnboardingWelcomeReturningBinding,
         ) : OnboardingPageViewHolder(binding.root)
 
         class Setup(

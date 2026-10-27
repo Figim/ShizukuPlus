@@ -130,6 +130,10 @@ class ServerStatusViewHolder(
                     onBind()
                 }
             }
+            diagnosticsChip.setOnLongClickListener {
+                context.startActivity(android.content.Intent(context, af.shizuku.manager.settings.ServiceDoctorActivity::class.java))
+                true
+            }
         } else {
             diagnosticsChip.visibility = View.GONE
         }

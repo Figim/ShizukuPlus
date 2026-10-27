@@ -383,6 +383,16 @@
     <string name="onboarding_watchdog_desc">Automatically heal and revive the server if killed</string>
     <string name="onboarding_take_tour">Feature Tour</string>
     <string name="onboarding_take_tour_summary">Explore the new M3 Expressive look, home layout, and network trust shield</string>
+    <string name="onboarding_returning_welcome_title">Welcome Back to Shizuku+</string>
+    <string name="onboarding_returning_welcome_desc">Your existing permissions, setup, and authorized apps remain fully preserved. Discover what\'s new in this release:</string>
+    <string name="onboarding_returning_status_preserved">Setup &amp; apps intact</string>
+    <string name="onboarding_returning_feat_m3e_title">Material 3 Expressive UI</string>
+    <string name="onboarding_returning_feat_m3e_desc">Fluid spring physics, shape morphing, visual app icon picker, and interactive multi-toggle pills.</string>
+    <string name="onboarding_returning_feat_gestures_title">Connected Gestures &amp; Actions</string>
+    <string name="onboarding_returning_feat_gestures_desc">Segmented swipe action groups, tactile preview cards, and customized quick actions.</string>
+    <string name="onboarding_returning_feat_doctor_title">Adaptive Service Doctor</string>
+    <string name="onboarding_returning_feat_doctor_desc">Proactive background diagnostics, health monitoring, and one-tap automated self-healing.</string>
+    <string name="onboarding_returning_action_jump">Jump to Dashboard</string>
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Swipe gestures</string>
@@ -813,6 +823,12 @@
     <string name="home_service_doctor_summary">Having trouble starting Shizuku+? Tap to run a diagnostic check.</string>
     <string name="doctor_tips_title">Troubleshooting &amp; Fixes</string>
     <string name="doctor_action_rerun">Re-run</string>
+    <string name="doctor_action_auto_fix_all">Adaptive Auto-Repair</string>
+    <string name="doctor_action_auto_fix_all_running">Auto-Repairing…</string>
+    <string name="doctor_auto_heal_complete">Adaptive repair complete: %1$d issue(s) resolved</string>
+    <string name="doctor_auto_heal_no_issues">All diagnostic checks passed</string>
+    <string name="doctor_adaptive_self_heal_title">Adaptive Background Self-Healing</string>
+    <string name="doctor_adaptive_self_heal_desc">Automatically run health checks and repair service drops or permission issues in background</string>
     <string name="doctor_summary_healthy_title">All Systems Healthy</string>
     <string name="doctor_summary_healthy_subtitle">All diagnostic checks passed. Service environment is optimal.</string>
     <string name="doctor_summary_issues_title">%1$d Issue(s) Detected</string>

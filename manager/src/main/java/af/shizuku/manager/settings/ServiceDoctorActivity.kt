@@ -2,15 +2,19 @@ package af.shizuku.manager.settings
 
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbPairingAccessibilityService
 import af.shizuku.manager.adb.LocalNetworkPermission
 import af.shizuku.manager.database.RootCompatHelper
 import af.shizuku.manager.databinding.ActivityServiceDoctorBinding
 import af.shizuku.manager.databinding.ItemDoctorCheckBinding
+import af.shizuku.manager.doctor.ServiceDoctor
 import af.shizuku.manager.home.tryEnableAccessibilityAutomatically
 import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.utils.DeviceOptimizer
 import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
@@ -63,10 +67,22 @@ class ServiceDoctorActivity : AppBarActivity() {
 
         tipsTextView = binding.tipsText
 
+        binding.btnRerun.applySpringTouch()
         binding.btnRerun.setOnClickListener {
-            af.shizuku.manager.utils.HapticUtils
-                .segmentTick(it)
+            HapticUtils.segmentTick(it)
             runDiagnostics()
+        }
+
+        binding.btnAutoHeal.applySpringTouch()
+        binding.btnAutoHeal.setOnClickListener {
+            HapticUtils.tap(it)
+            performAutoHeal()
+        }
+
+        binding.switchAdaptiveAutoHeal.isChecked = ShizukuSettings.isAdaptiveDoctorAutoHealEnabled()
+        binding.switchAdaptiveAutoHeal.setOnCheckedChangeListener { view, isChecked ->
+            if (isChecked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
+            ShizukuSettings.setAdaptiveDoctorAutoHealEnabled(isChecked)
         }
 
         binding.checkList.clipToPadding = false
@@ -714,6 +730,16 @@ class ServiceDoctorActivity : AppBarActivity() {
         checkListAdapter.submitList(checks)
 
         val issueCount = checks.count { !it.ok }
+        val fixableCount = checks.count { !it.ok && it.onFix != null }
+
+        if (fixableCount > 0) {
+            binding.autoFixContainer.visibility = View.VISIBLE
+            binding.btnAutoHeal.text = getString(R.string.doctor_action_auto_fix_all)
+            binding.btnAutoHeal.isEnabled = true
+        } else {
+            binding.autoFixContainer.visibility = View.GONE
+        }
+
         if (issueCount == 0) {
             binding.summaryTitle.text = getString(R.string.doctor_summary_healthy_title)
             binding.summarySubtitle.text = getString(R.string.doctor_summary_healthy_subtitle)
@@ -735,6 +761,28 @@ class ServiceDoctorActivity : AppBarActivity() {
         } else {
             val content = tips.joinToString("\n\n")
             tipsTextView.text = content
+        }
+    }
+
+    private fun performAutoHeal() {
+        binding.btnAutoHeal.isEnabled = false
+        binding.btnAutoHeal.text = getString(R.string.doctor_action_auto_fix_all_running)
+        binding.autoFixProgress.visibility = View.VISIBLE
+
+        serviceScope.launch {
+            val report = ServiceDoctor.autoHeal(this@ServiceDoctorActivity)
+            withContext(Dispatchers.Main) {
+                binding.autoFixProgress.visibility = View.GONE
+                HapticUtils.success(binding.btnAutoHeal)
+                val msg =
+                    if (report.resolvedCount > 0) {
+                        getString(R.string.doctor_auto_heal_complete, report.resolvedCount)
+                    } else {
+                        getString(R.string.doctor_auto_heal_no_issues)
+                    }
+                Toast.makeText(this@ServiceDoctorActivity, msg, Toast.LENGTH_SHORT).show()
+                runDiagnostics()
+            }
         }
     }
 

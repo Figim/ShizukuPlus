@@ -171,6 +171,7 @@ public class ShizukuSettings {
         // Management cache (Shizuku+ additions)
         public static final String KEY_LAST_GRANTED_APP_COUNT = "last_granted_app_count";
         public static final String KEY_SHOW_ADVANCED_SETTINGS = "show_advanced_settings";
+        public static final String KEY_DOCTOR_ADAPTIVE_AUTO_HEAL = "doctor_adaptive_auto_heal";
         public static final String KEY_FLOATING_NAV_BAR_ENABLED = "floating_nav_enabled";
         public static final String KEY_HIDE_LAUNCHER_ICON = "hide_launcher_icon";
         public static final String KEY_APP_ICON_ALIAS = "app_icon_alias";
@@ -943,6 +944,16 @@ public class ShizukuSettings {
 
     public static void setDiagnosticsEnabled(boolean enable) {
         getPreferences().edit().putBoolean("diagnostics_enabled", enable).apply();
+    }
+
+    public static boolean isAdaptiveDoctorAutoHealEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_DOCTOR_ADAPTIVE_AUTO_HEAL, true);
+    }
+
+    public static void setAdaptiveDoctorAutoHealEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DOCTOR_ADAPTIVE_AUTO_HEAL, enable).apply();
     }
 
     public static void setAutoReconnectMdnsEnabled(boolean enable) {
