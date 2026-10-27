@@ -136,7 +136,12 @@ class DisplayOptionsGridPreference
                             ?.putBoolean(key, newChecked)
                             ?.apply()
                         val act = context.findAppActivity()
-                        if (key == "blur_ui_enabled" || key == "bold_typography") {
+                        if (key == "blur_ui_enabled" ||
+                            key == "bold_typography" ||
+                            key == "expanded_headers_enabled" ||
+                            key == "oneui_theme_enabled" ||
+                            key == "one_handed_mode"
+                        ) {
                             act?.recreateWithoutTransition()
                         } else {
                             (act as? SettingsActivity)?.onThemeChanged()

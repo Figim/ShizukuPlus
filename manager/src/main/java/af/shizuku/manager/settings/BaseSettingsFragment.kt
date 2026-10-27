@@ -178,6 +178,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         if (title != null) {
             (activity as? SettingsActivity)?.updateTitle(title.toString())
         }
+        updateHeaderPadding()
 
         val highlightKey = arguments?.getString("highlight_key")
         if (!highlightKey.isNullOrEmpty()) {
@@ -376,6 +377,31 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             },
         )
         return recyclerView
+    }
+
+    fun updateHeaderPadding() {
+        val rv = listView ?: return
+        val cardMarginPx = context?.resources?.getDimensionPixelSize(R.dimen.margin_horizontal) ?: return
+        val currentHeaderTop = (activity as? SettingsActivity)?.getExpandedHeaderHeightPx() ?: 0
+        val rootWindowInsets = ViewCompat.getRootWindowInsets(rv)
+        val systemBarsInsets = rootWindowInsets?.getInsets(Type.systemBars() or Type.displayCutout())
+        val navBarClearancePx =
+            if (ShizukuSettings.isFloatingNavBarEnabled()) {
+                (112 * resources.displayMetrics.density).toInt()
+            } else {
+                (20 * resources.displayMetrics.density).toInt()
+            }
+        val topInsets = systemBarsInsets?.top ?: 0
+        val leftInsets = systemBarsInsets?.left ?: 0
+        val rightInsets = systemBarsInsets?.right ?: 0
+        val bottomInsets = systemBarsInsets?.bottom ?: 0
+        rv.setPadding(
+            cardMarginPx + leftInsets,
+            currentHeaderTop + topInsets,
+            cardMarginPx + rightInsets,
+            bottomInsets + navBarClearancePx,
+        )
+        ViewCompat.requestApplyInsets(rv)
     }
 
     override fun onCreateAdapter(preferenceScreen: androidx.preference.PreferenceScreen): RecyclerView.Adapter<*> {
