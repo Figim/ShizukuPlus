@@ -71,15 +71,17 @@ class AppIconTilePickerPreference
             val iconRes: Int,
         )
 
-        private val iconOptions =
-            listOf(
-                IconOption("default", "Shizuku+", R.mipmap.ic_launcher),
-                IconOption("classic", "Classic", R.mipmap.ic_launcher_classic),
-                IconOption("system", "System", R.mipmap.ic_launcher_system),
-                IconOption("tools", "Tools", R.mipmap.ic_launcher_tools),
-                IconOption("files", "Files", R.mipmap.ic_launcher_files),
-                IconOption("notes", "Notes", R.mipmap.ic_launcher_notes),
+        private fun getIconOptions(): List<IconOption> {
+            val entries = runCatching { context.resources.getStringArray(R.array.app_icon_alias_entries) }.getOrNull()
+            return listOf(
+                IconOption("default", entries?.getOrNull(0)?.substringBefore(" (") ?: "Shizuku+", R.mipmap.ic_launcher),
+                IconOption("classic", entries?.getOrNull(1)?.substringBefore(" (") ?: "Classic", R.mipmap.ic_launcher_classic),
+                IconOption("system", entries?.getOrNull(2)?.substringBefore(" (") ?: "System", R.mipmap.ic_launcher_system),
+                IconOption("tools", entries?.getOrNull(3)?.substringBefore(" (") ?: "Tools", R.mipmap.ic_launcher_tools),
+                IconOption("files", entries?.getOrNull(4)?.substringBefore(" (") ?: "Files", R.mipmap.ic_launcher_files),
+                IconOption("notes", entries?.getOrNull(5)?.substringBefore(" (") ?: "Notes", R.mipmap.ic_launcher_notes),
             )
+        }
 
         private val selectedAlias = mutableStateOf("default")
 
@@ -120,7 +122,7 @@ class AppIconTilePickerPreference
                     ?: holder.itemView as? ComposeView ?: return
             cv.setPreferenceContent {
                 AppIconPickerContent(
-                    options = iconOptions,
+                    options = getIconOptions(),
                     selectedKey = selectedAlias.value,
                     onSelect = { newKey ->
                         selectedAlias.value = newKey

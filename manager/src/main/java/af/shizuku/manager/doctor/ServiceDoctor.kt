@@ -256,6 +256,75 @@ object ServiceDoctor {
             )
             if (!walletSecurityOk) tips.add("• " + context.getString(R.string.doctor_tip_wallet_integrity))
 
+            // 6. Xiaomi Restricted ADB + HyperOS background kill
+            if (EnvironmentUtils.isXiaomi()) {
+                checks.add(
+                    CheckItem(
+                        id = "xiaomi_adb",
+                        title = context.getString(R.string.doctor_check_xiaomi_adb),
+                        status = context.getString(R.string.doctor_status_xiaomi_adb_unknown),
+                        ok = false,
+                        canAutoFix = false,
+                        tip = "• " + context.getString(R.string.doctor_tip_xiaomi),
+                    ),
+                )
+                tips.add("• " + context.getString(R.string.doctor_tip_xiaomi))
+
+                checks.add(
+                    CheckItem(
+                        id = "xiaomi_autostart",
+                        title = context.getString(R.string.doctor_check_xiaomi_autostart),
+                        status = context.getString(R.string.doctor_status_xiaomi_autostart_unknown),
+                        ok = false,
+                        canAutoFix = false,
+                        tip = "• " + context.getString(R.string.doctor_tip_xiaomi_battery),
+                    ),
+                )
+                tips.add("• " + context.getString(R.string.doctor_tip_xiaomi_battery))
+            }
+
+            // 6b. Oppo/OnePlus Restricted ADB (ColorOS/OxygenOS)
+            if (EnvironmentUtils.isOppo() || EnvironmentUtils.isOnePlus()) {
+                checks.add(
+                    CheckItem(
+                        id = "oppo_permission",
+                        title = context.getString(R.string.doctor_check_oppo_permission),
+                        status = context.getString(R.string.doctor_status_manual_check),
+                        ok = false,
+                        canAutoFix = false,
+                        tip = "• " + context.getString(R.string.doctor_tip_oppo_permission),
+                    ),
+                )
+                tips.add("• " + context.getString(R.string.doctor_tip_oppo_permission))
+
+                checks.add(
+                    CheckItem(
+                        id = "oppo_battery",
+                        title = context.getString(R.string.doctor_check_oppo_battery),
+                        status = context.getString(R.string.doctor_status_oppo_battery_unknown),
+                        ok = false,
+                        canAutoFix = false,
+                        tip = "• " + context.getString(R.string.doctor_tip_oppo_battery),
+                    ),
+                )
+                tips.add("• " + context.getString(R.string.doctor_tip_oppo_battery))
+            }
+
+            // 6c. TCL Device Polish
+            if (EnvironmentUtils.isTCL()) {
+                checks.add(
+                    CheckItem(
+                        id = "tcl_autostart",
+                        title = context.getString(R.string.doctor_check_tcl_autostart),
+                        status = context.getString(R.string.doctor_status_tcl_autostart_unknown),
+                        ok = false,
+                        canAutoFix = false,
+                        tip = "• " + context.getString(R.string.doctor_tip_tcl_background),
+                    ),
+                )
+                tips.add("• " + context.getString(R.string.doctor_tip_tcl_background))
+            }
+
             // 7. Samsung Auto Blocker (One UI 6.1+)
             if (EnvironmentUtils.isSamsung()) {
                 val oneUi = EnvironmentUtils.getOneUiVersion()
@@ -289,6 +358,53 @@ object ServiceDoctor {
                     tips.add("• " + context.getString(R.string.doctor_tip_samsung_autoblocker))
                     if (oneUi >= 8) tips.add("• " + context.getString(R.string.doctor_tip_oneui8_max_restrictions))
                     tips.add("• " + context.getString(R.string.doctor_tip_oneui_connectivity))
+                    tips.add("• " + context.getString(R.string.doctor_tip_s22_ultra))
+                }
+            }
+
+            // 8. Secondary User detection
+            if (EnvironmentUtils.isSecondaryUser()) {
+                checks.add(
+                    CheckItem(
+                        id = "secondary_user",
+                        title = context.getString(R.string.doctor_check_secondary_user),
+                        status = context.getString(R.string.doctor_status_detected),
+                        ok = false,
+                        canAutoFix = false,
+                        tip = "• " + context.getString(R.string.doctor_tip_secure_folder),
+                    ),
+                )
+                tips.add("• " + context.getString(R.string.doctor_tip_secure_folder))
+            }
+
+            // 8b. SU Bridge — Android 16+ ADB mode limitation
+            if (Build.VERSION.SDK_INT >= 36) {
+                val isAdbMode =
+                    try {
+                        Shizuku.pingBinder() && Shizuku.getUid() == 2000
+                    } catch (_: Exception) {
+                        false
+                    }
+                if (isAdbMode) {
+                    val hasExportedPath = ShizukuSettings.getExportDirUri() != null
+                    checks.add(
+                        CheckItem(
+                            id = "su_bridge_a16",
+                            title = context.getString(R.string.doctor_check_su_bridge_a16),
+                            status =
+                                if (hasExportedPath) {
+                                    context.getString(R.string.doctor_status_ok) + " — " + context.getString(R.string.doctor_status_su_bridge_path_set)
+                                } else {
+                                    context.getString(R.string.doctor_status_su_bridge_no_path)
+                                },
+                            ok = hasExportedPath,
+                            canAutoFix = false,
+                            tip = if (!hasExportedPath) "• " + context.getString(R.string.doctor_tip_su_bridge_a16) else null,
+                        ),
+                    )
+                    if (!hasExportedPath) {
+                        tips.add("• " + context.getString(R.string.doctor_tip_su_bridge_a16))
+                    }
                 }
             }
 
@@ -336,6 +452,19 @@ object ServiceDoctor {
                     ),
                 )
                 tips.add("• " + context.getString(R.string.doctor_tip_phantom_process))
+            }
+
+            // 11. Samsung Auto Restart & Sleeping Apps
+            if (EnvironmentUtils.isSamsung()) {
+                tips.add("• " + context.getString(R.string.doctor_tip_samsung_optimization))
+                tips.add("• " + context.getString(R.string.doctor_tip_samsung_sleeping))
+
+                val board = Build.HARDWARE.lowercase()
+                if (board.contains("exynos")) {
+                    tips.add("• " + context.getString(R.string.doctor_tip_s22_ultra_exynos))
+                } else if (board.contains("qcom") || board.contains("snapdragon")) {
+                    tips.add("• " + context.getString(R.string.doctor_tip_s22_ultra_snapdragon))
+                }
             }
 
             val issues = checks.count { !it.ok }

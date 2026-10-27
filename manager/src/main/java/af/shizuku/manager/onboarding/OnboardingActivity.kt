@@ -26,6 +26,7 @@ import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
@@ -40,6 +41,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -203,15 +205,24 @@ class OnboardingActivity : AppActivity() {
     private fun setupDots() {
         binding.dotsContainer.removeAllViews()
         dots.clear()
-        val sizePx = dpToPx(8)
-        val marginPx = dpToPx(5)
-        repeat(pages.size) {
+        val dotWidth = dpToPx(8)
+        val pillWidth = dpToPx(24)
+        val heightPx = dpToPx(8)
+        val marginPx = dpToPx(4)
+        val cornerPx = dpToPx(4).toFloat()
+
+        repeat(pages.size) { i ->
             val dot =
                 View(this).apply {
-                    val lp = LinearLayout.LayoutParams(sizePx, sizePx)
+                    val w = if (i == 0) pillWidth else dotWidth
+                    val lp = LinearLayout.LayoutParams(w, heightPx)
                     lp.setMargins(marginPx, 0, marginPx, 0)
                     layoutParams = lp
-                    background = GradientDrawable().apply { shape = GradientDrawable.OVAL }
+                    background =
+                        GradientDrawable().apply {
+                            shape = GradientDrawable.RECTANGLE
+                            cornerRadius = cornerPx
+                        }
                 }
             dots.add(dot)
             binding.dotsContainer.addView(dot)
@@ -222,14 +233,42 @@ class OnboardingActivity : AppActivity() {
     private fun updateDots(selected: Int) {
         val active = resolveThemeColor(android.R.attr.colorPrimary)
         val inactive = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+        val pillWidth = dpToPx(24)
+        val dotWidth = dpToPx(8)
+        val heightPx = dpToPx(8)
+        val cornerPx = dpToPx(4).toFloat()
+
         dots.forEachIndexed { i, dot ->
-            (dot.background as GradientDrawable).setColor(if (i == selected) active else inactive)
-            val sizePx = if (i == selected) dpToPx(10) else dpToPx(8)
-            dot.layoutParams =
-                (dot.layoutParams as LinearLayout.LayoutParams).also {
-                    it.width = sizePx
-                    it.height = sizePx
-                }
+            val isSelected = i == selected
+            val targetWidth = if (isSelected) pillWidth else dotWidth
+            val targetColor = if (isSelected) active else inactive
+            val currentWidth = dot.layoutParams.width
+
+            (dot.background as? GradientDrawable)?.apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = cornerPx
+                setColor(targetColor)
+            }
+
+            (dot.tag as? ValueAnimator)?.cancel()
+
+            if (currentWidth != targetWidth) {
+                val anim =
+                    ValueAnimator.ofInt(currentWidth, targetWidth).apply {
+                        duration = 260
+                        interpolator = FastOutSlowInInterpolator()
+                        addUpdateListener { va ->
+                            val w = va.animatedValue as Int
+                            dot.layoutParams =
+                                (dot.layoutParams as LinearLayout.LayoutParams).also { lp ->
+                                    lp.width = w
+                                    lp.height = heightPx
+                                }
+                        }
+                    }
+                dot.tag = anim
+                anim.start()
+            }
         }
     }
 
