@@ -19,13 +19,6 @@
             android:icon="@drawable/ic_palette_24"
             android:fragment="af.shizuku.manager.settings.PersonalizationSettingsFragment" />
 
-        <Preference
-            android:key="nav_app_management"
-            android:title="@string/settings_main_nav_app_interactions_title"
-            android:summary="@string/settings_main_nav_app_interactions_summary"
-            android:icon="@drawable/ic_swipe_24"
-            android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

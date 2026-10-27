@@ -234,14 +234,16 @@
         android:key="category_app_interactions"
         android:title="@string/settings_main_nav_app_interactions_title"
         android:icon="@drawable/ic_swipe_24"
-        android:defaultValue="false">
+        android:defaultValue="true">
+
+        <af.shizuku.manager.settings.AppInteractionsPreference
+            android:key="pref_app_interactions_studio" />
 
         <Preference
-            android:key="nav_personalization_interactions"
-            android:title="@string/settings_main_nav_app_interactions_title"
-            android:summary="@string/settings_main_nav_app_interactions_summary"
-            android:icon="@drawable/ic_swipe_24"
-            android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
+            android:key="update_app_database"
+            android:title="@string/settings_update_app_database"
+            android:summary="@string/settings_update_app_database_summary"
+            android:icon="@drawable/ic_autorenew" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

@@ -5,23 +5,43 @@ import af.shizuku.manager.ShizukuLocales
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.app.ThemeHelper
+import af.shizuku.manager.database.AppContextManager
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.utils.CustomTabsHelper
 import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.HapticUtils
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
+import kotlinx.coroutines.launch
 import rikka.core.util.ResourceUtils
 import rikka.material.app.LocaleDelegate
 import java.util.Locale
 
 class PersonalizationSettingsFragment : BaseSettingsFragment() {
+    private var checkingDatabase = false
+
+    private fun updateDatabaseSummary(pref: Preference) {
+        val last = ShizukuSettings.getLastDbUpdate()
+        val count = AppContextManager.appCount()
+        pref.summary =
+            if (last > 0) {
+                val checked =
+                    android.text.format.DateUtils
+                        .getRelativeTimeSpanString(last, System.currentTimeMillis(), android.text.format.DateUtils.MINUTE_IN_MILLIS)
+                getString(R.string.settings_update_app_database_status, count, checked)
+            } else {
+                getString(R.string.settings_update_app_database_status_never, count)
+            }
+    }
+
     private val iconPickerLauncher =
         registerForActivityResult(
             androidx.activity.result.contract.ActivityResultContracts
@@ -456,6 +476,38 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             widgetLayoutResource = R.layout.preference_widget_open_in_new
             setOnPreferenceClickListener {
                 CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.translation_url))
+                true
+            }
+        }
+
+        // App database updater moved into App Interactions category
+        findPreference<Preference>("update_app_database")?.let { pref ->
+            updateDatabaseSummary(pref)
+            pref.setOnPreferenceClickListener {
+                if (checkingDatabase) return@setOnPreferenceClickListener true
+                view?.let { HapticUtils.segmentTick(it) }
+                checkingDatabase = true
+                pref.summary = getString(R.string.settings_update_app_database_checking)
+                lifecycleScope.launch {
+                    val result =
+                        af.shizuku.manager.worker.RemoteDbSyncWorker
+                            .sync()
+                    checkingDatabase = false
+                    if (!isAdded) return@launch
+                    updateDatabaseSummary(pref)
+                    when (result) {
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Updated -> {
+                            view?.let { HapticUtils.success(it) }
+                            notifyUser(resources.getQuantityString(R.plurals.settings_update_app_database_updated, result.apps, result.apps))
+                        }
+                        af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.UpToDate -> {
+                            view?.let { HapticUtils.success(it) }
+                            notifyUser(R.string.settings_update_app_database_up_to_date)
+                        }
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Failed ->
+                            notifyUser(R.string.settings_update_app_database_error, long = true)
+                    }
+                }
                 true
             }
         }
