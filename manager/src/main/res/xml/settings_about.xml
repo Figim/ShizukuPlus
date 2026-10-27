@@ -37,6 +37,12 @@
             android:summary="@string/settings_check_for_update_summary"
             android:icon="@drawable/ic_update_24" />
 
+        <Preference
+            android:key="update_app_database"
+            android:title="@string/settings_update_app_database"
+            android:summary="@string/settings_update_app_database_summary"
+            android:icon="@drawable/ic_autorenew" />
+
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="update_channel"
             android:title="@string/settings_update_channel_title"

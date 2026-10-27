@@ -239,12 +239,6 @@
         <af.shizuku.manager.settings.AppInteractionsPreference
             android:key="pref_app_interactions_studio" />
 
-        <Preference
-            android:key="update_app_database"
-            android:title="@string/settings_update_app_database"
-            android:summary="@string/settings_update_app_database_summary"
-            android:icon="@drawable/ic_autorenew" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

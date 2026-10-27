@@ -3,11 +3,13 @@ package af.shizuku.manager.settings
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.database.AppContextManager
 import af.shizuku.manager.home.ChangelogDialogFragment
 import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.update.UpdateDialogHelper
 import af.shizuku.manager.update.UpdateManager
 import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.HapticUtils
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -31,6 +33,21 @@ class AboutSettingsFragment : BaseSettingsFragment() {
     private val updateManager: UpdateManager by inject()
     private var versionClickCount = 0
     private var isCheckingForUpdate = false
+    private var checkingDatabase = false
+
+    private fun updateDatabaseSummary(pref: Preference) {
+        val last = ShizukuSettings.getLastDbUpdate()
+        val count = AppContextManager.appCount()
+        pref.summary =
+            if (last > 0) {
+                val checked =
+                    android.text.format.DateUtils
+                        .getRelativeTimeSpanString(last, System.currentTimeMillis(), android.text.format.DateUtils.MINUTE_IN_MILLIS)
+                getString(R.string.settings_update_app_database_status, count, checked)
+            } else {
+                getString(R.string.settings_update_app_database_status_never, count)
+            }
+    }
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_about)
 
@@ -171,9 +188,41 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                     true
                 }
             }
+
+        findPreference<Preference>("update_app_database")?.let { pref ->
+            updateDatabaseSummary(pref)
+            pref.setOnPreferenceClickListener {
+                if (checkingDatabase) return@setOnPreferenceClickListener true
+                view?.let { HapticUtils.segmentTick(it) }
+                checkingDatabase = true
+                pref.summary = getString(R.string.settings_update_app_database_checking)
+                lifecycleScope.launch {
+                    val result =
+                        af.shizuku.manager.worker.RemoteDbSyncWorker
+                            .sync()
+                    checkingDatabase = false
+                    if (!isAdded) return@launch
+                    updateDatabaseSummary(pref)
+                    when (result) {
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Updated -> {
+                            view?.let { HapticUtils.success(it) }
+                            notifyUser(resources.getQuantityString(R.plurals.settings_update_app_database_updated, result.apps, result.apps))
+                        }
+                        af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.UpToDate -> {
+                            view?.let { HapticUtils.success(it) }
+                            notifyUser(R.string.settings_update_app_database_up_to_date)
+                        }
+                        is af.shizuku.manager.worker.RemoteDbSyncWorker.Companion.SyncResult.Failed ->
+                            notifyUser(R.string.settings_update_app_database_error, long = true)
+                    }
+                }
+                true
+            }
+        }
     }
 
     private fun updateLastCheckSummary() {
+        findPreference<Preference>("update_app_database")?.let { updateDatabaseSummary(it) }
         val pref = findPreference<Preference>(KEY_CHECK_FOR_UPDATE) ?: return
         val lastCheck = ShizukuSettings.getLastUpdateCheckTime()
         val status =
