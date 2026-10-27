@@ -101,7 +101,10 @@ class CollapsiblePreferenceCategory
                 if (catIcon != null) {
                     iconView.setImageDrawable(catIcon)
                     iconView.visibility = android.view.View.VISIBLE
-                    if (activeCount > 0 && collapsible) {
+                    val style =
+                        af.shizuku.manager.utils.IconStyleHelper
+                            .current()
+                    if (style == af.shizuku.manager.utils.IconStyleHelper.Style.TWO_TONE && activeCount > 0 && collapsible) {
                         val bgColor =
                             com.google.android.material.color.MaterialColors.getColor(
                                 ctx,

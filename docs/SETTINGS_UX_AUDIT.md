@@ -36,17 +36,18 @@ row for people who really want different home and settings cards. Migrate: Round
   and "↳ System Theming Bridge" fakes nesting with an arrow. Drop the suffixes (the screen is
   already Developer options) and show the child relationship with `dependency` or a sub-label.
 
-## 3. Rows on the wrong screen (medium) - DONE `bbfb7e6d` `f637bfa5` `c985f085` (Hide launcher icon stays in Advanced: App icon & name only shows with its experimental switch)
+## 3. Rows on the wrong screen (medium) - DONE `bbfb7e6d` `f637bfa5` `c985f085` `9dfa4ea8` `c37769e4` (Hide launcher icon stays in Advanced: App icon & name only shows with its experimental switch)
 
 - Main screen: "App interactions" sits under **Personalization**, but it holds swipe and
   long-press actions plus Verified installation and Package governor, which are security.
-  Proposal: keep gestures under Personalization; move Verified installation and Package
-  governor to **Startup & behavior > Network security** (renamed "Security"), or give them
-  their own "App safety" screen.
+  Done: Verified installation and Package governor were moved to **Startup & behavior > Network security**.
+  App interactions gestures were streamlined into a compact expressive card (`AppInteractionsPreference`)
+  directly embedded within **Personalization / Appearance**, completely removing `AppManagementSettingsFragment` as a separate subpage.
 - Advanced & diagnostics > Diagnostics is a grab-bag: Hide launcher icon, Hide Backup &
   restore, Update app database, Scripting. Hide launcher icon belongs with **App icon & name**
   (stealth sits next to camouflage); Scripting with **ADB tools**; Update app database (it fetches
-  the app descriptions and enhancement suggestions the Apps list shows) with App interactions.
+  the app descriptions and enhancement suggestions the Apps list shows) was moved to **About > Updates**
+  alongside app release updates (`settings_about.xml`).
 - Color & theme holds Bold typography, which isn't colour. Move it to a **Text & layout**
   group with One-handed mode, Expanded section headers and Edge-to-edge.
 - Activity log is split: "Enable activity log" (Advanced) and "Show Activity Log" (Home

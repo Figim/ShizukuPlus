@@ -120,6 +120,27 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-27 — Antigravity (App interactions consolidation, Settings UX, One UI title centering, GitHub triage) [master]
+
+- **App interactions modernization & consolidation**:
+  - Replaced the 700dp phone canvas and nested cards with a compact, spring-morphing M3 Expressive card (`AppInteractionsPreference.kt`) featuring unified horizontal swipe action selector chips (right/left) and long-press toggle pills in ~140dp.
+  - Consolidated App Interactions directly into the Appearance screen (`settings_personalization.xml`), completely eliminating `AppManagementSettingsFragment` and its separate subpage from `settings_main.xml`.
+  - Cleaned up obsolete `AppManagementSettingsFragment.kt` and `settings_app_management.xml` and removed dead entry from `SettingsSearchEngine`.
+- **Cloud Database Updater relocated**:
+  - Moved `update_app_database` (fetching app descriptions and tips) out of Appearance/Interactions into **About > Updates** (`settings_about.xml` / `AboutSettingsFragment.kt`), keeping Appearance dedicated to visual and interaction styling.
+- **Settings One UI & One-Handed mode title centering**:
+  - Aligned Settings One UI / One-Handed mode title positioning with `HomeScreen.kt` (centered when expanded, smoothly interpolating to start on collapse in `SettingsScreen.kt`).
+  - Addressed text cutoffs across 24 files, removing `TextOverflow.Ellipsis` and rigid maxLines for full text display across modern viewports (including Galaxy S26 Ultra).
+  - Elevated Snackbar above floating navigation bar in `SnackbarHelper.kt`.
+- **GitHub Issues triage & fixes**:
+  - **#641 (Inconsistent colors)**: Fixed header category icon styling in `CollapsiblePreferenceCategory.kt` to respect `IconStyleHelper.current()`. Now only applies a two-tone pill if `style == Style.TWO_TONE`; for `OUTLINED` or `STANDARD` icon styles, it keeps the clean primary icon without artificial purple/container background.
+  - **#642 (Inconsistent rounding)**: Fixed PLUS badge in `PlusGovernorsPreference.kt` to use a full pill (`RoundedCornerShape(100)`), consistent with `PlusFeaturePreference` and other badges.
+  - **#643 (One UI style crash on Samsung F14)**: Confirmed resolved by r3085 commit `768d27ad` (safe fragment detach/re-attach in `SettingsActivity.kt` on recreate, `view?.post` recreate triggers, and proper padding insets sync).
+  - **#640 (Option bug)**: Confirmed resolved by r3085 commit `768d27ad` (expanded header padding and title overlap sync).
+  - **#639 (Crash immediately)**: Root cause was `AppIconTilePickerPreference` ClassCastException resolved in r3082 (`60780ea0`) and recreate stabilization in r3085.
+  - **#623 (Error while searching settings)**: Confirmed resolved by commit `5bdf6f2a` (`SafePreferenceIcon`).
+
+
 ### 2026-10-24 (late) — Claude (stable prep: issues, tests, CI, merge) [master, unpushed, 175 ahead / 0 behind]
 
 - **Issues filed** for the removed per-app enhancements: #631 (concept + "Plus upgrade available" badge reference text, what a revival needs), #632 DPM, #633 NPU, #634 AVF VM, #635 Window Tuner.

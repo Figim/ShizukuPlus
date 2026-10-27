@@ -388,14 +388,14 @@ private fun GovernorsContent(
                             Box(
                                 modifier =
                                     Modifier
-                                        .clip(RoundedCornerShape(4.dp))
+                                        .clip(RoundedCornerShape(100))
                                         .background(
                                             if (checked) {
                                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
                                             } else {
                                                 MaterialTheme.colorScheme.surfaceContainerHighest
                                             },
-                                        ).padding(horizontal = 4.dp, vertical = 1.dp),
+                                        ).padding(horizontal = 6.dp, vertical = 2.dp),
                             ) {
                                 Text(
                                     text = "PLUS",

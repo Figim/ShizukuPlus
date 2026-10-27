@@ -4,6 +4,16 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+### 🎨 Appearance & Settings UX
+- **Compact App Interactions Studio** — replaced legacy nested views and phone preview canvas with an M3 Expressive, compact (~140dp) swipe and long-press interaction studio embedded directly into Appearance settings (`settings_personalization.xml`), eliminating the separate subpage.
+- **Centered One UI & One-Handed Settings Titles** — header titles in Settings now match the Home Screen by centering smoothly when expanded in One UI and One-Handed modes, interpolating back to the leading edge upon collapse.
+- **Header Icon Style Consistency** — category header icons in settings now strictly respect the active icon style (`IconStyleHelper`), avoiding artificial two-tone background pills when Outlined or Standard icon style is active ([#641](https://github.com/thejaustin/ShizukuPlus/issues/641)).
+- **Consistent PLUS Badge Shapes** — unified PLUS badge rounding across governors and feature cards into full pill shapes (`RoundedCornerShape(100)`) ([#642](https://github.com/thejaustin/ShizukuPlus/issues/642)).
+- **Relocated Cloud Database Updates** — moved cloud app database updates from Appearance into **About > Updates** alongside release updates.
+- **No Text Truncation** — eliminated aggressive ellipses and text clipping across 24 screens and dialogs, ensuring complete word readability on modern device viewports including Samsung Galaxy S26 Ultra.
+- **Elevated Snackbar** — raised Snackbar alerts above the floating navigation bar to prevent UI overlap.
+
+
 ## [v13.7.0-p1 — Major Stable Release] - 2026-10-25
 
 ### 🌟 Highlights
