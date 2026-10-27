@@ -187,15 +187,43 @@ class UpdateManager(
     ) = withContext(Dispatchers.IO) {
         var connection: HttpURLConnection? = null
         try {
-            val url = URL(downloadUrl)
-            connection = url.openConnection() as HttpURLConnection
-            connection.connectTimeout = 15_000
-            connection.readTimeout = 30_000
-            connection.instanceFollowRedirects = true
-            connection.setRequestProperty("User-Agent", "Shizuku+/$versionName")
-            connection.connect()
+            var currentUrl = downloadUrl
+            var redirects = 0
+            while (redirects < 5) {
+                val url = URL(currentUrl)
+                connection = url.openConnection() as HttpURLConnection
+                connection.connectTimeout = 15_000
+                connection.readTimeout = 30_000
+                connection.instanceFollowRedirects = true
+                connection.setRequestProperty("User-Agent", "Shizuku+/$versionName")
+                connection.connect()
 
-            val responseCode = connection.responseCode
+                val code = connection.responseCode
+                if (code == HttpURLConnection.HTTP_MOVED_PERM ||
+                    code == HttpURLConnection.HTTP_MOVED_TEMP ||
+                    code == HttpURLConnection.HTTP_SEE_OTHER ||
+                    code == 307 ||
+                    code == 308
+                ) {
+                    val location = connection.getHeaderField("Location")
+                    if (!location.isNullOrBlank()) {
+                        currentUrl = location
+                        connection.disconnect()
+                        redirects++
+                        continue
+                    }
+                }
+                break
+            }
+
+            val conn =
+                connection ?: run {
+                    _state.value = UpdateState.Error("Failed to open connection")
+                    showDownloadErrorNotification()
+                    return@withContext
+                }
+
+            val responseCode = conn.responseCode
             if (responseCode != HttpURLConnection.HTTP_OK) {
                 Timber.tag(TAG).w("Direct HTTP download returned status $responseCode")
                 _state.value = UpdateState.Error("Server returned code $responseCode", responseCode)
@@ -203,15 +231,18 @@ class UpdateManager(
                 return@withContext
             }
 
-            val contentLength = connection.contentLength.toLong()
+            val contentLength = conn.contentLength.toLong()
             var bytesReadTotal = 0L
 
-            connection.inputStream.use { input ->
+            conn.inputStream.use { input ->
                 FileOutputStream(file).use { output ->
                     val buffer = ByteArray(8192)
                     var bytes: Int
                     while (input.read(buffer).also { bytes = it } != -1) {
-                        if (!isActive) return@withContext
+                        if (!isActive) {
+                            file.delete()
+                            return@withContext
+                        }
                         output.write(buffer, 0, bytes)
                         bytesReadTotal += bytes
 
@@ -226,6 +257,7 @@ class UpdateManager(
             onDownloadComplete(file, versionName)
         } catch (e: Exception) {
             Timber.tag(TAG).w(e, "Direct HTTP download failed")
+            file.delete()
             _state.value = UpdateState.Error(e.message ?: "Network error")
             showDownloadErrorNotification()
         } finally {

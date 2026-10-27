@@ -151,7 +151,7 @@ class BehaviorSettingsFragment :
         }
 
         findPreference<TwoStatePreference>(KEY_LIVE_ACTIVITY_ENABLED)?.setOnPreferenceChangeListener { _, newValue ->
-            val enable = newValue as Boolean
+            val enable = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
             val ctx = requireContext()
             if (!enable) {
                 val svcIntent = Intent(ctx, ShizukuLiveService::class.java)
@@ -202,7 +202,7 @@ class BehaviorSettingsFragment :
                 // The listener runs before the switch persists its value; sync once it has, or the
                 // server gets the old state.
                 view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
-                if (key == "binder_firewall_enabled") syncTrustedNetworksAvailability(newValue as Boolean)
+                if (key == "binder_firewall_enabled") syncTrustedNetworksAvailability((newValue as? Boolean) == true)
                 true
             }
         }

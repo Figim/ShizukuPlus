@@ -195,7 +195,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
         morphShapePreference?.setOnPreferenceChangeListener { _, newValue ->
-            syncMorphAvailability(shape = newValue as String)
+            val shape = newValue as? String ?: return@setOnPreferenceChangeListener false
+            syncMorphAvailability(shape = shape)
             // Restyle once the new value has been persisted.
             view?.post {
                 applyTheme(requiresRecreate = false)

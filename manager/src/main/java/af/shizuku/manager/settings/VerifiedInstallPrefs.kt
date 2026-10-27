@@ -30,7 +30,7 @@ object VerifiedInstallPrefs {
 
         // Legacy individual rows wiring preserved if present
         fragment.findPreference<TwoStatePreference>("verify_apk_virustotal")?.setOnPreferenceChangeListener { pref, newValue ->
-            val enabling = newValue as Boolean
+            val enabling = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
             if (enabling && ShizukuSettings.getVirusTotalApiKey().isBlank()) {
                 promptVirusTotalKey(
                     fragment.requireContext(),

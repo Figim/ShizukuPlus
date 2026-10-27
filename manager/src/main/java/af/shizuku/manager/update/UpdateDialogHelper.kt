@@ -97,7 +97,14 @@ object UpdateDialogHelper {
                         if (dialog.isShowing) {
                             dialog.dismiss()
                         }
-                        Toast.makeText(activity, state.message, Toast.LENGTH_LONG).show()
+                        MaterialAlertDialogBuilder(activity)
+                            .setTitle(R.string.update_download_failed_title)
+                            .setMessage(state.message)
+                            .setPositiveButton(R.string.update_view_on_github) { _, _ ->
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
+                                activity.startActivity(intent)
+                            }.setNegativeButton(android.R.string.cancel, null)
+                            .show()
                     }
                     is UpdateManager.UpdateState.Idle -> {
                         // Idle

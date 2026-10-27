@@ -270,7 +270,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>("hide_launcher_icon")?.apply {
             isChecked = ShizukuSettings.isHideLauncherIconEnabled()
             setOnPreferenceChangeListener { pref, newValue ->
-                val enable = newValue as Boolean
+                val enable = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
                 if (enable) {
                     MaterialAlertDialogBuilder(context)
                         .setTitle(R.string.stealth_mode_enable_title)
@@ -297,7 +297,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>(KEY_CUSTOM_API_ENABLED)?.apply {
             isChecked = ShizukuSettings.isCustomApiEnabled()
             setOnPreferenceChangeListener { _, newValue ->
-                val enabled = newValue as Boolean
+                val enabled = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
                 maybePromptRestart(KEY_CUSTOM_API_ENABLED, enabled) {
                     ShizukuSettings.setCustomApiEnabled(enabled)
                     isChecked = enabled
