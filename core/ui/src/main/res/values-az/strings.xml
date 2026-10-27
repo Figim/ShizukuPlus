@@ -19,17 +19,34 @@
         <item>Xətli (Konturlu)</item>
         <item>İki çalarlı</item>
     </string-array>
+    <string-array name="icon_styles_value" translatable="false">
+        <item>standard</item>
+        <item>outlined</item>
+        <item>twotone</item>
+    </string-array>
     <string-array name="shape_styles">
         <item>Zen (Bədii)</item>
         <item>Müasir (Material 3)</item>
         <item>Klassik (Material 2)</item>
         <item>Üzvi (Dairəvi)</item>
     </string-array>
+    <string-array name="shape_styles_value" translatable="false">
+        <item>zen</item>
+        <item>modern</item>
+        <item>classic</item>
+        <item>squircle</item>
+    </string-array>
     <string-array name="animation_intensities">
         <item>Yoxdur</item>
         <item>Yüngül</item>
         <item>Standart</item>
         <item>Ekspressiv</item>
+    </string-array>
+    <string-array name="animation_intensities_value" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s işləyir</string>
@@ -592,7 +609,7 @@
     <string name="no_file_picker">Bu cihazda fayl seçici tətbiq tapılmadı</string>
     <string name="shell_export_success">Fayllar uğurla ixrac edildi</string>
     <string name="shell_export_failed">İxrac uğursuz oldu — heç bir fayl yazıla bilmədi</string>
-    <string name="shell_export_partial">%1$d / %2$d fayl ixrac edildi (bəziləri uğursuz oldu)</string>
+    <string name="shell_export_partial">%1$s / %2$s fayl ixrac edildi (bəziləri uğursuz oldu)</string>
     <!-- Settings backup/restore -->
     <string name="adb_native_unavailable">Naqilsiz ADB cütləşdirməsi bu cihazda mövcud deyil</string>
     <string name="changelog_title">Yeniliklər</string>
