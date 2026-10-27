@@ -1144,6 +1144,13 @@
     <string name="settings_verify_apk_virustotal_summary">Scan APK hashes against VirusTotal before installation. Requires API key.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Threat Intel</string>
     <string name="settings_verify_apk_pithus_summary">Check hashes against Pithus to detect malware traits.</string>
+    <string name="settings_verify_apk_local_badge">Offline Certificate</string>
+    <string name="settings_verify_apk_fdroid_badge">F-Droid Metadata</string>
+    <string name="settings_verify_apk_virustotal_badge">70+ Cloud Scanners</string>
+    <string name="settings_verify_apk_pithus_badge">Behavioral Intel</string>
+    <string name="settings_verify_engines_posture">%1$d of %2$d Security Engines Active</string>
+    <string name="settings_verify_key_required_hint">Key required · Tap to set</string>
+    <string name="settings_verify_key_saved_hint">Key active · Hold to edit</string>
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Custom Accent Color</string>
