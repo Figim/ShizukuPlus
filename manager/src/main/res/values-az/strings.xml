@@ -1295,7 +1295,7 @@
     <string name="update_signature_mismatch_title">İmza Uyğunsuzluğu</string>
     <string name="update_signature_mismatch_migrate_message">Hazırda quraşdırılmış tətbiqiniz bu rəsmi buraxılışdan fərqli açarla imzalanıb (yerli debug qurğusu kimi). İmza açarları fərqli olduqda Android standart yerində yeniləmələrin qarşısını alır.\n\nShizuku aktiv olduğundan, Shizuku+ tənzimləmələrinizin ehtiyat nüsxəsini çıxara, yeniləməni yenidən quraşdıra və konfiqurasiyanızı avtomatik bərpa edə bilər.\n\nİndi köçürülsün?</string>
     <string name="update_signature_mismatch_manual_message">Yüklənmiş yeniləmə rəsmi buraxılış açarı ilə imzalanıb, lakin hazırda quraşdırılmış tətbiqinizin başqa imza açarı var (yerli debug qurğusu kimi). Açarlar fərqli olduqda Android yerində yeniləmələrin qarşısını alır.\n\nYeniləmək üçün Tənzimləmələr → Ehtiyat Nüsxə və Bərpa bölməsində tənzimləmələrinizin ehtiyat nüsxəsini çıxarın, bu versiyanı silin və yeni yeniləməni quraşdırın.</string>
-    <string name="update_migrate_now">İndi Köçür/string>
+    <string name="update_migrate_now">İndi Köçür</string>
     <string name="update_open_backup_settings">Ehtiyat Nüsxə və Bərpa</string>
 
     <!-- Migration Dialog -->
