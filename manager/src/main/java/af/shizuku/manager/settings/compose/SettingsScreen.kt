@@ -259,14 +259,16 @@ fun SettingsScreen(
                                         .height(collapsedHeight)
                                         .padding(horizontal = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
-                                IconButton(onClick = { onNavigateUp() }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_back_24),
-                                        contentDescription = stringResource(R.string.cd_navigate_back),
-                                    )
+                                if (showNavigateUp) {
+                                    IconButton(onClick = { onNavigateUp() }) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_back_24),
+                                            contentDescription = stringResource(R.string.cd_navigate_back),
+                                        )
+                                    }
                                 }
+                                Spacer(modifier = Modifier.weight(1f))
                                 IconButton(onClick = { isSearchActive = true }) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_search_24),
@@ -276,7 +278,8 @@ fun SettingsScreen(
                             }
 
                             // Title and One UI subtitle
-                            val titleStartPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
+                            val collapsedTitleStartPadding = if (showNavigateUp) 56.dp else 24.dp
+                            val titleStartPadding = lerp(start = 24.dp, stop = collapsedTitleStartPadding, fraction = curvedFraction)
                             // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
                             // large system fonts don't push a 34sp title into the action icons.
                             val fontScaleCap = if (isOneUi) LocalDensity.current.fontScale.coerceAtLeast(1f) else 1f
@@ -288,7 +291,7 @@ fun SettingsScreen(
                             val horizontalBias = -1f // One UI aligns titles to the start
                             val verticalBias =
                                 androidx.compose.ui.util
-                                    .lerp(0.65f, -0.7f, curvedFraction)
+                                    .lerp(0.65f, 0.0f, curvedFraction)
 
                             Box(
                                 modifier =

@@ -66,6 +66,7 @@ class SettingsActivity :
 
     fun onThemeChanged() {
         themeVersion++
+        (supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseSettingsFragment)?.updateHeaderPadding()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,15 +141,37 @@ class SettingsActivity :
                         // FM restores the fragment into its internal state during super.onCreate(),
                         // before the Compose AndroidView container exists. findFragmentById returns
                         // non-null in that case, but the fragment's view was never created (the
-                        // container wasn't in the hierarchy when FM tried to attach it). Checking
-                        // view == null catches this: the fragment exists in FM's state but has no
-                        // live view, so we replace it to force a fresh attach.
+                        // container wasn't in the hierarchy when FM tried to attach it).
+                        // Detach and re-attach first to re-bind the existing fragment without losing
+                        // the user's current settings page on recreate.
                         val existing = supportFragmentManager.findFragmentById(R.id.fragment_container)
-                        if (existing == null || existing.view == null) {
+                        if (existing == null) {
                             supportFragmentManager
                                 .beginTransaction()
                                 .replace(R.id.fragment_container, SettingsFragment())
                                 .commitNow()
+                        } else if (existing.view == null) {
+                            supportFragmentManager
+                                .beginTransaction()
+                                .detach(existing)
+                                .attach(existing)
+                                .commitNow()
+                            if (existing.view == null) {
+                                try {
+                                    val fresh =
+                                        supportFragmentManager.fragmentFactory.instantiate(classLoader, existing.javaClass.name)
+                                    fresh.arguments = existing.arguments
+                                    supportFragmentManager
+                                        .beginTransaction()
+                                        .replace(R.id.fragment_container, fresh)
+                                        .commitNow()
+                                } catch (_: Throwable) {
+                                    supportFragmentManager
+                                        .beginTransaction()
+                                        .replace(R.id.fragment_container, SettingsFragment())
+                                        .commitNow()
+                                }
+                            }
                         }
                     },
                     isScrollIdle = _isScrollIdle,

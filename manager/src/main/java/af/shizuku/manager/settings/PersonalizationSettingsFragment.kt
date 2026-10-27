@@ -237,7 +237,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
 
         findPreference<Preference>("expanded_headers_enabled")?.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
+            view?.post { applyTheme(requiresRecreate = true) }
             true
         }
 
@@ -392,7 +392,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             pref.setOnPreferenceChangeListener { _, _ ->
                 // window.setBackgroundBlurRadius is set in onCreate; a recreate is needed for it to take
                 // effect. The AppBar translucency also needs onPostCreate to re-run (#449).
-                applyTheme(requiresRecreate = true)
+                view?.post { applyTheme(requiresRecreate = true) }
                 true
             }
         }
@@ -401,12 +401,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         oneUiThemePreference.isChecked = ShizukuSettings.isOneUiThemeEnabled()
         setChildAvailable(oneUiThemePreference, EnvironmentUtils.isSamsung())
         oneUiThemePreference.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
+            view?.post { applyTheme(requiresRecreate = true) }
             true
         }
 
         findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
+            view?.post { applyTheme(requiresRecreate = true) }
             true
         }
 
