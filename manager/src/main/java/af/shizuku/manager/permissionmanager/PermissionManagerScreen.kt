@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import kotlinx.coroutines.Dispatchers
@@ -149,7 +148,7 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
             androidx.compose.material3.MediumFlexibleTopAppBar(
                 title = {
                     if (selectedApp != null) {
-                        Text(selectedApp!!.label, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                        Text(selectedApp!!.label, maxLines = 3)
                     } else {
                         Text(stringResource(R.string.home_permission_manager_title))
                     }
@@ -340,15 +339,13 @@ private fun AppRow(
             Text(
                 text = app.label,
                 style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
             )
             Text(
                 text = app.packageName,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
             )
         }
         Icon(
@@ -480,15 +477,13 @@ private fun PermToggleRow(
             Text(
                 text = perm.shortName,
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
             )
             Text(
                 text = perm.name,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                maxLines = 3,
             )
         }
         AppSwitch(checked = perm.isGranted, onCheckedChange = null)

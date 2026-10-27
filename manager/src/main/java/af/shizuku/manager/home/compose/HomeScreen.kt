@@ -39,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -311,8 +310,7 @@ fun HomeScreen(
                                                 letterSpacing = titleLetterSpacing,
                                             ),
                                         textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
+                                        maxLines = 2,
                                     )
                                 } else if (isDropIn) {
                                     Row(
@@ -329,8 +327,7 @@ fun HomeScreen(
                                                     letterSpacing = titleLetterSpacing,
                                                 ),
                                             textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
+                                            maxLines = 2,
                                         )
                                         Spacer(modifier = Modifier.width(lerp(8.dp, 6.dp, curvedFraction)))
                                         Surface(
@@ -366,8 +363,7 @@ fun HomeScreen(
                                                 letterSpacing = titleLetterSpacing,
                                             ),
                                         textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
+                                        maxLines = 2,
                                     )
                                 }
                             } // end Crossfade

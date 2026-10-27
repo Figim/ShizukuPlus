@@ -44,20 +44,38 @@ object SnackbarHelper {
         val navRoot =
             view.rootView?.findViewById<View>(R.id.floating_nav_root)
                 ?: (context as? Activity)?.findViewById<View>(R.id.floating_nav_root)
-        if (navRoot != null && ShizukuSettings.isFloatingNavBarEnabled()) {
+        if (navRoot != null && ShizukuSettings.isFloatingNavBarEnabled() && navRoot.visibility == View.VISIBLE) {
             newSnackbar.anchorView = navRoot
         }
+
+        // Ensure snackbar text never clips or truncates with ellipses
+        val textView =
+            newSnackbar.view.findViewById<android.widget.TextView>(com.google.android.material.R.id.snackbar_text)
+        textView?.isSingleLine = false
+        textView?.maxLines = 5
+        textView?.ellipsize = null
 
         newSnackbar.show()
         snackbar = newSnackbar
 
         // If the floating nav bar was being measured or added concurrently, bind anchor
+        // and ensure bottom margin clears floating nav bar when anchorView is not honored by FrameLayout
         view.post {
             val liveNav =
                 view.rootView?.findViewById<View>(R.id.floating_nav_root)
                     ?: (context as? Activity)?.findViewById<View>(R.id.floating_nav_root)
-            if (liveNav != null && ShizukuSettings.isFloatingNavBarEnabled()) {
+            if (liveNav != null && ShizukuSettings.isFloatingNavBarEnabled() && liveNav.visibility == View.VISIBLE) {
                 updateAnchor(liveNav)
+                val navHeight = if (liveNav.height > 0) liveNav.height else (liveNav.layoutParams?.height ?: 0)
+                val navBottom = (liveNav.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.bottomMargin ?: 0
+                val extraMargin = (12 * context.resources.displayMetrics.density).toInt()
+                val targetBottom = navHeight + navBottom + extraMargin
+                (newSnackbar.view.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.let { lp ->
+                    if (lp.bottomMargin < targetBottom) {
+                        lp.bottomMargin = targetBottom
+                        newSnackbar.view.layoutParams = lp
+                    }
+                }
             }
         }
     }
@@ -66,6 +84,17 @@ object SnackbarHelper {
         snackbar?.let { sb ->
             if (sb.anchorView != anchorView) {
                 sb.anchorView = anchorView
+                if (anchorView != null && anchorView.visibility == View.VISIBLE) {
+                    val navHeight = if (anchorView.height > 0) anchorView.height else (anchorView.layoutParams?.height ?: 0)
+                    val navBottom = (anchorView.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.bottomMargin ?: 0
+                    val extraMargin = (12 * anchorView.resources.displayMetrics.density).toInt()
+                    val targetBottom = navHeight + navBottom + extraMargin
+                    (sb.view.layoutParams as? android.view.ViewGroup.MarginLayoutParams)?.let { lp ->
+                        if (lp.bottomMargin < targetBottom) {
+                            lp.bottomMargin = targetBottom
+                        }
+                    }
+                }
                 sb.view.requestLayout()
             }
         }

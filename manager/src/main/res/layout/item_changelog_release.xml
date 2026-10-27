@@ -40,8 +40,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end"
+                android:maxLines="2"
                 tools:text="v13.7.0.r2745" />
 
             <LinearLayout

@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
@@ -166,10 +165,9 @@ fun SegmentedChoiceRow(
             ) {
                 Text(
                     label,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 3,
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
+                    style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
                 )
             }
         }

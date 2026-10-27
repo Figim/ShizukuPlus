@@ -43,8 +43,7 @@
                 android:id="@+id/oneui_header_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="2"
-                android:ellipsize="end"
+                android:maxLines="3"
                 android:breakStrategy="balanced"
                 android:text="@string/home_app_management_title"
                 android:textAppearance="@style/TextAppearance.OneUI.HeadlineLarge" />

@@ -53,7 +53,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -211,8 +210,7 @@ private fun GestureStudioContent(
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
                         )
                     }
                 }
@@ -232,8 +230,7 @@ private fun GestureStudioContent(
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
                             modifier = Modifier.padding(end = 6.dp),
                         )
                         Text(
@@ -406,7 +403,7 @@ private fun GestureStudioContent(
                                 text = stringResource(R.string.settings_swipe_preview_hint),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
+                                maxLines = 2,
                             )
                         }
                     }
@@ -678,8 +675,7 @@ private fun ActionChip(
             style = MaterialTheme.typography.labelMedium,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
             color = contentColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
             modifier = Modifier.weight(1f),
         )
 

@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.preference.Preference
@@ -383,8 +382,7 @@ private fun GovernorsContent(
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = if (checked) FontWeight.Bold else FontWeight.Medium,
                                 color = contentColor,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
                             )
                             // PLUS Badge
                             Box(
@@ -411,8 +409,7 @@ private fun GovernorsContent(
                             text = stringResource(gov.summaryRes),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
                             color = contentColor.copy(alpha = 0.8f),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 4,
                         )
                     }
 

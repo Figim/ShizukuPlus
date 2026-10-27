@@ -100,7 +100,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
@@ -408,7 +407,7 @@ private fun StudioContent(
                             HapticUtils.segmentTick(view)
                             tab = i
                         },
-                        text = { Text(stringResource(label), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                        text = { Text(stringResource(label), maxLines = 1) },
                     )
                 }
             }
@@ -443,7 +442,7 @@ private fun StudioContent(
             ) {
                 Icon(painterResource(R.drawable.ic_install_24), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
-                Text(stringResource(R.string.custom_icon_studio_save_png_short), maxLines = 1)
+                Text(stringResource(R.string.custom_icon_studio_save_png_short), maxLines = 2)
             }
             Button(
                 onClick = {
@@ -455,7 +454,7 @@ private fun StudioContent(
             ) {
                 Icon(painterResource(R.drawable.ic_sparkle_24), contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(6.dp))
-                Text(stringResource(R.string.custom_icon_studio_pin_shortcut), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(stringResource(R.string.custom_icon_studio_pin_shortcut), maxLines = 2)
             }
         }
     }
@@ -513,8 +512,7 @@ private fun PreviewCard(
                                 text = appName.ifBlank { stringResource(R.string.app_name) },
                                 color = labelColor,
                                 style = MaterialTheme.typography.labelMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
                             )
                         } else {
                             Box(Modifier.size(width = 40.dp, height = 8.dp).background(ghost, RoundedCornerShape(4.dp)))
@@ -701,8 +699,7 @@ private fun ShapePage(
                 Text(
                     stringResource(names.getValue(s)),
                     style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
                     color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -989,7 +986,7 @@ private fun Segmented(
                     onSelect(i)
                 },
                 shape = SegmentedButtonDefaults.itemShape(index = i, count = options.size),
-            ) { Text(stringResource(res), maxLines = 1) }
+            ) { Text(stringResource(res), maxLines = 2) }
         }
     }
 }

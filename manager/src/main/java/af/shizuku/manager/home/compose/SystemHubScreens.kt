@@ -1304,7 +1304,7 @@ private fun ActivityLogTimelineRow(
                             text = appName,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
+                            maxLines = 2,
                         )
                         Spacer(modifier = Modifier.height(1.dp))
                         Text(
@@ -1599,15 +1599,13 @@ private fun StatTile(
                 value,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                maxLines = 2,
             )
             Text(
                 title,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                maxLines = 2,
             )
         }
     }

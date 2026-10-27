@@ -485,6 +485,17 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 position: Int,
             ) {
                 adapter.onBindViewHolder(holder, position)
+                // Ensure no preference titles or summaries cut off with ellipses or truncate
+                holder.itemView.findViewById<android.widget.TextView>(android.R.id.title)?.let { tv ->
+                    tv.isSingleLine = false
+                    tv.maxLines = 4
+                    tv.ellipsize = null
+                }
+                holder.itemView.findViewById<android.widget.TextView>(android.R.id.summary)?.let { tv ->
+                    tv.isSingleLine = false
+                    tv.maxLines = 10
+                    tv.ellipsize = null
+                }
                 val pref = (adapter as? androidx.preference.PreferenceGroupAdapter)?.getItem(position)
                 if (pref != null && pref !is PlusFeaturePreference) {
                     // No tooltip: the row's title and summary are already visible (M3 keeps

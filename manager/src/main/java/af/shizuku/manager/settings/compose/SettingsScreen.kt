@@ -41,7 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -293,9 +292,11 @@ fun SettingsScreen(
                             }
                         }
 
-                        // Title and One UI subtitle
+                        // Title and One UI subtitle: slides from center (expanded) → start (collapsed) via BiasAlignment just like HomeScreen.
+                        val horizontalBias = -curvedFraction
                         val collapsedTitleStartPadding = if (showNavigateUp) 56.dp else 24.dp
                         val titleStartPadding = lerp(start = 24.dp, stop = collapsedTitleStartPadding, fraction = curvedFraction)
+                        val titleEndPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
                         // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
                         // large system fonts don't push a 34sp title into the action icons.
                         val fontScaleCap = if (isOneUi) LocalDensity.current.fontScale.coerceAtLeast(1f) else 1f
@@ -304,7 +305,6 @@ fun SettingsScreen(
                         val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
                         val titleLetterSpacing = lerp((-0.5).sp, (-0.2).sp, curvedFraction)
 
-                        val horizontalBias = -1f // One UI aligns titles to the start
                         val verticalBias =
                             androidx.compose.ui.util
                                 .lerp(0.65f, 0.0f, curvedFraction)
@@ -315,13 +315,15 @@ fun SettingsScreen(
                                     .fillMaxSize()
                                     .padding(
                                         start = titleStartPadding,
-                                        end = 56.dp,
+                                        end = titleEndPadding,
                                         top = lerp(start = 32.dp, stop = 0.dp, fraction = curvedFraction),
                                         bottom = lerp(start = 16.dp, stop = 0.dp, fraction = curvedFraction),
                                     ),
                             contentAlignment = BiasAlignment(horizontalBias, verticalBias),
                         ) {
-                            Column {
+                            Column(
+                                horizontalAlignment = if (curvedFraction > 0.5f) Alignment.Start else Alignment.CenterHorizontally,
+                            ) {
                                 Text(
                                     text = title,
                                     style =
@@ -330,8 +332,8 @@ fun SettingsScreen(
                                             fontSize = titleFontSize,
                                             letterSpacing = titleLetterSpacing,
                                         ),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
+                                    textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
+                                    maxLines = 2,
                                 )
                                 if (isOneUi && !subtitle.isNullOrBlank()) {
                                     val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
@@ -344,8 +346,8 @@ fun SettingsScreen(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                     fontWeight = FontWeight.Normal,
                                                 ),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
+                                            textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
+                                            maxLines = 2,
                                             modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
                                         )
                                     }
@@ -372,7 +374,7 @@ fun SettingsScreen(
                 Box {
                     TopAppBar(
                         title = {
-                            Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(text = title, maxLines = 2)
                         },
                         navigationIcon = {
                             if (showNavigateUp) {
