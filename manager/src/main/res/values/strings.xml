@@ -383,6 +383,16 @@
     <string name="onboarding_watchdog_desc">Automatically heal and revive the server if killed</string>
     <string name="onboarding_take_tour">Feature Tour</string>
     <string name="onboarding_take_tour_summary">Explore the new M3 Expressive look, home layout, and network trust shield</string>
+    <string name="onboarding_returning_welcome_title">Welcome Back to Shizuku+</string>
+    <string name="onboarding_returning_welcome_desc">Your existing permissions, setup, and authorized apps remain fully preserved. Discover what\'s new in this release:</string>
+    <string name="onboarding_returning_status_preserved">Setup &amp; apps intact</string>
+    <string name="onboarding_returning_feat_m3e_title">Material 3 Expressive UI</string>
+    <string name="onboarding_returning_feat_m3e_desc">Fluid spring physics, shape morphing, visual app icon picker, and interactive multi-toggle pills.</string>
+    <string name="onboarding_returning_feat_gestures_title">Connected Gestures &amp; Actions</string>
+    <string name="onboarding_returning_feat_gestures_desc">Segmented swipe action groups, tactile preview cards, and customized quick actions.</string>
+    <string name="onboarding_returning_feat_doctor_title">Adaptive Service Doctor</string>
+    <string name="onboarding_returning_feat_doctor_desc">Proactive background diagnostics, health monitoring, and one-tap automated self-healing.</string>
+    <string name="onboarding_returning_action_jump">Jump to Dashboard</string>
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Swipe gestures</string>
@@ -813,6 +823,12 @@
     <string name="home_service_doctor_summary">Having trouble starting Shizuku+? Tap to run a diagnostic check.</string>
     <string name="doctor_tips_title">Troubleshooting &amp; Fixes</string>
     <string name="doctor_action_rerun">Re-run</string>
+    <string name="doctor_action_auto_fix_all">Adaptive Auto-Repair</string>
+    <string name="doctor_action_auto_fix_all_running">Auto-Repairing…</string>
+    <string name="doctor_auto_heal_complete">Adaptive repair complete: %1$d issue(s) resolved</string>
+    <string name="doctor_auto_heal_no_issues">All diagnostic checks passed</string>
+    <string name="doctor_adaptive_self_heal_title">Adaptive Background Self-Healing</string>
+    <string name="doctor_adaptive_self_heal_desc">Automatically run health checks and repair service drops or permission issues in background</string>
     <string name="doctor_summary_healthy_title">All Systems Healthy</string>
     <string name="doctor_summary_healthy_subtitle">All diagnostic checks passed. Service environment is optimal.</string>
     <string name="doctor_summary_issues_title">%1$d Issue(s) Detected</string>
@@ -1128,6 +1144,15 @@
     <string name="settings_verify_apk_virustotal_summary">Scan APK hashes against VirusTotal before installation. Requires API key.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Threat Intel</string>
     <string name="settings_verify_apk_pithus_summary">Check hashes against Pithus to detect malware traits.</string>
+    <string name="settings_verify_apk_local_badge">Offline Certificate</string>
+    <string name="settings_verify_apk_fdroid_badge">F-Droid Metadata</string>
+    <string name="settings_verify_apk_virustotal_badge">70+ Cloud Scanners</string>
+    <string name="settings_verify_apk_pithus_badge">Behavioral Intel</string>
+    <string name="settings_verify_engines_posture">%1$d of %2$d Security Engines Active</string>
+    <string name="settings_verify_key_required_hint">Key required · Tap to set</string>
+    <string name="settings_verify_key_saved_hint">Key active · Hold to edit</string>
+    <string name="settings_plus_governors_posture">%1$d of %2$d Governors Active</string>
+    <string name="settings_plus_governors_help_hint">Hold any governor for architecture details</string>
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Custom Accent Color</string>
@@ -1262,6 +1287,15 @@
     <string name="update_download_failed_storage">Not enough free storage to download the update.</string>
     <string name="update_download_failed_cannot_resume">The download couldn\'t resume after being interrupted. Please try again.</string>
     <string name="update_download_failed_http">A network error interrupted the download. Please check your connection and try again.</string>
+    <string name="update_installing_title">Installing update…</string>
+    <string name="update_installing_progress">Installing Shizuku+ %1$s…</string>
+    <string name="update_run_in_background">Run in background</string>
+    <string name="update_installed_success">Update installed successfully!</string>
+    <string name="update_signature_mismatch_title">Signature Mismatch</string>
+    <string name="update_signature_mismatch_migrate_message">Your currently installed app is signed with a different key than this official release (such as a local debug build). Android prevents standard in-place updates when signing keys differ.\n\nSince Shizuku is active, Shizuku+ can back up your settings, reinstall the update, and restore your configuration automatically.\n\nMigrate now?</string>
+    <string name="update_signature_mismatch_manual_message">The downloaded update is signed with the official release key, but your currently installed app has a different signing key (such as a local debug build). Android prevents in-place updates when keys differ.\n\nTo update, back up your settings in Settings → Backup &amp; Restore, uninstall this version, and install the new update.</string>
+    <string name="update_migrate_now">Migrate Now</string>
+    <string name="update_open_backup_settings">Backup &amp; Restore</string>
 
     <!-- Migration Dialog -->
     <string name="migration_success_message">Your settings have been copied from the old version. You can now safely uninstall moe.shizuku.privileged.api.</string>

@@ -20,7 +20,7 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_EXPERIMENTAL_APP_IDENTITY)?.apply {
             isChecked = ShizukuSettings.isExperimentalAppIdentityEnabled()
             setOnPreferenceChangeListener { _, v ->
-                val enabled = v as Boolean
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
                 ShizukuSettings.setExperimentalAppIdentityEnabled(enabled)
                 if (!enabled) {
                     ShizukuSettings.setAppIconAlias("default")
@@ -51,7 +51,7 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
         fun syncNavChildren(on: Boolean) = navChildren.forEach { it.setAvailable(on) }
         syncNavChildren(navToggle?.isChecked == true)
         navToggle?.setOnPreferenceChangeListener { _, v ->
-            syncNavChildren(v as Boolean)
+            syncNavChildren((v as? Boolean) == true)
             true
         }
         findPreference<androidx.preference.MultiSelectListPreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {

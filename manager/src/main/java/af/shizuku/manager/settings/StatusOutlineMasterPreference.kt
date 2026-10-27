@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -277,14 +278,18 @@ private fun StatusOutlineContent(
                             }
                             Spacer(modifier = Modifier.width(10.dp))
                             Column(modifier = Modifier.weight(1f)) {
+                                val styleLabels = stringArrayResource(R.array.status_card_outline_styles)
+                                val materialLabel = styleLabels.getOrNull(0) ?: "Material Theme"
+                                val statusLabel = styleLabels.getOrNull(1) ?: "Status Color"
+
                                 Text(
-                                    text = "Shizuku is running",
+                                    text = stringResource(R.string.home_status_service_is_running, "Shizuku"),
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurface,
                                 )
                                 Text(
-                                    text = if (style == "status") "Status color outline" else "Theme accent outline",
+                                    text = if (style == "status") statusLabel else materialLabel,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -300,10 +305,11 @@ private fun StatusOutlineContent(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+                        val styleLabels = stringArrayResource(R.array.status_card_outline_styles)
                         val options =
                             listOf(
-                                Triple("material", "Material Theme", R.drawable.ic_palette_24),
-                                Triple("status", "Green / Red Status", R.drawable.ic_server_ok_24),
+                                Triple("material", styleLabels.getOrNull(0) ?: "Material Theme", R.drawable.ic_palette_24),
+                                Triple("status", styleLabels.getOrNull(1) ?: "Status Color", R.drawable.ic_server_ok_24),
                             )
 
                         options.forEach { (key, label, iconRes) ->

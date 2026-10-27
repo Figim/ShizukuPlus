@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import rikka.core.content.asActivity
 import rikka.html.text.HtmlCompat
 import rikka.html.text.toHtml
@@ -125,10 +126,15 @@ class ServerStatusViewHolder(
             diagnosticsChip.visibility = View.VISIBLE
             diagnosticsChip.text = context.getString(R.string.home_status_diagnostics_tips)
             diagnosticsChip.setChipIconResource(R.drawable.ic_settings_suggest_24)
+            ViewCompat.setTooltipText(diagnosticsChip, context.getString(R.string.home_service_doctor_title))
             diagnosticsChip.setOnClickListener {
                 af.shizuku.manager.utils.DeactivationAdvisor.showStabilityTipsDialog(context) {
                     onBind()
                 }
+            }
+            diagnosticsChip.setOnLongClickListener {
+                context.startActivity(android.content.Intent(context, af.shizuku.manager.settings.ServiceDoctorActivity::class.java))
+                true
             }
         } else {
             diagnosticsChip.visibility = View.GONE

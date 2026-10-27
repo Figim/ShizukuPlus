@@ -195,7 +195,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
         morphShapePreference?.setOnPreferenceChangeListener { _, newValue ->
-            syncMorphAvailability(shape = newValue as String)
+            val shape = newValue as? String ?: return@setOnPreferenceChangeListener false
+            syncMorphAvailability(shape = shape)
             // Restyle once the new value has been persisted.
             view?.post {
                 applyTheme(requiresRecreate = false)
@@ -294,16 +295,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>("category_app_identity")?.isVisible =
             ShizukuSettings.isExperimentalAppIdentityEnabled()
 
-        findPreference<ListPreference>("app_icon_alias")?.apply {
-            value = ShizukuSettings.getAppIconAlias()
-            setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is String) {
-                    ShizukuSettings.setAppIconAlias(newValue)
-                    af.shizuku.manager.utils.AppAliasManager
-                        .applyAlias(requireContext(), newValue)
-                }
-                true
-            }
+        findPreference<Preference>("app_icon_alias")?.apply {
+            // AppIconTilePickerPreference manages its own selection and alias application.
         }
 
         findPreference<EditTextPreference>("custom_app_name")?.apply {

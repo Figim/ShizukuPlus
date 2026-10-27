@@ -14,6 +14,7 @@ import af.shizuku.manager.databinding.PageOnboardingSecurityDoctorBinding
 import af.shizuku.manager.databinding.PageOnboardingSetupBinding
 import af.shizuku.manager.databinding.PageOnboardingSwipeBinding
 import af.shizuku.manager.databinding.PageOnboardingWelcomeBinding
+import af.shizuku.manager.databinding.PageOnboardingWelcomeReturningBinding
 import af.shizuku.manager.home.StartWirelessAdbViewHolder
 import af.shizuku.manager.home.showAccessibilityDialog
 import af.shizuku.manager.ktx.themeColor
@@ -25,6 +26,7 @@ import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
@@ -37,6 +39,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -50,6 +55,7 @@ class OnboardingActivity : AppActivity() {
 
     enum class PageType {
         WELCOME,
+        WELCOME_RETURNING,
         SETUP,
         M3E,
         LAYOUT_NAV,
@@ -67,9 +73,12 @@ class OnboardingActivity : AppActivity() {
     private val pages: List<PageType> by lazy {
         if (isNewFeaturesOnly) {
             listOf(
+                PageType.WELCOME_RETURNING,
                 PageType.M3E,
                 PageType.LAYOUT_NAV,
                 PageType.SECURITY_DOCTOR,
+                PageType.SWIPE,
+                PageType.GESTURES,
                 PageType.LONG_PRESS,
             )
         } else {
@@ -115,6 +124,21 @@ class OnboardingActivity : AppActivity() {
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            binding.root.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            binding.btnRow.setPadding(
+                binding.btnRow.paddingLeft,
+                binding.btnRow.paddingTop,
+                binding.btnRow.paddingRight,
+                systemBars.bottom.coerceAtLeast(dpToPx(16)),
+            )
+            insets
+        }
 
         binding.pager.adapter = onboardingAdapter
         binding.pager.offscreenPageLimit = pages.size
@@ -181,15 +205,24 @@ class OnboardingActivity : AppActivity() {
     private fun setupDots() {
         binding.dotsContainer.removeAllViews()
         dots.clear()
-        val sizePx = dpToPx(8)
-        val marginPx = dpToPx(5)
-        repeat(pages.size) {
+        val dotWidth = dpToPx(8)
+        val pillWidth = dpToPx(24)
+        val heightPx = dpToPx(8)
+        val marginPx = dpToPx(4)
+        val cornerPx = dpToPx(4).toFloat()
+
+        repeat(pages.size) { i ->
             val dot =
                 View(this).apply {
-                    val lp = LinearLayout.LayoutParams(sizePx, sizePx)
+                    val w = if (i == 0) pillWidth else dotWidth
+                    val lp = LinearLayout.LayoutParams(w, heightPx)
                     lp.setMargins(marginPx, 0, marginPx, 0)
                     layoutParams = lp
-                    background = GradientDrawable().apply { shape = GradientDrawable.OVAL }
+                    background =
+                        GradientDrawable().apply {
+                            shape = GradientDrawable.RECTANGLE
+                            cornerRadius = cornerPx
+                        }
                 }
             dots.add(dot)
             binding.dotsContainer.addView(dot)
@@ -200,14 +233,42 @@ class OnboardingActivity : AppActivity() {
     private fun updateDots(selected: Int) {
         val active = resolveThemeColor(android.R.attr.colorPrimary)
         val inactive = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+        val pillWidth = dpToPx(24)
+        val dotWidth = dpToPx(8)
+        val heightPx = dpToPx(8)
+        val cornerPx = dpToPx(4).toFloat()
+
         dots.forEachIndexed { i, dot ->
-            (dot.background as GradientDrawable).setColor(if (i == selected) active else inactive)
-            val sizePx = if (i == selected) dpToPx(10) else dpToPx(8)
-            dot.layoutParams =
-                (dot.layoutParams as LinearLayout.LayoutParams).also {
-                    it.width = sizePx
-                    it.height = sizePx
-                }
+            val isSelected = i == selected
+            val targetWidth = if (isSelected) pillWidth else dotWidth
+            val targetColor = if (isSelected) active else inactive
+            val currentWidth = dot.layoutParams.width
+
+            (dot.background as? GradientDrawable)?.apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = cornerPx
+                setColor(targetColor)
+            }
+
+            (dot.tag as? ValueAnimator)?.cancel()
+
+            if (currentWidth != targetWidth) {
+                val anim =
+                    ValueAnimator.ofInt(currentWidth, targetWidth).apply {
+                        duration = 260
+                        interpolator = FastOutSlowInInterpolator()
+                        addUpdateListener { va ->
+                            val w = va.animatedValue as Int
+                            dot.layoutParams =
+                                (dot.layoutParams as LinearLayout.LayoutParams).also { lp ->
+                                    lp.width = w
+                                    lp.height = heightPx
+                                }
+                        }
+                    }
+                dot.tag = anim
+                anim.start()
+            }
         }
     }
 
@@ -286,6 +347,7 @@ class OnboardingActivity : AppActivity() {
             val inflater = LayoutInflater.from(parent.context)
             return when (PageType.values()[viewType]) {
                 PageType.WELCOME -> OnboardingPageViewHolder.Welcome(PageOnboardingWelcomeBinding.inflate(inflater, parent, false))
+                PageType.WELCOME_RETURNING -> OnboardingPageViewHolder.WelcomeReturning(PageOnboardingWelcomeReturningBinding.inflate(inflater, parent, false))
                 PageType.SETUP -> OnboardingPageViewHolder.Setup(PageOnboardingSetupBinding.inflate(inflater, parent, false))
                 PageType.M3E -> OnboardingPageViewHolder.M3E(PageOnboardingM3eBinding.inflate(inflater, parent, false))
                 PageType.LAYOUT_NAV -> OnboardingPageViewHolder.LayoutNav(PageOnboardingLayoutNavBinding.inflate(inflater, parent, false))
@@ -301,6 +363,7 @@ class OnboardingActivity : AppActivity() {
             position: Int,
         ) {
             when (holder) {
+                is OnboardingPageViewHolder.WelcomeReturning -> bindWelcomeReturningPage(holder.binding)
                 is OnboardingPageViewHolder.Setup -> bindSetupPage(holder.binding)
                 is OnboardingPageViewHolder.M3E -> bindM3ePage(holder.binding)
                 is OnboardingPageViewHolder.LayoutNav -> bindLayoutNavPage(holder.binding)
@@ -311,6 +374,37 @@ class OnboardingActivity : AppActivity() {
                 }
                 is OnboardingPageViewHolder.LongPress -> bindLongPressPage(holder.binding)
                 else -> {}
+            }
+        }
+
+        private fun bindWelcomeReturningPage(binding: PageOnboardingWelcomeReturningBinding) {
+            binding.heroIcon.applySpringTouch()
+            binding.cardFeatM3e.applySpringTouch()
+            binding.cardFeatGestures.applySpringTouch()
+            binding.cardFeatDoctor.applySpringTouch()
+            binding.btnJumpToApp.applySpringTouch()
+
+            binding.btnJumpToApp.setOnClickListener {
+                HapticUtils.tap(it)
+                completeOnboarding()
+            }
+
+            binding.cardFeatM3e.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.M3E)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+            }
+
+            binding.cardFeatGestures.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.GESTURES)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+            }
+
+            binding.cardFeatDoctor.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.SECURITY_DOCTOR)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
             }
         }
 
@@ -583,6 +677,10 @@ class OnboardingActivity : AppActivity() {
     ) : RecyclerView.ViewHolder(root) {
         class Welcome(
             val binding: PageOnboardingWelcomeBinding,
+        ) : OnboardingPageViewHolder(binding.root)
+
+        class WelcomeReturning(
+            val binding: PageOnboardingWelcomeReturningBinding,
         ) : OnboardingPageViewHolder(binding.root)
 
         class Setup(

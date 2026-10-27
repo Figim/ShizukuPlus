@@ -5,6 +5,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.home.ChangelogDialogFragment
 import af.shizuku.manager.update.UpdateChecker
+import af.shizuku.manager.update.UpdateDialogHelper
 import af.shizuku.manager.update.UpdateManager
 import af.shizuku.manager.utils.CustomTabsHelper
 import android.content.Intent
@@ -282,7 +283,8 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             builder
                 .setMessage(getString(R.string.update_available_message, info.versionName))
                 .setPositiveButton(R.string.update_download) { _, _ ->
-                    updateManager.downloadUpdate(info.downloadUrl, info.versionName, manual = true)
+                    val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setPositiveButton
+                    UpdateDialogHelper.showDownloadProgressDialog(activity, updateManager, info)
                 }
         }
 

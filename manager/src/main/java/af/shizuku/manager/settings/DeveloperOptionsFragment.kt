@@ -28,7 +28,8 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>(KEY_VECTOR_ENABLED)?.apply {
             isChecked = ShizukuSettings.isVectorEnabled()
             setOnPreferenceChangeListener { _, v ->
-                ShizukuSettings.setVectorEnabled(v as Boolean)
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
+                ShizukuSettings.setVectorEnabled(enabled)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 true
             }
@@ -38,7 +39,8 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>(KEY_EXPERIMENTAL_ROOT_COMPAT)?.apply {
             isChecked = ShizukuSettings.isExperimentalRootCompatEnabled()
             setOnPreferenceChangeListener { _, v ->
-                ShizukuSettings.setExperimentalRootCompatEnabled(v as Boolean)
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
+                ShizukuSettings.setExperimentalRootCompatEnabled(enabled)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 true
             }
@@ -48,7 +50,8 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>(KEY_SPOOF_DEVICE_ENABLED)?.apply {
             isChecked = ShizukuSettings.isSpoofDeviceEnabled()
             setOnPreferenceChangeListener { _, v ->
-                ShizukuSettings.setSpoofDeviceEnabled(v as Boolean)
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
+                ShizukuSettings.setSpoofDeviceEnabled(enabled)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 true
             }
@@ -56,7 +59,8 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
 
         // Spoof Target
         findPreference<rikka.preference.SimpleMenuPreference>(KEY_SPOOF_TARGET)?.setOnPreferenceChangeListener { _, v ->
-            ShizukuSettings.setSpoofTarget(if (v == "auto") "auto" else v as String)
+            val target = v as? String ?: return@setOnPreferenceChangeListener false
+            ShizukuSettings.setSpoofTarget(if (target == "auto") "auto" else target)
             ShizukuSettings.syncAllPlusFeaturesToServer()
             true
         }

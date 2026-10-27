@@ -8,6 +8,7 @@ import af.shizuku.manager.utils.springTo
 import android.content.Context
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.TextView
@@ -66,6 +67,9 @@ open class GrayableIconSwitchPreference
             style: String,
         ) {
             val density = view.resources.displayMetrics.density
+            val insetH = (10f * density).toInt()
+            val insetV = (2f * density).toInt()
+
             when (style) {
                 "card" -> {
                     if (checked) {
@@ -78,7 +82,7 @@ open class GrayableIconSwitchPreference
                                 setColor(color)
                                 setStroke((1f * density).toInt(), outline)
                             }
-                        view.background = bg
+                        view.background = InsetDrawable(bg, insetH, insetV, insetH, insetV)
                     } else {
                         view.background = null
                     }
@@ -92,13 +96,30 @@ open class GrayableIconSwitchPreference
                                 cornerRadius = 16f * density
                                 setColor(ColorUtils.setAlphaComponent(color, 70))
                             }
-                        view.background = bg
+                        view.background = InsetDrawable(bg, insetH, insetV, insetH, insetV)
+                    } else {
+                        view.background = null
+                    }
+                }
+                "expressive" -> {
+                    if (checked) {
+                        val color = MaterialColors.getColor(view, MaterialR.attr.colorSurfaceContainerLow)
+                        val outline = MaterialColors.getColor(view, MaterialR.attr.colorOutlineVariant)
+                        val bg =
+                            GradientDrawable().apply {
+                                shape = GradientDrawable.RECTANGLE
+                                cornerRadius = 16f * density
+                                setColor(color)
+                                setStroke((1f * density).toInt(), ColorUtils.setAlphaComponent(outline, 80))
+                            }
+                        view.background = InsetDrawable(bg, insetH, insetV, insetH, insetV)
                     } else {
                         view.background = null
                     }
                 }
                 else -> {
-                    // expressive / minimal: clean default selectable row
+                    // minimal: clean default selectable row
+                    view.background = null
                 }
             }
         }
