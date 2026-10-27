@@ -389,7 +389,7 @@
     <string name="onboarding_returning_status_preserved">Quraşdırma və tətbiqlər toxunulmazdır</string>
     <string name="onboarding_returning_feat_m3e_title">Material 3 Expressive UI</string>
     <string name="onboarding_returning_feat_m3e_desc">Axıcı yay fizikası, forma morfinqi, vizual tətbiq ikonu seçici və interaktiv çoxlu keçid kapsulları.</string>
-    <string name="onboarding_returning_feat_gestures_title">Bağlı Jestlər və Əməliyyatlar</string>
+    <string name="onboarding_returning_feat_gestures_title">Bağlı Jestlər və Fəaliyyətlər</string>
     <string name="onboarding_returning_feat_gestures_desc">Segmentlərə bölünmüş sürüşdürmə əməliyyat qrupları, toxunma önizləmə kartları və fərdiləşdirilmiş sürətli əməliyyatlar.</string>
     <string name="onboarding_returning_feat_doctor_title">Adaptiv Xidmət Həkimi</string>
     <string name="onboarding_returning_feat_doctor_desc">Proaktiv arxa fon diaqnostikası, sağlamlıq monitorinqi və bir toxunuşla avtomatlaşdırılmış özünü bərpa.</string>
@@ -487,7 +487,7 @@
     <string name="settings_title">Tənzimləmələr</string>
     <string name="settings_start_on_boot">Yüklənmədə başlat</string>
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb edir</string>
-    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni yadda saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olaçaqsınız.</string>
+    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olacaqsınız.</string>
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
     <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
@@ -1293,9 +1293,9 @@
     <string name="update_run_in_background">Fonda işlət</string>
     <string name="update_installed_success">Yeniləmə uğurla quraşdırıldı!</string>
     <string name="update_signature_mismatch_title">İmza Uyğunsuzluğu</string>
-    <string name="update_signature_mismatch_migrate_message">Hazırda quraşdırılmış tətbiqiniz bu rəsmi buraxılışdan fərqli açarla imzalanıb (yerli debug qurğusu kimi). İmza açarları fərqli olduqda Android standart yerində yeniləmələrin qarşısını alır.\n\nShizuku aktiv olduğundan, Shizuku+ parametrlərinizin ehtiyat nüsxəsini çıxara, yeniləməni yenidən quraşdıra və konfiqurasiyanızı avtomatik bərpa edə bilər.\n\nİndi miqrasiya edilsin?</string>
-    <string name="update_signature_mismatch_manual_message">Yüklənmiş yeniləmə rəsmi buraxılış açarı ilə imzalanıb, lakin hazırda quraşdırılmış tətbiqinizin başqa imza açarı var (yerli debug qurğusu kimi). Açarlar fərqli olduqda Android yerində yeniləmələrin qarşısını alır.\n\nYeniləmək üçün Tənzimləmələr → Ehtiyat Nüsxə və Bərpa bölməsində parametrlərinizin ehtiyat nüsxəsini çıxarın, bu versiyanı silin və yeni yeniləməni quraşdırın.</string>
-    <string name="update_migrate_now">İndi Miqrasiya Et</string>
+    <string name="update_signature_mismatch_migrate_message">Hazırda quraşdırılmış tətbiqiniz bu rəsmi buraxılışdan fərqli açarla imzalanıb (yerli debug qurğusu kimi). İmza açarları fərqli olduqda Android standart yerində yeniləmələrin qarşısını alır.\n\nShizuku aktiv olduğundan, Shizuku+ tənzimləmələrinizin ehtiyat nüsxəsini çıxara, yeniləməni yenidən quraşdıra və konfiqurasiyanızı avtomatik bərpa edə bilər.\n\nİndi köçürülsün?</string>
+    <string name="update_signature_mismatch_manual_message">Yüklənmiş yeniləmə rəsmi buraxılış açarı ilə imzalanıb, lakin hazırda quraşdırılmış tətbiqinizin başqa imza açarı var (yerli debug qurğusu kimi). Açarlar fərqli olduqda Android yerində yeniləmələrin qarşısını alır.\n\nYeniləmək üçün Tənzimləmələr → Ehtiyat Nüsxə və Bərpa bölməsində tənzimləmələrinizin ehtiyat nüsxəsini çıxarın, bu versiyanı silin və yeni yeniləməni quraşdırın.</string>
+    <string name="update_migrate_now">İndi Köçür/string>
     <string name="update_open_backup_settings">Ehtiyat Nüsxə və Bərpa</string>
 
     <!-- Migration Dialog -->
@@ -1598,7 +1598,7 @@
     <string name="help_package_governor_plus_detail">ADB/shell prosesi üçün əlçatan olan imtiyazlı paket idarəetmə əməliyyatlarını üzə çıxarır: işləmə müddəti icazəsinin verilməsi/ləğv edilməsi (pm grant/revoke), istifadəçi səviyyəsində sistem tətbiqinin silinməsi (pm uninstall --user 0) və bərpası (pm install-existing), məlumat üçün təhlükəsiz tətbiq dayandırılması (pm suspend/unsuspend) və avtomatik icazə verilməsi ilə səssiz APK quraşdırılması. Bunlar həqiqi root tələb etmədən Shizuku-nu ADB üzərindən işlədən istənilən cihazda işləyən həqiqi root-sinif imkanlardır.</string>
     <string name="settings_display_tuner_plus_summary">Ekran icazəsini və DPI-ni ləğv edin — adb shell wm size/density ilə eynidir — beləliklə tətbiqlər və avtomatlaşdırma özləri ADB girişi tələb etmədən ekran düzənini tənzimləyə bilər.</string>
     <string name="help_display_tuner_plus_title">Ekran Tənzimləyicisi</string>
-    <string name="help_display_tuner_plus_detail">wm shell aləti vasitəsilə imtiyazlı ekran konfiqurasiyasını təmin edir: yolda ikən icazəni (wm size) və sıxlığı (wm density) ləğv edin, cari və fiziki dəyərləri oxuyun və ləğvləri cihaz ilkin dəyərlərinə qaytarın. Tətbiq tərtivatı problemlərini həll etmək, ekran yazılması üçün müəyyən aspekt nisbətini məcbur etmək, masaüstü rejimində dəyişikliklər və əlçatanlıq miqyaslaması üçün faydalıdır — tarixi olaraq yalnız root imkanı indi ADB shell prosesi vasitəsilə əlçatandır.</string>
+    <string name="help_display_tuner_plus_detail">wm shell aləti vasitəsilə imtiyazlı ekran konfiqurasiyasını təmin edir: yoldaykən icazəni (wm size) və sıxlığı (wm density) ləğv edin, cari və fiziki dəyərləri oxuyun və ləğvləri cihaz ilkin dəyərlərinə qaytarın. Tətbiq tərtibatı problemlərini həll etmək, ekran yazılması üçün müəyyən aspekt nisbətini məcbur etmək, masaüstü rejimində dəyişikliklər və əlçatanlıq miqyaslaması üçün faydalıdır — tarixi olaraq yalnız root imkanı indi ADB shell prosesi vasitəsilə əlçatandır.</string>
 
     <!-- App Backup feature -->
     <string name="home_backup_title">Tətbiq Ehtiyat Nüsxəsi</string>
