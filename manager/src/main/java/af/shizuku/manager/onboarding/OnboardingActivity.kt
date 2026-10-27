@@ -38,6 +38,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -120,6 +122,21 @@ class OnboardingActivity : AppActivity() {
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            binding.root.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            binding.btnRow.setPadding(
+                binding.btnRow.paddingLeft,
+                binding.btnRow.paddingTop,
+                binding.btnRow.paddingRight,
+                systemBars.bottom.coerceAtLeast(dpToPx(16)),
+            )
+            insets
+        }
 
         binding.pager.adapter = onboardingAdapter
         binding.pager.offscreenPageLimit = pages.size

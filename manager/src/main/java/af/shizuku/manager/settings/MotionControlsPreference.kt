@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -243,12 +244,21 @@ private fun MotionCardContent(
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                 ) {
                     val currentStep = intensity.roundToInt().coerceIn(0, 3)
-                    val (label, speed) =
+                    val intensityLabels = stringArrayResource(R.array.animation_intensities)
+                    val fallbackName =
                         when (currentStep) {
-                            0 -> "Reduced" to "0.5x"
-                            1 -> "Subtle" to "0.8x"
-                            3 -> "Expressive" to "1.2x"
-                            else -> "Standard" to "1.0x"
+                            0 -> "Reduced"
+                            1 -> "Subtle"
+                            3 -> "Expressive"
+                            else -> "Standard"
+                        }
+                    val label = intensityLabels.getOrNull(currentStep) ?: fallbackName
+                    val speed =
+                        when (currentStep) {
+                            0 -> "0.5x"
+                            1 -> "0.8x"
+                            3 -> "1.2x"
+                            else -> "1.0x"
                         }
 
                     Row(

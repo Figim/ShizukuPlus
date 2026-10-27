@@ -46,6 +46,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.preference.Preference
@@ -164,10 +165,13 @@ private fun SwipeActionsCardContent(
         tonalElevation = 1.dp,
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            val swipeRightText = stringResource(R.string.settings_swipe_right)
+            val swipeLeftText = stringResource(R.string.settings_swipe_left)
+
             // Swipe Right Section
             ActionRowSection(
-                title = stringResource(R.string.settings_swipe_right),
-                directionHint = "→ Swipe Right",
+                title = swipeRightText,
+                directionHint = "→ $swipeRightText",
                 iconRes = R.drawable.ic_swipe_24,
                 actions = actions,
                 selectedValue = selectedRight,
@@ -183,8 +187,8 @@ private fun SwipeActionsCardContent(
 
             // Swipe Left Section
             ActionRowSection(
-                title = stringResource(R.string.settings_swipe_left),
-                directionHint = "← Swipe Left",
+                title = swipeLeftText,
+                directionHint = "← $swipeLeftText",
                 iconRes = R.drawable.ic_swipe_24,
                 actions = actions,
                 selectedValue = selectedLeft,
@@ -348,6 +352,8 @@ private fun ActionRowSection(
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                     color = contentColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 if (isSelected) {
                     Spacer(modifier = Modifier.width(4.dp))

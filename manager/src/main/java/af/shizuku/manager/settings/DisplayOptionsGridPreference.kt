@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.preference.Preference
@@ -274,7 +275,8 @@ private fun DisplayGridContent(
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = if (checked) FontWeight.Bold else FontWeight.Medium,
                                     color = contentColor,
-                                    maxLines = 1,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                                 Surface(
                                     shape = RoundedCornerShape(if (checked) 8.dp else 4.dp),

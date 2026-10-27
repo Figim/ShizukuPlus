@@ -86,12 +86,12 @@ class ServiceDoctorActivity : AppBarActivity() {
         }
 
         binding.checkList.clipToPadding = false
-        ViewCompat.setOnApplyWindowInsetsListener(binding.checkList) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars =
                 insets.getInsets(
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
                 )
-            view.setPadding(bars.left, view.paddingTop, bars.right, bars.bottom)
+            view.setPadding(bars.left, 0, bars.right, bars.bottom)
             insets
         }
 

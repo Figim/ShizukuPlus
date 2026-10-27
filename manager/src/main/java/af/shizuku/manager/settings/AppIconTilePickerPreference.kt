@@ -45,8 +45,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.preference.Preference
@@ -190,6 +192,7 @@ private fun AppIconPickerContent(
 
             // Horizontal Swatch Strip
             val scrollState = rememberScrollState()
+            val aliasEntries = stringArrayResource(R.array.app_icon_alias_entries)
             Row(
                 modifier =
                     Modifier
@@ -197,8 +200,9 @@ private fun AppIconPickerContent(
                         .horizontalScroll(scrollState),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                options.forEach { option ->
+                options.forEachIndexed { index, option ->
                     val isSelected = option.key == selectedKey
+                    val displayLabel = aliasEntries.getOrNull(index)?.substringBefore(" (") ?: option.label
 
                     val scale by animateFloatAsState(
                         targetValue = if (isSelected) 1.0f else 0.94f,
@@ -282,10 +286,12 @@ private fun AppIconPickerContent(
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = option.label,
+                                    text = displayLabel,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                     color = contentColor,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                                 if (isSelected) {
                                     Spacer(modifier = Modifier.width(4.dp))
