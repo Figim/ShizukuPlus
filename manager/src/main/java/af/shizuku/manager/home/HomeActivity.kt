@@ -10,6 +10,7 @@ import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.management.AppsViewModel
 import af.shizuku.manager.settings.SettingsActivity
 import af.shizuku.manager.update.UpdateChecker
+import af.shizuku.manager.update.UpdateDialogHelper
 import af.shizuku.manager.update.UpdateManager
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
@@ -773,6 +774,23 @@ open class HomeActivity :
         if (intent?.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false) == true) {
             handleStartViaMdnsNotification()
         }
+        handleUpdateIntent(intent)
+    }
+
+    private fun handleUpdateIntent(intent: Intent?) {
+        val action = intent?.action ?: return
+        val filePath = intent.getStringExtra(UpdateManager.EXTRA_UPDATE_FILE_PATH) ?: return
+        val file = java.io.File(filePath)
+        if (!file.exists()) return
+
+        when (action) {
+            UpdateManager.ACTION_MIGRATE_UPDATE -> {
+                UpdateDialogHelper.showSignatureMismatchMigrateDialog(this, file)
+            }
+            UpdateManager.ACTION_SIGNATURE_MISMATCH -> {
+                UpdateDialogHelper.showSignatureMismatchManualDialog(this)
+            }
+        }
     }
 
     // Asked once, after onboarding, never during it: crash reports are only sent after a yes.
@@ -806,6 +824,7 @@ open class HomeActivity :
         if (intent.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false)) {
             handleStartViaMdnsNotification()
         }
+        handleUpdateIntent(intent)
     }
 
     private fun handleStartViaMdnsNotification() {
@@ -990,10 +1009,8 @@ open class HomeActivity :
         } else {
             builder.setPositiveButton(R.string.update_download) { _, _ ->
                 activeUpdateManager?.cancel()
-                activeUpdateManager =
-                    UpdateManager(this).also {
-                        it.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName, manual = true)
-                    }
+                val mgr = UpdateManager(this).also { activeUpdateManager = it }
+                UpdateDialogHelper.showDownloadProgressDialog(this, mgr, updateInfo)
             }
         }
 

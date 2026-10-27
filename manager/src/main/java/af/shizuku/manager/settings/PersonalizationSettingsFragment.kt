@@ -294,16 +294,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>("category_app_identity")?.isVisible =
             ShizukuSettings.isExperimentalAppIdentityEnabled()
 
-        findPreference<ListPreference>("app_icon_alias")?.apply {
-            value = ShizukuSettings.getAppIconAlias()
-            setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is String) {
-                    ShizukuSettings.setAppIconAlias(newValue)
-                    af.shizuku.manager.utils.AppAliasManager
-                        .applyAlias(requireContext(), newValue)
-                }
-                true
-            }
+        findPreference<Preference>("app_icon_alias")?.apply {
+            // AppIconTilePickerPreference manages its own selection and alias application.
         }
 
         findPreference<EditTextPreference>("custom_app_name")?.apply {

@@ -167,14 +167,17 @@ object UpdateChecker {
             if (isDropIn) {
                 apkAssets.firstOrNull {
                     val name = it.getString("name")
-                    name.contains("Drop-In", ignoreCase = true) || name.contains("dropin", ignoreCase = true)
+                    (name.contains("Drop-In", ignoreCase = true) || name.contains("dropin", ignoreCase = true)) &&
+                        !name.contains("Compat", ignoreCase = true)
                 }
             } else {
                 apkAssets.firstOrNull {
                     val name = it.getString("name")
-                    !name.contains("Drop-In", ignoreCase = true) && !name.contains("dropin", ignoreCase = true)
+                    !name.contains("Drop-In", ignoreCase = true) &&
+                        !name.contains("dropin", ignoreCase = true) &&
+                        !name.contains("Compat", ignoreCase = true)
                 }
-            } ?: apkAssets.firstOrNull()
+            } ?: apkAssets.firstOrNull { !it.getString("name").contains("Compat", ignoreCase = true) }
 
         val downloadUrl =
             targetAsset?.getString("browser_download_url")
