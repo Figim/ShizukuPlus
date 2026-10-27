@@ -17,6 +17,7 @@ import android.content.Intent
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +41,10 @@ import rikka.recyclerview.fixEdgeEffect
 import kotlin.coroutines.resume
 
 abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
+    companion object {
+        private const val KEY_RV_SCROLL_STATE = "rv_scroll_state"
+    }
+
     protected lateinit var batteryOptimizationListener: ActivityResultLauncher<Intent>
     protected var batteryOptimizationContinuation: CancellableContinuation<Boolean>? = null
     private val activeDialogs = mutableListOf<android.app.Dialog>()
@@ -252,6 +257,20 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         setDivider(null)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        listView?.layoutManager?.onSaveInstanceState()?.let {
+            outState.putParcelable(KEY_RV_SCROLL_STATE, it)
+        }
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.getParcelable<Parcelable>(KEY_RV_SCROLL_STATE)?.let {
+            listView?.layoutManager?.onRestoreInstanceState(it)
+        }
+    }
+
     /**
      * Confirms an action with an M3 snackbar on this page; falls back to a toast if the page is
      * gone by the time an async result arrives (or isn't showing).
@@ -362,8 +381,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     dx: Int,
                     dy: Int,
                 ) {
-                    val canScrollUp = rv.canScrollVertically(-1)
-                    (activity as? SettingsActivity)?.onPreferenceListScrolled(dy, canScrollUp, rv.computeVerticalScrollOffset())
+                    (activity as? SettingsActivity)?.onPreferenceListScrolled(rv, dy)
                 }
 
                 override fun onScrollStateChanged(
@@ -395,12 +413,17 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val leftInsets = systemBarsInsets?.left ?: 0
         val rightInsets = systemBarsInsets?.right ?: 0
         val bottomInsets = systemBarsInsets?.bottom ?: 0
-        rv.setPadding(
-            cardMarginPx + leftInsets,
-            currentHeaderTop + topInsets,
-            cardMarginPx + rightInsets,
-            bottomInsets + navBarClearancePx,
-        )
+        val targetLeft = cardMarginPx + leftInsets
+        val targetTop = currentHeaderTop + topInsets
+        val targetRight = cardMarginPx + rightInsets
+        val targetBottom = bottomInsets + navBarClearancePx
+        if (rv.paddingLeft != targetLeft ||
+            rv.paddingTop != targetTop ||
+            rv.paddingRight != targetRight ||
+            rv.paddingBottom != targetBottom
+        ) {
+            rv.setPadding(targetLeft, targetTop, targetRight, targetBottom)
+        }
         ViewCompat.requestApplyInsets(rv)
     }
 
@@ -408,6 +431,8 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val adapter = super.onCreateAdapter(preferenceScreen)
         return object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             init {
+                setHasStableIds(adapter.hasStableIds())
+                stateRestorationPolicy = StateRestorationPolicy.PREVENT_WHEN_EMPTY
                 adapter.registerAdapterDataObserver(
                     object : RecyclerView.AdapterDataObserver() {
                         override fun onChanged() = notifyDataSetChanged()
@@ -416,6 +441,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                             positionStart: Int,
                             itemCount: Int,
                         ) = notifyItemRangeChanged(positionStart, itemCount)
+
+                        override fun onItemRangeChanged(
+                            positionStart: Int,
+                            itemCount: Int,
+                            payload: Any?,
+                        ) = notifyItemRangeChanged(positionStart, itemCount, payload)
 
                         override fun onItemRangeInserted(
                             positionStart: Int,

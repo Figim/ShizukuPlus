@@ -164,340 +164,312 @@ fun SettingsScreen(
     val fraction = if (isExpandedHeaders) scrollBehavior.state.collapsedFraction else 1f
     val curvedFraction = FastOutSlowInEasing.transform(fraction)
 
-    Scaffold(
-        containerColor = pageBackground,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        topBar = {
-            if (isSearchActive) {
-                // Search mode: back button + inline text field + optional clear button
-                TopAppBar(
-                    title = {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = { q ->
-                                searchQuery = q
-                                onSearchQueryChanged(q)
-                            },
-                            placeholder = { Text(stringResource(R.string.settings_search_hint)) },
-                            singleLine = true,
-                            colors =
-                                TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                ),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .focusRequester(searchFocusRequester),
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { exitSearch() }) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_back_24),
-                                contentDescription = stringResource(R.string.cd_navigate_back),
-                            )
-                        }
-                    },
-                    actions = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchQuery = ""
-                                onSearchQueryChanged("")
-                            }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_close_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search_clear),
-                                )
-                            }
-                        }
-                    },
-                    colors =
-                        TopAppBarDefaults.topAppBarColors(
-                            containerColor = pageBackground,
-                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                            actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        ),
-                )
-            } else {
-                if (isExpandedHeaders) {
-                    Surface(
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(pageBackground),
+    ) {
+        // Fragment container — always full screen with stable bounds
+        AndroidView(
+            factory = { context ->
+                FrameLayout(context).apply {
+                    id = R.id.fragment_container
+                    clipToPadding = false
+                    post { onContainerCreated() }
+                }
+            },
+            update = { view ->
+                view.visibility = if (isSearchActive) android.view.View.GONE else android.view.View.VISIBLE
+            },
+            modifier = Modifier.fillMaxSize(),
+        )
+        if (isSearchActive) {
+            // Search mode: back button + inline text field + optional clear button
+            TopAppBar(
+                title = {
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { q ->
+                            searchQuery = q
+                            onSearchQueryChanged(q)
+                        },
+                        placeholder = { Text(stringResource(R.string.settings_search_hint)) },
+                        singleLine = true,
+                        colors =
+                            TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                            ),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { keyboardController?.hide() }),
                         modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .height(
-                                    (expandedHeight + statusBarPadding + with(density) { scrollBehavior.state.heightOffset.toDp() })
-                                        .coerceAtLeast(collapsedHeight + statusBarPadding),
-                                ),
-                        color =
-                            run {
-                                // Fade in early and end fully opaque: the list scrolls under the
-                                // collapsing title, and a bar that stayed clear until 65% (or
-                                // capped at ~72% with "frosted glass", which never actually blurs
-                                // here) let row text show straight through the title.
-                                val barAlpha = ((fraction - 0.3f) / 0.4f).coerceIn(0f, 1f)
-                                barScrolledColor.copy(alpha = barAlpha)
-                            },
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .padding(top = statusBarPadding),
-                        ) {
-                            // Navigation and Action buttons in the pinned 64dp collapsed zone
-                            Row(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .height(collapsedHeight)
-                                        .padding(horizontal = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                if (showNavigateUp) {
-                                    IconButton(onClick = { onNavigateUp() }) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_back_24),
-                                            contentDescription = stringResource(R.string.cd_navigate_back),
-                                        )
-                                    }
-                                }
-                                Spacer(modifier = Modifier.weight(1f))
-                                IconButton(onClick = { isSearchActive = true }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_search_24),
-                                        contentDescription = stringResource(R.string.cd_settings_search),
-                                    )
-                                }
-                            }
-
-                            // Title and One UI subtitle
-                            val collapsedTitleStartPadding = if (showNavigateUp) 56.dp else 24.dp
-                            val titleStartPadding = lerp(start = 24.dp, stop = collapsedTitleStartPadding, fraction = curvedFraction)
-                            // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
-                            // large system fonts don't push a 34sp title into the action icons.
-                            val fontScaleCap = if (isOneUi) LocalDensity.current.fontScale.coerceAtLeast(1f) else 1f
-                            val expandedTitleSp = (if (isOneUi) 34f else 30f) / fontScaleCap
-                            val titleFontSize = lerp(start = expandedTitleSp.sp, stop = 20.sp, fraction = curvedFraction)
-                            val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
-                            val titleLetterSpacing = lerp((-0.5).sp, (-0.2).sp, curvedFraction)
-
-                            val horizontalBias = -1f // One UI aligns titles to the start
-                            val verticalBias =
-                                androidx.compose.ui.util
-                                    .lerp(0.65f, 0.0f, curvedFraction)
-
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxSize()
-                                        .padding(
-                                            start = titleStartPadding,
-                                            end = 56.dp,
-                                            top = lerp(start = 32.dp, stop = 0.dp, fraction = curvedFraction),
-                                            bottom = lerp(start = 16.dp, stop = 0.dp, fraction = curvedFraction),
-                                        ),
-                                contentAlignment = BiasAlignment(horizontalBias, verticalBias),
-                            ) {
-                                Column {
-                                    Text(
-                                        text = title,
-                                        style =
-                                            MaterialTheme.typography.headlineLarge.copy(
-                                                fontWeight = titleFontWeight,
-                                                fontSize = titleFontSize,
-                                                letterSpacing = titleLetterSpacing,
-                                            ),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
-                                    if (isOneUi && !subtitle.isNullOrBlank()) {
-                                        val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
-                                        if (subtitleAlpha > 0f) {
-                                            Spacer(modifier = Modifier.height(4.dp))
-                                            Text(
-                                                text = subtitle,
-                                                style =
-                                                    MaterialTheme.typography.bodyMedium.copy(
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        fontWeight = FontWeight.Normal,
-                                                    ),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
-                                                modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Hairline divider when collapsed
-                            if (curvedFraction > 0.5f) {
-                                val dividerAlpha = ((curvedFraction - 0.5f) / 0.5f).coerceIn(0f, 1f)
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .align(Alignment.BottomStart)
-                                            .fillMaxWidth()
-                                            .height(0.8.dp)
-                                            .graphicsLayer { alpha = dividerAlpha }
-                                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
-                                )
-                            }
+                                .focusRequester(searchFocusRequester),
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { exitSearch() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_back_24),
+                            contentDescription = stringResource(R.string.cd_navigate_back),
+                        )
+                    }
+                },
+                actions = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = {
+                            searchQuery = ""
+                            onSearchQueryChanged("")
+                        }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_close_24),
+                                contentDescription = stringResource(R.string.cd_settings_search_clear),
+                            )
                         }
                     }
-                } else {
-                    Box {
-                        TopAppBar(
-                            title = {
-                                Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            },
-                            navigationIcon = {
-                                if (showNavigateUp) {
-                                    IconButton(onClick = { onNavigateUp() }) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_back_24),
-                                            contentDescription = stringResource(R.string.cd_navigate_back),
-                                        )
-                                    }
-                                }
-                            },
-                            actions = {
-                                IconButton(onClick = { isSearchActive = true }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_search_24),
-                                        contentDescription = stringResource(R.string.cd_settings_search),
-                                    )
-                                }
-                            },
-                            colors =
-                                TopAppBarDefaults.topAppBarColors(
-                                    containerColor = Color.Transparent,
-                                    scrolledContainerColor = barScrolledColor,
-                                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                ),
-                        )
-                        // Hairline divider always visible (bar is always in collapsed appearance)
-                        Box(
-                            modifier =
-                                Modifier
-                                    .align(Alignment.BottomStart)
-                                    .fillMaxWidth()
-                                    .height(0.8.dp)
-                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
-                        )
-                    } // end Box
-                }
-            }
-        },
-    ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            // Fragment container — always full screen with stable bounds
-            AndroidView(
-                factory = { context ->
-                    FrameLayout(context).apply {
-                        id = R.id.fragment_container
-                        clipToPadding = false
-                        post { onContainerCreated() }
-                    }
                 },
-                update = { view ->
-                    view.visibility = if (isSearchActive) android.view.View.GONE else android.view.View.VISIBLE
-                },
-                modifier = Modifier.fillMaxSize(),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = pageBackground,
+                        titleContentColor = MaterialTheme.colorScheme.onSurface,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                        actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    ),
             )
-
-            // One-handed reach handle indicator when expanded
-            if (isOneHanded && fraction < 0.25f) {
-                val handleAlpha = (1f - (fraction * 4f)).coerceIn(0f, 1f)
-                Box(
+        } else {
+            if (isExpandedHeaders) {
+                Surface(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = statusBarPadding + collapsedHeight + 8.dp)
-                            .graphicsLayer { alpha = handleAlpha },
-                    contentAlignment = Alignment.TopCenter,
+                            .height(
+                                (expandedHeight + statusBarPadding + with(density) { scrollBehavior.state.heightOffset.toDp() })
+                                    .coerceAtLeast(collapsedHeight + statusBarPadding),
+                            ),
+                    color =
+                        run {
+                            // Fade in early and end fully opaque: the list scrolls under the
+                            // collapsing title, and a bar that stayed clear until 65% (or
+                            // capped at ~72% with "frosted glass", which never actually blurs
+                            // here) let row text show straight through the title.
+                            val barAlpha = ((fraction - 0.3f) / 0.4f).coerceIn(0f, 1f)
+                            barScrolledColor.copy(alpha = barAlpha)
+                        },
                 ) {
                     Box(
                         modifier =
                             Modifier
-                                .width(36.dp)
-                                .height(4.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
-                                    shape =
-                                        androidx.compose.foundation.shape
-                                            .RoundedCornerShape(2.dp),
-                                ),
-                    )
-                }
-            }
-
-            // Inline search results — appears below the search TopAppBar
-            val searchFade: FiniteAnimationSpec<Float> =
-                if (af.shizuku.manager.ShizukuSettings
-                        .scaledAnimationDuration(200L) > 0
-                ) {
-                    MaterialTheme.motionScheme.fastEffectsSpec()
-                } else {
-                    snap()
-                }
-            AnimatedVisibility(
-                visible = isSearchActive,
-                enter = fadeIn(searchFade),
-                exit = fadeOut(searchFade),
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding().coerceAtLeast(0.dp)),
-            ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .background(pageBackground),
-                ) {
-                    if (searchQuery.isBlank()) {
-                        // Empty query: just show the background so the fragment is covered
-                    } else if (searchResults.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.settings_search_empty_state),
+                                .fillMaxSize()
+                                .padding(top = statusBarPadding),
+                    ) {
+                        // Navigation and Action buttons in the pinned 64dp collapsed zone
+                        Row(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .padding(32.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    .height(collapsedHeight)
+                                    .padding(horizontal = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            items(
-                                items = searchResults,
-                                key = { item -> "${item.fragmentClass}_${item.key}_${item.title}_${item.iconResId}" },
-                            ) { item ->
-                                SearchResultItem(
-                                    item = item,
-                                    isBlackTheme = isBlackTheme,
-                                    onClick = {
-                                        exitSearch()
-                                        onNavigateToSetting(item)
-                                    },
+                            if (showNavigateUp) {
+                                IconButton(onClick = { onNavigateUp() }) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_back_24),
+                                        contentDescription = stringResource(R.string.cd_navigate_back),
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            IconButton(onClick = { isSearchActive = true }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_search_24),
+                                    contentDescription = stringResource(R.string.cd_settings_search),
                                 )
                             }
                         }
+
+                        // Title and One UI subtitle
+                        val collapsedTitleStartPadding = if (showNavigateUp) 56.dp else 24.dp
+                        val titleStartPadding = lerp(start = 24.dp, stop = collapsedTitleStartPadding, fraction = curvedFraction)
+                        // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
+                        // large system fonts don't push a 34sp title into the action icons.
+                        val fontScaleCap = if (isOneUi) LocalDensity.current.fontScale.coerceAtLeast(1f) else 1f
+                        val expandedTitleSp = (if (isOneUi) 34f else 30f) / fontScaleCap
+                        val titleFontSize = lerp(start = expandedTitleSp.sp, stop = 20.sp, fraction = curvedFraction)
+                        val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
+                        val titleLetterSpacing = lerp((-0.5).sp, (-0.2).sp, curvedFraction)
+
+                        val horizontalBias = -1f // One UI aligns titles to the start
+                        val verticalBias =
+                            androidx.compose.ui.util
+                                .lerp(0.65f, 0.0f, curvedFraction)
+
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .padding(
+                                        start = titleStartPadding,
+                                        end = 56.dp,
+                                        top = lerp(start = 32.dp, stop = 0.dp, fraction = curvedFraction),
+                                        bottom = lerp(start = 16.dp, stop = 0.dp, fraction = curvedFraction),
+                                    ),
+                            contentAlignment = BiasAlignment(horizontalBias, verticalBias),
+                        ) {
+                            Column {
+                                Text(
+                                    text = title,
+                                    style =
+                                        MaterialTheme.typography.headlineLarge.copy(
+                                            fontWeight = titleFontWeight,
+                                            fontSize = titleFontSize,
+                                            letterSpacing = titleLetterSpacing,
+                                        ),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                if (isOneUi && !subtitle.isNullOrBlank()) {
+                                    val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
+                                    if (subtitleAlpha > 0f) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = subtitle,
+                                            style =
+                                                MaterialTheme.typography.bodyMedium.copy(
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    fontWeight = FontWeight.Normal,
+                                                ),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        // Hairline divider when collapsed
+                        if (curvedFraction > 0.5f) {
+                            val dividerAlpha = ((curvedFraction - 0.5f) / 0.5f).coerceIn(0f, 1f)
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.BottomStart)
+                                        .fillMaxWidth()
+                                        .height(0.8.dp)
+                                        .graphicsLayer { alpha = dividerAlpha }
+                                        .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
+                            )
+                        }
+                    }
+                }
+            } else {
+                Box {
+                    TopAppBar(
+                        title = {
+                            Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        },
+                        navigationIcon = {
+                            if (showNavigateUp) {
+                                IconButton(onClick = { onNavigateUp() }) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_back_24),
+                                        contentDescription = stringResource(R.string.cd_navigate_back),
+                                    )
+                                }
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { isSearchActive = true }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_search_24),
+                                    contentDescription = stringResource(R.string.cd_settings_search),
+                                )
+                            }
+                        },
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = Color.Transparent,
+                                scrolledContainerColor = barScrolledColor,
+                                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                                actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                    )
+                    // Hairline divider always visible (bar is always in collapsed appearance)
+                    Box(
+                        modifier =
+                            Modifier
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth()
+                                .height(0.8.dp)
+                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
+                    )
+                } // end Box
+            }
+        }
+    }
+
+    // Inline search results — appears below the search TopAppBar
+    val searchFade: FiniteAnimationSpec<Float> =
+        if (af.shizuku.manager.ShizukuSettings
+                .scaledAnimationDuration(200L) > 0
+        ) {
+            MaterialTheme.motionScheme.fastEffectsSpec()
+        } else {
+            snap()
+        }
+    AnimatedVisibility(
+        visible = isSearchActive,
+        enter = fadeIn(searchFade),
+        exit = fadeOut(searchFade),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(top = collapsedHeight + statusBarPadding),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(pageBackground),
+        ) {
+            if (searchQuery.isBlank()) {
+                // Empty query: just show the background so the fragment is covered
+            } else if (searchResults.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.settings_search_empty_state),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(
+                        items = searchResults,
+                        key = { item -> "${item.fragmentClass}_${item.key}_${item.title}_${item.iconResId}" },
+                    ) { item ->
+                        SearchResultItem(
+                            item = item,
+                            isBlackTheme = isBlackTheme,
+                            onClick = {
+                                exitSearch()
+                                onNavigateToSetting(item)
+                            },
+                        )
                     }
                 }
             }

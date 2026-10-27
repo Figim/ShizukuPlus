@@ -88,6 +88,7 @@ private fun queryLiveServerPatchVersion(): Int {
 fun ServerMetricsScreen(
     bottomInset: Dp = 0.dp,
     reachSpacer: Boolean = true,
+    onConnectedAppsClick: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     var isServerRunning by remember { mutableStateOf<Boolean?>(null) }
@@ -330,6 +331,7 @@ fun ServerMetricsScreen(
                     value = clientCountText,
                     iconRes = R.drawable.ic_server_24,
                     modifier = Modifier.weight(1f),
+                    onClick = onConnectedAppsClick,
                 )
             }
 
@@ -475,18 +477,28 @@ fun ActivityLogScreen(
     onBackClick: (() -> Unit)? = null,
     bottomInset: Dp = 0.dp,
     reachSpacer: Boolean = true,
+    initialFilterConnected: Boolean = false,
 ) {
     val context = LocalContext.current
     val view = LocalView.current
     val focusManager = LocalFocusManager.current
     val rawLogs by ActivityLogManager.logs.collectAsState(initial = emptyList())
 
+    var isConnectedAppsOnly by remember { mutableStateOf(initialFilterConnected) }
     var selectedTypes by remember { mutableStateOf<Set<ActivityEventType>>(emptySet()) }
-    var currentSort by remember { mutableStateOf(ActivityLogSort.NEWEST) }
-    var currentGrouping by remember { mutableStateOf(ActivityLogGrouping.DATE) }
+    var currentSort by remember { mutableStateOf(if (initialFilterConnected) ActivityLogSort.MOST_ACTIVE else ActivityLogSort.NEWEST) }
+    var currentGrouping by remember { mutableStateOf(if (initialFilterConnected) ActivityLogGrouping.APP else ActivityLogGrouping.DATE) }
     var stackRepetitive by remember { mutableStateOf(true) }
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
+
+    LaunchedEffect(initialFilterConnected) {
+        if (initialFilterConnected) {
+            isConnectedAppsOnly = true
+            currentGrouping = ActivityLogGrouping.APP
+            currentSort = ActivityLogSort.MOST_ACTIVE
+        }
+    }
 
     var showSortMenu by remember { mutableStateOf(false) }
     var showGroupingMenu by remember { mutableStateOf(false) }
@@ -524,7 +536,7 @@ fun ActivityLogScreen(
 
     // Process logs: Filter -> Group/Stack -> Sort
     val processedGroups =
-        remember(rawLogs, selectedTypes, currentSort, stackRepetitive, searchQuery, appLabels) {
+        remember(rawLogs, selectedTypes, currentSort, stackRepetitive, searchQuery, appLabels, isConnectedAppsOnly) {
             // 1. Filter by event type
             var filtered =
                 if (selectedTypes.isEmpty()) {
@@ -532,6 +544,11 @@ fun ActivityLogScreen(
                 } else {
                     rawLogs.filter { it.eventType in selectedTypes }
                 }
+
+            // 1b. Filter connected client apps only
+            if (isConnectedAppsOnly) {
+                filtered = filtered.filter { it.packageName != context.packageName }
+            }
 
             // 2. Filter by search query
             if (searchQuery.isNotBlank()) {
@@ -737,6 +754,27 @@ fun ActivityLogScreen(
                     leadingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.ic_search_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    },
+                )
+
+                // Connected Apps Filter Pill
+                FilterChip(
+                    selected = isConnectedAppsOnly,
+                    onClick = {
+                        HapticUtils.segmentTick(view)
+                        isConnectedAppsOnly = !isConnectedAppsOnly
+                        if (isConnectedAppsOnly) {
+                            currentGrouping = ActivityLogGrouping.APP
+                            currentSort = ActivityLogSort.MOST_ACTIVE
+                        }
+                    },
+                    label = { Text(stringResource(R.string.active_connections)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_server_24),
                             contentDescription = null,
                             modifier = Modifier.size(16.dp),
                         )
@@ -1526,15 +1564,36 @@ private fun StatTile(
     value: String,
     iconRes: Int,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
-    Card(shape = MaterialTheme.shapes.extraLarge, modifier = modifier) {
+    val cardModifier =
+        if (onClick != null) {
+            modifier.clickable(onClick = onClick)
+        } else {
+            modifier
+        }
+    Card(shape = MaterialTheme.shapes.extraLarge, modifier = cardModifier) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Icon(
-                painterResource(iconRes),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(22.dp),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painterResource(iconRes),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(22.dp),
+                )
+                if (onClick != null) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_chevron_right_24),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 value,

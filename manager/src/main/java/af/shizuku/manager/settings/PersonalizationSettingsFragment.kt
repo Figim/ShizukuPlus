@@ -237,7 +237,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
 
         findPreference<Preference>("expanded_headers_enabled")?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = true) }
+            view?.post { applyTheme(requiresRecreate = false) }
             true
         }
 
@@ -401,12 +401,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         oneUiThemePreference.isChecked = ShizukuSettings.isOneUiThemeEnabled()
         setChildAvailable(oneUiThemePreference, EnvironmentUtils.isSamsung())
         oneUiThemePreference.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = true) }
+            view?.post { applyTheme(requiresRecreate = false) }
             true
         }
 
         findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = true) }
+            view?.post { applyTheme(requiresRecreate = false) }
             true
         }
 

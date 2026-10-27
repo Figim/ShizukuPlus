@@ -11,8 +11,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.platform.LocalContext
 
 class ActivityLogActivity : AppActivity() {
+    companion object {
+        const val EXTRA_FILTER_CONNECTED = "extra_filter_connected"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val filterConnected = intent?.getBooleanExtra(EXTRA_FILTER_CONNECTED, false) ?: false
         setContent {
             val context = LocalContext.current
             AppTheme(
@@ -29,6 +34,7 @@ class ActivityLogActivity : AppActivity() {
                 ActivityLogScreen(
                     showTopBar = true,
                     onBackClick = { finish() },
+                    initialFilterConnected = filterConnected,
                 )
             }
         }

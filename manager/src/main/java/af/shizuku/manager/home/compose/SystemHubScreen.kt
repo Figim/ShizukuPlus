@@ -105,6 +105,8 @@ fun SystemHubScreen(
                 )
             }
 
+            var filterConnectedApps by remember { mutableStateOf(false) }
+
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
@@ -113,8 +115,21 @@ fun SystemHubScreen(
                     // Bottom clearance goes inside each page's scroll content, not on this
                     // Column: padding here leaves an empty band that shows the bare window
                     // background (a black bar in AMOLED) and stops content short of the nav bar.
-                    0 -> ServerMetricsScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance, reachSpacer = !reachMode)
-                    1 -> ActivityLogScreen(bottomInset = innerPadding.calculateBottomPadding() + navClearance, reachSpacer = !reachMode)
+                    0 ->
+                        ServerMetricsScreen(
+                            bottomInset = innerPadding.calculateBottomPadding() + navClearance,
+                            reachSpacer = !reachMode,
+                            onConnectedAppsClick = {
+                                filterConnectedApps = true
+                                coroutineScope.launch { pagerState.animateScrollToPage(1) }
+                            },
+                        )
+                    1 ->
+                        ActivityLogScreen(
+                            bottomInset = innerPadding.calculateBottomPadding() + navClearance,
+                            reachSpacer = !reachMode,
+                            initialFilterConnected = filterConnectedApps,
+                        )
                 }
             }
         }
