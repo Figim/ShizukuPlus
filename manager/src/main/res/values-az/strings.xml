@@ -148,8 +148,8 @@
     <string name="dialog_adb_discovery_message">Zəhmət olmasa, \"Tərtibatçı seçimləri\"ndə \"Simsiz sazlama\"nı aktivləşdirin. Şəbəkə dəyişdikdə \"Simsiz sazlama\" avtomatik olaraq söndürülür.\n\nNəzərə alın ki, \"Tərtibatçı seçimləri\"ni və ya \"USB sazlama\"nı söndürməyin, əks halda Shizuku dayandırılacaq.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Axtarış davam edərsə, \"Simsiz sazlama\"nı söndürüb yenidən aktivləşdirməyə çalışın.</string>
     <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi bağlantısı kəsilib.</b><br>Android mobil internet (5G/LTE) üzərindən Simsiz Sazlamanı tapa bilmir.]]></string>
-    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 </b>İpucu:</b> Wi-Fi şəbəkəsi olmadan Simsiz Sazlamanı aktivləşdirmək üçün telefonunuzun <b>Mobil Hotspot</b>-unu yandırın və ya yerli 5555 portu vasitəsilə qoşulun.]]></string>
-    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 </b>Samsung Qeydi:</b> Mobil Hotspot aktiv olarkən One UI Simsiz Sazlamanı söndürür. Başqa cihazın Wi-Fi nöqtəsinə qoşulun (oflayn olması da olar) və ya USB vasitəsilə bir dəfə <code>adb tcpip 5555</code> işlədin.]]></string>
+    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>İpucu:</b> Wi-Fi şəbəkəsi olmadan Simsiz Sazlamanı aktivləşdirmək üçün telefonunuzun <b>Mobil Hotspot</b>-unu yandırın və ya yerli 5555 portu vasitəsilə qoşulun.]]></string>
+    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Samsung Qeydi:</b> Mobil Hotspot aktiv olarkən One UI Simsiz Sazlamanı söndürür. Başqa cihazın Wi-Fi nöqtəsinə qoşulun (oflayn olması da olar) və ya USB vasitəsilə bir dəfə <code>adb tcpip 5555</code> işlədin.]]></string>
     <string name="dialog_adb_open_hotspot">Mobil Hotspot Tənzimləmələri</string>
     <string name="dialog_adb_probing_loopback">Yerli port yoxlanılır (127.0.0.1:5555)...</string>
     <string name="dialog_adb_loopback_found">%1$d portunda aktiv ADB xidməti tapıldı! Qoşulur...</string>
@@ -384,6 +384,16 @@
     <string name="onboarding_watchdog_desc">Server dayandırılarsa, onu avtomatik bərpa edin və yenidən başladın</string>
     <string name="onboarding_take_tour">Xüsusiyyət Turu</string>
     <string name="onboarding_take_tour_summary">Yeni M3 Expressive görünüşünü, əsas ekran düzənini və şəbəkə etibar qalxanını kəşf edin</string>
+    <string name="onboarding_returning_welcome_title">Shizuku+ Tətbiqinə Yenidən Xoş Gəlmisiniz</string>
+    <string name="onboarding_returning_welcome_desc">Mövcud icazələriniz, quraşdırmanız və səlahiyyətli tətbiqləriniz tamamilə qorunub saxlanılır. Bu buraxılışdakı yenilikləri kəşf edin:</string>
+    <string name="onboarding_returning_status_preserved">Quraşdırma və tətbiqlər toxunulmazdır</string>
+    <string name="onboarding_returning_feat_m3e_title">Material 3 Expressive UI</string>
+    <string name="onboarding_returning_feat_m3e_desc">Axıcı yay fizikası, forma morfinqi, vizual tətbiq ikonu seçici və interaktiv çoxlu keçid kapsulları.</string>
+    <string name="onboarding_returning_feat_gestures_title">Bağlı Jestlər və Əməliyyatlar</string>
+    <string name="onboarding_returning_feat_gestures_desc">Segmentlərə bölünmüş sürüşdürmə əməliyyat qrupları, toxunma önizləmə kartları və fərdiləşdirilmiş sürətli əməliyyatlar.</string>
+    <string name="onboarding_returning_feat_doctor_title">Adaptiv Xidmət Həkimi</string>
+    <string name="onboarding_returning_feat_doctor_desc">Proaktiv arxa fon diaqnostikası, sağlamlıq monitorinqi və bir toxunuşla avtomatlaşdırılmış özünü bərpa.</string>
+    <string name="onboarding_returning_action_jump">İdarə Panelinə Keç</string>
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Sürüşdürmə jestləri</string>
@@ -477,7 +487,7 @@
     <string name="settings_title">Tənzimləmələr</string>
     <string name="settings_start_on_boot">Yüklənmədə başlat</string>
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb edir</string>
-    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni yadda saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olacaqsınız.</string>
+    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni yadda saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olaçaqsınız.</string>
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
     <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
@@ -765,7 +775,7 @@
     <string name="su_bridge_report_app_exec_blocked">⚠️ bu cihazda bloklanıb (çox ehtimal ki, SELinux): %1$s</string>
     <string name="su_bridge_report_root_level">Root səviyyəli körpü: əsl root tələb edən tətbiqlər bunun vasitəsilə işləyə bilər.</string>
     <string name="su_bridge_report_shell_level">Shell səviyyəli körpü (ADB kimi): yalnız shell/ADB tələb edən tətbiq xüsusiyyətləri işləyəcək. Əsl root tələb edən xüsusiyyətlər, məsələn, başqa tətbiqin şəxsi məlumatlarını oxumaq, tətbiq \"root\" aşkar etsə belə işləyə bilməz.</string>
-    <string name="su_bridge_report_authorize_reminder">Unutmayın: çağırış edən tətbiq körpü vasitəsilə olan əmrləri uğurlu olmamışdan əvvəl Shizuku+-da səlahiyyətləndirilməlidir.</string>
+    <string name="su_bridge_report_authorize_reminder">Unutmayın: çağırış edən tətbiq körpü vasitəsilə olan əmrləri uğurlu olmasından əvvəl Shizuku+-da səlahiyyətləndirilməlidir.</string>
     <string name="su_bridge_terminal_profile_title">Terminal və mühit quraşdırması</string>
     <string name="su_bridge_terminal_profile_desc">Termux və shell skriptləri üçün SU Bridge-i PATH-ın əvvəlinə əlavə edin və ya \'su\' əmrinin root olmadan problemsiz işləməsi üçün ləqəb təyin edin.</string>
     <string name="su_bridge_copy_termux_setup">Termux profil əmrini kopyala</string>
@@ -814,6 +824,12 @@
     <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çəkirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
     <string name="doctor_tips_title">İpucları &amp; həllər</string>
     <string name="doctor_action_rerun">Yenidən icra et</string>
+    <string name="doctor_action_auto_fix_all">Adaptiv Avtomatik Bərpa</string>
+    <string name="doctor_action_auto_fix_all_running">Avtomatik Bərpa Olunur…</string>
+    <string name="doctor_auto_heal_complete">Adaptiv bərpa tamamlandı: %1$d problem həll edildi</string>
+    <string name="doctor_auto_heal_no_issues">Bütün diaqnostika yoxlamalarından uğurla keçildi</string>
+    <string name="doctor_adaptive_self_heal_title">Adaptiv Arxa Fon Özünübərpası</string>
+    <string name="doctor_adaptive_self_heal_desc">Arxa fonda sağlamlıq yoxlamalarını avtomatik işlədin və xidmət dayanmalarını və ya icazə problemlərini bərpa edin</string>
     <string name="doctor_summary_healthy_title">Bütün sistemlər qaydasındadır</string>
     <string name="doctor_summary_healthy_subtitle">Bütün diaqnostika yoxlamalarından keçdi. Xidmət mühiti optimaldır.</string>
     <string name="doctor_summary_issues_title">%1$d problem aşkar edildi</string>
@@ -1129,6 +1145,15 @@
     <string name="settings_verify_apk_virustotal_summary">Quraşdırmadan əvvəl APK heşlərini VirusTotal-a qarşı skan edin. API açarı tələb olunur.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Təhlükə Kəşfiyyatı</string>
     <string name="settings_verify_apk_pithus_summary">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın.</string>
+    <string name="settings_verify_apk_local_badge">Oflayn Sertifikat</string>
+    <string name="settings_verify_apk_fdroid_badge">F-Droid Meta-məlumatı</string>
+    <string name="settings_verify_apk_virustotal_badge">70+ Bulud Skaneri</string>
+    <string name="settings_verify_apk_pithus_badge">Davranış Kəşfiyyatı</string>
+    <string name="settings_verify_engines_posture">%1$d / %2$d Təhlükəsizlik Mühərriki Aktivdir</string>
+    <string name="settings_verify_key_required_hint">Açar tələb olunur · Təyin etmək üçün toxunun</string>
+    <string name="settings_verify_key_saved_hint">Açar aktivdir · Redaktə etmək üçün basıb saxlayın</string>
+    <string name="settings_plus_governors_posture">%1$d / %2$d İdarəedici Aktivdir</string>
+    <string name="settings_plus_governors_help_hint">Arxitektura təfərrüatları üçün istənilən idarəediciyə basıb saxlayın</string>
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Xüsusi Vurğu Rəngi</string>
@@ -1263,6 +1288,15 @@
     <string name="update_download_failed_storage">Yeniləməni yükləmək üçün kifayət qədər boş yaddaş yoxdur.</string>
     <string name="update_download_failed_cannot_resume">Fasilədən sonra yükləmə davam etdirilə bilmədi. Zəhmət olmasa yenidən cəhd edin.</string>
     <string name="update_download_failed_http">Şəbəkə xətası yükləməni kəsdi. Zəhmət olmasa əlaqənizi yoxlayın və yenidən cəhd edin.</string>
+    <string name="update_installing_title">Yeniləmə quraşdırılır…</string>
+    <string name="update_installing_progress">Shizuku+ %1$s quraşdırılır…</string>
+    <string name="update_run_in_background">Fonda işlət</string>
+    <string name="update_installed_success">Yeniləmə uğurla quraşdırıldı!</string>
+    <string name="update_signature_mismatch_title">İmza Uyğunsuzluğu</string>
+    <string name="update_signature_mismatch_migrate_message">Hazırda quraşdırılmış tətbiqiniz bu rəsmi buraxılışdan fərqli açarla imzalanıb (yerli debug qurğusu kimi). İmza açarları fərqli olduqda Android standart yerində yeniləmələrin qarşısını alır.\n\nShizuku aktiv olduğundan, Shizuku+ parametrlərinizin ehtiyat nüsxəsini çıxara, yeniləməni yenidən quraşdıra və konfiqurasiyanızı avtomatik bərpa edə bilər.\n\nİndi miqrasiya edilsin?</string>
+    <string name="update_signature_mismatch_manual_message">Yüklənmiş yeniləmə rəsmi buraxılış açarı ilə imzalanıb, lakin hazırda quraşdırılmış tətbiqinizin başqa imza açarı var (yerli debug qurğusu kimi). Açarlar fərqli olduqda Android yerində yeniləmələrin qarşısını alır.\n\nYeniləmək üçün Tənzimləmələr → Ehtiyat Nüsxə və Bərpa bölməsində parametrlərinizin ehtiyat nüsxəsini çıxarın, bu versiyanı silin və yeni yeniləməni quraşdırın.</string>
+    <string name="update_migrate_now">İndi Miqrasiya Et</string>
+    <string name="update_open_backup_settings">Ehtiyat Nüsxə və Bərpa</string>
 
     <!-- Migration Dialog -->
     <string name="migration_success_message">Tənzimləmələriniz köhnə versiyadan kopyalandı. İndi moe.shizuku.privileged.api tətbiqini təhlükəsiz şəkildə silə bilərsiniz.</string>
@@ -1291,7 +1325,7 @@
 
     <!-- Settings backup/restore -->
     <string name="adb_native_unavailable">ADB cütləşməsi bu cihazda əlçatan deyil</string>
-    
+
     <string name="changelog_title">Yeniliklər Nələrdir</string>
     <string name="changelog_close">Bağla</string>
     <string name="changelog_view_on_github">GitHub-da Bax</string>
@@ -1564,7 +1598,7 @@
     <string name="help_package_governor_plus_detail">ADB/shell prosesi üçün əlçatan olan imtiyazlı paket idarəetmə əməliyyatlarını üzə çıxarır: işləmə müddəti icazəsinin verilməsi/ləğv edilməsi (pm grant/revoke), istifadəçi səviyyəsində sistem tətbiqinin silinməsi (pm uninstall --user 0) və bərpası (pm install-existing), məlumat üçün təhlükəsiz tətbiq dayandırılması (pm suspend/unsuspend) və avtomatik icazə verilməsi ilə səssiz APK quraşdırılması. Bunlar həqiqi root tələb etmədən Shizuku-nu ADB üzərindən işlədən istənilən cihazda işləyən həqiqi root-sinif imkanlardır.</string>
     <string name="settings_display_tuner_plus_summary">Ekran icazəsini və DPI-ni ləğv edin — adb shell wm size/density ilə eynidir — beləliklə tətbiqlər və avtomatlaşdırma özləri ADB girişi tələb etmədən ekran düzənini tənzimləyə bilər.</string>
     <string name="help_display_tuner_plus_title">Ekran Tənzimləyicisi</string>
-    <string name="help_display_tuner_plus_detail">wm shell aləti vasitəsilə imtiyazlı ekran konfiqurasiyasını təmin edir: yolda ikən icazəni (wm size) və sıxlığı (wm density) ləğv edin, cari və fiziki dəyərləri oxuyun və ləğvləri cihaz ilkin dəyərlərinə qaytarın. Tətbiq tərtibatı problemlərini həll etmək, ekran yazılması üçün müəyyən aspekt nisbətini məcbur etmək, masaüstü rejimində dəyişikliklər və əlçatanlıq miqyaslaması üçün faydalıdır — tarixi olaraq yalnız root imkanı indi ADB shell prosesi vasitəsilə əlçatandır.</string>
+    <string name="help_display_tuner_plus_detail">wm shell aləti vasitəsilə imtiyazlı ekran konfiqurasiyasını təmin edir: yolda ikən icazəni (wm size) və sıxlığı (wm density) ləğv edin, cari və fiziki dəyərləri oxuyun və ləğvləri cihaz ilkin dəyərlərinə qaytarın. Tətbiq tərtivatı problemlərini həll etmək, ekran yazılması üçün müəyyən aspekt nisbətini məcbur etmək, masaüstü rejimində dəyişikliklər və əlçatanlıq miqyaslaması üçün faydalıdır — tarixi olaraq yalnız root imkanı indi ADB shell prosesi vasitəsilə əlçatandır.</string>
 
     <!-- App Backup feature -->
     <string name="home_backup_title">Tətbiq Ehtiyat Nüsxəsi</string>
