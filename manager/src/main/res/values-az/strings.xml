@@ -402,7 +402,6 @@
     <string name="swipe_hint_direction_left">← SOLA SÜRÜŞDÜR</string>
     <string name="swipe_hint_customize">Fərdiləşdir</string>
     <string name="swipe_hint_got_it">Anladım</string>
-
     <string name="swipe_hint_right">Sürətli əməliyyat üçün sağa sürüşdürün</string>
     <string name="swipe_hint_left">Sürətli əməliyyat üçün sola sürüşdürün</string>
     <string name="swipe_hint_dismiss">Bağlamaq üçün istənilən yerə toxunun</string>
