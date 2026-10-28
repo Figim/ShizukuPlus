@@ -398,8 +398,8 @@ private fun StatusBadge(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, letterSpacing = 0.4.sp),
+            fontWeight = FontWeight.Bold,
             color = onContainer,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
         )
@@ -424,13 +424,14 @@ fun MetricCard(
                 Text(
                     title,
                     style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     value,
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                 )
             }
             if (iconRes != null) {
@@ -1339,8 +1340,8 @@ private fun ActivityLogTimelineRow(
                     ) {
                         Text(
                             text = typeLabel,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Medium,
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp, letterSpacing = 0.4.sp),
+                            fontWeight = FontWeight.Bold,
                             color = containerPair(typeColor).second,
                             modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.dp),
                         )

@@ -297,13 +297,32 @@ fun SettingsScreen(
                         val collapsedTitleStartPadding = if (showNavigateUp) 56.dp else 24.dp
                         val titleStartPadding = lerp(start = 24.dp, stop = collapsedTitleStartPadding, fraction = curvedFraction)
                         val titleEndPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
+                        val isBoldTypography = ShizukuSettings.isBoldTypographyEnabled()
                         // One UI caps the expanded title's font scale at 1.0 (SESL MAX_FONT_SCALE) so
-                        // large system fonts don't push a 34sp title into the action icons.
+                        // large system fonts don't push a 36sp title into the action icons.
                         val fontScaleCap = if (isOneUi) LocalDensity.current.fontScale.coerceAtLeast(1f) else 1f
-                        val expandedTitleSp = (if (isOneUi) 34f else 30f) / fontScaleCap
-                        val titleFontSize = lerp(start = expandedTitleSp.sp, stop = 20.sp, fraction = curvedFraction)
-                        val titleFontWeight = if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
-                        val titleLetterSpacing = lerp((-0.5).sp, (-0.2).sp, curvedFraction)
+                        val expandedTitleSp = (if (isOneUi) 36f else 32f) / fontScaleCap
+                        val titleFontSize = lerp(start = expandedTitleSp.sp, stop = 22.sp, fraction = curvedFraction)
+                        val titleFontWeight =
+                            if (isOneUi) {
+                                if (curvedFraction > 0.65f) {
+                                    if (isBoldTypography) FontWeight.ExtraBold else FontWeight.Bold
+                                } else {
+                                    if (isBoldTypography) FontWeight.Black else FontWeight.ExtraBold
+                                }
+                            } else {
+                                if (curvedFraction > 0.65f) {
+                                    if (isBoldTypography) FontWeight.Bold else FontWeight.SemiBold
+                                } else {
+                                    if (isBoldTypography) FontWeight.ExtraBold else FontWeight.Medium
+                                }
+                            }
+                        val titleLetterSpacing =
+                            if (isOneUi) {
+                                lerp((-0.5).sp, (-0.2).sp, curvedFraction)
+                            } else {
+                                lerp((-0.2).sp, 0.sp, curvedFraction)
+                            }
 
                         val verticalBias =
                             androidx.compose.ui.util
@@ -490,9 +509,11 @@ fun SearchResultItem(
     // LocalIndication, and on Android 16 / Compose Foundation 1.7+ that threw
     // "clickable only supports IndicationNodeFactory instances provided to LocalIndication"
     // when a legacy Indication was in scope, crashing settings search (#309 / SHIZUKUPLUS-72).
+    val isBoldTypography = ShizukuSettings.isBoldTypographyEnabled()
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
         colors =
             CardDefaults.cardColors(
                 containerColor = if (isBlackTheme) Color(0xFF141414) else MaterialTheme.colorScheme.surfaceContainerLow,
@@ -517,6 +538,7 @@ fun SearchResultItem(
                 Text(
                     text = item.category ?: "Settings",
                     style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 4.dp),
                 )
@@ -524,13 +546,14 @@ fun SearchResultItem(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = if (isBoldTypography) FontWeight.ExtraBold else FontWeight.Bold,
                 )
                 if (!item.summary.isNullOrEmpty()) {
                     Text(
                         text = item.summary,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = if (isBoldTypography) FontWeight.Medium else FontWeight.Normal,
                         modifier = Modifier.padding(top = 2.dp),
                     )
                 }

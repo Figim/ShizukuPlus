@@ -80,10 +80,10 @@ class CollapsiblePreferenceCategory
                     card.radius =
                         when (cornerStyle) {
                             "sharp" -> 0f
-                            "rounded" -> 12f * density
-                            "large" -> 24f * density
+                            "rounded" -> 16f * density
+                            "large" -> 20f * density
                             "squircle" -> 28f * density
-                            "xlarge" -> 36f * density
+                            "xlarge" -> 32f * density
                             else -> card.radius
                         }
                 }

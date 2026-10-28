@@ -132,13 +132,21 @@ Things discussed or sketched that we never formally decided to build.
   - Aligned Settings One UI / One-Handed mode title positioning with `HomeScreen.kt` (centered when expanded, smoothly interpolating to start on collapse in `SettingsScreen.kt`).
   - Addressed text cutoffs across 24 files, removing `TextOverflow.Ellipsis` and rigid maxLines for full text display across modern viewports (including Galaxy S26 Ultra).
   - Elevated Snackbar above floating navigation bar in `SnackbarHelper.kt`.
+- **Material 3 Expressive boldness, sizing, and standards alignment**:
+  - Aligned `HomeScreen.kt` top app bar typography with official Google M3 Expressive tokens: `HeadlineLarge` (32sp expanded, 36sp One UI) to `TitleLarge` (22sp collapsed), tracking (-0.2sp to 0sp).
+  - Wired `isBoldTypography` dynamically into title weight scaling (interpolating between `FontWeight.ExtraBold`/`Black` and `FontWeight.Bold`/`SemiBold`), giving users impactful editorial hierarchy across both standard and One UI layouts.
+  - Aligned `SettingsScreen.kt` collapsed app bar title size to standard `TitleLarge` (22sp, formerly 20sp) with dynamic `FontWeight.ExtraBold`/`Bold` weights.
+  - Updated `SettingsScreen.kt` search results with `shapes.large` (16dp) card boundaries, bold category titles, and typography boldness scaling.
+  - Aligned System Hub `StatusBadge` and `ActivityRecordItem` badges to official M3E emphasized badge spec (11sp, `FontWeight.Bold`, 0.4sp tracking).
+  - Updated `SystemHubScreen.kt` `TabRow` to emphasize active tabs with `FontWeight.Bold` and `TitleSmall` role.
+  - Snapped settings category card corner styles in `CollapsiblePreferenceCategory.kt` to official Google M3 shape scale tokens: Large (16dp), LargeIncreased (20dp), ExtraLarge (28dp), ExtraLargeIncreased (32dp), eliminating arbitrary off-scale values.
 - **GitHub Issues triage & fixes**:
   - **#641 (Inconsistent colors)**: Fixed header category icon styling in `CollapsiblePreferenceCategory.kt` to respect `IconStyleHelper.current()`. Now only applies a two-tone pill if `style == Style.TWO_TONE`; for `OUTLINED` or `STANDARD` icon styles, it keeps the clean primary icon without artificial purple/container background.
   - **#642 (Inconsistent rounding)**: Fixed PLUS badge in `PlusGovernorsPreference.kt` to use a full pill (`RoundedCornerShape(100)`), consistent with `PlusFeaturePreference` and other badges.
   - **#643 (One UI style crash on Samsung F14)**: Confirmed resolved by r3085 commit `768d27ad` (safe fragment detach/re-attach in `SettingsActivity.kt` on recreate, `view?.post` recreate triggers, and proper padding insets sync).
   - **#640 (Option bug)**: Confirmed resolved by r3085 commit `768d27ad` (expanded header padding and title overlap sync).
   - **#639 (Crash immediately)**: Root cause was `AppIconTilePickerPreference` ClassCastException resolved in r3082 (`60780ea0`) and recreate stabilization in r3085.
-  - **#623 (Error while searching settings)**: Confirmed resolved by commit `5bdf6f2a` (`SafePreferenceIcon`).
+  - **#623 (Error while searching settings)**: Confirmed resolved by commit `5bdf6f2a` (`SafePreferenceIcon`). Pruned dead `AppManagementSettingsFragment` entry from `SettingsSearchEngine`.
 
 
 ### 2026-10-24 (late) — Claude (stable prep: issues, tests, CI, merge) [master, unpushed, 175 ahead / 0 behind]

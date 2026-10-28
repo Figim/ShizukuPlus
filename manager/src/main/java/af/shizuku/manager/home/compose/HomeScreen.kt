@@ -219,6 +219,7 @@ fun HomeScreen(
                                     Text(
                                         text = stringResource(R.string.home_edit_mode_done),
                                         style = MaterialTheme.typography.labelLarge,
+                                        fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary,
                                     )
                                 }
@@ -262,23 +263,32 @@ fun HomeScreen(
                         label = "titleEndPaddingStop",
                     )
                     val endPadding = lerp(start = 24.dp, stop = endPaddingStop, fraction = curvedFraction)
+                    val isBoldTypography = ShizukuSettings.isBoldTypographyEnabled()
                     val titleFontSize =
                         lerp(
-                            start = if (isOneUi) 36.sp else 28.sp,
-                            stop = 20.sp,
+                            start = if (isOneUi) 36.sp else 32.sp,
+                            stop = 22.sp,
                             fraction = curvedFraction,
                         )
                     val titleFontWeight =
                         if (isOneUi) {
-                            if (curvedFraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
+                            if (curvedFraction > 0.65f) {
+                                if (isBoldTypography) FontWeight.ExtraBold else FontWeight.Bold
+                            } else {
+                                if (isBoldTypography) FontWeight.Black else FontWeight.ExtraBold
+                            }
                         } else {
-                            if (curvedFraction > 0.65f) FontWeight.SemiBold else FontWeight.Normal
+                            if (curvedFraction > 0.65f) {
+                                if (isBoldTypography) FontWeight.Bold else FontWeight.SemiBold
+                            } else {
+                                if (isBoldTypography) FontWeight.ExtraBold else FontWeight.Medium
+                            }
                         }
                     val titleLetterSpacing =
                         if (isOneUi) {
                             lerp((-0.6).sp, (-0.2).sp, curvedFraction)
                         } else {
-                            0.sp
+                            lerp((-0.2).sp, 0.sp, curvedFraction)
                         }
 
                     Box(
@@ -542,6 +552,7 @@ fun HomeEmptyState(onRestoreHomeCards: () -> Unit) {
         Text(
             text = stringResource(R.string.empty_state_title_no_home_cards),
             style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(8.dp))

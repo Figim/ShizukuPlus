@@ -25,6 +25,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -92,15 +93,29 @@ fun SystemHubScreen(
                     .padding(top = innerPadding.calculateTopPadding()),
         ) {
             TabRow(selectedTabIndex = pagerState.currentPage) {
+                val isPage0 = pagerState.currentPage == 0
                 Tab(
-                    selected = pagerState.currentPage == 0,
+                    selected = isPage0,
                     onClick = { coroutineScope.launch { pagerState.animateScrollToPage(0) } },
-                    text = { Text(stringResource(R.string.system_hub_tab_metrics)) },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.system_hub_tab_metrics),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = if (isPage0) FontWeight.Bold else FontWeight.Medium,
+                        )
+                    },
                 )
+                val isPage1 = pagerState.currentPage == 1
                 Tab(
-                    selected = pagerState.currentPage == 1,
+                    selected = isPage1,
                     onClick = { coroutineScope.launch { pagerState.animateScrollToPage(1) } },
-                    text = { Text(stringResource(R.string.settings_category_activity_log)) },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.settings_category_activity_log),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = if (isPage1) FontWeight.Bold else FontWeight.Medium,
+                        )
+                    },
                 )
             }
 

@@ -11,6 +11,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Consistent PLUS Badge Shapes** — unified PLUS badge rounding across governors and feature cards into full pill shapes (`RoundedCornerShape(100)`) ([#642](https://github.com/thejaustin/ShizukuPlus/issues/642)).
 - **Relocated Cloud Database Updates** — moved cloud app database updates from Appearance into **About > Updates** alongside release updates.
 - **No Text Truncation** — eliminated aggressive ellipses and text clipping across 24 screens and dialogs, ensuring complete word readability on modern device viewports including Samsung Galaxy S26 Ultra.
+- **Material 3 Expressive Boldness & Sizing Alignment** — aligned top app bar headers (HomeScreen & SettingsScreen) to official Google M3 Expressive specs (HeadlineLarge 32sp expanded, TitleLarge 22sp collapsed, tightened -0.2sp tracking), dynamic bold weight scaling across both standard and One UI modes, emphasized status badges (11sp bold with 0.4sp tracking), active TabRow bold weights, and snapped Settings category card corners to the official M3 shape scale (Large 16dp, LargeIncreased 20dp, ExtraLarge 28dp, ExtraLargeIncreased 32dp).
 - **Elevated Snackbar** — raised Snackbar alerts above the floating navigation bar to prevent UI overlap.
 
 
