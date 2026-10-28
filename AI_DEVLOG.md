@@ -135,6 +135,11 @@ Things discussed or sketched that we never formally decided to build.
 - **Authorized Apps screen entrance & dynamic gesture guide**:
   - Upgraded `ApplicationManagementActivity` entrance animation with unified `MaterialSharedAxis.Z` and cascading item slide-in (`item_slide_in_bottom.xml`).
   - Redesigned swipe gesture guide popup (`swipe_hint_overlay.xml`) to dynamically reflect the user's active right and left swipe actions with exact theme container colors, directional preview arrows, choreographed bounce animations, "Customize in Settings" direct navigation, and re-triggerable action in the top app bar menu.
+- **Settings subpage SharedAxis.X transitions & back navigation polish**:
+  - Connected `applySharedAxis` in `SettingsActivity.kt` to `ShizukuSettings.isExpressiveAnimationsEnabled()`, giving nested settings fragment transitions fluid lateral slide/fade on Material 3 SharedAxis.X instead of abrupt cuts.
+  - Aligned back navigation across `PermissionManagerActivity.kt`, `DeviceControlActivity.kt`, and `SystemHubActivity.kt` to invoke `finishAfterTransition()` instead of `finish()`, enabling proper reverse window transitions.
+  - Added `@interpolator/m3e_emphasized_accelerate` and updated all floating navigation bar slide transitions (`floating_nav_enter_forward`, `floating_nav_exit_forward`, etc.) to use Google M3 emphasized deceleration (280ms) and acceleration (240ms) curves.
+  - Verified and confirmed resolution of GitHub issues #639 (Appearance crash on Android 15 One UI) and #623 (Settings search crash with non-vector drawables).
 - **Settings crash resilience & One UI theme fixes (Issues #643, #646)**:
   - Replaced synchronous `commitNow()` in `SettingsActivity.kt`'s `onContainerCreated` with `commitNowAllowingStateLoss()` and `commitAllowingStateLoss()` guarded by lifecycle/destroyed checks, resolving immediate crash on Android 15 One UI 7 when tapping Settings (#646).
   - Unrestricted `oneUiThemePreference` in `PersonalizationSettingsFragment.kt` (removed Samsung-only restriction) so all devices can toggle One UI style, and ensured preference changes trigger `applyTheme(requiresRecreate = true)` to immediately render the expanded One UI header and padding (#643).

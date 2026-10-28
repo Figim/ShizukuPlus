@@ -28,7 +28,7 @@ class PermissionManagerActivity : AppActivity() {
                 isBoldTypography = ShizukuSettings.isBoldTypographyEnabled(),
                 isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled(),
             ) {
-                PermissionManagerScreen(onBackClick = { finish() })
+                PermissionManagerScreen(onBackClick = { finishAfterTransition() })
             }
         }
     }

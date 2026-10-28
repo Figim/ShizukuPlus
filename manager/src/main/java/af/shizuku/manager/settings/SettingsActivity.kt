@@ -269,11 +269,13 @@ class SettingsActivity :
     }
 
     /**
-     * Experimental "Material screen transitions": settings pages slide on the shared X axis
+     * M3 Shared Axis X screen transitions: settings pages slide on the shared X axis
      * (forward in, back out) instead of cutting.
      */
     private fun applySharedAxis(next: androidx.fragment.app.Fragment) {
         if (!af.shizuku.manager.ShizukuSettings
+                .isExpressiveAnimationsEnabled() &&
+            !af.shizuku.manager.ShizukuSettings
                 .isExperimentalScreenTransitionsEnabled()
         ) {
             return
