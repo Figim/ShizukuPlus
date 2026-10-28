@@ -28,7 +28,7 @@ class DeviceControlActivity : AppActivity() {
                 isBoldTypography = ShizukuSettings.isBoldTypographyEnabled(),
                 isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled(),
             ) {
-                DeviceControlScreen(onBackClick = { finish() })
+                DeviceControlScreen(onBackClick = { finishAfterTransition() })
             }
         }
     }

@@ -30,7 +30,7 @@ class SystemHubActivity : AppActivity() {
                 isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled(),
             ) {
                 SystemHubScreen(
-                    onBackClick = { finish() },
+                    onBackClick = { finishAfterTransition() },
                     showBack =
                         !af.shizuku.manager.widget.FloatingNavBar
                             .isTopLevel(this),

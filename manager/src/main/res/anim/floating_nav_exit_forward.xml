@@ -4,11 +4,11 @@
     <translate
         android:fromXDelta="0"
         android:toXDelta="-12%p"
-        android:duration="300"
-        android:interpolator="@android:interpolator/fast_out_slow_in" />
+        android:duration="240"
+        android:interpolator="@interpolator/m3e_emphasized_accelerate" />
     <alpha
         android:fromAlpha="1"
         android:toAlpha="0"
         android:duration="150"
-        android:interpolator="@android:interpolator/linear" />
+        android:interpolator="@interpolator/m3e_emphasized_accelerate" />
 </set>
