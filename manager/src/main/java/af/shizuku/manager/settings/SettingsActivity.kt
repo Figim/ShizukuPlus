@@ -18,6 +18,29 @@ class SettingsActivity :
     private var currentTitle by mutableStateOf("")
     private var searchResults by mutableStateOf<List<SettingsSearchEngine.SettingItem>>(emptyList())
     var themeVersion by mutableStateOf(0)
+    private var isOneUi by mutableStateOf(
+        af.shizuku.manager.ShizukuSettings
+            .isOneUiThemeEnabled(),
+    )
+    private var isOneHanded by mutableStateOf(
+        af.shizuku.manager.ShizukuSettings
+            .isOneHandedModeEnabled(),
+    )
+
+    private val prefsListener =
+        android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == af.shizuku.manager.ShizukuSettings.Keys.KEY_ONEUI_THEME ||
+                key == af.shizuku.manager.ShizukuSettings.Keys.KEY_ONE_HANDED_MODE
+            ) {
+                isOneUi =
+                    af.shizuku.manager.ShizukuSettings
+                        .isOneUiThemeEnabled()
+                isOneHanded =
+                    af.shizuku.manager.ShizukuSettings
+                        .isOneHandedModeEnabled()
+                themeVersion++
+            }
+        }
 
     private var preferenceScrollState: TopAppBarState? = null
     private var _isScrollIdle by mutableStateOf(true)
@@ -82,8 +105,21 @@ class SettingsActivity :
     }
 
     fun onThemeChanged() {
+        isOneUi =
+            af.shizuku.manager.ShizukuSettings
+                .isOneUiThemeEnabled()
+        isOneHanded =
+            af.shizuku.manager.ShizukuSettings
+                .isOneHandedModeEnabled()
         themeVersion++
         (supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseSettingsFragment)?.updateHeaderPadding()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        af.shizuku.manager.ShizukuSettings
+            .getPreferences()
+            ?.unregisterOnSharedPreferenceChangeListener(prefsListener)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,6 +128,20 @@ class SettingsActivity :
         // setDecorFitsSystemWindows=false) based on the user's setting and Android version.
         // Repeating it unconditionally here was inconsistent with HomeActivity and caused
         // mismatched window state during the Explode transition, crashing on Android 16 (#483).
+
+        af.shizuku.manager.ShizukuSettings
+            .getPreferences()
+            ?.registerOnSharedPreferenceChangeListener(prefsListener)
+
+        supportFragmentManager.addOnBackStackChangedListener {
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseSettingsFragment
+            val title = currentFragment?.getTitle()?.toString()
+            if (title != null) {
+                currentTitle = title
+            } else if (supportFragmentManager.backStackEntryCount == 0) {
+                currentTitle = getString(R.string.settings_title)
+            }
+        }
 
         SettingsSearchEngine.init(this)
 
@@ -109,9 +159,7 @@ class SettingsActivity :
                 isAmoledPlus =
                     af.shizuku.manager.ShizukuSettings
                         .isAmoledPlusEnabled(),
-                isOneUi =
-                    af.shizuku.manager.ShizukuSettings
-                        .isOneUiThemeEnabled(),
+                isOneUi = isOneUi,
                 isBoldTypography =
                     af.shizuku.manager.ShizukuSettings
                         .isBoldTypographyEnabled(),
@@ -134,6 +182,8 @@ class SettingsActivity :
                     }
                 SettingsScreen(
                     title = displayTitle,
+                    isOneUi = isOneUi,
+                    isOneHanded = isOneHanded,
                     showNavigateUp =
                         !(
                             af.shizuku.manager.widget.FloatingNavBar

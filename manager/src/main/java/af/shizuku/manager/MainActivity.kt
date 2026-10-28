@@ -11,9 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainActivity : HomeActivity() {
@@ -33,6 +31,9 @@ class MainActivity : HomeActivity() {
                 }
             }
 
+            // Auto-restore settings if a force-update or migration backup exists before checking onboarding
+            checkAndRestoreBackupSynchronous()
+
             Timber.d("Checking onboarding status")
             Sentry.addBreadcrumb(Breadcrumb("Checking onboarding status"))
             if (!ShizukuSettings.isOnboardingSeen()) {
@@ -49,9 +50,6 @@ class MainActivity : HomeActivity() {
                 finish()
                 return
             }
-
-            // Auto-restore settings if a force-update backup exists
-            checkAndRestoreBackup()
 
             // Show what's new after an update. Separate from the Sentry-quota-reset version
             // tracking in ShizukuApplication.onCreate() — that one bumps its own flag before any
@@ -84,28 +82,23 @@ class MainActivity : HomeActivity() {
         }
     }
 
-    private fun checkAndRestoreBackup() {
-        lifecycleScope.launch(Dispatchers.IO) {
+    private fun checkAndRestoreBackupSynchronous() {
+        try {
             val backupFile =
                 af.shizuku.manager.update.UpdateInstaller
                     .getBackupFile(this@MainActivity)
-            if (backupFile != null && backupFile.exists()) {
-                try {
-                    val json = backupFile.readText()
-                    if (af.shizuku.manager.utils.SettingsBackupManager
-                            .import(this@MainActivity, json, trustPrivileged = true)
-                    ) {
-                        Timber.i("Successfully auto-restored settings from force-update backup")
-                        backupFile.delete()
-                        // Notify user or refresh UI if needed
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(this@MainActivity, R.string.migration_success_message, Toast.LENGTH_LONG).show()
-                        }
-                    }
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to auto-restore settings")
+            if (backupFile != null && backupFile.exists() && backupFile.length() > 0) {
+                val json = backupFile.readText()
+                if (af.shizuku.manager.utils.SettingsBackupManager
+                        .importAndCommit(this@MainActivity, json, trustPrivileged = true)
+                ) {
+                    Timber.i("Successfully auto-restored settings from backup")
+                    backupFile.delete()
+                    Toast.makeText(this@MainActivity, R.string.migration_success_message, Toast.LENGTH_LONG).show()
                 }
             }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to auto-restore settings")
         }
     }
 

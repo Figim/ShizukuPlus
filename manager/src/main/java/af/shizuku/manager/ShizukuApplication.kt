@@ -566,7 +566,12 @@ class ShizukuApplication :
 
                 override fun onActivityPaused(activity: Activity) = Unit
 
-                override fun onActivityStopped(activity: Activity) = Unit
+                override fun onActivityStopped(activity: Activity) {
+                    CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                        af.shizuku.manager.utils.SettingsBackupManager
+                            .saveAutoBackup(this@ShizukuApplication)
+                    }
+                }
 
                 override fun onActivitySaveInstanceState(
                     activity: Activity,
@@ -911,6 +916,10 @@ class ShizukuApplication :
                     ) {
                         af.shizuku.manager.settings.SettingsShareManager
                             .markSettingsModified()
+                        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                            af.shizuku.manager.utils.SettingsBackupManager
+                                .saveAutoBackup(this@ShizukuApplication)
+                        }
                         if (af.shizuku.manager.settings.SettingsShareManager
                                 .isAutoSyncEnabled() &&
                             af.shizuku.manager.settings.SettingsShareManager
@@ -924,13 +933,15 @@ class ShizukuApplication :
                     }
                 }.also { prefs.registerOnSharedPreferenceChangeListener(it) }
 
-        // On startup: check for initial import or auto-sync in background
+        // On startup: check for initial import or auto-sync and persist current settings backup
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             try {
+                af.shizuku.manager.utils.SettingsBackupManager
+                    .saveAutoBackup(this@ShizukuApplication)
                 af.shizuku.manager.settings.SettingsShareManager
                     .checkAndPerformAutoSync(this@ShizukuApplication)
             } catch (e: Exception) {
-                Timber.tag("ShizukuApplication").w(e, "Peer settings initial auto-sync failed")
+                Timber.tag("ShizukuApplication").w(e, "Peer settings initial auto-sync or backup failed")
             }
         }
     }

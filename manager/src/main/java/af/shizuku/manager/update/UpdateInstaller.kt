@@ -13,18 +13,30 @@ object UpdateInstaller {
     const val AUTO_BACKUP_FILENAME = "shizuku_plus_auto_backup.json"
 
     fun getBackupFile(context: Context): File? {
+        val internalFile = File(context.filesDir, AUTO_BACKUP_FILENAME)
+        if (internalFile.exists() && internalFile.length() > 0) return internalFile
+
+        val tmpFile = File("/data/local/tmp", AUTO_BACKUP_FILENAME)
+        if (tmpFile.exists() && tmpFile.length() > 0) return tmpFile
+
+        val tmpAlt = File("/data/local/tmp", "shizukuplus_settings.json")
+        if (tmpAlt.exists() && tmpAlt.length() > 0) return tmpAlt
+
         val appExtDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val primaryFile = if (appExtDir != null) File(appExtDir, AUTO_BACKUP_FILENAME) else null
-        if (primaryFile?.exists() == true) return primaryFile
+        if (primaryFile?.exists() == true && primaryFile.length() > 0) return primaryFile
 
         val publicDownloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
         val fallbackPublic = File(publicDownloadDir, AUTO_BACKUP_FILENAME)
-        if (fallbackPublic.exists()) return fallbackPublic
+        if (fallbackPublic.exists() && fallbackPublic.length() > 0) return fallbackPublic
 
-        val internalFile = File(context.filesDir, AUTO_BACKUP_FILENAME)
-        if (internalFile.exists()) return internalFile
+        val sdcardDownload = File("/sdcard/Download", AUTO_BACKUP_FILENAME)
+        if (sdcardDownload.exists() && sdcardDownload.length() > 0) return sdcardDownload
 
-        return primaryFile ?: fallbackPublic
+        val storageDownload = File("/storage/emulated/0/Download", AUTO_BACKUP_FILENAME)
+        if (storageDownload.exists() && storageDownload.length() > 0) return storageDownload
+
+        return internalFile
     }
 
     /**
@@ -68,12 +80,24 @@ object UpdateInstaller {
                     pm grant $packageName android.permission.WRITE_SECURE_SETTINGS 2>/dev/null
                     appops set $packageName SYSTEM_ALERT_WINDOW allow 2>/dev/null
                     appops set $packageName GET_USAGE_STATS allow 2>/dev/null
+                    appops set $packageName MANAGE_EXTERNAL_STORAGE allow 2>/dev/null
 
                     if [ -f /data/local/tmp/shizukuplus_settings.json ]; then
+                        cp /data/local/tmp/shizukuplus_settings.json "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
+                        chmod 666 "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
+
                         DEST_DIR="/sdcard/Android/data/$packageName/files/Download"
                         mkdir -p "${'$'}DEST_DIR" 2>/dev/null
                         cp /data/local/tmp/shizukuplus_settings.json "${'$'}DEST_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
+
                         cp /data/local/tmp/shizukuplus_settings.json "/sdcard/Download/$AUTO_BACKUP_FILENAME" 2>/dev/null
+
+                        for DATA_DIR in "/data/data/$packageName/files" "/data/user/0/$packageName/files"; do
+                            mkdir -p "${'$'}DATA_DIR" 2>/dev/null
+                            cp /data/local/tmp/shizukuplus_settings.json "${'$'}DATA_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
+                            chmod 666 "${'$'}DATA_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
+                        done
+
                         rm -f /data/local/tmp/shizukuplus_settings.json
                     fi
                     am start -n $packageName/af.shizuku.manager.MainActivity

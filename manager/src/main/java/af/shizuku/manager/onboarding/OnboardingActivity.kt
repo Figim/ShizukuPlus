@@ -121,6 +121,24 @@ class OnboardingActivity : AppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        try {
+            val backupFile =
+                af.shizuku.manager.update.UpdateInstaller
+                    .getBackupFile(this)
+            if (backupFile != null && backupFile.exists() && backupFile.length() > 0) {
+                val json = backupFile.readText()
+                if (af.shizuku.manager.utils.SettingsBackupManager
+                        .importAndCommit(this, json, trustPrivileged = true)
+                ) {
+                    backupFile.delete()
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                    return
+                }
+            }
+        } catch (_: Exception) {
+        }
+
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
