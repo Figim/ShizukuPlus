@@ -2,7 +2,6 @@ package af.shizuku.manager.ktx
 
 import af.shizuku.manager.ShizukuApplication
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.util.Pair
@@ -13,10 +12,28 @@ import androidx.annotation.ColorInt
 
 fun Activity.startWithSceneTransition(
     intent: Intent,
-    sharedView: View,
-    transitionName: String,
+    sharedView: View? = null,
+    transitionName: String? = null,
 ) {
-    val options = ActivityOptions.makeSceneTransitionAnimation(this, Pair.create(sharedView, transitionName))
+    val bundle =
+        if (sharedView != null && !transitionName.isNullOrEmpty()) {
+            androidx.core.app.ActivityOptionsCompat
+                .makeSceneTransitionAnimation(
+                    this,
+                    androidx.core.util.Pair(sharedView, transitionName),
+                ).toBundle()
+        } else {
+            androidx.core.app.ActivityOptionsCompat
+                .makeSceneTransitionAnimation(this)
+                .toBundle()
+        }
+    startActivity(intent, bundle)
+}
+
+fun Activity.startWithSceneTransition(intent: Intent) {
+    val options =
+        androidx.core.app.ActivityOptionsCompat
+            .makeSceneTransitionAnimation(this)
     startActivity(intent, options.toBundle())
 }
 

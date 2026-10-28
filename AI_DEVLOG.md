@@ -120,6 +120,22 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-28 — Antigravity (Screen opening animations, Explode elimination, Activity Log fluid transitions, M3E gestures) [master]
+
+- **App-wide screen transition overhaul & legacy Explode eradication**:
+  - Identified and eliminated `android.transition.Explode()` default window transition across `AppActivity.kt` and `AppBarActivity.kt`. Explode was scattering views in chaotic shards and causing crashes on Android 16 (#483, #529).
+  - Standardized on Google Material 3 Expressive `MaterialSharedAxis.Z` (depth zoom and fade) by default across all app activities, with lateral `MaterialSharedAxis.X` remaining available when experimental screen transitions are toggled.
+  - Replaced broken shared element transitions (`icon_server_status`, `icon_manage_apps`, `icon_backup`, `icon_permission_manager`, `icon_device_control`) that caused Android's `ActivityTransitionCoordinator` to stall for timeout before snapping.
+  - Enhanced `startWithSceneTransition` in `Context.kt` to safely construct clean window scene transitions without phantom view pairs.
+  - Fixed toolbar Up navigation and TopAppBar back navigation across `AppActivity`, `ActivityLogActivity`, and `ApplicationManagementActivity` to call `finishAfterTransition()`, playing the smooth reverse M3 return transition.
+- **Activity Log opening & list motion**:
+  - Overhauled Activity Log opening from Server Status chip, System Hub, and Advanced Settings with fluid `MaterialSharedAxis.Z` depth navigation.
+  - Wired `finishAfterTransition()` to `ActivityLogActivity`'s TopAppBar navigation icon.
+  - Added `Modifier.animateItem()` to timeline records and timeline date headers in `SystemHubScreens.kt`, enabling spring layout animations when toggling filtering pills or changing sorting modes.
+- **Authorized Apps screen entrance & dynamic gesture guide**:
+  - Upgraded `ApplicationManagementActivity` entrance animation with unified `MaterialSharedAxis.Z` and cascading item slide-in (`item_slide_in_bottom.xml`).
+  - Redesigned swipe gesture guide popup (`swipe_hint_overlay.xml`) to dynamically reflect the user's active right and left swipe actions with exact theme container colors, directional preview arrows, choreographed bounce animations, "Customize in Settings" direct navigation, and re-triggerable action in the top app bar menu.
+
 ### 2026-10-27 — Antigravity (App interactions consolidation, Settings UX, One UI title centering, GitHub triage) [master]
 
 - **App interactions modernization & consolidation**:

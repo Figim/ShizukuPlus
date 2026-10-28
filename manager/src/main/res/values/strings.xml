@@ -396,6 +396,11 @@
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Swipe gestures</string>
+    <string name="swipe_hint_subtitle">Swipe any app row to trigger quick actions</string>
+    <string name="swipe_hint_direction_right">SWIPE RIGHT →</string>
+    <string name="swipe_hint_direction_left">← SWIPE LEFT</string>
+    <string name="swipe_hint_customize">Customize</string>
+    <string name="swipe_hint_got_it">Got it</string>
     <string name="swipe_hint_right">Swipe right for quick action</string>
     <string name="swipe_hint_left">Swipe left for quick action</string>
     <string name="swipe_hint_dismiss">Tap anywhere to dismiss</string>

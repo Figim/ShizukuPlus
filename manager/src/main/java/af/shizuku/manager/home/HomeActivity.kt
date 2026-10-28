@@ -6,6 +6,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbPairingService
 import af.shizuku.manager.app.SnackbarHelper
 import af.shizuku.manager.home.compose.HomeScreen
+import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.management.AppsViewModel
 import af.shizuku.manager.settings.SettingsActivity
@@ -277,7 +278,7 @@ open class HomeActivity :
                         }
                     },
                     onSettingsClick = {
-                        startActivity(Intent(this, SettingsActivity::class.java))
+                        startWithSceneTransition(Intent(this, SettingsActivity::class.java))
                     },
                     onHelpClick = {
                         MaterialAlertDialogBuilder(this)
@@ -317,7 +318,7 @@ open class HomeActivity :
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     AdbDialogFragment().show(supportFragmentManager)
                 }
-            "open_terminal" -> startActivity(android.content.Intent(this, af.shizuku.manager.shell.ShellTutorialActivity::class.java))
+            "open_terminal" -> startWithSceneTransition(android.content.Intent(this, af.shizuku.manager.shell.ShellTutorialActivity::class.java))
         }
 
         // Initial status load

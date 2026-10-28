@@ -9,7 +9,6 @@
         android:duplicateParentState="true"
         android:importantForAccessibility="yes"
         android:contentDescription="@string/home_backup_title"
-        android:transitionName="icon_backup"
         android:src="@drawable/ic_folder_24" />
 
     <LinearLayout

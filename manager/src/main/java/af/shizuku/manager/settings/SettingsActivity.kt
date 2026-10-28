@@ -163,10 +163,35 @@ class SettingsActivity :
                         // the user's current settings page on recreate.
                         val existing = supportFragmentManager.findFragmentById(R.id.fragment_container)
                         if (existing == null) {
-                            supportFragmentManager
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, SettingsFragment())
-                                .commitNow()
+                            val highlightKey = intent?.getStringExtra("highlight_key")
+                            val initialItem = highlightKey?.let { SettingsSearchEngine.findItemByKey(this@SettingsActivity, it) }
+                            if (initialItem != null) {
+                                intent?.removeExtra("highlight_key")
+                                val rootFrag = SettingsFragment()
+                                val targetFrag =
+                                    supportFragmentManager.fragmentFactory.instantiate(classLoader, initialItem.fragmentClass).apply {
+                                        arguments =
+                                            Bundle().apply {
+                                                putString("highlight_key", initialItem.key)
+                                            }
+                                    }
+                                applySharedAxis(targetFrag)
+                                supportFragmentManager
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, rootFrag)
+                                    .commitNow()
+                                supportFragmentManager
+                                    .beginTransaction()
+                                    .setReorderingAllowed(true)
+                                    .replace(R.id.fragment_container, targetFrag)
+                                    .addToBackStack(null)
+                                    .commit()
+                            } else {
+                                supportFragmentManager
+                                    .beginTransaction()
+                                    .replace(R.id.fragment_container, SettingsFragment())
+                                    .commitNow()
+                            }
                         } else if (existing.view == null) {
                             supportFragmentManager
                                 .beginTransaction()

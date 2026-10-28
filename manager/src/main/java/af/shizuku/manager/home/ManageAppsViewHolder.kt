@@ -3,7 +3,6 @@ package af.shizuku.manager.home
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeManageAppsItemBinding
-import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.management.ApplicationManagementActivity
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.IconStyleHelper
@@ -73,8 +72,6 @@ class ManageAppsViewHolder(
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, ApplicationManagementActivity::class.java),
-            iconView,
-            "icon_manage_apps",
         )
     }
 }

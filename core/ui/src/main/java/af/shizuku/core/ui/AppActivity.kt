@@ -78,18 +78,16 @@ abstract class AppActivity : MaterialActivity() {
         if (!suppressTransitionOnCreate) {
             try {
                 window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-                if (materialScreenTransitions()) {
-                    // Experimental: M3 shared axis X - forward slides in from the end, back
-                    // reverses it. Replaces Explode, which isn't an M3 pattern.
-                    val axis = com.google.android.material.transition.platform.MaterialSharedAxis.X
-                    window.enterTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, true)
-                    window.exitTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, true)
-                    window.reenterTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, false)
-                    window.returnTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, false)
-                } else {
-                    window.enterTransition = android.transition.Explode()
-                    window.exitTransition = android.transition.Explode()
-                }
+                val axis =
+                    if (materialScreenTransitions()) {
+                        com.google.android.material.transition.platform.MaterialSharedAxis.X
+                    } else {
+                        com.google.android.material.transition.platform.MaterialSharedAxis.Z
+                    }
+                window.enterTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, true)
+                window.exitTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, true)
+                window.reenterTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, false)
+                window.returnTransition = com.google.android.material.transition.platform.MaterialSharedAxis(axis, false)
             } catch (_: Exception) {
             }
         }
@@ -207,9 +205,7 @@ abstract class AppActivity : MaterialActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         if (!super.onSupportNavigateUp()) {
-            // With Material screen transitions, toolbar back plays the same return transition as
-            // the system back gesture instead of cutting.
-            if (materialScreenTransitions()) finishAfterTransition() else finish()
+            finishAfterTransition()
         }
         return true
     }

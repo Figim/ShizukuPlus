@@ -78,8 +78,6 @@ class PermissionManagerViewHolder(
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, PermissionManagerActivity::class.java),
-            iconView,
-            "icon_permission_manager",
         )
     }
 }

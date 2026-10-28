@@ -9,7 +9,6 @@
         android:duplicateParentState="true"
         android:importantForAccessibility="yes"
         android:contentDescription="@string/home_permission_manager_title"
-        android:transitionName="icon_permission_manager"
         android:src="@drawable/ic_shield_24" />
 
     <LinearLayout

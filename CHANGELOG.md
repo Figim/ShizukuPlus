@@ -4,6 +4,12 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+### 🎬 Screen Transitions & Motion Experience
+- **Unified Material 3 Expressive Screen Navigation** — completely eradicated legacy Android 5.0 `Explode()` transitions across the app, replacing them with fluid Material Design `MaterialSharedAxis.Z` (depth zoom and fade) transitions as the default across all activities (`AppActivity` and `AppBarActivity`).
+- **Eliminated Broken Shared Element Stalls** — removed mismatched `transitionName` strings and scene transition calls (`icon_server_status`, `icon_manage_apps`, `icon_backup`, `icon_permission_manager`, `icon_device_control`) that caused Android's transition coordinator to stall and snap. Unified activity launches using `startWithSceneTransition(intent)`.
+- **Fluid Activity Log Navigation & List Animation** — overhauled Activity Log screen opening with smooth M3 depth zoom, fixed top bar back navigation to call `finishAfterTransition()`, and added `Modifier.animateItem()` to timeline cards and section headers for spring-animated layout transitions during filtering and sorting.
+- **Dynamic Swipe Actions Guide & Authorized Apps Entry** — upgraded Authorized Applications opening animation with `MaterialSharedAxis.Z` and cascading item slide-in, replaced hardcoded swipe hint popup with dynamic configuration binding to the user's active swipe actions, added interactive preview animations, "Customize in Settings" direct navigation, and re-triggerable action in the top app bar menu.
+
 ### 🎨 Appearance & Settings UX
 - **Compact App Interactions Studio** — replaced legacy nested views and phone preview canvas with an M3 Expressive, compact (~140dp) swipe and long-press interaction studio embedded directly into Appearance settings (`settings_personalization.xml`), eliminating the separate subpage.
 - **Centered One UI & One-Handed Settings Titles** — header titles in Settings now match the Home Screen by centering smoothly when expanded in One UI and One-Handed modes, interpolating back to the leading edge upon collapse.

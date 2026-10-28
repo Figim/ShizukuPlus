@@ -33,7 +33,7 @@ class ActivityLogActivity : AppActivity() {
             ) {
                 ActivityLogScreen(
                     showTopBar = true,
-                    onBackClick = { finish() },
+                    onBackClick = { finishAfterTransition() },
                     initialFilterConnected = filterConnected,
                 )
             }

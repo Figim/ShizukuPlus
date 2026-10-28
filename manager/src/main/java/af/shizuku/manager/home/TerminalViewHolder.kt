@@ -72,8 +72,6 @@ class TerminalViewHolder(
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, ShellTutorialActivity::class.java),
-            binding.icon,
-            "icon_terminal",
         )
     }
 }

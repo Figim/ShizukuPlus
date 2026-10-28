@@ -80,6 +80,37 @@ object SettingsSearchEngine {
         indexedItems = items
     }
 
+    fun findItemByKey(
+        context: Context,
+        key: String,
+    ): SettingItem? {
+        init(context)
+        val direct = indexedItems?.firstOrNull { it.key == key }
+        if (direct != null) return direct
+
+        val namespace = "http://schemas.android.com/apk/res/android"
+        for ((xmlId, fragmentClass) in screens) {
+            try {
+                val parser = context.resources.getXml(xmlId)
+                var eventType = parser.eventType
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    if (eventType == XmlPullParser.START_TAG) {
+                        val k = parser.getAttributeValue(namespace, "key")
+                        if (k == key) {
+                            val titleRes = parser.getAttributeResourceValue(namespace, "title", 0)
+                            val title = if (titleRes != 0) context.getString(titleRes) else (parser.getAttributeValue(namespace, "title") ?: key)
+                            val iconRes = parser.getAttributeResourceValue(namespace, "icon", 0)
+                            return SettingItem(key, title, null, null, fragmentClass, xmlId, iconRes)
+                        }
+                    }
+                    eventType = parser.next()
+                }
+            } catch (_: Exception) {
+            }
+        }
+        return null
+    }
+
     fun search(
         context: Context,
         query: String,

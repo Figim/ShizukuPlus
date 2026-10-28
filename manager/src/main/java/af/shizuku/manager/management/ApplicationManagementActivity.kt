@@ -14,11 +14,13 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
+import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -448,7 +450,11 @@ open class ApplicationManagementActivity :
         }
         return when (item.itemId) {
             android.R.id.home -> {
-                finish()
+                finishAfterTransition()
+                true
+            }
+            R.id.action_swipe_hint -> {
+                showSwipeHint()
                 true
             }
             R.id.sort_name -> {
@@ -519,6 +525,45 @@ open class ApplicationManagementActivity :
         val iconRes: Int,
         val labelRes: Int,
     )
+
+    private fun getSwipeActionConfig(action: String): SwipeActionConfig =
+        when (action) {
+            "open_app" ->
+                SwipeActionConfig(
+                    com.google.android.material.R.attr.colorPrimaryContainer,
+                    com.google.android.material.R.attr.colorOnPrimaryContainer,
+                    R.drawable.ic_outline_play_arrow_24,
+                    R.string.settings_action_open_app,
+                )
+            "app_info" ->
+                SwipeActionConfig(
+                    com.google.android.material.R.attr.colorSecondaryContainer,
+                    com.google.android.material.R.attr.colorOnSecondaryContainer,
+                    R.drawable.ic_outline_info_24,
+                    R.string.settings_action_app_info,
+                )
+            "toggle_permission" ->
+                SwipeActionConfig(
+                    com.google.android.material.R.attr.colorTertiaryContainer,
+                    com.google.android.material.R.attr.colorOnTertiaryContainer,
+                    R.drawable.ic_shield_24,
+                    R.string.settings_action_toggle_permission,
+                )
+            "hide_from_list" ->
+                SwipeActionConfig(
+                    com.google.android.material.R.attr.colorErrorContainer,
+                    com.google.android.material.R.attr.colorOnErrorContainer,
+                    R.drawable.ic_visibility_off_24,
+                    R.string.settings_action_hide_from_list,
+                )
+            else ->
+                SwipeActionConfig(
+                    com.google.android.material.R.attr.colorSurfaceVariant,
+                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                    R.drawable.ic_outline_info_24,
+                    R.string.settings_action_none,
+                )
+        }
 
     private fun setupSwipe(rv: RecyclerView) {
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
@@ -698,44 +743,7 @@ open class ApplicationManagementActivity :
         val absDx = kotlin.math.abs(dX)
         if (absDx < 4f) return
 
-        val config =
-            when (action) {
-                "open_app" ->
-                    SwipeActionConfig(
-                        com.google.android.material.R.attr.colorPrimaryContainer,
-                        com.google.android.material.R.attr.colorOnPrimaryContainer,
-                        R.drawable.ic_outline_play_arrow_24,
-                        R.string.settings_action_open_app,
-                    )
-                "app_info" ->
-                    SwipeActionConfig(
-                        com.google.android.material.R.attr.colorSecondaryContainer,
-                        com.google.android.material.R.attr.colorOnSecondaryContainer,
-                        R.drawable.ic_outline_info_24,
-                        R.string.settings_action_app_info,
-                    )
-                "toggle_permission" ->
-                    SwipeActionConfig(
-                        com.google.android.material.R.attr.colorTertiaryContainer,
-                        com.google.android.material.R.attr.colorOnTertiaryContainer,
-                        R.drawable.ic_shield_24,
-                        R.string.settings_action_toggle_permission,
-                    )
-                "hide_from_list" ->
-                    SwipeActionConfig(
-                        com.google.android.material.R.attr.colorErrorContainer,
-                        com.google.android.material.R.attr.colorOnErrorContainer,
-                        R.drawable.ic_visibility_off_24,
-                        R.string.settings_action_hide_from_list,
-                    )
-                else ->
-                    SwipeActionConfig(
-                        com.google.android.material.R.attr.colorSecondaryContainer,
-                        com.google.android.material.R.attr.colorOnSecondaryContainer,
-                        R.drawable.ic_outline_info_24,
-                        R.string.settings_action_none,
-                    )
-            }
+        val config = getSwipeActionConfig(action)
 
         val bgColor = MaterialColors.getColor(v, config.bgAttr)
         val onColor = MaterialColors.getColor(v, config.onAttr)
@@ -836,6 +844,8 @@ open class ApplicationManagementActivity :
 
     // ----- First-run swipe hint -----
 
+    private var swipeHintOverlay: View? = null
+
     private fun maybeShowSwipeHint() {
         val prefs = getSharedPreferences("app_management_prefs", Context.MODE_PRIVATE)
         if (prefs.getBoolean("swipe_hint_shown", false)) return
@@ -844,70 +854,143 @@ open class ApplicationManagementActivity :
     }
 
     private fun showSwipeHint() {
+        if (swipeHintOverlay != null) return
+
         val hintBinding = SwipeHintOverlayBinding.inflate(layoutInflater, rootView as ViewGroup, false)
         val hint = hintBinding.root
+        swipeHintOverlay = hint
         (rootView as ViewGroup).addView(hint)
 
-        hint.doOnLayout { v ->
-            // Start below screen, slide up
-            v.translationY = v.height.toFloat()
-            v
+        // Bind dynamic swipe actions based on current configuration
+        val rightConfig = getSwipeActionConfig(swipeRightAction)
+        val leftConfig = getSwipeActionConfig(swipeLeftAction)
+
+        val rightBgColor = MaterialColors.getColor(hint, rightConfig.bgAttr)
+        val rightOnColor = MaterialColors.getColor(hint, rightConfig.onAttr)
+        val leftBgColor = MaterialColors.getColor(hint, leftConfig.bgAttr)
+        val leftOnColor = MaterialColors.getColor(hint, leftConfig.onAttr)
+
+        hintBinding.hintTextRight.text = getString(rightConfig.labelRes)
+        hintBinding.hintIconRight.setImageResource(rightConfig.iconRes)
+        hintBinding.hintIconRight.imageTintList = ColorStateList.valueOf(rightOnColor)
+        hintBinding.hintIconRight.background =
+            GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(rightBgColor)
+            }
+
+        hintBinding.hintTextLeft.text = getString(leftConfig.labelRes)
+        hintBinding.hintIconLeft.setImageResource(leftConfig.iconRes)
+        hintBinding.hintIconLeft.imageTintList = ColorStateList.valueOf(leftOnColor)
+        hintBinding.hintIconLeft.background =
+            GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(leftBgColor)
+            }
+
+        val card = hintBinding.hintCard
+        card.alpha = 0f
+        hintBinding.hintScrim.alpha = 0f
+
+        // Handle system back navigation to dismiss overlay if open
+        val hintBackCallback =
+            object : androidx.activity.OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    dismissHint()
+                }
+            }
+        onBackPressedDispatcher.addCallback(this, hintBackCallback)
+
+        var isDismissing = false
+
+        fun dismissHint() {
+            if (isDismissing) return
+            isDismissing = true
+            hintBackCallback.remove()
+            hintBinding.hintScrim
                 .animate()
-                .translationY(0f)
-                .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
+                .alpha(0f)
+                .setDuration(ShizukuSettings.scaledAnimationDuration(200))
+                .start()
+            card
+                .animate()
+                .translationY(card.height.toFloat() + dpToPx(32f))
+                .alpha(0f)
+                .setDuration(ShizukuSettings.scaledAnimationDuration(260))
+                .setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_ACCELERATE)
+                .withEndAction {
+                    (hint.parent as? ViewGroup)?.removeView(hint)
+                    if (swipeHintOverlay === hint) swipeHintOverlay = null
+                }.start()
+        }
+
+        card.doOnLayout {
+            hintBinding.hintScrim
+                .animate()
+                .alpha(1f)
+                .setDuration(ShizukuSettings.scaledAnimationDuration(250))
                 .start()
 
-            // Bounce the right-swipe icon right to hint the gesture
+            card.translationY = (card.height + dpToPx(32f)).coerceAtLeast(dpToPx(240f))
+            card
+                .animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setDuration(ShizukuSettings.scaledAnimationDuration(380))
+                .setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
+                .start()
+
+            // Choreographed gesture hint bounce on the right icon
             val iconRight = hintBinding.hintIconRight
             iconRight.postDelayed({
+                if (swipeHintOverlay == null) return@postDelayed
                 iconRight
                     .animate()
-                    .translationX(dpToPx(18f))
-                    .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
+                    .translationX(dpToPx(16f))
+                    .setDuration(ShizukuSettings.scaledAnimationDuration(300))
+                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
                     .withEndAction {
                         iconRight
                             .animate()
                             .translationX(0f)
-                            .setDuration(ShizukuSettings.scaledAnimationDuration(250))
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(200))
                             .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                             .start()
                     }.start()
-            }, 500)
+            }, 450)
 
-            // Bounce the left-swipe icon left
+            // Choreographed gesture hint bounce on the left icon
             val iconLeft = hintBinding.hintIconLeft
             iconLeft.postDelayed({
+                if (swipeHintOverlay == null) return@postDelayed
                 iconLeft
                     .animate()
-                    .translationX(-dpToPx(18f))
-                    .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
+                    .translationX(-dpToPx(16f))
+                    .setDuration(ShizukuSettings.scaledAnimationDuration(300))
+                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
                     .withEndAction {
                         iconLeft
                             .animate()
                             .translationX(0f)
-                            .setDuration(ShizukuSettings.scaledAnimationDuration(250))
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(200))
                             .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
                             .start()
                     }.start()
-            }, 1000)
+            }, 850)
         }
 
-        val dismiss = {
-            hint
-                .animate()
-                .translationY(hint.height.toFloat())
-                .alpha(0f)
-                .setDuration(ShizukuSettings.scaledAnimationDuration(300))
-                .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
-                .withEndAction { (hint.parent as? ViewGroup)?.removeView(hint) }
-                .start()
+        hintBinding.hintScrim.setOnClickListener { dismissHint() }
+        hintBinding.hintCard.setOnClickListener { /* Consume click inside card */ }
+        hintBinding.hintButtonClose.setOnClickListener { dismissHint() }
+        hintBinding.hintButtonGotIt.setOnClickListener { dismissHint() }
+        hintBinding.hintButtonSettings.setOnClickListener {
+            dismissHint()
+            val intent =
+                Intent(this, af.shizuku.manager.settings.SettingsActivity::class.java).apply {
+                    putExtra("highlight_key", "category_app_interactions")
+                }
+            startActivity(intent)
         }
-
-        hint.setOnClickListener { dismiss() }
-        hint.postDelayed(dismiss, 4000)
     }
 
     private fun dpToPx(dp: Float) = dp * resources.displayMetrics.density

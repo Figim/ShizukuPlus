@@ -6,6 +6,7 @@ import af.shizuku.manager.activitylog.ActivityLogActivity
 import af.shizuku.manager.backup.BackupKeyUnavailableException
 import af.shizuku.manager.backup.BackupRestoreManager
 import af.shizuku.manager.backup.CryptoUtils
+import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.security.BiometricLock
 import af.shizuku.manager.utils.EnvironmentUtils
 import android.content.ClipData
@@ -183,12 +184,22 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         }
 
         findPreference<Preference>("service_doctor")?.setOnPreferenceClickListener {
-            startActivity(Intent(context, ServiceDoctorActivity::class.java))
+            val act = activity
+            if (act != null) {
+                act.startWithSceneTransition(Intent(context, ServiceDoctorActivity::class.java))
+            } else {
+                startActivity(Intent(context, ServiceDoctorActivity::class.java))
+            }
             true
         }
 
         findPreference<Preference>("activity_log")?.setOnPreferenceClickListener {
-            startActivity(Intent(context, ActivityLogActivity::class.java))
+            val act = activity
+            if (act != null) {
+                act.startWithSceneTransition(Intent(context, ActivityLogActivity::class.java))
+            } else {
+                startActivity(Intent(context, ActivityLogActivity::class.java))
+            }
             true
         }
 

@@ -9,7 +9,6 @@
         android:duplicateParentState="true"
         android:importantForAccessibility="yes"
         android:contentDescription="@string/home_device_control_title"
-        android:transitionName="icon_device_control"
         android:src="@drawable/ic_devices_24" />
 
     <LinearLayout

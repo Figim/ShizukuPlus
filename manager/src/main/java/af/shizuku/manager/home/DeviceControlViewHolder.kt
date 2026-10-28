@@ -78,8 +78,6 @@ class DeviceControlViewHolder(
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, DeviceControlActivity::class.java),
-            iconView,
-            "icon_device_control",
         )
     }
 }

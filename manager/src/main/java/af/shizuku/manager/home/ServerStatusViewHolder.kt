@@ -107,8 +107,6 @@ class ServerStatusViewHolder(
             val activity = context.asActivity<android.app.Activity>() ?: return@setOnClickListener
             activity.startWithSceneTransition(
                 android.content.Intent(activity, af.shizuku.manager.activitylog.ActivityLogActivity::class.java),
-                iconView,
-                "icon_server_status",
             )
         }
 
@@ -118,7 +116,7 @@ class ServerStatusViewHolder(
             diagnosticsChip.setChipIconResource(R.drawable.ic_server_ok_24)
             diagnosticsChip.setOnClickListener {
                 val activity = context.asActivity<android.app.Activity>() ?: return@setOnClickListener
-                activity.startActivity(android.content.Intent(activity, SystemHubActivity::class.java))
+                activity.startWithSceneTransition(android.content.Intent(activity, SystemHubActivity::class.java))
             }
         } else if (af.shizuku.manager.ShizukuSettings
                 .isDiagnosticsEnabled()

@@ -91,8 +91,6 @@ class AppBackupViewHolder(
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, AppBackupActivity::class.java),
-            iconView,
-            "icon_backup",
         )
     }
 }

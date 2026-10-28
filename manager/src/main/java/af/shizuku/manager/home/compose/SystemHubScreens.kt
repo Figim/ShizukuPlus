@@ -984,6 +984,7 @@ fun ActivityLogScreen(
                             item(key = "header_${currentGrouping.name}_$sectionTitle") {
                                 TimelineDateHeader(
                                     title = "$sectionTitle ($totalEvents)",
+                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
@@ -1007,6 +1008,7 @@ fun ActivityLogScreen(
                                         expandedKeys.add(group.key)
                                     }
                                 },
+                                modifier = Modifier.animateItem(),
                             )
                         }
                     }
@@ -1075,10 +1077,13 @@ fun ActivityLogScreen(
 }
 
 @Composable
-private fun TimelineDateHeader(title: String) {
+private fun TimelineDateHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .padding(start = 6.dp, top = 14.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -1113,6 +1118,7 @@ private fun ActivityLogTimelineRow(
     isLatest: Boolean,
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val record = group.primaryRecord
     val context = LocalContext.current
@@ -1199,7 +1205,7 @@ private fun ActivityLogTimelineRow(
 
     Row(
         modifier =
-            Modifier
+            modifier
                 .fillMaxWidth()
                 .semantics(mergeDescendants = true) {},
         verticalAlignment = Alignment.Top,
