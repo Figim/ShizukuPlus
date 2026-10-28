@@ -397,6 +397,12 @@
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Sürüşdürmə jestləri</string>
+    <string name="swipe_hint_subtitle">Sürətli əməliyyatları işə salmaq üçün istənilən tətbiq sətrini sürüşdürün</string>
+    <string name="swipe_hint_direction_right">SAĞA SÜRÜŞDÜR →</string>
+    <string name="swipe_hint_direction_left">← SOLA SÜRÜŞDÜR</string>
+    <string name="swipe_hint_customize">Fərdiləşdir</string>
+    <string name="swipe_hint_got_it">Anladım</string>
+
     <string name="swipe_hint_right">Sürətli əməliyyat üçün sağa sürüşdürün</string>
     <string name="swipe_hint_left">Sürətli əməliyyat üçün sola sürüşdürün</string>
     <string name="swipe_hint_dismiss">Bağlamaq üçün istənilən yerə toxunun</string>
@@ -1059,7 +1065,7 @@
     <string name="settings_main_category_system">Sistem</string>
     <string name="settings_main_nav_root_compat_title">Root və Uyğunluq</string>
     <string name="settings_main_nav_root_compat_summary">SU bridge, Cihaz Sahibi alətləri və stok tətbiq uyğunluğu</string>
-    <string name="settings_main_nav_appearance_summary">Tema, formalar, ikonlar, hərəkət, əsas ekran düzəni və dil</string>
+    <string name="settings_main_nav_appearance_summary">Tema, ikonlar, jestlər, qarşılıqlı toxunuşlar və tərtibat</string>
     <string name="settings_main_nav_app_interactions_title">Tətbiq Qarşılıqlı Əlaqələri</string>
     <string name="settings_main_nav_app_interactions_summary">Jestlər, uzun basma əməliyyatları və tətbiq verilənlər bazası</string>
     <string name="settings_main_nav_startup_behavior_title">Başlanğıc və Davranış</string>
