@@ -60,6 +60,12 @@ fun SettingsScreen(
     onSearchQueryChanged: (String) -> Unit,
     onContainerCreated: () -> Unit,
     isScrollIdle: Boolean = true,
+    isOneUi: Boolean =
+        af.shizuku.manager.ShizukuSettings
+            .isOneUiThemeEnabled(),
+    isOneHanded: Boolean =
+        af.shizuku.manager.ShizukuSettings
+            .isOneHandedModeEnabled(),
     onScrollStateCreated: (TopAppBarState) -> Unit = {},
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
@@ -82,15 +88,9 @@ fun SettingsScreen(
         }
     }
 
-    val isOneUi =
-        af.shizuku.manager.ShizukuSettings
-            .isOneUiThemeEnabled()
-    val isOneHanded =
-        af.shizuku.manager.ShizukuSettings
-            .isOneHandedModeEnabled()
+    val isReachMode = isOneUi || isOneHanded
     val isExpandedHeaders =
-        isOneUi ||
-            isOneHanded ||
+        isReachMode ||
             af.shizuku.manager.ShizukuSettings
                 .isExpandedHeadersEnabled()
     val context = LocalContext.current
@@ -293,7 +293,7 @@ fun SettingsScreen(
                         }
 
                         // Title and One UI subtitle: slides from center (expanded) → start (collapsed) via BiasAlignment just like HomeScreen.
-                        val horizontalBias = -curvedFraction
+                        val horizontalBias = if (isReachMode) -curvedFraction else -1f
                         val collapsedTitleStartPadding = if (showNavigateUp) 56.dp else 24.dp
                         val titleStartPadding = lerp(start = 24.dp, stop = collapsedTitleStartPadding, fraction = curvedFraction)
                         val titleEndPadding = lerp(start = 24.dp, stop = 56.dp, fraction = curvedFraction)
@@ -325,8 +325,12 @@ fun SettingsScreen(
                             }
 
                         val verticalBias =
-                            androidx.compose.ui.util
-                                .lerp(0.65f, 0.0f, curvedFraction)
+                            if (isReachMode) {
+                                0.0f
+                            } else {
+                                androidx.compose.ui.util
+                                    .lerp(0.65f, 0.0f, curvedFraction)
+                            }
 
                         Box(
                             modifier =
@@ -335,13 +339,13 @@ fun SettingsScreen(
                                     .padding(
                                         start = titleStartPadding,
                                         end = titleEndPadding,
-                                        top = lerp(start = 32.dp, stop = 0.dp, fraction = curvedFraction),
-                                        bottom = lerp(start = 16.dp, stop = 0.dp, fraction = curvedFraction),
+                                        top = lerp(start = if (isReachMode) 32.dp else 24.dp, stop = 0.dp, fraction = curvedFraction),
+                                        bottom = lerp(start = if (isReachMode) 0.dp else 16.dp, stop = 0.dp, fraction = curvedFraction),
                                     ),
                             contentAlignment = BiasAlignment(horizontalBias, verticalBias),
                         ) {
                             Column(
-                                horizontalAlignment = if (curvedFraction > 0.5f) Alignment.Start else Alignment.CenterHorizontally,
+                                horizontalAlignment = if (isReachMode && curvedFraction <= 0.5f) Alignment.CenterHorizontally else Alignment.Start,
                             ) {
                                 Text(
                                     text = title,
@@ -351,7 +355,7 @@ fun SettingsScreen(
                                             fontSize = titleFontSize,
                                             letterSpacing = titleLetterSpacing,
                                         ),
-                                    textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
+                                    textAlign = if (isReachMode && curvedFraction <= 0.5f) TextAlign.Center else TextAlign.Start,
                                     maxLines = 2,
                                 )
                                 if (isOneUi && !subtitle.isNullOrBlank()) {
@@ -365,7 +369,7 @@ fun SettingsScreen(
                                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                     fontWeight = FontWeight.Normal,
                                                 ),
-                                            textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
+                                            textAlign = if (isReachMode && curvedFraction <= 0.5f) TextAlign.Center else TextAlign.Start,
                                             maxLines = 2,
                                             modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
                                         )

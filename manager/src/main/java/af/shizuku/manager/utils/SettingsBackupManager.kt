@@ -2,8 +2,12 @@ package af.shizuku.manager.utils
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.update.UpdateInstaller
 import android.content.Context
+import android.os.Environment
 import org.json.JSONObject
+import timber.log.Timber
+import java.io.File
 
 object SettingsBackupManager {
     private const val VERSION_KEY = "_version"
@@ -158,8 +162,54 @@ object SettingsBackupManager {
     fun importAndCommit(
         @Suppress("UNUSED_PARAMETER") context: Context,
         json: String,
+        trustPrivileged: Boolean = false,
     ): Boolean =
-        importInternal(json, synchronous = true)
+        importInternal(json, synchronous = true, trustPrivileged = trustPrivileged)
+
+    /**
+     * Automatically saves a serialized snapshot of settings to persistent storage locations
+     * (internal files, app external download dir, public Downloads, and /sdcard/Download) so
+     * that clean reinstalls, mismatched signature builds, and sideload updates preserve
+     * the user's settings.
+     */
+    fun saveAutoBackup(context: Context) {
+        try {
+            val json = export(context)
+            if (json.isBlank() || json == "{}" || json.length < 20) return
+
+            // 1. Internal storage
+            runCatching {
+                val internal = File(context.filesDir, UpdateInstaller.AUTO_BACKUP_FILENAME)
+                internal.writeText(json)
+            }
+
+            // 2. App-specific external storage (no permissions required)
+            runCatching {
+                val extDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+                if (extDir != null) {
+                    File(extDir, UpdateInstaller.AUTO_BACKUP_FILENAME).writeText(json)
+                }
+            }
+
+            // 3. Public Download directory fallback
+            runCatching {
+                val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                if (publicDir != null && (publicDir.exists() || publicDir.mkdirs())) {
+                    File(publicDir, UpdateInstaller.AUTO_BACKUP_FILENAME).writeText(json)
+                }
+            }
+
+            // 4. Direct /sdcard/Download fallback
+            runCatching {
+                val sdcardDir = File("/sdcard/Download")
+                if (sdcardDir.exists() && sdcardDir.canWrite()) {
+                    File(sdcardDir, UpdateInstaller.AUTO_BACKUP_FILENAME).writeText(json)
+                }
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to persist auto backup")
+        }
+    }
 
     private fun importInternal(
         json: String,
