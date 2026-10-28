@@ -135,6 +135,12 @@ Things discussed or sketched that we never formally decided to build.
 - **Authorized Apps screen entrance & dynamic gesture guide**:
   - Upgraded `ApplicationManagementActivity` entrance animation with unified `MaterialSharedAxis.Z` and cascading item slide-in (`item_slide_in_bottom.xml`).
   - Redesigned swipe gesture guide popup (`swipe_hint_overlay.xml`) to dynamically reflect the user's active right and left swipe actions with exact theme container colors, directional preview arrows, choreographed bounce animations, "Customize in Settings" direct navigation, and re-triggerable action in the top app bar menu.
+- **Settings crash resilience & One UI theme fixes (Issues #643, #646)**:
+  - Replaced synchronous `commitNow()` in `SettingsActivity.kt`'s `onContainerCreated` with `commitNowAllowingStateLoss()` and `commitAllowingStateLoss()` guarded by lifecycle/destroyed checks, resolving immediate crash on Android 15 One UI 7 when tapping Settings (#646).
+  - Unrestricted `oneUiThemePreference` in `PersonalizationSettingsFragment.kt` (removed Samsung-only restriction) so all devices can toggle One UI style, and ensured preference changes trigger `applyTheme(requiresRecreate = true)` to immediately render the expanded One UI header and padding (#643).
+- **Home screen card motion & touch physics**:
+  - Upgraded `applySpringTouch` in `MotionUtils.kt` to monitor `MotionEvent.ACTION_MOVE` out-of-bounds events and smoothly release cards back to 1.0f scale.
+  - Upgraded `HomeAdapter.kt` card entry to DPI-scaled 24dp translation, 0.96 scale, and M3 Expressive decelerate easing.
 
 ### 2026-10-27 — Antigravity (App interactions consolidation, Settings UX, One UI title centering, GitHub triage) [master]
 

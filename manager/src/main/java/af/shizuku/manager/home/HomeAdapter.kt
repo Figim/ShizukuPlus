@@ -387,28 +387,30 @@ class HomeAdapter(
                 (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O || android.animation.ValueAnimator.areAnimatorsEnabled())
 
         if (animationsEnabled) {
+            val density = view.resources.displayMetrics.density
             view.alpha = 0f
-            view.translationY = 16f
-            val interp =
-                android.view.animation.AnimationUtils.loadInterpolator(
-                    view.context,
-                    android.R.interpolator.fast_out_slow_in,
-                )
+            view.translationY = 24f * density
+            view.scaleX = 0.96f
+            view.scaleY = 0.96f
             view
                 .animate()
                 ?.alpha(1f)
                 ?.translationY(0f)
+                ?.scaleX(1f)
+                ?.scaleY(1f)
                 ?.setDuration(
                     af.shizuku.manager.ShizukuSettings
-                        .scaledAnimationDuration(350),
+                        .scaledAnimationDuration(380),
                 )?.setStartDelay(
                     af.shizuku.manager.ShizukuSettings
-                        .scaledAnimationDuration(position * 40L),
-                )?.setInterpolator(interp)
+                        .scaledAnimationDuration(position * 45L),
+                )?.setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
                 ?.start()
         } else {
             view.alpha = 1f
             view.translationY = 0f
+            view.scaleX = 1f
+            view.scaleY = 1f
         }
     }
 

@@ -155,12 +155,7 @@ class SettingsActivity :
                         }
                     },
                     onContainerCreated = {
-                        // FM restores the fragment into its internal state during super.onCreate(),
-                        // before the Compose AndroidView container exists. findFragmentById returns
-                        // non-null in that case, but the fragment's view was never created (the
-                        // container wasn't in the hierarchy when FM tried to attach it).
-                        // Detach and re-attach first to re-bind the existing fragment without losing
-                        // the user's current settings page on recreate.
+                        if (isFinishing || isDestroyed || supportFragmentManager.isDestroyed) return@onContainerCreated
                         val existing = supportFragmentManager.findFragmentById(R.id.fragment_container)
                         if (existing == null) {
                             val highlightKey = intent?.getStringExtra("highlight_key")
@@ -176,42 +171,55 @@ class SettingsActivity :
                                             }
                                     }
                                 applySharedAxis(targetFrag)
-                                supportFragmentManager
-                                    .beginTransaction()
-                                    .replace(R.id.fragment_container, rootFrag)
-                                    .commitNow()
-                                supportFragmentManager
-                                    .beginTransaction()
-                                    .setReorderingAllowed(true)
-                                    .replace(R.id.fragment_container, targetFrag)
-                                    .addToBackStack(null)
-                                    .commit()
+                                runCatching {
+                                    supportFragmentManager
+                                        .beginTransaction()
+                                        .replace(R.id.fragment_container, rootFrag)
+                                        .commitNowAllowingStateLoss()
+                                    supportFragmentManager
+                                        .beginTransaction()
+                                        .setReorderingAllowed(true)
+                                        .replace(R.id.fragment_container, targetFrag)
+                                        .addToBackStack(null)
+                                        .commitAllowingStateLoss()
+                                }.onFailure {
+                                    runCatching {
+                                        supportFragmentManager
+                                            .beginTransaction()
+                                            .replace(R.id.fragment_container, SettingsFragment())
+                                            .commitAllowingStateLoss()
+                                    }
+                                }
                             } else {
-                                supportFragmentManager
-                                    .beginTransaction()
-                                    .replace(R.id.fragment_container, SettingsFragment())
-                                    .commitNow()
+                                runCatching {
+                                    supportFragmentManager
+                                        .beginTransaction()
+                                        .replace(R.id.fragment_container, SettingsFragment())
+                                        .commitNowAllowingStateLoss()
+                                }
                             }
                         } else if (existing.view == null) {
-                            supportFragmentManager
-                                .beginTransaction()
-                                .detach(existing)
-                                .attach(existing)
-                                .commitNow()
-                            if (existing.view == null) {
-                                try {
+                            runCatching {
+                                supportFragmentManager
+                                    .beginTransaction()
+                                    .detach(existing)
+                                    .attach(existing)
+                                    .commitNowAllowingStateLoss()
+                                if (existing.view == null) {
                                     val fresh =
                                         supportFragmentManager.fragmentFactory.instantiate(classLoader, existing.javaClass.name)
                                     fresh.arguments = existing.arguments
                                     supportFragmentManager
                                         .beginTransaction()
                                         .replace(R.id.fragment_container, fresh)
-                                        .commitNow()
-                                } catch (_: Throwable) {
+                                        .commitNowAllowingStateLoss()
+                                }
+                            }.onFailure {
+                                runCatching {
                                     supportFragmentManager
                                         .beginTransaction()
                                         .replace(R.id.fragment_container, SettingsFragment())
-                                        .commitNow()
+                                        .commitAllowingStateLoss()
                                 }
                             }
                         }

@@ -135,10 +135,17 @@ object MotionUtils {
             ) {
                 return@setOnTouchListener false
             }
-            when (event.action) {
+            when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     springX.animateToFinalPosition(scale)
                     springY.animateToFinalPosition(scale)
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val isInside = event.x in 0f..v.width.toFloat() && event.y in 0f..v.height.toFloat()
+                    if (!isInside) {
+                        springX.animateToFinalPosition(1.0f)
+                        springY.animateToFinalPosition(1.0f)
+                    }
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     springX.animateToFinalPosition(1.0f)

@@ -7,7 +7,6 @@ import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.app.ThemeHelper
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.utils.CustomTabsHelper
-import af.shizuku.manager.utils.EnvironmentUtils
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -399,14 +398,27 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         oneUiThemePreference = requireNotNull(findPreference(KEY_ONEUI_THEME))
         oneUiThemePreference.isChecked = ShizukuSettings.isOneUiThemeEnabled()
-        setChildAvailable(oneUiThemePreference, EnvironmentUtils.isSamsung())
-        oneUiThemePreference.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = false) }
+        oneUiThemePreference.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                ShizukuSettings
+                    .getPreferences()
+                    .edit()
+                    .putBoolean(KEY_ONEUI_THEME, newValue)
+                    .apply()
+                view?.post { applyTheme(requiresRecreate = true) }
+            }
             true
         }
 
-        findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = false) }
+        findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                ShizukuSettings
+                    .getPreferences()
+                    .edit()
+                    .putBoolean(KEY_ONE_HANDED_MODE, newValue)
+                    .apply()
+                view?.post { applyTheme(requiresRecreate = true) }
+            }
             true
         }
 
