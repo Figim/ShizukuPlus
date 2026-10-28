@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -132,6 +133,17 @@ fun HomeScreen(
     val fraction = if (isOneHanded || isOneUi) scrollBehavior.state.collapsedFraction else 1f
     val curvedFraction = FastOutSlowInEasing.transform(fraction)
 
+    val isDarkTheme = androidx.compose.foundation.isSystemInDarkTheme()
+    val isBlackTheme =
+        isDarkTheme &&
+            af.shizuku.manager.app.ThemeHelper
+                .isBlackNightTheme(context)
+    val isOled =
+        (isBlackTheme || ShizukuSettings.isAmoledPlusEnabled()) &&
+            (isDarkTheme || ((context.resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES))
+    val homePageBackground = if (isOled) androidx.compose.ui.graphics.Color.Black else MaterialTheme.colorScheme.surface
+    val homeBarScrolledColor = if (isOled) androidx.compose.ui.graphics.Color.Black else MaterialTheme.colorScheme.surfaceContainer
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -144,14 +156,8 @@ fun HomeScreen(
                                 .coerceAtLeast(collapsedHeight + statusBarPadding),
                         ),
                 color =
-                    run {
-                        val barAlpha = ((fraction - 0.6f) / 0.35f).coerceIn(0f, 1f)
-                        if (ShizukuSettings.isBlurUiEnabled()) {
-                            MaterialTheme.colorScheme.surface.copy(alpha = 0.82f * barAlpha)
-                        } else {
-                            MaterialTheme.colorScheme.surface.copy(alpha = barAlpha)
-                        }
-                    },
+                    androidx.compose.ui.graphics
+                        .lerp(homePageBackground, homeBarScrolledColor, curvedFraction),
             ) {
                 // Use pre-computed statusBarPadding (captured before the Scaffold) rather than
                 // windowInsetsPadding(WindowInsets.statusBars) inside the topBar slot. Scaffold
@@ -320,7 +326,8 @@ fun HomeScreen(
                                                 letterSpacing = titleLetterSpacing,
                                             ),
                                         textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                        maxLines = 2,
+                                        maxLines = if (curvedFraction > 0.65f) 1 else 2,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 } else if (isDropIn) {
                                     Row(
@@ -337,7 +344,8 @@ fun HomeScreen(
                                                     letterSpacing = titleLetterSpacing,
                                                 ),
                                             textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                            maxLines = 2,
+                                            maxLines = if (curvedFraction > 0.65f) 1 else 2,
+                                            overflow = TextOverflow.Ellipsis,
                                         )
                                         Spacer(modifier = Modifier.width(lerp(8.dp, 6.dp, curvedFraction)))
                                         Surface(
@@ -373,7 +381,8 @@ fun HomeScreen(
                                                 letterSpacing = titleLetterSpacing,
                                             ),
                                         textAlign = if (curvedFraction > 0.5f) TextAlign.Start else TextAlign.Center,
-                                        maxLines = 2,
+                                        maxLines = if (curvedFraction > 0.65f) 1 else 2,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                 }
                             } // end Crossfade

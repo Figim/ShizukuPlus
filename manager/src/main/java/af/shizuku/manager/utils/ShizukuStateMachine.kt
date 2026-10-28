@@ -146,6 +146,20 @@ object ShizukuStateMachine {
                     applyWatchdogDefault()
                     try {
                         val context = ShizukuApplication.appContext
+                        af.shizuku.manager.service.WatchdogService
+                            .dismissCrashNotification(context)
+                        af.shizuku.manager.worker.AdbStartWorker
+                            .dismissNotifications(context)
+                        val nm = context.getSystemService(android.app.NotificationManager::class.java)
+                        nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.NOTIFICATION_ID)
+                        nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.FOREGROUND_NOTIFICATION_ID)
+                        nm?.cancel(BackgroundNudge.NOTIFICATION_ID)
+                        nm?.cancel(af.shizuku.manager.adb.AdbPairingService.NOTIFICATION_ID)
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to cancel lingering notifications on RUNNING")
+                    }
+                    try {
+                        val context = ShizukuApplication.appContext
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 try {

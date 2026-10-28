@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -251,14 +252,8 @@ fun SettingsScreen(
                                     .coerceAtLeast(collapsedHeight + statusBarPadding),
                             ),
                     color =
-                        run {
-                            // Fade in early and end fully opaque: the list scrolls under the
-                            // collapsing title, and a bar that stayed clear until 65% (or
-                            // capped at ~72% with "frosted glass", which never actually blurs
-                            // here) let row text show straight through the title.
-                            val barAlpha = ((fraction - 0.3f) / 0.4f).coerceIn(0f, 1f)
-                            barScrolledColor.copy(alpha = barAlpha)
-                        },
+                        androidx.compose.ui.graphics
+                            .lerp(pageBackground, barScrolledColor, curvedFraction),
                 ) {
                     Box(
                         modifier =
@@ -356,7 +351,8 @@ fun SettingsScreen(
                                             letterSpacing = titleLetterSpacing,
                                         ),
                                     textAlign = if (isReachMode && curvedFraction <= 0.5f) TextAlign.Center else TextAlign.Start,
-                                    maxLines = 2,
+                                    maxLines = if (curvedFraction > 0.65f) 1 else 2,
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                                 if (isOneUi && !subtitle.isNullOrBlank()) {
                                     val subtitleAlpha = (1f - curvedFraction * 3f).coerceIn(0f, 1f)
@@ -370,7 +366,8 @@ fun SettingsScreen(
                                                     fontWeight = FontWeight.Normal,
                                                 ),
                                             textAlign = if (isReachMode && curvedFraction <= 0.5f) TextAlign.Center else TextAlign.Start,
-                                            maxLines = 2,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                             modifier = Modifier.graphicsLayer { alpha = subtitleAlpha },
                                         )
                                     }
@@ -394,48 +391,57 @@ fun SettingsScreen(
                     }
                 }
             } else {
-                Box {
-                    TopAppBar(
-                        title = {
-                            Text(text = title, maxLines = 2)
-                        },
-                        navigationIcon = {
-                            if (showNavigateUp) {
-                                IconButton(onClick = { onNavigateUp() }) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = pageBackground,
+                ) {
+                    Box {
+                        TopAppBar(
+                            title = {
+                                Text(
+                                    text = title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            },
+                            navigationIcon = {
+                                if (showNavigateUp) {
+                                    IconButton(onClick = { onNavigateUp() }) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_back_24),
+                                            contentDescription = stringResource(R.string.cd_navigate_back),
+                                        )
+                                    }
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = { isSearchActive = true }) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_back_24),
-                                        contentDescription = stringResource(R.string.cd_navigate_back),
+                                        painter = painterResource(R.drawable.ic_search_24),
+                                        contentDescription = stringResource(R.string.cd_settings_search),
                                     )
                                 }
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { isSearchActive = true }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_search_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search),
-                                )
-                            }
-                        },
-                        colors =
-                            TopAppBarDefaults.topAppBarColors(
-                                containerColor = Color.Transparent,
-                                scrolledContainerColor = barScrolledColor,
-                                titleContentColor = MaterialTheme.colorScheme.onSurface,
-                                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-                                actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
-                    )
-                    // Hairline divider always visible (bar is always in collapsed appearance)
-                    Box(
-                        modifier =
-                            Modifier
-                                .align(Alignment.BottomStart)
-                                .fillMaxWidth()
-                                .height(0.8.dp)
-                                .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
-                    )
-                } // end Box
+                            },
+                            colors =
+                                TopAppBarDefaults.topAppBarColors(
+                                    containerColor = pageBackground,
+                                    scrolledContainerColor = barScrolledColor,
+                                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                ),
+                        )
+                        // Hairline divider always visible (bar is always in collapsed appearance)
+                        Box(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.BottomStart)
+                                    .fillMaxWidth()
+                                    .height(0.8.dp)
+                                    .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)),
+                        )
+                    } // end Box
+                } // end Surface
             }
         }
     }

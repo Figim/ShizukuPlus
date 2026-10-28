@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -50,7 +51,7 @@ fun SystemHubScreen(
     val pinnedBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     scrollBehavior.GuardHeightOffset()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
-    val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 2) }
+    val title = @Composable { Text(stringResource(R.string.system_hub_title), maxLines = 1, overflow = TextOverflow.Ellipsis) }
     val nav =
         @Composable {
             if (showBack) {

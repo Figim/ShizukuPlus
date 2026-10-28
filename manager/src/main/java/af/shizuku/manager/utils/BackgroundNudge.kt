@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
  */
 object BackgroundNudge {
     private const val CHANNEL_ID = "BackgroundNudge"
-    private const val NOTIFICATION_ID = 7476
+    const val NOTIFICATION_ID = 7476
     private const val SNOOZE_DAYS = 3
 
     fun maybePost(context: Context) {

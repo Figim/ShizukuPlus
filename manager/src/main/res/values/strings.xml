@@ -1328,6 +1328,10 @@
     <string name="shell_export_partial">%1$d of %2$d files exported (some failed)</string>
 
     <!-- Settings backup/restore -->
+    <string name="onboarding_restore_backup_title">Previous Settings Found</string>
+    <string name="onboarding_restore_backup_desc">A backup of your preferences and configurations was found on this device. Restore it now to skip setup and keep your settings.</string>
+    <string name="onboarding_restore_backup_action">Restore Settings &amp; Continue</string>
+    <string name="onboarding_restore_pick_file">Select backup file (.json)</string>
     <string name="adb_native_unavailable">ADB pairing is not available on this device</string>
 
     <string name="changelog_title">What\'s New</string>
