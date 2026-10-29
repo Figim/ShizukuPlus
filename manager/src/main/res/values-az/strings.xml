@@ -216,7 +216,7 @@
     <string name="dialog_adb_pairing_accessibility_navigate">Zəhmət olmasa, aşağıdakı addımları yerinə yetirərək cütləşməni başladın:\n- \"Tərtibatçı Seçimləri\"nə keçin\n- \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin\n- \"Simsiz sazlama\"nın sol tərəfinə toxunun\n- \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Shizuku cütləşmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinin yeganə yoludur.</string>
-    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizminin zədələnməsi ola bilər.</string>
+    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizмініn zədələnməsi ola bilər.</string>
     <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
     <string name="adb_pair_required">Zəhmət olmasa, əvvəlcə cütləşmə addımını tamamlayın.</string>
     <string name="enable">Aktivləşdir</string>
@@ -418,7 +418,7 @@
     <string name="settings_show_home_cards_outline_summary">Əsas ekran kartlarının ətrafında incə kontur xətti göstər</string>
     <string name="settings_custom_icon_studio_title">Xüsusi İkon Studiyası</string>
     <string name="settings_custom_icon_studio_summary">Öz şəklinizi yükləyin, formanı, boşluqları və fonu fərdiləşdirin və başlatıcı ikonu olaraq təyin edin</string>
-    <string name="custom_icon_studio_shape"> Forma</string>
+    <string name="custom_icon_studio_shape">Forma</string>
     <string name="custom_icon_studio_bg">Fon</string>
     <string name="custom_icon_studio_pin_shortcut">Ana ekrana əlavə et</string>
     <string name="custom_icon_studio_pinned_success">Xüsusi ikon Ana Ekranınıza əlavə edildi!</string>
@@ -745,7 +745,7 @@
     <string name="su_bridge_magic_setup_all_no_apps">Avtomatlaşdırma üçün dəstəklənən root tətbiqi tapılmadı.</string>
     <string name="su_bridge_copy_open">Yolu kopyala və aç</string>
     <string name="su_bridge_no_export">SU yolu təyin edilməyib. Əvvəlcə Əsas ekrandan Shizuku fayllarını ixrac edin.</string>
-    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri birbaşa körpüyə yönəltmək üçün isə \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
+    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri isə birbaşa körpüyə yönəltmək üçün \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
     <string name="su_bridge_how_to_use">Necə istifadə etməli:</string>
     <string name="su_bridge_step_1">1. Shizuku fayllarını ixrac edin və ya SU bridge-i Əsas ekranından /data/local/tmp qovluğuna yerləşdirin.</string>
     <string name="su_bridge_step_2">2. Xüsusi binar faylları dəstəkləyən tətbiqlərdə (məs. AdAway, Solid Explorer), onların \"SU Yolu\" tənzimləməsini bridge yoluna yönəldin.</string>
@@ -765,7 +765,7 @@
     <string name="su_bridge_report_not_connected">Shizuku qoşulmayıb. Ana ekrandan Shizuku xidmətini başladın və yenidən cəhd edin.</string>
     <string name="su_bridge_report_deploy_failed">❌ Körpünü /data/local/tmp qovluğuna yerləşdirmək mümkün olmadı.</string>
     <string name="su_bridge_report_deploy_reason">Səbəb: %1$s</string>
-    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İxrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
+    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İcrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
     <string name="su_bridge_report_deploy_hint_retry">Shizuku xidmətinin işlədiyinə əmin olun və yenidən cəhd edin.</string>
     <string name="su_bridge_report_deployed">✅ Körpü %1$s ünvanına yerləşdirildi</string>
     <string name="su_bridge_report_missing">❌ Körpü faylları %1$s altında tapılmadı</string>
@@ -826,7 +826,7 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Xidmət Həkimi</string>
-    <string name="home_service_doctor_summary">Having trouble starting Shizuku+? Tap to run a diagnostic check.</string>
+    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çvirsiniz? Diaqnostika yoxlaması aparmaq üçün toxunun.</string>
     <string name="doctor_tips_title">İpucları &amp; həllər</string>
     <string name="doctor_action_rerun">Yenidən icra et</string>
     <string name="doctor_action_auto_fix_all">Adaptiv Avtomatik Bərpa</string>
@@ -1001,7 +1001,7 @@
     <string name="adb_error_generic">Gözlənilməz xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.</string>
 
     <!-- WADB Starter -->
-    <string name="wadb_notification_title">Starting Shizuku…</string>
+    <string name="wadb_notification_title">Shizuku başladılır…</string>
     <string name="wadb_notification_wifi_required">Davam etməzdən əvvəl Wi-Fi bağlantısı gözlənilir</string>
     <string name="wadb_notification_retry">Yenidən cəhd etmək üçün gözlənilir</string>
     <string name="wadb_mdns_blocked_title">mDNS aşkarlanması dəfələrlə uğursuz olur</string>
@@ -1143,7 +1143,7 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiﻘin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə meta verilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
@@ -1220,7 +1220,7 @@
     <string name="settings_haptics_always">Həmişə aktiv</string>
     <string name="settings_personalization_category_app_identity">Tətbiq ikonu &amp; adı</string>
     <string name="settings_personalization_category_motion_haptics">Hərəkət &amp; əks-əlaqə</string>
-    <string name="settings_personalization_category_layout_nav"> Mətn &amp; tərtibat</string>
+    <string name="settings_personalization_category_layout_nav">Mətn &amp; tərtibat</string>
     <string name="settings_plus_category_system_performance">Sistem və Performans</string>
     <string name="settings_plus_category_security_access">Təhlükəsizlik və Giriş</string>
     <string name="settings_plus_category_backup_restore">Ehtiyat Nüsxə və Bərpa</string>
@@ -1266,8 +1266,8 @@
     <!-- Developer Options -->
     <string name="settings_developer_options">Tərtibatçı Seçimləri</string>
     <string name="settings_developer_options_summary">Virtualizasiya, cihazın saxtalaşdırılması və eksperimental xüsusiyyətlər</string>
-    <string name="settings_notification_system_title">Notification system</string>
-    <string name="settings_notification_system_summary">Allow Shizuku+ to post status, diagnostic, and crash recovery notifications</string>
+    <string name="settings_notification_system_title">Bildiriş sistemi</string>
+    <string name="settings_notification_system_summary">Shizuku+-ın status, diaqnostika və qəza bərpası bildirişləri göndərməsinə icazə verin</string>
     <string name="settings_auto_update_title">Yeniləmələri avtomatik yoxla</string>
     <string name="settings_auto_update_summary">Tətbiq işə düşərkən avtomatik olaraq yeni versiyaları yoxlayın</string>
     <string name="settings_auto_install_title">Yeniləmələri avtomatik quraşdır</string>
@@ -1331,10 +1331,10 @@
     <string name="shell_export_partial">%2$d fayldan %1$d-i ixrac edildi (bəziləri uğursuz oldu)</string>
 
     <!-- Settings backup/restore -->
-    <string name="onboarding_restore_backup_title">Previous Settings Found</string>
-    <string name="onboarding_restore_backup_desc">A backup of your preferences and configurations was found on this device. Restore it now to skip setup and keep your settings.</string>
-    <string name="onboarding_restore_backup_action">Restore Settings &amp; Continue</string>
-    <string name="onboarding_restore_pick_file">Select backup file (.json)</string>
+    <string name="onboarding_restore_backup_title">Əvvəlki Parametrlər Tapıldı</string>
+    <string name="onboarding_restore_backup_desc">Bu cihazda parametrlərinizin və konfiqurasiyalarınızın ehtiyat nüsxəsi tapıldı. Quraşdırmanı ötürmək və parametrlərinizi qorumaq üçün onu indi bərpa edin.</string>
+    <string name="onboarding_restore_backup_action">Parametrləri Bərpa et və Davam et</string>
+    <string name="onboarding_restore_pick_file">Ehtiyat nüsxə faylını seçin (.json)</string>
     <string name="adb_native_unavailable">ADB cütləşməsi bu cihazda əlçatan deyil</string>
 
     <string name="changelog_title">Yeniliklər Nələrdir</string>
@@ -1489,7 +1489,7 @@
     <string name="scripting_copy_output">Çıxışı Kopyala</string>
     <string name="scripting_output_copied">Çıxış mübadilə buferinə kopyalandı</string>
     <string name="scripting_title_hint">Skript adı</string>
-    <scripting_script_hint>Shell əmri/əmrləri</scripting_script_hint>
+    <string name="scripting_script_hint">Shell əmri/əmrləri</string>
     <string name="scripting_title_and_script_required">Ad və skript tələb olunur</string>
     <string name="scripting_delete_title">Skript silinsin?</string>
     <string name="scripting_delete_message">“%1$s” həmişəlik silinəcək.</string>
@@ -1693,12 +1693,12 @@
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="settings_home_card_shape">Əsas ekran Kartının Küncləri</string>
     <string name="settings_settings_card_shape">Tənzimləmələr Kartının Küncləri</string>
-    <corner_style_global>Qlobal parametri izlə</corner_style_global>
-    <corner_style_sharp>İti / Düz</corner_style_sharp>
-    <corner_style_rounded>Dairəvi (M3)</corner_style_rounded>
-    <corner_style_large>Böyük Dairəvi</corner_style_large>
-    <corner_style_squircle>Dairəvi</corner_style_squircle>
-    <corner_style_extra_large>Çox Böyük</corner_style_extra_large>
+    <string name="corner_style_global">Qlobal parametri izlə</string>
+    <string name="corner_style_sharp">İti / Düz</string>
+    <string name="corner_style_rounded">Dairəvi (M3)</string>
+    <string name="corner_style_large">Böyük Dairəvi</string>
+    <string name="corner_style_squircle">Dairəvi</string>
+    <string name="corner_style_extra_large">Çox Böyük</string>
 
     <!-- Feature Hub experimental category label -->
 
