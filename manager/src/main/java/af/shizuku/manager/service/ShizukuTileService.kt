@@ -103,36 +103,47 @@ class ShizukuTileService : TileService() {
 
     internal fun startShizuku() {
         watchdog?.cancel()
-        if (Shell.isAppGrantedRoot() == true) {
-            ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-            updateTile()
-            Shell.cmd(Starter.internalCommand).submit {
-                if (!it.isSuccess && ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
-                    ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
-                }
-                ShizukuStateMachine.update()
-                updateTile()
-            }
-        } else {
-            val hasWriteSecure = checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
-            // Port probes are blocking I/O — move them off the main thread
-            CoroutineScope(Dispatchers.IO).launch {
-                val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
-                val hasLoopback =
-                    AdbPortProber.isPortOpen(5555, 50) ||
-                        (ShizukuSettings.getLastPort() in 1..65535 && AdbPortProber.isPortOpen(ShizukuSettings.getLastPort(), 50))
+        val hasWriteSecure = checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        // Root execution and port probes are blocking I/O — run off the main thread
+        CoroutineScope(Dispatchers.IO).launch {
+            if (Shell.isAppGrantedRoot() == true || EnvironmentUtils.isRooted()) {
                 withContext(Dispatchers.Main) {
-                    if (!hasLoopback && !isWifiOk && !hasWriteSecure) {
-                        Toast.makeText(this@ShizukuTileService, R.string.tile_open_app_required, Toast.LENGTH_SHORT).show()
-                        openApp()
-                        return@withContext
-                    }
-
                     ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
                     updateTile()
-                    AdbStartWorker.enqueue(this@ShizukuTileService, explicit = true)
-                    superviseStart()
                 }
+                val rootOk =
+                    runCatching { Shell.cmd(Starter.internalCommand).exec().isSuccess }.getOrDefault(false) ||
+                        runCatching {
+                            val suPath = EnvironmentUtils.findSuBinary() ?: return@runCatching false
+                            val proc = ProcessBuilder(suPath, "-c", Starter.internalCommand).redirectErrorStream(true).start()
+                            proc.waitFor(15, java.util.concurrent.TimeUnit.SECONDS) && proc.exitValue() == 0
+                        }.getOrDefault(false)
+                if (rootOk) {
+                    withContext(Dispatchers.Main) {
+                        ShizukuStateMachine.update()
+                        updateTile()
+                    }
+                    return@launch
+                }
+            }
+
+            val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
+            val hasLoopback = AdbPortProber.findActiveLoopbackPort(this@ShizukuTileService) > 0
+            withContext(Dispatchers.Main) {
+                if (!hasLoopback && !isWifiOk && !hasWriteSecure) {
+                    if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                        ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                        updateTile()
+                    }
+                    Toast.makeText(this@ShizukuTileService, R.string.tile_open_app_required, Toast.LENGTH_SHORT).show()
+                    openApp()
+                    return@withContext
+                }
+
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+                updateTile()
+                AdbStartWorker.enqueue(this@ShizukuTileService, explicit = true)
+                superviseStart()
             }
         }
     }

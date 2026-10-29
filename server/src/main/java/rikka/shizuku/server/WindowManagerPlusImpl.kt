@@ -91,6 +91,13 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
                 }
             }
 
+            // Per-package Android 12+ CompatChange override (#635)
+            if (rikka.shizuku.server.util.InputValidationUtils.isValidPackageName(packageName)) {
+                val action = if (enabled) "enable" else "reset"
+                ShellExecutor.execBool("am", "compat", action, "ALLOW_RESIZEABLE_ACTIVITY", packageName)
+                ShellExecutor.execBool("am", "compat", action, "FORCE_RESIZE_APP", packageName)
+            }
+
             // Fallback: write setting via ContentProvider (works on Samsung SELinux builds)
             val value = if (enabled) "1" else "0"
             putSetting("global", "force_resizable_activities", value)

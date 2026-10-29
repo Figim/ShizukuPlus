@@ -283,9 +283,9 @@ class StartWirelessAdbViewHolder(
                             activity.getString(R.string.recommendation_tcp_mode_enabled_toast),
                             Toast.LENGTH_SHORT,
                         ).show()
-                    StartAdbDialogFragment().show(activity.supportFragmentManager)
+                    AdbDialogFragment.forUserGesture().show(activity.supportFragmentManager)
                 }.setNeutralButton(R.string.home_adb_button_view_command) { _, _ ->
-                    StartAdbDialogFragment().show(activity.supportFragmentManager)
+                    StartAdbViewHolder.showViewCommandDialog(activity)
                 }.setNegativeButton(android.R.string.cancel, null)
                 .show()
             return

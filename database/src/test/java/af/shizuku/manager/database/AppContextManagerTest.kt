@@ -43,6 +43,13 @@ class AppContextManagerTest :
             (AppContextManager.getMetadata("dev.ukanth.ufirewall")?.suPathSettingNav != null) shouldBe true
         }
 
+        test("every enhancement key in app_context_db.json maps to an implemented global Plus feature") {
+            val json = File("src/main/assets/app_context_db.json").readText()
+            AppContextManager.validateEnhancementKeys(json) shouldBe emptyList()
+            AppContextManager.initialize(FakeSettings(json))
+            AppContextManager.getMetadata("org.adaway")?.recommendedPlusFeatures shouldBe listOf("network_governor_plus")
+        }
+
         test("a newer download overrides only the fields it sets") {
             val s = FakeSettings(bundled)
             AppContextManager.initialize(s)

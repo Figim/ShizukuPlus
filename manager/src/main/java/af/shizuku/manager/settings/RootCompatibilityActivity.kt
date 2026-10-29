@@ -266,6 +266,39 @@ class RootCompatibilityActivity : AppBarActivity() {
         ContextCompat.registerReceiver(this, packageReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val prevRoot = isRoot
+        val prevAdb = isAdbMode
+        val prevPath = resolvedSuPath
+        isRoot =
+            try {
+                Shizuku.pingBinder() && Shizuku.getUid() == 0
+            } catch (_: Exception) {
+                false
+            }
+        isAdbMode =
+            try {
+                Shizuku.pingBinder() && Shizuku.getUid() == 2000
+            } catch (_: Exception) {
+                false
+            }
+        val latestExportPath = resolveSuPath()
+        if (latestExportPath != null && resolvedSuPath == null) {
+            resolvedSuPath = latestExportPath
+        }
+        val path = resolvedSuPath
+        if (path != null) {
+            binding.globalSuPath.text = path
+        }
+        binding.globalSetupCard.isVisible = path != null || runCatching { Shizuku.pingBinder() }.getOrDefault(false)
+        binding.kernelsuUpgradeCard.visibility =
+            if (RootCompatHelper.isKernelSuInstalled(this) && isAdbMode) View.VISIBLE else View.GONE
+        if (prevRoot != isRoot || prevAdb != isAdbMode || prevPath != resolvedSuPath) {
+            refreshList()
+        }
+    }
+
     override fun onDestroy() {
         unregisterReceiver(packageReceiver)
         super.onDestroy()
@@ -685,7 +718,16 @@ class RootCompatibilityActivity : AppBarActivity() {
                                         Toast.makeText(this@RootCompatibilityActivity, this@RootCompatibilityActivity.getString(R.string.su_bridge_magic_setup_success, appName), Toast.LENGTH_LONG).show()
                                         launchOrStore(pkg)
                                     } else {
-                                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_magic_setup_fail, Toast.LENGTH_SHORT).show()
+                                        // Fallback: copy SU path and open the guided manual configuration dialog
+                                        copyToClipboard(path)
+                                        com.google.android.material.dialog
+                                            .MaterialAlertDialogBuilder(this@RootCompatibilityActivity)
+                                            .setTitle(getString(R.string.su_bridge_configure_dialog_title, appName))
+                                            .setMessage(getString(R.string.su_bridge_configure_dialog_message, path, appName, navHint))
+                                            .setPositiveButton(R.string.su_bridge_open_app) { _, _ ->
+                                                launchOrStore(pkg)
+                                            }.setNegativeButton(android.R.string.cancel, null)
+                                            .show()
                                     }
                                 }
                             },

@@ -34,17 +34,8 @@ class StartAdbViewHolder(
                 val inner = HomeStartAdbBinding.inflate(inflater, outer.cardContent, true)
                 StartAdbViewHolder(inner, outer)
             }
-    }
 
-    init {
-        containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener {
-            HomeEditMode.enter()
-            true
-        }
-        binding.button1.setOnClickListener { v: View ->
-            HapticUtils.tap(v)
-            val context = v.context
+        fun showViewCommandDialog(context: android.content.Context) {
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.home_adb_button_view_command)
                 .setMessage(
@@ -75,6 +66,18 @@ class StartAdbViewHolder(
                         )
                     context.startActivity(intent)
                 }.show()
+        }
+    }
+
+    init {
+        containerBinding.root.applySpringTouch()
+        containerBinding.root.setOnLongClickListener {
+            HomeEditMode.enter()
+            true
+        }
+        binding.button1.setOnClickListener { v: View ->
+            HapticUtils.tap(v)
+            showViewCommandDialog(v.context)
         }
         binding.text1.movementMethod = LinkMovementMethod.getInstance()
         containerBinding.dragHandle.apply {

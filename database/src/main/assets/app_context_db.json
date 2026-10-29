@@ -23,12 +23,14 @@
     },
     "org.adaway": {
       "description": "AdAway: Open-source ad blocker. SU path auto-configured; use 'Network Governor' in Shizuku+ for rootless DNS blocking.",
-      "verified": true
+      "verified": true,
+      "enhancements": ["network_governor_plus"]
     },
     "dev.ukanth.ufirewall": {
       "description": "AFWall+: Firewall app. Fully functional rootless under Shizuku+ via automatic local iptables fallback mocking.",
       "verified": true,
-      "su_path_nav": "Menu > Preferences > SU path"
+      "su_path_nav": "Menu > Preferences > SU path",
+      "enhancements": ["network_governor_plus", "shell_interceptor"]
     },
     "com.ramdaas.ramexe": {
       "description": "RamExe: RAM manager and process killer. SU path auto-configured via Android global settings (no root needed).",
@@ -40,26 +42,31 @@
     },
     "com.samsung.android.hexinstall": {
       "description": "Hex Installer: Theming engine for Samsung. Shizuku+ provides the necessary Overlay Bridge for OneUI 8+.",
-      "verified": true
+      "verified": true,
+      "enhancements": ["overlay_manager_plus"]
     },
     "com.samsung.android.themepark": {
       "description": "Theme Park: Official Samsung customization. Enhanced by Shizuku+ Overlay API.",
-      "verified": true
+      "verified": true,
+      "enhancements": ["overlay_manager_plus"]
     },
     "com.keramidas.TitaniumBackup": {
       "description": "Titanium Backup: App data backup and restore fully works via SU Bridge using native 'bu' mapping.",
       "verified": true,
-      "su_path_nav": "Menu > More > Preferences > su executable path"
+      "su_path_nav": "Menu > More > Preferences > su executable path",
+      "enhancements": ["shell_interceptor", "storage_proxy"]
     },
     "eu.darken.sdm": {
       "description": "SD Maid (Legacy): Fully functional via SU Bridge; deep system paths and shell execution are safely routed.",
       "verified": true,
-      "su_path_nav": "Settings > Root > Binary path"
+      "su_path_nav": "Settings > Root > Binary path",
+      "enhancements": ["shell_interceptor", "storage_proxy"]
     },
     "com.speedsoftware.rootexplorer": {
       "description": "Root Explorer: File manager with elevated access. SU path auto-configured; Storage Bridge handles deep system browsing.",
       "verified": true,
-      "su_path_nav": "Settings > Root access > SU path"
+      "su_path_nav": "Settings > Root access > SU path",
+      "enhancements": ["storage_proxy", "shell_interceptor"]
     },
     "com.speedsoftware.explorer": {
       "description": "Speed Explorer: File manager by Speed Software.",
@@ -68,7 +75,8 @@
     "com.jrummy.root.browserfree": {
       "description": "Root Browser: File manager with elevated access. SU path auto-configured; Storage Bridge handles system browsing.",
       "verified": true,
-      "su_path_nav": "Settings > Superuser > SU binary path"
+      "su_path_nav": "Settings > Superuser > SU binary path",
+      "enhancements": ["storage_proxy", "shell_interceptor"]
     },
     "com.estrongs.android.pop": {
       "description": "ES File Explorer: All-in-one file manager. SU path auto-configured via shared_prefs when running as root.",

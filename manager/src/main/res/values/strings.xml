@@ -1916,4 +1916,13 @@
     <string name="adb_pairing_fallback_title">Native Pairing Unavailable</string>
     <string name="adb_pairing_fallback_message">Your device firmware restricted the native wireless pairing library (libadb.so). You can still start and use Shizuku+ reliably by enabling TCP Mode (port 5555) or running the starter command once from ADB.</string>
     <string name="adb_pairing_fallback_enable_tcp">Use TCP Mode (5555)</string>
+    <string name="app_management_context_plus_benefits">Plus features this app benefits from…</string>
+    <string name="plus_benefits_dialog_title">Plus Features · %1$s</string>
+    <string name="plus_benefits_item_status_on">%1$s (On) →</string>
+    <string name="plus_benefits_item_status_off">%1$s (Off) →</string>
+    <string name="plus_benefits_badge_hint">Benefits from: %1$s (off) →</string>
+    <string name="lp_action_enable_freeform">Allow free-form / resizing</string>
+    <string name="lp_action_disable_freeform">Disable forced free-form / resizing</string>
+    <string name="toast_freeform_enabled">Free-form resizing enabled for %1$s</string>
+    <string name="toast_freeform_disabled">Free-form resizing reset for %1$s</string>
 </resources>
