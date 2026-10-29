@@ -588,15 +588,17 @@ class ShizukuApplication :
         af.shizuku.manager.plugin.PlusFeatureRegistry
             .register(af.shizuku.manager.scripting.ScriptingFeatureModule)
 
-        // Run auto-run snippets each time the Shizuku service transitions to RUNNING.
+        // Run auto-run snippets each time the Shizuku service transitions to RUNNING with a live binder.
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             ShizukuStateMachine
                 .asFlow()
                 .distinctUntilChanged()
                 .filter { it == ShizukuStateMachine.State.RUNNING }
                 .collect {
-                    af.shizuku.manager.database.ScriptSnippetManager
-                        .runAutoRunSnippets()
+                    if (runCatching { Shizuku.pingBinder() }.getOrDefault(false)) {
+                        af.shizuku.manager.database.ScriptSnippetManager
+                            .runAutoRunSnippets("service start")
+                    }
                 }
         }
 

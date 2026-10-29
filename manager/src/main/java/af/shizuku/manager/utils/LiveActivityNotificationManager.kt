@@ -74,6 +74,7 @@ object LiveActivityNotificationManager {
         title: String,
         message: String,
     ) {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return
         ensureChannel(context)
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
         val pendingIntent =

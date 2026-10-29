@@ -228,6 +228,7 @@ public class ShizukuSettings {
         public static final String KEY_STEALTH_MODE = "stealth_mode";
         public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
         public static final String KEY_WATCHDOG_CRASH_ALERTS = "watchdog_crash_alerts";
+        public static final String KEY_NOTIFICATION_SYSTEM_ENABLED = "notification_system_enabled";
         /** Keep the manager process alive while the privileged server runs (legacy rish clients). */
         public static final String KEY_LEGACY_RISH_KEEPALIVE = "legacy_rish_keepalive";
     }
@@ -937,6 +938,18 @@ public class ShizukuSettings {
 
     public static void setWatchdogCrashAlertsEnabled(boolean enable) {
         getPreferences().edit().putBoolean(Keys.KEY_WATCHDOG_CRASH_ALERTS, enable).apply();
+    }
+
+    public static boolean isNotificationSystemEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_NOTIFICATION_SYSTEM_ENABLED, true);
+    }
+
+    public static void setNotificationSystemEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) {
+            p.edit().putBoolean(Keys.KEY_NOTIFICATION_SYSTEM_ENABLED, enable).apply();
+        }
     }
 
     public static boolean getTcpMode() {

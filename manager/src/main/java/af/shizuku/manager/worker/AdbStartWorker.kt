@@ -394,6 +394,7 @@ class AdbStartWorker(
         }
 
     private fun showMdnsBlockedSuggestion(context: Context) {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
@@ -448,6 +449,7 @@ class AdbStartWorker(
         context: Context,
         e: Exception,
     ) {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return
         val now = System.currentTimeMillis()
         if (now - lastErrorNotificationMs < ERROR_NOTIFICATION_COOLDOWN_MS) {
             return

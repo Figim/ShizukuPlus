@@ -8,6 +8,19 @@
         android:icon="@drawable/ic_code_24"
         android:defaultValue="true">
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="notification_system_enabled"
+            android:title="@string/settings_notification_system_title"
+            android:summary="@string/settings_notification_system_summary"
+            android:icon="@drawable/ic_outline_notifications_active_24"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="reset_recommendations"
+            android:title="@string/settings_reset_recommendations_title"
+            android:summary="@string/settings_reset_recommendations_summary"
+            android:icon="@drawable/ic_settings_suggest_24" />
+
         <Preference
             android:key="manual_report"
             android:title="@string/manual_report_title"

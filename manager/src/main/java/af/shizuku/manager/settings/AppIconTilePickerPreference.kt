@@ -7,12 +7,14 @@ import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.AttributeSet
+import android.widget.ImageView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -50,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 
@@ -276,9 +279,22 @@ private fun AppIconPickerContent(
                                         .clip(RoundedCornerShape(iconCorner)),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Image(
-                                    painter = painterResource(option.iconRes),
-                                    contentDescription = option.label,
+                                AndroidView(
+                                    factory = { ctx ->
+                                        AppCompatImageView(ctx).apply {
+                                            scaleType = ImageView.ScaleType.FIT_CENTER
+                                        }
+                                    },
+                                    update = { imageView ->
+                                        imageView.contentDescription = option.label
+                                        runCatching {
+                                            imageView.setImageDrawable(
+                                                AppCompatResources.getDrawable(imageView.context, option.iconRes),
+                                            )
+                                        }.onFailure {
+                                            imageView.setImageDrawable(null)
+                                        }
+                                    },
                                     modifier = Modifier.size(40.dp),
                                 )
                             }

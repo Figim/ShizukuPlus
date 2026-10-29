@@ -116,6 +116,11 @@ class BehaviorSettingsFragment :
             }
         }
 
+        findPreference<Preference>("startup_scripts")?.setOnPreferenceClickListener {
+            startActivity(Intent(context, af.shizuku.manager.scripting.ScriptingActivity::class.java))
+            true
+        }
+
         deviceHardeningPreference.apply {
             isChecked = ShizukuSettings.isDeviceHardeningEnabled()
             setOnPreferenceChangeListener { _, newValue ->

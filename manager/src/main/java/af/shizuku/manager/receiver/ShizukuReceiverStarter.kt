@@ -487,6 +487,14 @@ object ShizukuReceiverStarter {
         if (display == Display.Unknown) return
         runCatching {
             val nm = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (!af.shizuku.manager.ShizukuSettings
+                    .isNotificationSystemEnabled()
+            ) {
+                nm.cancel(NOTIFICATION_ID)
+                nm.cancel(PERMISSION_NOTIFICATION_ID)
+                rendered = Display.None
+                return@runCatching
+            }
             // The missing-permission notice stops being true once the permission is held.
             if (app.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 nm.cancel(PERMISSION_NOTIFICATION_ID)
@@ -645,6 +653,11 @@ object ShizukuReceiverStarter {
     }
 
     private fun showPermissionErrorNotification(context: Context) {
+        if (!af.shizuku.manager.ShizukuSettings
+                .isNotificationSystemEnabled()
+        ) {
+            return
+        }
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         ensureChannel(context)
 

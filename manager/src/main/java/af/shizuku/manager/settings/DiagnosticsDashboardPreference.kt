@@ -123,6 +123,34 @@ class DiagnosticsDashboardPreference
                 )
             }
 
+            // Diagnostic 8: TCP Mode disabled while using Wireless ADB
+            if (ShizukuSettings.getLastLaunchMode() != ShizukuSettings.LaunchMethod.ROOT &&
+                (
+                    af.shizuku.manager.utils.EnvironmentUtils
+                        .isTlsSupported() ||
+                        af.shizuku.manager.utils.EnvironmentUtils
+                            .isTelevision()
+                ) &&
+                !ShizukuSettings.getTcpMode()
+            ) {
+                activeWarnings.add(
+                    WarningItem(
+                        id = "tcp_mode_disabled",
+                        message = context.getString(R.string.diagnostics_warning_tcp_mode_disabled),
+                    ),
+                )
+            }
+
+            // Diagnostic 9: Device Hardening disabled
+            if (!ShizukuSettings.isDeviceHardeningEnabled()) {
+                activeWarnings.add(
+                    WarningItem(
+                        id = "device_hardening_disabled",
+                        message = context.getString(R.string.diagnostics_warning_device_hardening_disabled),
+                    ),
+                )
+            }
+
             val visibleWarnings = activeWarnings.filter { it.id !in dismissed }
 
             if (visibleWarnings.isEmpty()) {
@@ -219,6 +247,17 @@ class DiagnosticsDashboardPreference
                         "start_on_boot_disabled" -> {
                             ShizukuSettings.setStartOnBoot(context, true)
                             Toast.makeText(context, R.string.diagnostics_start_on_boot_enabled_toast, Toast.LENGTH_SHORT).show()
+                            notifyChanged()
+                        }
+                        "tcp_mode_disabled" -> {
+                            ShizukuSettings.setTcpMode(true)
+                            ShizukuSettings.setForceStartWadbEnabled(true)
+                            Toast.makeText(context, R.string.diagnostics_tcp_mode_enabled_toast, Toast.LENGTH_SHORT).show()
+                            notifyChanged()
+                        }
+                        "device_hardening_disabled" -> {
+                            ShizukuSettings.setDeviceHardeningEnabled(true)
+                            Toast.makeText(context, R.string.device_hardening_applied, Toast.LENGTH_SHORT).show()
                             notifyChanged()
                         }
                     }

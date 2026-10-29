@@ -160,6 +160,10 @@ class WatchdogService : Service() {
                                             } ?: false
                                         if (cameBack) {
                                             ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after restart #1")
+                                            runCatching {
+                                                af.shizuku.manager.database.ScriptSnippetManager
+                                                    .runAutoRunSnippets("Watchdog restart")
+                                            }
                                         } else {
                                             showCrashNotification()
                                         }
@@ -235,7 +239,7 @@ class WatchdogService : Service() {
     private fun buildNotification(): Notification = buildNotification(this, currentLiveStatus)
 
     private fun showCrashNotification() {
-        if (!ShizukuSettings.isWatchdogCrashAlertsEnabled()) {
+        if (!ShizukuSettings.isNotificationSystemEnabled() || !ShizukuSettings.isWatchdogCrashAlertsEnabled()) {
             return
         }
         val now = System.currentTimeMillis()

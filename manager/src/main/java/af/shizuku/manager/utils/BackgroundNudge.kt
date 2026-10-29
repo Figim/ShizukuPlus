@@ -20,6 +20,11 @@ object BackgroundNudge {
     private const val SNOOZE_DAYS = 3
 
     fun maybePost(context: Context) {
+        if (!af.shizuku.manager.ShizukuSettings
+                .isNotificationSystemEnabled()
+        ) {
+            return
+        }
         if (DeviceOptimizer.isNagSnoozed()) return
         if (DeviceOptimizer.backgroundState(context) == DeviceOptimizer.BackgroundState.PROTECTED) return
         val nm = context.getSystemService(NotificationManager::class.java) ?: return
