@@ -1265,6 +1265,8 @@
     <!-- Developer Options -->
     <string name="settings_developer_options">Developer Options</string>
     <string name="settings_developer_options_summary">Virtualization, device spoofing, and experimental features</string>
+    <string name="settings_notification_system_title">Notification system</string>
+    <string name="settings_notification_system_summary">Allow Shizuku+ to post status, diagnostic, and crash recovery notifications</string>
     <string name="settings_auto_update_title">Auto-check for updates</string>
     <string name="settings_auto_update_summary">Automatically check for new versions on app startup</string>
     <string name="settings_auto_install_title">Auto-install updates</string>
@@ -1328,6 +1330,10 @@
     <string name="shell_export_partial">%1$d of %2$d files exported (some failed)</string>
 
     <!-- Settings backup/restore -->
+    <string name="onboarding_restore_backup_title">Previous Settings Found</string>
+    <string name="onboarding_restore_backup_desc">A backup of your preferences and configurations was found on this device. Restore it now to skip setup and keep your settings.</string>
+    <string name="onboarding_restore_backup_action">Restore Settings &amp; Continue</string>
+    <string name="onboarding_restore_pick_file">Select backup file (.json)</string>
     <string name="adb_native_unavailable">ADB pairing is not available on this device</string>
 
     <string name="changelog_title">What\'s New</string>
@@ -1487,8 +1493,8 @@
     <string name="scripting_delete_title">Delete snippet?</string>
     <string name="scripting_delete_message">“%1$s” will be permanently deleted.</string>
     <string name="scripting_delete">Delete</string>
-    <string name="scripting_auto_run_label">Auto-run on service start</string>
-    <string name="scripting_auto_run_badge_desc">Auto-runs on service start</string>
+    <string name="scripting_auto_run_label">Auto-run on service start &amp; Watchdog restart</string>
+    <string name="scripting_auto_run_badge_desc">Auto-runs on service start &amp; Watchdog restart</string>
 
     <!-- Tasker/Locale automation plugin (#6) -->
     <string name="automation_plugin_action_label">Shizuku+ Service</string>
@@ -1869,4 +1875,45 @@
     <string name="settings_about_category_app_info">App info</string>
     <string name="settings_about_category_project">Project info</string>
     <string name="settings_check_for_update_title">Check for update</string>
+
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <string name="action_close">Close</string>
+    <string name="settings_tcp_mode">TCP mode (port 5555)</string>
+    <string name="recommendation_dont_show_again">Don\'t show this recommendation again</string>
+    <string name="recommendation_not_now">Not now</string>
+    <string name="recommendation_tcp_mode_title">Enable TCP Mode (Port 5555)?</string>
+    <string name="recommendation_tcp_mode_message">Enabling TCP Mode keeps Wireless Debugging listening on port 5555 so Shizuku+ can start, reconnect, and auto-recover instantly—even without Wi-Fi or mDNS port discovery.\n\nWould you like to enable TCP Mode and Force Start without Wi-Fi?</string>
+    <string name="recommendation_tcp_mode_enable">Enable TCP Mode</string>
+    <string name="tip_tcp_mode_desc">Keep ADB listening on port 5555 so Shizuku+ can reconnect and start without Wi-Fi or mDNS discovery</string>
+    <string name="tip_device_hardening_desc">Apply privileged OS optimizations to prevent phantom process kills and background freezes</string>
+    <string name="diagnostics_warning_tcp_mode_disabled">TCP Mode (port 5555) is disabled. Tap to enable instant Wireless ADB reconnection without Wi-Fi.</string>
+    <string name="diagnostics_warning_device_hardening_disabled">Device Hardening is disabled. Tap to protect Shizuku+ from background process kills.</string>
+    <string name="diagnostics_tcp_mode_enabled_toast">TCP Mode (port 5555) enabled</string>
+    <string name="settings_reset_recommendations_title">Reset dismissed recommendations</string>
+    <string name="settings_reset_recommendations_summary">Restore all dismissed adaptive tips and diagnostic warnings</string>
+    <string name="settings_reset_recommendations_toast">Dismissed recommendations reset</string>
+    <string name="settings_startup_scripts_title">Startup &amp; Watchdog scripts</string>
+    <string name="settings_startup_scripts_summary">Manage shell snippets that auto-run on service start and Watchdog restart</string>
+    <string name="settings_lock_home_layout">Lock Home Screen layout</string>
+    <string name="settings_lock_home_layout_summary">Prevent long-pressing cards on the Home Screen from entering rearrange mode</string>
+    <string name="settings_rearrange_home_cards">Rearrange Home Screen cards</string>
+    <string name="settings_rearrange_home_cards_summary">Open the Home Screen in card rearrange mode</string>
+    <string name="app_management_context_api_scopes">API Access &amp; Scopes…</string>
+    <string name="app_management_context_select_multiple">Select multiple apps</string>
+    <string name="app_management_selected_count">%1$d selected</string>
+    <string name="api_scopes_dialog_title">API Scopes · %1$s</string>
+    <string name="api_scopes_restricted_badge">Scopes: %1$d/%2$d allowed</string>
+    <string name="api_scope_shell">Shell &amp; Process Execution (newProcess)</string>
+    <string name="api_scope_package_manager">Package Manager (install, uninstall, suspend)</string>
+    <string name="api_scope_activity_manager">Activity &amp; Process Manager (force-stop, tasks)</string>
+    <string name="api_scope_appops">AppOps &amp; Runtime Permissions</string>
+    <string name="api_scope_system_settings">System Settings &amp; Power Control</string>
+    <string name="recommendation_tcp_guard_title">Protect TCP Port on Public Wi-Fi?</string>
+    <string name="recommendation_tcp_guard_message">When TCP Mode is active, ADB listens on port 5555. Enabling Open &amp; Public Wi-Fi Protection automatically closes the port whenever you join an unencrypted or captive-portal Wi-Fi network.</string>
+    <string name="recommendation_tcp_guard_enable">Enable Protection</string>
+    <string name="recommendation_tcp_guard_enabled_toast">Open &amp; Public Wi-Fi Protection enabled</string>
+    <string name="recommendation_tcp_mode_enabled_toast">TCP Mode (port 5555) enabled</string>
+    <string name="adb_pairing_fallback_title">Native Pairing Unavailable</string>
+    <string name="adb_pairing_fallback_message">Your device firmware restricted the native wireless pairing library (libadb.so). You can still start and use Shizuku+ reliably by enabling TCP Mode (port 5555) or running the starter command once from ADB.</string>
+    <string name="adb_pairing_fallback_enable_tcp">Use TCP Mode (5555)</string>
 </resources>

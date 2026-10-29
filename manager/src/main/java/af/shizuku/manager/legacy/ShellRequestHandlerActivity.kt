@@ -71,6 +71,7 @@ class ShellRequestHandlerActivity : MaterialActivity() {
         title: Int,
         message: Int,
     ) {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return
         val titleStr = getString(title)
         val messageStr = getString(message)
 

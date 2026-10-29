@@ -157,12 +157,36 @@ open class HomeActivity :
                 appsModel.load()
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 maybeShowVersionSkewSnackbar()
+                window.decorView.post {
+                    if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                        val uid = runCatching { rikka.shizuku.Shizuku.getUid() }.getOrDefault(-1)
+                        if (uid == 2000 && !ShizukuSettings.getTcpMode()) {
+                            af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                .maybeRecommendTcpMode(this)
+                        }
+                    }
+                }
             }
             ShizukuStateMachine.State.STOPPED,
             ShizukuStateMachine.State.CRASHED,
             -> {
                 // Shizuku stopped or crashed - refresh status display
                 checkServerStatus()
+                if (state == ShizukuStateMachine.State.CRASHED &&
+                    af.shizuku.manager.utils.DeactivationAdvisor
+                        .getRecentDropCount() >= 2
+                ) {
+                    window.decorView.post {
+                        if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                            af.shizuku.manager.utils.DeactivationAdvisor.showStabilityTipsDialog(
+                                this,
+                                isAutomaticPrompt = true,
+                            ) {
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+                    }
+                }
             }
             else -> {
                 // Starting or stopping - optional refresh
@@ -842,6 +866,9 @@ open class HomeActivity :
         isOneUi = ShizukuSettings.isOneUiThemeEnabled()
         isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
         isServerRunning = ShizukuStateMachine.isRunning()
+        if (ShizukuSettings.isHomeLayoutLocked() && HomeEditMode.isActive && !HomeEditMode.wasForced) {
+            HomeEditMode.exit()
+        }
         // Synchronously rebind all visible cards so appearance-setting changes (icon style, shape
         // style, etc.) are visible immediately when returning from SettingsActivity. The async
         // checkServerStatus() / homeModel.reload() path updates service-status content but involves
@@ -858,11 +885,17 @@ open class HomeActivity :
                 af.shizuku.manager.settings.SettingsShareManager
                     .checkAndPerformAutoSync(this@HomeActivity)
             if (synced) {
+                ShizukuSettings.syncAllPlusFeaturesToServer()
                 withContext(Dispatchers.Main) {
                     isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
                     isOneUi = ShizukuSettings.isOneUiThemeEnabled()
                     isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+                    if (ShizukuSettings.isHomeLayoutLocked() && HomeEditMode.isActive && !HomeEditMode.wasForced) {
+                        HomeEditMode.exit()
+                    }
                     adapter.notifyDataSetChanged()
+                    homeModel.reload()
+                    appsModel.load()
                 }
             }
         }

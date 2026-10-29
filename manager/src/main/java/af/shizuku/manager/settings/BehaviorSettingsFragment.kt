@@ -116,6 +116,11 @@ class BehaviorSettingsFragment :
             }
         }
 
+        findPreference<Preference>("startup_scripts")?.setOnPreferenceClickListener {
+            startActivity(Intent(context, af.shizuku.manager.scripting.ScriptingActivity::class.java))
+            true
+        }
+
         deviceHardeningPreference.apply {
             isChecked = ShizukuSettings.isDeviceHardeningEnabled()
             setOnPreferenceChangeListener { _, newValue ->
@@ -251,7 +256,14 @@ class BehaviorSettingsFragment :
                         applyChange = apply,
                     )
                 } else {
-                    maybePromptRestart(KEY_TCP_MODE, enable) { apply() }
+                    maybePromptRestart(KEY_TCP_MODE, enable) {
+                        apply()
+                        if (enable) {
+                            af.shizuku.manager.utils.AdaptiveRecommendationManager.maybeRecommendTcpNetworkGuard(context) {
+                                reload()
+                            }
+                        }
+                    }
                 }
             }
             onPortChangeRequest = { port, randomized, apply ->

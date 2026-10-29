@@ -39,6 +39,12 @@ object ShizukuStateMachine {
         java.util.concurrent.atomic
             .AtomicLong(0L)
     private const val STARTING_TIMEOUT_MS = 90_000L
+    private const val COLD_START_GRACE_MS = 2_500L
+
+    @Volatile
+    private var processStartElapsedMs = android.os.SystemClock.elapsedRealtime()
+    private val binderReceivedThisProcess = AtomicBoolean(false)
+    private val coldStartRecheckScheduled = AtomicBoolean(false)
 
     // One exemption check runs at a time in this process: two RUNNING transitions close together
     // (a crash right after the first start, then a quick restart) each launch a coroutine that could
@@ -57,6 +63,9 @@ object ShizukuStateMachine {
     internal fun resetForTesting() {
         state.set(loadPersistedSettledState())
         startingTimestamp.set(0L)
+        processStartElapsedMs = -COLD_START_GRACE_MS * 2
+        binderReceivedThisProcess.set(false)
+        coldStartRecheckScheduled.set(false)
         postRunningLatchForTesting = null
         exemptionCheckRunning.set(false)
         BatteryOptimizationGuard.resetForTesting()
@@ -82,6 +91,7 @@ object ShizukuStateMachine {
                         category = "shizuku.service"
                     },
                 )
+                binderReceivedThisProcess.set(true)
                 set(State.RUNNING)
                 // Push the user's Plus feature flags as soon as the binder arrives - in the
                 // background too (watchdog, boot), not only when Home is open - so the server never
@@ -146,6 +156,20 @@ object ShizukuStateMachine {
                     applyWatchdogDefault()
                     try {
                         val context = ShizukuApplication.appContext
+                        af.shizuku.manager.service.WatchdogService
+                            .dismissCrashNotification(context)
+                        af.shizuku.manager.worker.AdbStartWorker
+                            .dismissNotifications(context)
+                        val nm = context.getSystemService(android.app.NotificationManager::class.java)
+                        nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.NOTIFICATION_ID)
+                        nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.FOREGROUND_NOTIFICATION_ID)
+                        nm?.cancel(BackgroundNudge.NOTIFICATION_ID)
+                        nm?.cancel(af.shizuku.manager.adb.AdbPairingService.NOTIFICATION_ID)
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to cancel lingering notifications on RUNNING")
+                    }
+                    try {
+                        val context = ShizukuApplication.appContext
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 try {
@@ -153,6 +177,17 @@ object ShizukuStateMachine {
                                         DeviceOptimizer.applyFixes(context)
                                     }
                                     SettingsHelper.autoGrantPrivileges(context)
+                                    val trigger =
+                                        if (oldState == State.CRASHED ||
+                                            af.shizuku.manager.service.WatchdogService
+                                                .isRunning()
+                                        ) {
+                                            "Watchdog / service start"
+                                        } else {
+                                            "service start"
+                                        }
+                                    af.shizuku.manager.database.ScriptSnippetManager
+                                        .runAutoRunSnippets(trigger)
                                 } catch (e: Exception) {
                                     Timber.tag("ShizukuStateMachine").e(e, "Failed to apply optimizations and privileges on RUNNING")
                                 }
@@ -327,12 +362,36 @@ object ShizukuStateMachine {
                         } catch (_: Exception) {
                             false
                         }
-                    if (verifiedAlive) State.RUNNING else State.CRASHED
+                    if (verifiedAlive) {
+                        binderReceivedThisProcess.set(true)
+                        State.RUNNING
+                    } else {
+                        val elapsedSinceProcessStart = android.os.SystemClock.elapsedRealtime() - processStartElapsedMs
+                        if (!binderReceivedThisProcess.get() && elapsedSinceProcessStart in 0L until COLD_START_GRACE_MS) {
+                            scheduleColdStartRecheck(COLD_START_GRACE_MS - elapsedSinceProcessStart + 50L)
+                            State.RUNNING
+                        } else {
+                            State.CRASHED
+                        }
+                    }
                 }
                 else -> State.STOPPED
             }
         set(state)
         return state
+    }
+
+    private fun scheduleColdStartRecheck(delayMs: Long) {
+        if (coldStartRecheckScheduled.compareAndSet(false, true)) {
+            runCatching {
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    coldStartRecheckScheduled.set(false)
+                    update()
+                }, delayMs)
+            }.onFailure {
+                coldStartRecheckScheduled.set(false)
+            }
+        }
     }
 
     /** When a drop was last observed, so the next RUNNING can report how long the gap was. */

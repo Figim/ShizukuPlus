@@ -111,9 +111,21 @@ object EnvironmentUtils {
         return result
     }
 
-    private fun checkSuExists(): Boolean {
+    /**
+     * Locates a usable `su` binary path across custom user settings, standard PATH, and modern
+     * KernelSU / APatch / Magisk directories. Used as a direct ProcessBuilder fallback when
+     * libsu's default `Shell.getShell()` cannot find `su` in the standard environment PATH.
+     */
+    @JvmStatic
+    fun findSuBinary(): String? {
+        runCatching {
+            val custom = ShizukuSettings.getPreferences().getString("custom_su_path", null)?.trim()
+            if (!custom.isNullOrEmpty()) {
+                val customFile = java.io.File(custom)
+                if (customFile.exists()) return customFile.absolutePath
+            }
+        }
         val paths = System.getenv("PATH")?.split(":")?.toMutableList() ?: mutableListOf()
-        // Add common modern root paths that might not be in the standard PATH
         paths.addAll(
             listOf(
                 "/data/adb/ksu/bin",
@@ -130,10 +142,13 @@ object EnvironmentUtils {
             ),
         )
         for (path in paths) {
-            if (java.io.File(path, "su").exists()) return true
+            val file = java.io.File(path, "su")
+            if (file.exists()) return file.absolutePath
         }
-        return false
+        return null
     }
+
+    private fun checkSuExists(): Boolean = findSuBinary() != null
 
     @JvmStatic
     fun isSamsung(): Boolean =

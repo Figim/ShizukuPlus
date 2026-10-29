@@ -368,6 +368,7 @@ object VendorBatteryRestrictions {
             ?: context.packageManager.getApplicationEnabledSetting(pkg)
 
     private fun canPostNotification(context: Context): Boolean {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return false
         if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return false
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

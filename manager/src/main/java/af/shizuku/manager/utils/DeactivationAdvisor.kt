@@ -5,11 +5,17 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.settings.ServiceDoctorActivity
 import android.content.Context
 import android.content.Intent
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
  * Tracks unexpected Shizuku server deactivations/crashes and provides actionable tips
- * and settings suggestions to keep Shizuku alive in the background.
+ * and settings suggestions to keep Shizuku alive in the background, including a
+ * "Don't show this recommendation again" option for automatic prompts.
  */
 object DeactivationAdvisor {
     private const val PREF_KEY_DEACTIVATION_TIMESTAMPS = "unexpected_deactivation_timestamps"
@@ -53,6 +59,23 @@ object DeactivationAdvisor {
 
     fun getTips(context: Context): List<Tip> {
         val tips = mutableListOf<Tip>()
+        val isRootMode = ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
+
+        if (!isRootMode && (EnvironmentUtils.isTlsSupported() || EnvironmentUtils.isTelevision())) {
+            val tcpModeOn = ShizukuSettings.getTcpMode()
+            tips.add(
+                Tip(
+                    id = "tcp_mode",
+                    title = context.getString(R.string.settings_tcp_mode),
+                    summary = context.getString(R.string.tip_tcp_mode_desc),
+                    isEnabled = tcpModeOn,
+                    onEnable = {
+                        ShizukuSettings.setTcpMode(true)
+                        ShizukuSettings.setForceStartWadbEnabled(true)
+                    },
+                ),
+            )
+        }
 
         val watchdogOn = ShizukuSettings.getWatchdog()
         tips.add(
@@ -65,16 +88,18 @@ object DeactivationAdvisor {
             ),
         )
 
-        val autoReconnectOn = ShizukuSettings.isAutoReconnectMdnsEnabled()
-        tips.add(
-            Tip(
-                id = "auto_reconnect",
-                title = context.getString(R.string.settings_auto_reconnect_mdns),
-                summary = context.getString(R.string.tip_auto_reconnect_desc),
-                isEnabled = autoReconnectOn,
-                onEnable = { ShizukuSettings.setAutoReconnectMdnsEnabled(true) },
-            ),
-        )
+        if (!isRootMode) {
+            val autoReconnectOn = ShizukuSettings.isAutoReconnectMdnsEnabled()
+            tips.add(
+                Tip(
+                    id = "auto_reconnect",
+                    title = context.getString(R.string.settings_auto_reconnect_mdns),
+                    summary = context.getString(R.string.tip_auto_reconnect_desc),
+                    isEnabled = autoReconnectOn,
+                    onEnable = { ShizukuSettings.setAutoReconnectMdnsEnabled(true) },
+                ),
+            )
+        }
 
         val startOnBootOn = ShizukuSettings.getStartOnBoot(context)
         tips.add(
@@ -84,6 +109,17 @@ object DeactivationAdvisor {
                 summary = context.getString(R.string.tip_start_on_boot_desc),
                 isEnabled = startOnBootOn,
                 onEnable = { ShizukuSettings.setStartOnBoot(it, true) },
+            ),
+        )
+
+        val hardeningOn = ShizukuSettings.isDeviceHardeningEnabled()
+        tips.add(
+            Tip(
+                id = "device_hardening",
+                title = context.getString(R.string.settings_device_hardening),
+                summary = context.getString(R.string.tip_device_hardening_desc),
+                isEnabled = hardeningOn,
+                onEnable = { ShizukuSettings.setDeviceHardeningEnabled(true) },
             ),
         )
 
@@ -104,11 +140,19 @@ object DeactivationAdvisor {
         return tips
     }
 
-    /** Show the Stability / Keep-Alive Tips dialog */
+    /** Show the Stability / Keep-Alive Tips dialog with a "Don't show again" option */
+    @JvmOverloads
     fun showStabilityTipsDialog(
         context: Context,
+        isAutomaticPrompt: Boolean = false,
         onDismiss: () -> Unit = {},
     ) {
+        if (isAutomaticPrompt &&
+            AdaptiveRecommendationManager.isDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
+        ) {
+            return
+        }
+
         val tips = getTips(context)
         val disabledTips = tips.filter { !it.isEnabled }
 
@@ -118,31 +162,88 @@ object DeactivationAdvisor {
                 .setIcon(R.drawable.ic_settings_suggest_24)
 
         if (disabledTips.isEmpty()) {
+            if (isAutomaticPrompt) return
             builder
                 .setMessage(R.string.stability_tips_all_enabled_message)
                 .setPositiveButton(R.string.home_service_doctor_title) { _, _ ->
                     context.startActivity(Intent(context, ServiceDoctorActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }.setNegativeButton(android.R.string.ok, null)
         } else {
-            val multiChoices = BooleanArray(disabledTips.size) { true }
+            val density = context.resources.displayMetrics.density
+            val padH = (24 * density).toInt()
+            val padV = (8 * density).toInt()
+
+            val scrollView = ScrollView(context)
+            val contentLayout =
+                LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(padH, padV, padH, padV)
+                }
+            scrollView.addView(contentLayout)
+
+            val introView =
+                TextView(context).apply {
+                    setText(R.string.stability_tips_dialog_message)
+                    setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+                    setPadding(0, 0, 0, (8 * density).toInt())
+                }
+            contentLayout.addView(introView)
+
+            val checkBoxes =
+                disabledTips.map { tip ->
+                    MaterialCheckBox(context).apply {
+                        text = "${tip.title}\n${tip.summary}"
+                        isChecked = true
+                        setPadding((4 * density).toInt(), (6 * density).toInt(), 0, (6 * density).toInt())
+                        contentLayout.addView(this)
+                    }
+                }
+
+            val divider =
+                View(context).apply {
+                    val lp =
+                        LinearLayout
+                            .LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                (1 * density).toInt().coerceAtLeast(1),
+                            ).apply {
+                                topMargin = (8 * density).toInt()
+                                bottomMargin = (4 * density).toInt()
+                            }
+                    layoutParams = lp
+                    setBackgroundColor(0x22888888)
+                }
+            contentLayout.addView(divider)
+
+            val dontShowCheck =
+                MaterialCheckBox(context).apply {
+                    text = context.getString(R.string.recommendation_dont_show_again)
+                    isChecked = AdaptiveRecommendationManager.isDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
+                    contentLayout.addView(this)
+                }
 
             builder
-                .setMultiChoiceItems(
-                    disabledTips.map { it.title }.toTypedArray(),
-                    multiChoices,
-                ) { _, which, isChecked ->
-                    multiChoices[which] = isChecked
-                }.setMessage(R.string.stability_tips_dialog_message)
+                .setView(scrollView)
                 .setPositiveButton(R.string.stability_tips_apply_selected) { _, _ ->
+                    if (dontShowCheck.isChecked) {
+                        AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, true)
+                    }
                     disabledTips.forEachIndexed { index, tip ->
-                        if (multiChoices[index]) {
+                        if (checkBoxes[index].isChecked) {
                             tip.onEnable(context)
                         }
                     }
                     onDismiss()
                 }.setNeutralButton(R.string.home_service_doctor_title) { _, _ ->
+                    if (dontShowCheck.isChecked) {
+                        AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, true)
+                    }
                     context.startActivity(Intent(context, ServiceDoctorActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                }.setNegativeButton(android.R.string.cancel, null)
+                }.setNegativeButton(android.R.string.cancel) { _, _ ->
+                    if (dontShowCheck.isChecked) {
+                        AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, true)
+                    }
+                }
         }
 
         builder.setOnDismissListener { onDismiss() }.show()

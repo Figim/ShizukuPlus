@@ -45,6 +45,9 @@ object HomeEditMode {
     var isActive: Boolean = false
         private set
 
+    var wasForced: Boolean = false
+        private set
+
     var onChanged: (() -> Unit)? = null
     var startDragCallback: ((RecyclerView.ViewHolder) -> Unit)? = null
     var removeCardCallback: ((Long) -> Unit)? = null
@@ -52,7 +55,17 @@ object HomeEditMode {
     /** Moves the card hosting the given view by [delta] positions (-1 up, +1 down); false if not possible. */
     var moveCardCallback: ((android.view.View, Int) -> Boolean)? = null
 
-    fun enter() {
+    @JvmOverloads
+    fun enter(force: Boolean = false) {
+        if (!force &&
+            af.shizuku.manager.ShizukuSettings
+                .isHomeLayoutLocked()
+        ) {
+            return
+        }
+        if (force) {
+            wasForced = true
+        }
         if (!isActive) {
             isActive = true
             io.sentry.Sentry.addBreadcrumb("HomeEditMode: enter()")
@@ -61,6 +74,7 @@ object HomeEditMode {
     }
 
     fun exit() {
+        wasForced = false
         if (isActive) {
             isActive = false
             onChanged?.invoke()

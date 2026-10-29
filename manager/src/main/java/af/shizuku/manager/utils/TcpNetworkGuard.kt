@@ -29,7 +29,7 @@ import timber.log.Timber
 object TcpNetworkGuard {
     private const val TAG = "TcpNetworkGuard"
     private const val CHANNEL_ID = "TcpNetworkGuard"
-    private const val NOTIFICATION_ID = 7518
+    const val NOTIFICATION_ID = 7518
 
     @Volatile private var registered = false
 
@@ -121,6 +121,12 @@ object TcpNetworkGuard {
         assessment: NetworkTrust.Assessment,
     ) {
         val nm = context.getSystemService(NotificationManager::class.java) ?: return
+        if (!af.shizuku.manager.ShizukuSettings
+                .isNotificationSystemEnabled()
+        ) {
+            nm.cancel(NOTIFICATION_ID)
+            return
+        }
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_ID, context.getString(R.string.tcp_guard_channel), NotificationManager.IMPORTANCE_HIGH),
         )

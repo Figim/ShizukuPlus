@@ -344,7 +344,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         BinderSender.register(this);
 
         ((Logger) LOGGER).setEventDispatcher((priority, tag, message, throwable) -> {
-            List<ClientRecord> records = clientManager.findClients(managerAppId);
+            List<ClientRecord> records = new java.util.ArrayList<>(clientManager.findClients(managerAppId));
+            if (secondaryManagerAppId != -1) {
+                records.addAll(clientManager.findClients(secondaryManagerAppId));
+            }
             for (ClientRecord record : records) {
                 if (record.client != null) {
                     try {
@@ -939,12 +942,62 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         return applied;
     }
 
+    private boolean isAppScopeDisabled(int uid, String callingPkg, String scope) {
+        if (isManagerAppId(UserHandleCompat.getAppId(uid))) return false;
+        String serialized = plusSettingsMap.get("per_app_disabled_scopes");
+        if (serialized == null || serialized.isEmpty()) return false;
+
+        java.util.List<String> candidatePackages = new java.util.ArrayList<>();
+        if (callingPkg != null && !callingPkg.isEmpty() && !"unknown".equals(callingPkg)) {
+            candidatePackages.add(callingPkg);
+        } else {
+            for (ClientRecord cr : clientManager.findClients(uid)) {
+                if (cr.packageName != null && !candidatePackages.contains(cr.packageName)) {
+                    candidatePackages.add(cr.packageName);
+                }
+            }
+        }
+        if (candidatePackages.isEmpty()) return false;
+
+        for (String entry : serialized.split(";")) {
+            int colon = entry.indexOf(':');
+            if (colon <= 0) continue;
+            String pkg = entry.substring(0, colon).trim();
+            if (!candidatePackages.contains(pkg)) continue;
+            String scopesPart = entry.substring(colon + 1);
+            for (String s : scopesPart.split("\\|")) {
+                if (scope.equals(s.trim())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     protected boolean isBinderCallBlocked(int uid, String descriptor, int code) {
-        if (!isFeatureEnabled("binder_firewall")) return false;
-
         // The manager app (the owner of this service) is always allowed
         if (isManagerAppId(UserHandleCompat.getAppId(uid))) return false;
+
+        // Per-app granular API scope firewall (#645)
+        if (descriptor != null) {
+            String requiredScope = null;
+            if (descriptor.startsWith("android.content.pm.IPackage")) {
+                requiredScope = "package_manager";
+            } else if ("android.app.IActivityManager".equals(descriptor) || "android.app.IActivityTaskManager".equals(descriptor)) {
+                requiredScope = "activity_manager";
+            } else if ("com.android.internal.app.IAppOpsService".equals(descriptor) || "android.permission.IPermissionManager".equals(descriptor)) {
+                requiredScope = "appops";
+            } else if ("android.os.IPowerManager".equals(descriptor)) {
+                requiredScope = "system_settings";
+            }
+            if (requiredScope != null && isAppScopeDisabled(uid, null, requiredScope)) {
+                LOGGER.w("Binder call blocked by per-app scope '%s': UID=%d, Descriptor=%s, Code=%d", requiredScope, uid, descriptor, code);
+                return true;
+            }
+        }
+
+        if (!isFeatureEnabled("binder_firewall")) return false;
 
         boolean isBlocked = false;
 
@@ -1173,7 +1226,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             ApplicationInfo ai = getManagerApplicationInfo();
             if (ai == null) return;
 
-            List<ClientRecord> records = clientManager.findClients(ai.uid);
+            List<ClientRecord> records = new java.util.ArrayList<>(clientManager.findClients(ai.uid));
+            if (secondaryManagerAppId != -1 && secondaryManagerAppId != ai.uid) {
+                records.addAll(clientManager.findClients(secondaryManagerAppId));
+            }
             for (ClientRecord record : records) {
                 try {
                     record.client.dispatchLog("", packageName, action);
@@ -1247,6 +1303,31 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // do nothing" reports (#411, #421, #426) undiagnosable from logcat alone. This makes every
         // call visible regardless of which branch (if any) it hits.
         LOGGER.d("newProcess: %s -> %s", callingPkg, String.join(" ", cmd));
+
+        // Per-app granular API scope enforcement for shell/process execution (#645)
+        if (isAppScopeDisabled(callingUid, callingPkg, "shell")) {
+            LOGGER.w("newProcess blocked by per-app 'shell' scope for %s (UID=%d)", callingPkg, callingUid);
+            throw new SecurityException("Permission denied: Shell execution scope is disabled for " + callingPkg);
+        }
+        if (cmd != null && cmd.length > 0) {
+            String fullCmd = String.join(" ", cmd);
+            if ((fullCmd.startsWith("pm ") || fullCmd.contains(" pm ") || fullCmd.contains("cmd package")) &&
+                isAppScopeDisabled(callingUid, callingPkg, "package_manager")) {
+                throw new SecurityException("Permission denied: Package Manager scope is disabled for " + callingPkg);
+            }
+            if ((fullCmd.startsWith("am ") || fullCmd.contains(" am ") || fullCmd.contains("cmd activity")) &&
+                isAppScopeDisabled(callingUid, callingPkg, "activity_manager")) {
+                throw new SecurityException("Permission denied: Activity Manager scope is disabled for " + callingPkg);
+            }
+            if ((fullCmd.startsWith("appops ") || fullCmd.contains(" appops ") || fullCmd.contains("cmd appops")) &&
+                isAppScopeDisabled(callingUid, callingPkg, "appops")) {
+                throw new SecurityException("Permission denied: AppOps scope is disabled for " + callingPkg);
+            }
+            if ((fullCmd.startsWith("settings ") || fullCmd.contains(" settings ") || fullCmd.startsWith("svc ")) &&
+                isAppScopeDisabled(callingUid, callingPkg, "system_settings")) {
+                throw new SecurityException("Permission denied: System Settings & Power scope is disabled for " + callingPkg);
+            }
+        }
 
         // Catastrophic Command Interceptor (Storage Safety)
         if (isCatastrophicCommand(cmd)) {
@@ -2353,7 +2434,19 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // dialog instead of dropping the request.
         ApplicationInfo ai = Android17Compat.getApplicationInfo(clientRecord.packageName, 0, userId);
 
-        PackageInfo pi = Android17Compat.getPackageInfo(MANAGER_APPLICATION_ID, 0, userId);
+        String targetManagerPkg = MANAGER_APPLICATION_ID;
+        if (secondaryManagerAppId != -1 &&
+                clientManager.findClients(managerAppId).isEmpty() &&
+                !clientManager.findClients(secondaryManagerAppId).isEmpty()) {
+            targetManagerPkg = ServerConstants.DROPIN_APPLICATION_ID.equals(MANAGER_APPLICATION_ID)
+                    ? ServerConstants.PLUS_APPLICATION_ID
+                    : ServerConstants.DROPIN_APPLICATION_ID;
+        }
+        PackageInfo pi = Android17Compat.getPackageInfo(targetManagerPkg, 0, userId);
+        if (pi == null && !targetManagerPkg.equals(MANAGER_APPLICATION_ID)) {
+            targetManagerPkg = MANAGER_APPLICATION_ID;
+            pi = Android17Compat.getPackageInfo(targetManagerPkg, 0, userId);
+        }
         UserInfo userInfo = UserManagerApis.getUserInfo(userId);
         boolean isWorkProfileUser = BuildUtils.INSTANCE.getAtLeast30() ?
                 "android.os.usertype.profile.MANAGED".equals(userInfo.userType) :
@@ -2364,8 +2457,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             return;
         }
 
-        Intent intent = new Intent(ServerConstants.getRequestPermissionAction())
-                .setPackage(MANAGER_APPLICATION_ID)
+        Intent intent = new Intent(targetManagerPkg + ".intent.action.REQUEST_PERMISSION")
+                .setPackage(targetManagerPkg)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
                 .putExtra("uid", callingUid)
                 .putExtra("pid", callingPid)
@@ -2830,12 +2923,24 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         sendBinderToManager(this);
     }
 
+    private static String getSecondaryManagerPackage() {
+        String other = ServerConstants.DROPIN_APPLICATION_ID.equals(MANAGER_APPLICATION_ID)
+                ? ServerConstants.PLUS_APPLICATION_ID
+                : ServerConstants.DROPIN_APPLICATION_ID;
+        ApplicationInfo ai = Android17Compat.getApplicationInfo(other, 0, 0);
+        return (ai != null && isSignedLikeManager(other)) ? other : null;
+    }
+
     private static void sendBinderToManager(Binder binder) {
+        String secondaryPkg = getSecondaryManagerPackage();
         java.util.List<Integer> failedUserIds = new java.util.ArrayList<>();
         for (int userId : UserManagerApis.getUserIdsNoThrow()) {
             boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
             if (!success) {
                 failedUserIds.add(userId);
+            }
+            if (secondaryPkg != null) {
+                sendBinderToUserApp(binder, secondaryPkg, userId);
             }
         }
         if (!failedUserIds.isEmpty()) {
@@ -2871,6 +2976,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     static void sendBinderToManager(Binder binder, int userId) {
+        String secondaryPkg = getSecondaryManagerPackage();
+        if (secondaryPkg != null) {
+            sendBinderToUserApp(binder, secondaryPkg, userId);
+        }
         boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
         if (!success) {
             // For unknown reason, sometimes this could happens

@@ -147,6 +147,22 @@ open class ApplicationManagementActivity :
             onBackPressedDispatcher.addCallback(this, it)
         }
 
+        adapter.setSelectionListener { inSelectionMode, selectedCount ->
+            backCallback?.isEnabled = inSelectionMode
+            invalidateOptionsMenu()
+            if (inSelectionMode) {
+                val titleText = getString(R.string.app_management_selected_count, selectedCount)
+                supportActionBar?.title = titleText
+                toolbar?.title = titleText
+            } else {
+                val oneUi = ShizukuSettings.isOneUiThemeEnabled()
+                val oneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                val defaultTitle = if (oneUi || oneHanded) "" else getString(R.string.home_app_management_title)
+                supportActionBar?.title = defaultTitle
+                toolbar?.title = defaultTitle
+            }
+        }
+
         // One UI & One-Handed mode: spacious header with live authorized app count
         val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
         val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
@@ -455,6 +471,10 @@ open class ApplicationManagementActivity :
             }
             R.id.action_swipe_hint -> {
                 showSwipeHint()
+                true
+            }
+            R.id.action_select_multiple -> {
+                adapter.isSelectionMode = true
                 true
             }
             R.id.sort_name -> {
@@ -892,21 +912,13 @@ open class ApplicationManagementActivity :
         card.alpha = 0f
         hintBinding.hintScrim.alpha = 0f
 
-        // Handle system back navigation to dismiss overlay if open
-        val hintBackCallback =
-            object : androidx.activity.OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    dismissHint()
-                }
-            }
-        onBackPressedDispatcher.addCallback(this, hintBackCallback)
-
         var isDismissing = false
+        var hintBackCallback: androidx.activity.OnBackPressedCallback? = null
 
         fun dismissHint() {
             if (isDismissing) return
             isDismissing = true
-            hintBackCallback.remove()
+            hintBackCallback?.remove()
             hintBinding.hintScrim
                 .animate()
                 .alpha(0f)
@@ -923,6 +935,16 @@ open class ApplicationManagementActivity :
                     if (swipeHintOverlay === hint) swipeHintOverlay = null
                 }.start()
         }
+
+        // Handle system back navigation to dismiss overlay if open
+        hintBackCallback =
+            object : androidx.activity.OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    dismissHint()
+                }
+            }.also {
+                onBackPressedDispatcher.addCallback(this, it)
+            }
 
         card.doOnLayout {
             hintBinding.hintScrim
@@ -1012,6 +1034,7 @@ open class ApplicationManagementActivity :
             isFirstResume = false
         } else {
             viewModel.refresh()
+            adapter.notifyDataSetChanged()
         }
         // Re-read swipe settings: setupSwipe()'s callback closes over these fields, so a
         // change made in Settings while this activity was backgrounded takes effect here

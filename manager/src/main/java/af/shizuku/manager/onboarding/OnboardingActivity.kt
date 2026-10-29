@@ -20,10 +20,12 @@ import af.shizuku.manager.home.showAccessibilityDialog
 import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.starter.StarterActivity
+import af.shizuku.manager.update.UpdateInstaller
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.NetworkTrust
+import af.shizuku.manager.utils.SettingsBackupManager
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
 import android.animation.ValueAnimator
@@ -32,6 +34,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +50,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.core.util.ClipboardUtils
+import timber.log.Timber
+import java.io.File
 
 class OnboardingActivity : AppActivity() {
     companion object {
@@ -112,6 +117,53 @@ class OnboardingActivity : AppActivity() {
                 startActivity(Intent(this, AdbPairingTutorialActivity::class.java))
             }
         }
+
+    private val backupPickerLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.OpenDocument(),
+        ) { uri ->
+            if (uri != null) {
+                try {
+                    contentResolver.openInputStream(uri)?.use { stream ->
+                        val json = stream.bufferedReader().use { it.readText() }
+                        if (SettingsBackupManager.importAndCommit(this, json, trustPrivileged = false)) {
+                            Toast.makeText(this, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
+                            completeOnboarding()
+                        } else {
+                            Toast.makeText(this, getString(R.string.restore_failed_generic, "Invalid backup format"), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to restore backup from picked document")
+                    Toast.makeText(this, getString(R.string.restore_failed_generic, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+    private fun findAvailableBackupFile(): File? {
+        val candidates =
+            listOfNotNull(
+                UpdateInstaller.getBackupFile(this),
+                File(filesDir, UpdateInstaller.AUTO_BACKUP_FILENAME),
+                File("/data/local/tmp", UpdateInstaller.AUTO_BACKUP_FILENAME),
+                File("/data/local/tmp", "shizukuplus_settings.json"),
+                getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let {
+                    File(it, UpdateInstaller.AUTO_BACKUP_FILENAME)
+                },
+                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), UpdateInstaller.AUTO_BACKUP_FILENAME),
+                File("/sdcard/Download", UpdateInstaller.AUTO_BACKUP_FILENAME),
+                File("/storage/emulated/0/Download", UpdateInstaller.AUTO_BACKUP_FILENAME),
+            )
+        for (candidate in candidates) {
+            try {
+                if (candidate.exists() && candidate.isFile && candidate.length() > 10) {
+                    return candidate
+                }
+            } catch (_: Exception) {
+            }
+        }
+        return null
+    }
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         if (!isFinishing && !isDestroyed) {
@@ -381,6 +433,7 @@ class OnboardingActivity : AppActivity() {
             position: Int,
         ) {
             when (holder) {
+                is OnboardingPageViewHolder.Welcome -> bindWelcomePage(holder.binding)
                 is OnboardingPageViewHolder.WelcomeReturning -> bindWelcomeReturningPage(holder.binding)
                 is OnboardingPageViewHolder.Setup -> bindSetupPage(holder.binding)
                 is OnboardingPageViewHolder.M3E -> bindM3ePage(holder.binding)
@@ -390,8 +443,44 @@ class OnboardingActivity : AppActivity() {
                     swipeIconRight = holder.binding.hintIconRight
                     swipeIconLeft = holder.binding.hintIconLeft
                 }
+                is OnboardingPageViewHolder.Gestures -> Unit
                 is OnboardingPageViewHolder.LongPress -> bindLongPressPage(holder.binding)
-                else -> {}
+            }
+        }
+
+        private fun bindWelcomePage(binding: PageOnboardingWelcomeBinding) {
+            binding.cardRestoreBackup.applySpringTouch()
+            binding.btnRestoreBackup.applySpringTouch()
+            binding.btnPickBackupFile.applySpringTouch()
+
+            val foundBackup = findAvailableBackupFile()
+            if (foundBackup != null) {
+                binding.cardRestoreBackup.visibility = View.VISIBLE
+                binding.btnRestoreBackup.setOnClickListener {
+                    try {
+                        val json = foundBackup.readText()
+                        if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = true)) {
+                            foundBackup.delete()
+                            Toast.makeText(this@OnboardingActivity, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
+                            completeOnboarding()
+                        } else {
+                            Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, "Invalid backup format"), Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to restore found backup during onboarding")
+                        Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                binding.cardRestoreBackup.visibility = View.GONE
+            }
+
+            binding.btnPickBackupFile.setOnClickListener {
+                try {
+                    backupPickerLauncher.launch(arrayOf("application/json", "*/*"))
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to launch backup file picker")
+                }
             }
         }
 

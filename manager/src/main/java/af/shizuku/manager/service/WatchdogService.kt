@@ -106,6 +106,19 @@ class WatchdogService : Service() {
             scope.launch {
                 ShizukuStateMachine.asFlow().collectLatest { state ->
                     if (state == ShizukuStateMachine.State.CRASHED) {
+                        // Suppress false crash alert if disconnected from Wi-Fi on Wireless ADB
+                        if (ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB &&
+                            !af.shizuku.manager.utils.NetworkStateHelper
+                                .isWirelessAdbSupportedNetwork(applicationContext) &&
+                            af.shizuku.manager.utils.EnvironmentUtils
+                                .isWifiRequired(allowNetworkProbe = false)
+                        ) {
+                            Timber.tag(TAG).d("Watchdog: server dropped because Wi-Fi/network is disconnected; suppressing crash alert")
+                            stabilityJob?.cancel()
+                            pendingRecoveryJob?.cancel()
+                            return@collectLatest
+                        }
+
                         // The server is no longer RUNNING, so the stability window ends here:
                         // left armed, it would fire while the server is dead and reset
                         // consecutiveCrashes, making the next crash look like a first restart.
@@ -147,6 +160,10 @@ class WatchdogService : Service() {
                                             } ?: false
                                         if (cameBack) {
                                             ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after restart #1")
+                                            runCatching {
+                                                af.shizuku.manager.database.ScriptSnippetManager
+                                                    .runAutoRunSnippets("Watchdog restart")
+                                            }
                                         } else {
                                             showCrashNotification()
                                         }
@@ -167,6 +184,9 @@ class WatchdogService : Service() {
                                 delay(STABILITY_WINDOW_MS)
                                 consecutiveCrashes = 0
                             }
+                        dismissCrashNotification(applicationContext)
+                        af.shizuku.manager.worker.AdbStartWorker
+                            .dismissNotifications(applicationContext)
                     }
                 }
             }
@@ -219,7 +239,7 @@ class WatchdogService : Service() {
     private fun buildNotification(): Notification = buildNotification(this, currentLiveStatus)
 
     private fun showCrashNotification() {
-        if (!ShizukuSettings.isWatchdogCrashAlertsEnabled()) {
+        if (!ShizukuSettings.isNotificationSystemEnabled() || !ShizukuSettings.isWatchdogCrashAlertsEnabled()) {
             return
         }
         val now = System.currentTimeMillis()
@@ -255,6 +275,15 @@ class WatchdogService : Service() {
         val reportIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/issues/new"))
         val reportPendingIntent = PendingIntent.getActivity(this, 12, reportIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
+        val restartIntent = Intent(this, af.shizuku.manager.receiver.NotifAttemptActivity::class.java)
+        val restartPendingIntent =
+            PendingIntent.getActivity(
+                this,
+                13,
+                restartIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+
         val builder =
             NotificationCompat
                 .Builder(this, channelId)
@@ -265,6 +294,7 @@ class WatchdogService : Service() {
                 .setAutoCancel(true)
                 .setSilent(true)
                 .setOnlyAlertOnce(true)
+                .addAction(0, getString(R.string.starter_retry), restartPendingIntent)
                 .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_report_manually), reportPendingIntent)
                 .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_turn_off_alerts), disablePendingIntent)
 
@@ -296,7 +326,7 @@ class WatchdogService : Service() {
     companion object {
         private const val TAG = "ShizukuWatchdog"
         private const val NOTIFICATION_ID_WATCHDOG = 1001
-        private const val NOTIFICATION_ID_CRASH = 1002
+        const val NOTIFICATION_ID_CRASH = 1002
         private const val ACTION_STOP_SERVICE = "action.stop_service"
         const val WATCHDOG_CHANNEL_ID = "shizuku_watchdog"
         const val CRASH_CHANNEL_ID = "crash_reports"
@@ -309,7 +339,16 @@ class WatchdogService : Service() {
 
         private const val BASE_COOLDOWN_MS = 5_000L
         private const val MAX_COOLDOWN_MS = 300_000L // 5 min cap
-        private const val CRASH_NOTIFICATION_COOLDOWN_MS = 60_000L
+        private const val CRASH_NOTIFICATION_COOLDOWN_MS = 900_000L // 15 min cooldown
+
+        @JvmStatic
+        fun dismissCrashNotification(context: Context) {
+            try {
+                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
+                nm.cancel(NOTIFICATION_ID_CRASH)
+            } catch (_: Exception) {
+            }
+        }
 
         @Volatile
         private var lastCrashNotificationMs = 0L

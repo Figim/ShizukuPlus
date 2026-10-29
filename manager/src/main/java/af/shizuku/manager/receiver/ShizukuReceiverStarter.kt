@@ -103,11 +103,19 @@ object ShizukuReceiverStarter {
         }
 
         if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ROOT) {
-            rootStart(context)
+            rootStart(context, forceStart)
         } else if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ADB) {
             if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 AdbStartWorker.enqueue(context, explicit = forceStart)
             } else {
+                // Fallback: if TCP mode is enabled or an ADB TCP port is already active,
+                // AdbStartWorker can connect without WRITE_SECURE_SETTINGS and auto-regrant it.
+                if (ShizukuSettings.getTcpMode() ||
+                    af.shizuku.manager.utils.EnvironmentUtils
+                        .getAdbTcpPort() > 0
+                ) {
+                    AdbStartWorker.enqueue(context, explicit = forceStart)
+                }
                 showPermissionErrorNotification(context)
             }
         } else {
@@ -487,6 +495,14 @@ object ShizukuReceiverStarter {
         if (display == Display.Unknown) return
         runCatching {
             val nm = app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (!af.shizuku.manager.ShizukuSettings
+                    .isNotificationSystemEnabled()
+            ) {
+                nm.cancel(NOTIFICATION_ID)
+                nm.cancel(PERMISSION_NOTIFICATION_ID)
+                rendered = Display.None
+                return@runCatching
+            }
             // The missing-permission notice stops being true once the permission is held.
             if (app.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 nm.cancel(PERMISSION_NOTIFICATION_ID)
@@ -594,17 +610,39 @@ object ShizukuReceiverStarter {
             cm != null && cm.activeNetwork != null && !cm.isActiveNetworkMetered
         }.getOrDefault(false)
 
-    private fun rootStart(context: Context) {
+    private fun rootStart(
+        context: Context,
+        forceStart: Boolean = false,
+    ) {
         Sentry.addBreadcrumb(Breadcrumb("Background Root start initiated").apply { category = "shizuku.starter" })
         if (!Shell.getShell().isRoot) {
+            Shell.getCachedShell()?.close()
+            // Plan B: Try direct su binary execution if su lives outside standard PATH (e.g. KernelSU / APatch / custom_su_path)
+            val fallbackSu =
+                af.shizuku.manager.utils.EnvironmentUtils
+                    .findSuBinary()
+            if (fallbackSu != null) {
+                try {
+                    ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+                    val proc = ProcessBuilder(fallbackSu, "-c", Starter.internalCommand).start()
+                    val code = proc.waitFor()
+                    if (code == 0) {
+                        ShizukuStateMachine.update()
+                        return
+                    }
+                    recoverFromFailedStart()
+                } catch (e: Exception) {
+                    Timber.tag(AppConstants.TAG).w(e, "Direct su fallback ($fallbackSu) failed")
+                    recoverFromFailedStart()
+                }
+            }
             Sentry.addBreadcrumb(
                 Breadcrumb("Background Root start failed - no root").apply {
                     category = "shizuku.starter"
                     level = io.sentry.SentryLevel.WARNING
                 },
             )
-            // NotificationHelper.notify(context, AppConstants.NOTIFICATION_ID_STATUS, AppConstants.NOTIFICATION_CHANNEL_STATUS, R.string.notification_service_start_no_root)
-            Shell.getCachedShell()?.close()
+            tryFallbackToAdbFromRoot(context, forceStart)
             return
         }
 
@@ -624,6 +662,7 @@ object ShizukuReceiverStarter {
                 )
                 Timber.tag(AppConstants.TAG).e("Root starter exited with code ${result.code}")
                 recoverFromFailedStart()
+                tryFallbackToAdbFromRoot(context, forceStart)
             }
         } catch (e: Exception) {
             Sentry.addBreadcrumb(
@@ -634,6 +673,30 @@ object ShizukuReceiverStarter {
             )
             Timber.tag(AppConstants.TAG).e(e, "Failed to start Shizuku with root")
             recoverFromFailedStart()
+            tryFallbackToAdbFromRoot(context, forceStart)
+        }
+    }
+
+    private fun tryFallbackToAdbFromRoot(
+        context: Context,
+        forceStart: Boolean,
+    ) {
+        if (ShizukuStateMachine.isRunning()) return
+        val canTryAdb =
+            context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED ||
+                ShizukuSettings.getTcpMode() ||
+                af.shizuku.manager.utils.EnvironmentUtils
+                    .getAdbTcpPort() > 0
+        if (canTryAdb && (forceStart || !AdbAuthWait.isUnanswered()) && !AdbAuthWait.isWaiting()) {
+            Timber.tag(AppConstants.TAG).i("Root start failed; falling back to Wireless ADB")
+            runCatching {
+                af.shizuku.manager.database.ActivityLogManager.log(
+                    "Shizuku",
+                    context.packageName,
+                    "Connection: Root start failed; falling back to Wireless ADB",
+                )
+            }
+            AdbStartWorker.enqueue(context, explicit = forceStart)
         }
     }
 
@@ -645,6 +708,11 @@ object ShizukuReceiverStarter {
     }
 
     private fun showPermissionErrorNotification(context: Context) {
+        if (!af.shizuku.manager.ShizukuSettings
+                .isNotificationSystemEnabled()
+        ) {
+            return
+        }
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         ensureChannel(context)
 

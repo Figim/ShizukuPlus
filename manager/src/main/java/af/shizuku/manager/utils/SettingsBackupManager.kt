@@ -267,6 +267,7 @@ object SettingsBackupManager {
                 }
             // Old backups carry the pre-merge corner keys.
             ShizukuSettings.migrateCornerSettingsIfNeeded()
+            ShizukuSettings.syncAllPlusFeaturesToServer()
             written
         } catch (e: Exception) {
             false

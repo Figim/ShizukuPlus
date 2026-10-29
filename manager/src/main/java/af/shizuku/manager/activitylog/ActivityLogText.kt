@@ -77,11 +77,18 @@ object ActivityLogText {
     /** English action logged when a permission is toggled by tapping a row in the Apps list. */
     const val TOGGLE_GRANT = "Toggle permission: Grant permission"
     const val TOGGLE_REVOKE = "Toggle permission: Revoke permission"
+    private val REPEAT_SUFFIX_REGEX = Regex("^(.*) \\(×(\\d+)\\)$")
 
     fun localize(
         context: Context,
         action: String,
     ): String {
+        val repeatMatch = REPEAT_SUFFIX_REGEX.matchEntire(action)
+        if (repeatMatch != null) {
+            val base = repeatMatch.groupValues[1]
+            val count = repeatMatch.groupValues[2]
+            return "${localize(context, base)} (×$count)"
+        }
         exact[action]?.let { return context.getString(it) }
         when (action) {
             TOGGLE_GRANT -> return toggle(context, R.string.app_management_context_grant)

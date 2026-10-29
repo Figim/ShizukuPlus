@@ -16,8 +16,23 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
 
     public static final class HeaderMarker {}
 
+    public interface SelectionListener {
+        void onSelectionChanged(boolean inSelectionMode, int selectedCount);
+    }
+
     private boolean selectionMode = false;
     private final Set<String> selectedPackages = new HashSet<>();
+    private SelectionListener selectionListener;
+
+    public void setSelectionListener(SelectionListener listener) {
+        this.selectionListener = listener;
+    }
+
+    private void notifySelectionListener() {
+        if (selectionListener != null) {
+            selectionListener.onSelectionChanged(selectionMode, selectedPackages.size());
+        }
+    }
 
     public AppsAdapter() {
         super();
@@ -37,6 +52,7 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
             selectedPackages.clear();
         }
         notifyDataSetChanged();
+        notifySelectionListener();
     }
 
     public Set<String> getSelectedPackages() {
@@ -50,6 +66,7 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
             selectedPackages.add(packageName);
         }
         notifyDataSetChanged();
+        notifySelectionListener();
     }
 
     @Override

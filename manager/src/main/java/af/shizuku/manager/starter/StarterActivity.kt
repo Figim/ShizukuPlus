@@ -93,14 +93,51 @@ class StarterActivity : AppBarActivity() {
                     is TimeoutException -> message = R.string.adb_error_timeout
                 }
                 val dialogMessage = if (message != 0) message else R.string.adb_error_generic
-                MaterialAlertDialogBuilder(this)
-                    .setMessage(dialogMessage)
-                    .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
-                    .setNegativeButton(R.string.starter_retry) { _, _ ->
-                        binding.progressIndicator.visibility = View.VISIBLE
-                        binding.cancelButton.visibility = View.VISIBLE
-                        viewModel.retry()
-                    }.show()
+                val builder =
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(dialogMessage)
+                        .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+                        .setNegativeButton(R.string.starter_retry) { _, _ ->
+                            binding.progressIndicator.visibility = View.VISIBLE
+                            binding.cancelButton.visibility = View.VISIBLE
+                            viewModel.retry()
+                        }
+                when (result.error) {
+                    is SSLProtocolException -> {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R &&
+                            af.shizuku.manager.adb.AdbPairingClient
+                                .isNativeAvailable()
+                        ) {
+                            builder.setNeutralButton(R.string.home_wireless_adb_button_pair) { _, _ ->
+                                startActivity(android.content.Intent(this, af.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
+                                finish()
+                            }
+                        }
+                    }
+                    is NotRootedException -> {
+                        if (af.shizuku.manager.utils.EnvironmentUtils
+                                .isTlsSupported() ||
+                            af.shizuku.manager.utils.EnvironmentUtils
+                                .getAdbTcpPort() > 0
+                        ) {
+                            builder.setNeutralButton(R.string.home_wireless_adb_title) { _, _ ->
+                                finish()
+                                af.shizuku.manager.home.StartWirelessAdbViewHolder.start(
+                                    this,
+                                    kotlinx.coroutines.MainScope(),
+                                )
+                            }
+                        }
+                    }
+                    is ConnectException, is SocketTimeoutException -> {
+                        builder.setNeutralButton(R.string.settings_developer_options) { _, _ ->
+                            af.shizuku.manager.utils.SettingsPage.Developer.Options
+                                .launch(this)
+                            finish()
+                        }
+                    }
+                }
+                builder.show()
             }
             binding.text1.text = output
             binding.scrollView.post { binding.scrollView.scrollTo(0, Int.MAX_VALUE) }
@@ -271,6 +308,24 @@ class ViewModel(
                         log(appContext.getString(af.shizuku.manager.R.string.wadb_notification_awaiting_auth) + "\n")
                         started = false
                         return@launch
+                    } catch (e: Exception) {
+                        if (e is ConnectException || e is SocketTimeoutException) {
+                            log("\nPort $port did not respond. Probing fallback loopback ports...\n")
+                            val fallbackPort =
+                                withContext(Dispatchers.IO) {
+                                    af.shizuku.manager.adb.AdbPortProber
+                                        .findActiveLoopbackPort(appContext)
+                                }
+                            if (fallbackPort in 1..65535 && fallbackPort != port) {
+                                log("Found active ADB port $fallbackPort — reconnecting...\n")
+                                lastPort = fallbackPort
+                                AdbStarter.startAdb(appContext, fallbackPort, log = { log(it) })
+                            } else {
+                                throw e
+                            }
+                        } else {
+                            throw e
+                        }
                     }
                 }
                 Starter.waitForBinder({ log(it) })
@@ -357,6 +412,29 @@ class ViewModel(
 
                 if (!Shell.getShell().isRoot) {
                     Shell.getCachedShell()?.close()
+                    val fallbackSu =
+                        af.shizuku.manager.utils.EnvironmentUtils
+                            .findSuBinary()
+                    if (fallbackSu != null) {
+                        log("Standard root shell unavailable; trying direct su binary ($fallbackSu)...\n")
+                        try {
+                            ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+                            val proc =
+                                ProcessBuilder(fallbackSu, "-c", Starter.internalCommand)
+                                    .redirectErrorStream(true)
+                                    .start()
+                            proc.inputStream.bufferedReader().useLines { lines ->
+                                lines.forEach { log(it) }
+                            }
+                            if (proc.waitFor() == 0) {
+                                ShizukuStateMachine.update()
+                                ActivityLogManager.log("Shizuku", appContext.packageName, "Service started via root ($fallbackSu)")
+                                return@withContext
+                            }
+                        } catch (e: Exception) {
+                            log("Direct su binary fallback failed: ${e.message}\n")
+                        }
+                    }
                     throw NotRootedException()
                 }
             }

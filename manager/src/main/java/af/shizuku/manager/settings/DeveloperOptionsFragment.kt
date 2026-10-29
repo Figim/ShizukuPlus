@@ -24,6 +24,45 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
     ) {
         setPreferencesFromResource(R.xml.settings_developer_options, rootKey)
 
+        // Notification system master switch
+        findPreference<TwoStatePreference>(KEY_NOTIFICATION_SYSTEM_ENABLED)?.apply {
+            isChecked = ShizukuSettings.isNotificationSystemEnabled()
+            setOnPreferenceChangeListener { _, v ->
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
+                ShizukuSettings.setNotificationSystemEnabled(enabled)
+                if (!enabled) {
+                    val ctx = context ?: return@setOnPreferenceChangeListener true
+                    val nm = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as? android.app.NotificationManager
+                    nm?.cancel(af.shizuku.manager.service.WatchdogService.NOTIFICATION_ID_CRASH)
+                    nm?.cancel(af.shizuku.manager.worker.AdbStartWorker.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.worker.AdbStartWorker.NOTIFICATION_ID_MDNS_BLOCKED)
+                    nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.FOREGROUND_NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.utils.BackgroundNudge.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.utils.BatteryOptimizationGuard.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.utils.VendorBatteryRestrictions.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.adb.AdbPairingService.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.utils.TcpNetworkGuard.NOTIFICATION_ID)
+                    nm?.cancel(af.shizuku.manager.utils.LiveActivityNotificationManager.NOTIFICATION_ID_WARNING)
+                }
+                true
+            }
+        }
+
+        findPreference<Preference>("reset_recommendations")?.setOnPreferenceClickListener {
+            af.shizuku.manager.utils.AdaptiveRecommendationManager
+                .resetAll()
+            context?.let { ctx ->
+                Toast
+                    .makeText(
+                        ctx,
+                        R.string.settings_reset_recommendations_toast,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+            }
+            true
+        }
+
         // Vector / AVF Manager
         findPreference<TwoStatePreference>(KEY_VECTOR_ENABLED)?.apply {
             isChecked = ShizukuSettings.isVectorEnabled()

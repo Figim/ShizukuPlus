@@ -34,6 +34,12 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_outline_notifications_active_24" />
 
+        <Preference
+            android:key="startup_scripts"
+            android:title="@string/settings_startup_scripts_title"
+            android:summary="@string/settings_startup_scripts_summary"
+            android:icon="@drawable/ic_code_24" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="auto_reconnect_mdns"
             android:title="@string/settings_auto_reconnect_mdns"

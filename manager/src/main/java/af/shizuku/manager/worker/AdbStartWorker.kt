@@ -104,8 +104,10 @@ class AdbStartWorker(
                 throw SecurityException("Wireless debugging start blocked: current network is untrusted")
             }
 
-            Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
-            Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+            runCatching {
+                Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
+                Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+            }
 
             // Fast path: if TCP mode is on and the port is already listening, connect directly —
             // no Wireless Debugging or Wi-Fi required.
@@ -152,10 +154,17 @@ class AdbStartWorker(
                 }
             }
 
+            val verifiedSavedPort =
+                if (savedPort in 1..65535 && isWifiOk && runAttemptCount == 0 && AdbPortProber.isPortOpen(savedPort, 400)) {
+                    savedPort
+                } else {
+                    -1
+                }
+
             val port =
                 when {
-                    tcpPort > 0 && isWifiOk -> tcpPort
-                    savedPort > 0 && isWifiOk && runAttemptCount == 0 -> savedPort
+                    tcpPort > 0 && isWifiOk && AdbPortProber.isPortOpen(tcpPort, 400) -> tcpPort
+                    verifiedSavedPort > 0 -> verifiedSavedPort
                     else ->
                         callbackFlow {
                             val adbMdns =
@@ -186,7 +195,18 @@ class AdbStartWorker(
                                 timeoutJob =
                                     launch {
                                         delay(15_000)
-                                        close(TimeoutException("Timed out during mDNS port discovery"))
+                                        val fallbackLoopbackPort =
+                                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                                AdbPortProber.findActiveLoopbackPort(applicationContext)
+                                            }
+                                        if (fallbackLoopbackPort in 1..65535) {
+                                            timber.log.Timber
+                                                .tag("AdbStartWorker")
+                                                .i("mDNS timed out, falling back to active loopback port %d", fallbackLoopbackPort)
+                                            trySend(fallbackLoopbackPort)
+                                        } else {
+                                            close(TimeoutException("Timed out during mDNS port discovery"))
+                                        }
                                     }
                             }
 
@@ -242,7 +262,7 @@ class AdbStartWorker(
                                                     if (NetworkTrust.shouldBlockTcp(context)) {
                                                         close(SecurityException("Wireless debugging suppressed on unlock: network is not trusted"))
                                                     } else {
-                                                        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                                                        runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                                                     }
                                                 }
                                             }
@@ -274,7 +294,7 @@ class AdbStartWorker(
                                                     samsungResetCount++
                                                     launch {
                                                         delay(300L * samsungResetCount)
-                                                        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                                                        runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                                                     }
                                                 } else {
                                                     handleAuth()
@@ -284,7 +304,7 @@ class AdbStartWorker(
                                     }
                                 }
 
-                            Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                            runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                             cr.registerContentObserver(Settings.Global.getUriFor("adb_wifi_enabled"), false, observer)
                             startDiscoveryWithTimeout()
 
@@ -305,6 +325,7 @@ class AdbStartWorker(
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .i("doWork: Shizuku service successfully started and binder ready on port %d", port)
+            dismissNotifications(applicationContext)
 
             return Result.success()
         } catch (e: CancellationException) {
@@ -393,6 +414,7 @@ class AdbStartWorker(
         }
 
     private fun showMdnsBlockedSuggestion(context: Context) {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
@@ -414,6 +436,17 @@ class AdbStartWorker(
                 openAppIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
+        val devIntent =
+            Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        val devPi =
+            PendingIntent.getActivity(
+                context,
+                23,
+                devIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
         val notification =
             NotificationCompat
                 .Builder(context, CHANNEL_ID)
@@ -426,6 +459,7 @@ class AdbStartWorker(
                         .bigText(context.getString(R.string.wadb_mdns_blocked_text)),
                 ).setContentIntent(pi)
                 .addAction(0, context.getString(R.string.wadb_mdns_switch_tcp_action), pi)
+                .addAction(0, context.getString(R.string.settings_developer_options), devPi)
                 .setAutoCancel(true)
                 .build()
         nm.notify(NOTIFICATION_ID_MDNS_BLOCKED, notification)
@@ -435,6 +469,13 @@ class AdbStartWorker(
         context: Context,
         e: Exception,
     ) {
+        if (!ShizukuSettings.isNotificationSystemEnabled()) return
+        val now = System.currentTimeMillis()
+        if (now - lastErrorNotificationMs < ERROR_NOTIFICATION_COOLDOWN_MS) {
+            return
+        }
+        lastErrorNotificationMs = now
+
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel =
@@ -464,6 +505,27 @@ class AdbStartWorker(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
 
+        val retryIntent = Intent(context, af.shizuku.manager.receiver.NotifAttemptActivity::class.java)
+        val retryPendingIntent =
+            PendingIntent.getActivity(
+                context,
+                21,
+                retryIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+
+        val devIntent =
+            Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+        val devPendingIntent =
+            PendingIntent.getActivity(
+                context,
+                22,
+                devIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+
         val notification =
             nb
                 .setSmallIcon(R.drawable.ic_notification_icon)
@@ -471,7 +533,10 @@ class AdbStartWorker(
                 .setContentText(shortMsg)
                 .setContentIntent(pendingIntent)
                 .setSilent(true)
+                .setAutoCancel(true)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
+                .addAction(0, context.getString(R.string.starter_retry), retryPendingIntent)
+                .addAction(0, context.getString(R.string.settings_developer_options), devPendingIntent)
                 .build()
 
         nm.notify(NOTIFICATION_ID, notification)
@@ -520,6 +585,16 @@ class AdbStartWorker(
             then: (() -> Unit)? = null,
         ) = ShizukuReceiverStarter.cancelStarts(context, then)
 
+        @JvmStatic
+        fun dismissNotifications(context: Context) {
+            try {
+                val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
+                nm.cancel(NOTIFICATION_ID)
+                nm.cancel(NOTIFICATION_ID_MDNS_BLOCKED)
+            } catch (_: Exception) {
+            }
+        }
+
         const val UNIQUE_WORK_NAME = "adb_start_worker"
 
         // The progress key a running worker publishes its StartNotificationState.Step under.
@@ -530,6 +605,10 @@ class AdbStartWorker(
         private const val KEY_REQUESTED_AT = "requested_at"
         const val CHANNEL_ID = "AdbStartWorker"
         const val NOTIFICATION_ID = 1448
-        private const val NOTIFICATION_ID_MDNS_BLOCKED = 1449
+        const val NOTIFICATION_ID_MDNS_BLOCKED = 1449
+        private const val ERROR_NOTIFICATION_COOLDOWN_MS = 600_000L
+
+        @Volatile
+        private var lastErrorNotificationMs = 0L
     }
 }

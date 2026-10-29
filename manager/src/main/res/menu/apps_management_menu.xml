@@ -9,6 +9,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_select_multiple"
+        android:title="@string/app_management_context_select_multiple"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_sort"
         android:title="@string/app_management_action_sort"
         app:showAsAction="never">

@@ -204,8 +204,8 @@ class SettingsActivity :
                             searchResults = SettingsSearchEngine.search(this, query)
                         }
                     },
-                    onContainerCreated = {
-                        if (isFinishing || isDestroyed || supportFragmentManager.isDestroyed) return@onContainerCreated
+                    onContainerCreated = containerCreated@{
+                        if (isFinishing || isDestroyed || supportFragmentManager.isDestroyed) return@containerCreated
                         val existing = supportFragmentManager.findFragmentById(R.id.fragment_container)
                         if (existing == null) {
                             val highlightKey = intent?.getStringExtra("highlight_key")

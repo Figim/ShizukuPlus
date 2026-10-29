@@ -253,6 +253,19 @@
             android:icon="@drawable/ic_article_24"
             android:defaultValue="true" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="lock_home_layout"
+            android:title="@string/settings_lock_home_layout"
+            android:summary="@string/settings_lock_home_layout_summary"
+            android:icon="@drawable/ic_shield_24"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="rearrange_home_cards"
+            android:title="@string/settings_rearrange_home_cards"
+            android:summary="@string/settings_rearrange_home_cards_summary"
+            android:icon="@drawable/ic_space_dashboard_24" />
+
         <af.shizuku.manager.settings.StatusOutlineMasterPreference
             android:key="status_card_outline_card" />
 
