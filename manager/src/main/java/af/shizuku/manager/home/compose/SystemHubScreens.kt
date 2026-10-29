@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -1594,10 +1595,10 @@ private fun StatTile(
                 )
                 if (onClick != null) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_chevron_right_24),
+                        painter = painterResource(R.drawable.ic_expand_more_24),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(16.dp).graphicsLayer(rotationZ = -90f),
                     )
                 }
             }

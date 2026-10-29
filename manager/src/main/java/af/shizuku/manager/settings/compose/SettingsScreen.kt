@@ -1,6 +1,7 @@
 package af.shizuku.manager.settings.compose
 
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.settings.SettingsSearchEngine
 import android.content.res.ColorStateList
 import android.widget.FrameLayout

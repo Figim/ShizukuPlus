@@ -110,8 +110,8 @@ class WatchdogService : Service() {
                         if (ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB &&
                             !af.shizuku.manager.utils.NetworkStateHelper
                                 .isWirelessAdbSupportedNetwork(applicationContext) &&
-                            !af.shizuku.manager.utils.EnvironmentUtils
-                                .hasLocalAdbLoopback()
+                            af.shizuku.manager.utils.EnvironmentUtils
+                                .isWifiRequired(allowNetworkProbe = false)
                         ) {
                             Timber.tag(TAG).d("Watchdog: server dropped because Wi-Fi/network is disconnected; suppressing crash alert")
                             stabilityJob?.cancel()

@@ -892,21 +892,13 @@ open class ApplicationManagementActivity :
         card.alpha = 0f
         hintBinding.hintScrim.alpha = 0f
 
-        // Handle system back navigation to dismiss overlay if open
-        val hintBackCallback =
-            object : androidx.activity.OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    dismissHint()
-                }
-            }
-        onBackPressedDispatcher.addCallback(this, hintBackCallback)
-
         var isDismissing = false
+        var hintBackCallback: androidx.activity.OnBackPressedCallback? = null
 
         fun dismissHint() {
             if (isDismissing) return
             isDismissing = true
-            hintBackCallback.remove()
+            hintBackCallback?.remove()
             hintBinding.hintScrim
                 .animate()
                 .alpha(0f)
@@ -923,6 +915,16 @@ open class ApplicationManagementActivity :
                     if (swipeHintOverlay === hint) swipeHintOverlay = null
                 }.start()
         }
+
+        // Handle system back navigation to dismiss overlay if open
+        hintBackCallback =
+            object : androidx.activity.OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    dismissHint()
+                }
+            }.also {
+                onBackPressedDispatcher.addCallback(this, it)
+            }
 
         card.doOnLayout {
             hintBinding.hintScrim

@@ -443,6 +443,7 @@ class OnboardingActivity : AppActivity() {
                     swipeIconRight = holder.binding.hintIconRight
                     swipeIconLeft = holder.binding.hintIconLeft
                 }
+                is OnboardingPageViewHolder.Gestures -> Unit
                 is OnboardingPageViewHolder.LongPress -> bindLongPressPage(holder.binding)
             }
         }

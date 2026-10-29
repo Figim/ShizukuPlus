@@ -1877,6 +1877,8 @@
     <string name="settings_check_for_update_title">Check for update</string>
 
     <!-- Adaptive Recommendations & Startup Scripts -->
+    <string name="action_close">Close</string>
+    <string name="settings_tcp_mode">TCP mode (port 5555)</string>
     <string name="recommendation_dont_show_again">Don\'t show this recommendation again</string>
     <string name="recommendation_not_now">Not now</string>
     <string name="recommendation_tcp_mode_title">Enable TCP Mode (Port 5555)?</string>
