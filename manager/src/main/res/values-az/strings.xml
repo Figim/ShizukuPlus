@@ -625,7 +625,7 @@
     <string name="diagnostics_dismiss">Rədd et</string>
     <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Rejimi aktivdir, lakin Cihaz Sahibinin komponenti aktiv deyil. Həll etmək üçün toxunun.</string>
     <string name="diagnostics_warning_shadow_binder_no_apps">Kölgə Bağlayıcısı aktivdir, lakin gizlədiləcək heç bir tətbiq seçilməyib. Seçmək üçün toxunun.</string>
-    <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırılacağı ehtimal edilir. İstisna etmək üçün toxunun.</string>
+    <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırıla bilər. İstisna etmək üçün toxunun.</string>
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
     <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladıla bilmədi</string>
     <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
@@ -765,7 +765,7 @@
     <string name="su_bridge_report_not_connected">Shizuku qoşulmayıb. Ana ekrandan Shizuku xidmətini başladın və yenidən cəhd edin.</string>
     <string name="su_bridge_report_deploy_failed">❌ Körpünü /data/local/tmp qovluğuna yerləşdirmək mümkün olmadı.</string>
     <string name="su_bridge_report_deploy_reason">Səbəb: %1$s</string>
-    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İcrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
+    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İxrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
     <string name="su_bridge_report_deploy_hint_retry">Shizuku xidmətinin işlədiyinə əmin olun və yenidən cəhd edin.</string>
     <string name="su_bridge_report_deployed">✅ Körpü %1$s ünvanına yerləşdirildi</string>
     <string name="su_bridge_report_missing">❌ Körpü faylları %1$s altında tapılmadı</string>
@@ -826,7 +826,7 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Xidmət Həkimi</string>
-    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çvirsiniz? Diaqnostika yoxlaması aparmaq üçün toxunun.</string>
+    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çəkirsiniz? Diaqnostika yoxlaması aparmaq üçün toxunun.</string>
     <string name="doctor_tips_title">İpucları &amp; həllər</string>
     <string name="doctor_action_rerun">Yenidən icra et</string>
     <string name="doctor_action_auto_fix_all">Adaptiv Avtomatik Bərpa</string>
@@ -1001,7 +1001,7 @@
     <string name="adb_error_generic">Gözlənilməz xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.</string>
 
     <!-- WADB Starter -->
-    <string name="wadb_notification_title">Shizuku başladılır…</string>
+    <string name="wadb_notification_title">Shizuku-nu başladır…</string>
     <string name="wadb_notification_wifi_required">Davam etməzdən əvvəl Wi-Fi bağlantısı gözlənilir</string>
     <string name="wadb_notification_retry">Yenidən cəhd etmək üçün gözlənilir</string>
     <string name="wadb_mdns_blocked_title">mDNS aşkarlanması dəfələrlə uğursuz olur</string>
@@ -1143,7 +1143,7 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiﻘin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə meta verilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
@@ -1331,9 +1331,9 @@
     <string name="shell_export_partial">%2$d fayldan %1$d-i ixrac edildi (bəziləri uğursuz oldu)</string>
 
     <!-- Settings backup/restore -->
-    <string name="onboarding_restore_backup_title">Əvvəlki Parametrlər Tapıldı</string>
-    <string name="onboarding_restore_backup_desc">Bu cihazda parametrlərinizin və konfiqurasiyalarınızın ehtiyat nüsxəsi tapıldı. Quraşdırmanı ötürmək və parametrlərinizi qorumaq üçün onu indi bərpa edin.</string>
-    <string name="onboarding_restore_backup_action">Parametrləri Bərpa et və Davam et</string>
+    <string name="onboarding_restore_backup_title">Əvvəlki Tənzimləmələr Tapıldı</string>
+    <string name="onboarding_restore_backup_desc">Bu cihazda tənzimləmələrinizin və konfiqurasiyalarınızın ehtiyat nüsxəsi tapıldı. Quraşdırmanı ötürmək və tənzimləmələri qorumaq üçün onu indi bərpa edin.</string>
+    <string name="onboarding_restore_backup_action">Tənzimləmələri Bərpa et və Davam et</string>
     <string name="onboarding_restore_pick_file">Ehtiyat nüsxə faylını seçin (.json)</string>
     <string name="adb_native_unavailable">ADB cütləşməsi bu cihazda əlçatan deyil</string>
 
@@ -1905,8 +1905,8 @@
     <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
     <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
     <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
-    <string name="api_scope_package_manager">Paket İdarəedicisi (install, uninstall, suspend)</string>
-    <string name="api_scope_activity_manager">Fəaliyyət və Proses Meneceri (force-stop, tasks)</string>
+    <string name="api_scope_package_manager">Paket İdarəedicisi (quraşdır, sil, dayandır)</string>
+    <string name="api_scope_activity_manager">Fəaliyyət və Proses Meneceri (məcburi dayandır, tapşırıqlar)</string>
     <string name="api_scope_appops">AppOps və İşləmə Müddəti İcazələri</string>
     <string name="api_scope_system_settings">Sistem Tənzimləmələri və Enerji Nəzarəti</string>
     <string name="recommendation_tcp_guard_title">İctimai Wi-Fi-da TCP Portu Qorunsun?</string>
@@ -1915,6 +1915,6 @@
     <string name="recommendation_tcp_guard_enabled_toast">Açıq və İctimai Wi-Fi Mühafizəsi aktivləşdirildi</string>
     <string name="recommendation_tcp_mode_enabled_toast">TCP Rejimi (port 5555) aktivləşdirildi</string>
     <string name="adb_pairing_fallback_title">Yerli Cütləşmə Əlçatan Deyil</string>
-    <string name="adb_pairing_fallback_message">Cihazınızın proqram təminatı yerli simsiz cütləşmə kitabxanasını (libadb.so) məhdudlaşdırıb. TCP Rejimini (port 5555) aktivləşdirərək və ya ADB-dən bir dəfə başladıcı əmri işlədərək Shizuku+-ı etibarlı şəkildə başladacaq və istifadə edə bilərsiniz.</string>
+    <string name="adb_pairing_fallback_message">Cihazınızın proqram təminatı yerli simsiz cütləşmə kitabxanasını (libadb.so) məhdudlaşdırıb. TCP Rejimini (port 5555) aktivləşdirərək və ya ADB-dən bir dəfə başladıcı əmri işlədərək Shizuku+-ı etibarlı şəkildə başlada və istifadə edə bilərsiniz.</string>
     <string name="adb_pairing_fallback_enable_tcp">TCP Rejimini İstifadə Et (5555)</string>
 </resources>
