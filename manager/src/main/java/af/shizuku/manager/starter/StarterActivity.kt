@@ -108,7 +108,7 @@ class StarterActivity : AppBarActivity() {
                             af.shizuku.manager.adb.AdbPairingClient
                                 .isNativeAvailable()
                         ) {
-                            builder.setNeutralButton(R.string.home_wireless_adb_button_pair) { _, _ ->
+                            builder.setNeutralButton(R.string.adb_pairing) { _, _ ->
                                 startActivity(android.content.Intent(this, af.shizuku.manager.adb.AdbPairingTutorialActivity::class.java))
                                 finish()
                             }

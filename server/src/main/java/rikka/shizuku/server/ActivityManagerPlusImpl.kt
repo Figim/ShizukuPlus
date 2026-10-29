@@ -47,6 +47,16 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             Log.w(TAG, "usageStatsService unavailable", e)
             null
         }
+
+        private fun devicePolicyManagerService(): Any? = try {
+            val binder = ServiceManager.getService("device_policy") ?: return null
+            Class.forName("android.app.admin.IDevicePolicyManager\$Stub")
+                .getDeclaredMethod("asInterface", IBinder::class.java)
+                .invoke(null, binder)
+        } catch (e: Exception) {
+            Log.w(TAG, "devicePolicyManagerService unavailable", e)
+            null
+        }
     }
 
     private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
@@ -115,28 +125,108 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         }
     }
 
+    /**
+     * Attempts DevicePolicyManager.setApplicationHidden (#632) when a Device Owner or Profile Owner
+     * component is active on the user (e.g., Shizuku+ or Dhizuku). Returns true on success.
+     */
+    private fun tryDpmSetApplicationHidden(packageName: String, hidden: Boolean): Boolean {
+        return try {
+            val dpm = devicePolicyManagerService() ?: return false
+            val userId = callingUserId()
+            val admin = runCatching {
+                val getDo = dpm.javaClass.methods.firstOrNull { it.name == "getDeviceOwnerComponent" && it.parameterCount == 1 }
+                getDo?.invoke(dpm, false) as? android.content.ComponentName
+            }.getOrNull() ?: runCatching {
+                val getPo = dpm.javaClass.methods.firstOrNull { it.name == "getProfileOwnerAsUser" && it.parameterCount == 1 }
+                getPo?.invoke(dpm, userId) as? android.content.ComponentName
+            }.getOrNull() ?: return false
+
+            val setHidden4 = dpm.javaClass.methods.firstOrNull {
+                it.name == "setApplicationHidden" && it.parameterCount == 4
+            }
+            if (setHidden4 != null) {
+                return setHidden4.invoke(dpm, admin, packageName, hidden, userId) as? Boolean ?: false
+            }
+            val setHidden3 = dpm.javaClass.methods.firstOrNull {
+                it.name == "setApplicationHidden" && it.parameterCount == 3
+            }
+            if (setHidden3 != null) {
+                return setHidden3.invoke(dpm, admin, packageName, hidden) as? Boolean ?: false
+            }
+            false
+        } catch (e: Exception) {
+            Log.d(TAG, "tryDpmSetApplicationHidden unavailable for $packageName hidden=$hidden", e)
+            false
+        }
+    }
+
+    private fun isDpmApplicationHidden(packageName: String): Boolean {
+        return try {
+            val dpm = devicePolicyManagerService() ?: return false
+            val userId = callingUserId()
+            val isHidden4 = dpm.javaClass.methods.firstOrNull {
+                it.name == "isApplicationHidden" && it.parameterCount == 4
+            }
+            if (isHidden4 != null) {
+                return isHidden4.invoke(dpm, null, packageName, userId, false) as? Boolean ?: false
+            }
+            val isHidden3 = dpm.javaClass.methods.firstOrNull {
+                it.name == "isApplicationHidden" && it.parameterCount == 3
+            }
+            if (isHidden3 != null) {
+                return isHidden3.invoke(dpm, null, packageName, userId) as? Boolean ?: false
+            }
+            false
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     override fun freezeApp(packageName: String?): Boolean {
         if (packageName == null) return false
-        // COMPONENT_ENABLED_STATE_DISABLED_USER = 3 — user-level disable, reversible
+        // Stage 1 (#632): DevicePolicyManager.setApplicationHidden when DO/PO is active
+        if (tryDpmSetApplicationHidden(packageName, true)) return true
+        // Stage 2: COMPONENT_ENABLED_STATE_DISABLED_USER = 3 — user-level disable, reversible
         if (setApplicationEnabledSetting(packageName, 3)) return true
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
-        return ShellExecutor.execBool("pm", "disable-user", "--user", "0", packageName)
+        // Stage 3: pm disable-user fallback
+        if (ShellExecutor.execBool("pm", "disable-user", "--user", callingUserId().toString(), packageName)) {
+            return true
+        }
+        // Stage 4: cmd package suspend fallback for protected system packages
+        return ShellExecutor.execBool("cmd", "package", "suspend", "--user", callingUserId().toString(), packageName)
     }
 
     override fun unfreezeApp(packageName: String?): Boolean {
         if (packageName == null) return false
+        var restored = false
+        // Restore DPM hidden state if package was hidden via DevicePolicyManager (#632)
+        if (isDpmApplicationHidden(packageName)) {
+            restored = tryDpmSetApplicationHidden(packageName, false) || restored
+        }
         // COMPONENT_ENABLED_STATE_DEFAULT = 0 — restore manifest-declared state
-        if (setApplicationEnabledSetting(packageName, 0)) return true
-        if (!InputValidationUtils.isValidPackageName(packageName)) return false
-        return ShellExecutor.execBool("pm", "enable", "--user", "0", packageName)
+        if (setApplicationEnabledSetting(packageName, 0)) {
+            restored = true
+        }
+        if (InputValidationUtils.isValidPackageName(packageName)) {
+            ShellExecutor.execBool("cmd", "package", "unsuspend", "--user", callingUserId().toString(), packageName)
+            if (!restored) {
+                restored = ShellExecutor.execBool("pm", "enable", "--user", callingUserId().toString(), packageName)
+            }
+        }
+        return restored
     }
 
     override fun isAppFrozen(packageName: String?): Boolean {
         if (packageName == null) return false
-        // Primary: check ApplicationInfo.enabled via Binder IPC
+        if (isDpmApplicationHidden(packageName)) return true
+        // Primary: check ApplicationInfo.enabled / FLAG_SUSPENDED (1 shl 30) via Binder IPC
         try {
             val ai = Android17Compat.getApplicationInfo(packageName, 0L, callingUserId())
-            if (ai != null) return !ai.enabled
+            if (ai != null) {
+                val suspended = (ai.flags and (1 shl 30)) != 0
+                return !ai.enabled || suspended
+            }
         } catch (e: Exception) {
             Log.w(TAG, "isAppFrozen IPC failed for $packageName, falling back", e)
         }

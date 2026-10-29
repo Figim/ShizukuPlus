@@ -183,6 +183,7 @@ public class ShizukuSettings {
         public static final String KEY_AICORE_A11Y_INHERITED = "aicore_a11y_inherited";
         public static final String KEY_ALLOW_AUTOMATION_PLUGIN = "allow_automation_plugin";
         public static final String KEY_SECURITY_DEFAULTS_DECIDED = "security_defaults_decided";
+        public static final String KEY_FORCE_RESIZABLE_PACKAGES = "force_resizable_packages";
         public static final String KEY_CRASH_REPORTING = "crash_reporting_enabled";
         public static final String KEY_CRASH_REPORTING_ASKED = "crash_reporting_asked";
         public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
@@ -1789,6 +1790,17 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("shadow_binder", isShadowBinderEnabled());
                 service.setPlusSetting("shadow_hidden_packages", getShadowBinderHiddenPackages());
                 service.setPlusSetting("per_app_disabled_scopes", getPerAppDisabledScopesSerialized());
+                if (isCustomApiEnabled() && isWindowManagerPlusEnabled()) {
+                    try {
+                        af.shizuku.server.IWindowManagerPlus wmPlus = service.getWindowManagerPlus();
+                        if (wmPlus != null) {
+                            for (String pkg : getForceResizablePackages()) {
+                                wmPlus.forceResizable(pkg, true);
+                            }
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                }
                 service.updatePlusFeatureEnabled("samsung_system_uid_escalation", isSamsungSystemUidEscalationEnabled());
                 service.updatePlusFeatureEnabled("software_keystore_fallback", isSoftwareKeystoreFallbackEnabled());
                 service.updatePlusFeatureEnabled("overlay_fs_proxy", isOverlayFsProxyEnabled());
@@ -2209,5 +2221,31 @@ public class ShizukuSettings {
         String updated = android.text.TextUtils.join(";", entries);
         p.edit().putString(Keys.KEY_PER_APP_DISABLED_SCOPES, updated).apply();
         syncAllPlusFeaturesToServer();
+    }
+
+    @NonNull
+    public static java.util.Set<String> getForceResizablePackages() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return new java.util.HashSet<>();
+        java.util.Set<String> stored = p.getStringSet(Keys.KEY_FORCE_RESIZABLE_PACKAGES, null);
+        return stored != null ? new java.util.HashSet<>(stored) : new java.util.HashSet<>();
+    }
+
+    public static boolean isAppForceResizable(String packageName) {
+        if (packageName == null || packageName.isEmpty()) return false;
+        return getForceResizablePackages().contains(packageName);
+    }
+
+    public static void setAppForceResizable(String packageName, boolean enabled) {
+        if (packageName == null || packageName.isEmpty()) return;
+        SharedPreferences p = getPreferences();
+        if (p == null) return;
+        java.util.Set<String> current = getForceResizablePackages();
+        if (enabled) {
+            current.add(packageName);
+        } else {
+            current.remove(packageName);
+        }
+        p.edit().putStringSet(Keys.KEY_FORCE_RESIZABLE_PACKAGES, current).apply();
     }
 }

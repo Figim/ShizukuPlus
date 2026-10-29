@@ -267,6 +267,16 @@ class AppViewHolder(
                 },
             )
 
+            // Read-only global Plus features hint & link (#631)
+            val metadata = AppContextManager.getMetadata(capturedPackage)
+            if (metadata != null && metadata.recommendedPlusFeatures.isNotEmpty()) {
+                add(
+                    LpAction(context.getString(R.string.app_management_context_plus_benefits)) {
+                        showPlusBenefitsDialog(context, appLabel, metadata.recommendedPlusFeatures)
+                    },
+                )
+            }
+
             // Bulk selection mode (#1)
             add(
                 LpAction(context.getString(R.string.app_management_context_select_multiple)) {
@@ -276,7 +286,7 @@ class AppViewHolder(
                 },
             )
 
-            // Freeze/Unfreeze — binder calls are safe here since buildEnabledActions runs on IO
+            // Freeze/Unfreeze & Per-App Free-Form Window Resizing (#635) — binder calls are safe here on IO
             if (ShizukuSettings.isCustomApiEnabled()) {
                 val shizukuService =
                     try {
@@ -285,11 +295,59 @@ class AppViewHolder(
                         null
                     }
                 if (shizukuService != null) {
-                    val amPlus =
+                    val serviceStub =
                         try {
                             moe.shizuku.server.IShizukuService.Stub
                                 .asInterface(shizukuService)
-                                .activityManagerPlus
+                        } catch (_: Exception) {
+                            null
+                        }
+                    if (ShizukuSettings.isWindowManagerPlusEnabled()) {
+                        val wmPlus =
+                            try {
+                                serviceStub?.windowManagerPlus
+                            } catch (_: Exception) {
+                                null
+                            }
+                        if (wmPlus != null) {
+                            val isResizable = ShizukuSettings.isAppForceResizable(capturedPackage)
+                            val freeformLabel =
+                                context.getString(
+                                    if (isResizable) R.string.lp_action_disable_freeform else R.string.lp_action_enable_freeform,
+                                )
+                            add(
+                                LpAction(freeformLabel) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        try {
+                                            val targetState = !isResizable
+                                            wmPlus.forceResizable(capturedPackage, targetState)
+                                            ShizukuSettings.setAppForceResizable(capturedPackage, targetState)
+                                            ActivityLogManager.log(
+                                                appLabel,
+                                                capturedPackage,
+                                                "Long-press: ${if (targetState) "enable_freeform" else "disable_freeform"}",
+                                            )
+                                            withContext(Dispatchers.Main) {
+                                                notifyUser(
+                                                    context.getString(
+                                                        if (targetState) R.string.toast_freeform_enabled else R.string.toast_freeform_disabled,
+                                                        appLabel,
+                                                    ),
+                                                )
+                                            }
+                                        } catch (e: Exception) {
+                                            withContext(Dispatchers.Main) {
+                                                notifyUser(context.getString(R.string.toast_error_with_message, e.message))
+                                            }
+                                        }
+                                    }
+                                },
+                            )
+                        }
+                    }
+                    val amPlus =
+                        try {
+                            serviceStub?.activityManagerPlus
                         } catch (_: Exception) {
                             null
                         }
@@ -491,6 +549,83 @@ class AppViewHolder(
             .show()
     }
 
+    private data class GlobalPlusFeatureInfo(
+        val key: String,
+        val title: String,
+        val isEnabled: Boolean,
+        val highlightKey: String,
+    )
+
+    private fun resolveGlobalPlusFeature(
+        context: Context,
+        featureKey: String,
+    ): GlobalPlusFeatureInfo? =
+        when (featureKey) {
+            "shell_interceptor" ->
+                GlobalPlusFeatureInfo(
+                    key = featureKey,
+                    title = context.getString(R.string.settings_shell_interceptor),
+                    isEnabled = ShizukuSettings.isShellInterceptorEnabled(),
+                    highlightKey = "plus_governors_module",
+                )
+            "storage_proxy" ->
+                GlobalPlusFeatureInfo(
+                    key = featureKey,
+                    title = context.getString(R.string.settings_storage_proxy),
+                    isEnabled = ShizukuSettings.isStorageProxyEnabled(),
+                    highlightKey = "plus_governors_module",
+                )
+            "overlay_manager_plus" ->
+                GlobalPlusFeatureInfo(
+                    key = featureKey,
+                    title = context.getString(R.string.settings_overlay_manager_plus),
+                    isEnabled = ShizukuSettings.isOverlayManagerPlusEnabled(),
+                    highlightKey = "overlay_manager_plus_enabled",
+                )
+            "network_governor_plus" ->
+                GlobalPlusFeatureInfo(
+                    key = featureKey,
+                    title = context.getString(R.string.settings_network_governor_plus_title),
+                    isEnabled = ShizukuSettings.isNetworkGovernorPlusEnabled(),
+                    highlightKey = "network_governor_plus_enabled",
+                )
+            else -> null
+        }
+
+    /**
+     * Read-only dialog (#631 Option 3) listing the global Plus features that [appLabel] benefits
+     * from, showing their live global On/Off state and navigating directly to the setting on tap.
+     */
+    private fun showPlusBenefitsDialog(
+        context: Context,
+        appLabel: String,
+        featureKeys: List<String>,
+    ) {
+        val resolved = featureKeys.mapNotNull { resolveGlobalPlusFeature(context, it) }
+        if (resolved.isEmpty()) return
+        val items =
+            resolved
+                .map { info ->
+                    context.getString(
+                        if (info.isEnabled) R.string.plus_benefits_item_status_on else R.string.plus_benefits_item_status_off,
+                        info.title,
+                    )
+                }.toTypedArray()
+
+        MaterialAlertDialogBuilder(context)
+            .setIcon(R.drawable.ic_bolt_24)
+            .setTitle(context.getString(R.string.plus_benefits_dialog_title, appLabel))
+            .setItems(items) { _, which ->
+                val target = resolved[which]
+                val intent =
+                    Intent(context, af.shizuku.manager.settings.SettingsActivity::class.java).apply {
+                        putExtra("highlight_key", target.highlightKey)
+                    }
+                launchActivity(context, intent)
+            }.setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     /** Snackbar on the Apps screen; toast if this row was recycled before an async result came back. */
     private fun notifyUser(message: String) {
         if (itemView.isAttachedToWindow) {
@@ -565,6 +700,11 @@ class AppViewHolder(
 
         val metadata = AppContextManager.getMetadata(capturedPackage)
         val disabledScopes = ShizukuSettings.getAppDisabledScopes(capturedPackage)
+        val firstDisabledPlusBenefit =
+            metadata
+                ?.recommendedPlusFeatures
+                ?.mapNotNull { resolveGlobalPlusFeature(context, it) }
+                ?.firstOrNull { !it.isEnabled }
         if (disabledScopes.isNotEmpty()) {
             appContextView.visibility = View.VISIBLE
             val badge = context.getString(R.string.api_scopes_restricted_badge, 5 - disabledScopes.size, 5)
@@ -574,11 +714,32 @@ class AppViewHolder(
                 } else {
                     badge
                 }
+            appContextView.setOnClickListener {
+                showApiScopesDialog(context, capturedPackage, appLabel)
+            }
         } else if (metadata != null) {
             appContextView.visibility = View.VISIBLE
-            appContextView.text = metadata.description
+            if (firstDisabledPlusBenefit != null) {
+                val hint = context.getString(R.string.plus_benefits_badge_hint, firstDisabledPlusBenefit.title)
+                appContextView.text = "$hint · ${metadata.description}"
+                appContextView.setOnClickListener {
+                    showPlusBenefitsDialog(context, appLabel, metadata.recommendedPlusFeatures)
+                }
+            } else {
+                appContextView.text = metadata.description
+                if (metadata.recommendedPlusFeatures.isNotEmpty()) {
+                    appContextView.setOnClickListener {
+                        showPlusBenefitsDialog(context, appLabel, metadata.recommendedPlusFeatures)
+                    }
+                } else {
+                    appContextView.setOnClickListener(null)
+                    appContextView.isClickable = false
+                }
+            }
         } else {
             appContextView.visibility = View.GONE
+            appContextView.setOnClickListener(null)
+            appContextView.isClickable = false
         }
 
         root.visibility =

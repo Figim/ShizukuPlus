@@ -33,13 +33,25 @@ interface AppContextSettings {
  */
 object AppContextManager {
 
+    /**
+     * Real server-backed global Plus features that an app in `app_context_db.json` may reference
+     * in its `enhancements` list (#631).
+     */
+    val SUPPORTED_PLUS_FEATURES: Set<String> = setOf(
+        "shell_interceptor",
+        "storage_proxy",
+        "overlay_manager_plus",
+        "network_governor_plus"
+    )
+
     @Serializable
     data class AppMetadata(
         val description: String,
         val isVerified: Boolean = false,
         val suPathSettingNav: String? = null,
         val rootSupportLevel: RootSupportLevel = RootSupportLevel.FULL,
-        val supportsShizukuNatively: Boolean = false
+        val supportsShizukuNatively: Boolean = false,
+        val recommendedPlusFeatures: List<String> = emptyList()
     )
 
     @Serializable
@@ -55,7 +67,8 @@ object AppContextManager {
         val verified: Boolean? = null,
         @SerialName("su_path_nav") val suPathNav: String? = null,
         @SerialName("root_support") val rootSupport: String? = null,
-        @SerialName("shizuku_aware") val shizukuAware: Boolean? = null
+        @SerialName("shizuku_aware") val shizukuAware: Boolean? = null,
+        @SerialName("enhancements") val enhancements: List<String>? = null
     )
 
     private val jsonConfig = Json {
@@ -183,8 +196,27 @@ object AppContextManager {
         }
     }
 
+    /**
+     * Validates that every key in `enhancements` across all entries in [json] is a member of
+     * [SUPPORTED_PLUS_FEATURES]. Returns the list of unknown keys (`pkg:key`), or empty if valid.
+     */
+    fun validateEnhancementKeys(json: String): List<String> {
+        val parsed = jsonConfig.decodeFromString<DbFile>(json)
+        val unknown = mutableListOf<String>()
+        parsed.apps.forEach { (pkg, entry) ->
+            entry.enhancements?.forEach { key ->
+                if (key !in SUPPORTED_PLUS_FEATURES) {
+                    unknown.add("$pkg:$key")
+                }
+            }
+        }
+        return unknown
+    }
+
     private fun DbEntry.toMetadata(base: AppMetadata?): AppMetadata? {
         val desc = description ?: base?.description ?: return null
+        val features = (enhancements ?: base?.recommendedPlusFeatures ?: emptyList())
+            .filter { it in SUPPORTED_PLUS_FEATURES }
         return AppMetadata(
             description = desc,
             isVerified = verified ?: base?.isVerified ?: false,
@@ -196,7 +228,8 @@ object AppContextManager {
                     else -> RootSupportLevel.FULL
                 }
             } ?: base?.rootSupportLevel ?: RootSupportLevel.FULL,
-            supportsShizukuNatively = shizukuAware ?: base?.supportsShizukuNatively ?: false
+            supportsShizukuNatively = shizukuAware ?: base?.supportsShizukuNatively ?: false,
+            recommendedPlusFeatures = features
         )
     }
 }
