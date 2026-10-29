@@ -1595,10 +1595,10 @@ private fun StatTile(
                 )
                 if (onClick != null) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_expand_more_24),
+                        painter = painterResource(R.drawable.ic_chevron_right_24),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        modifier = Modifier.size(16.dp).graphicsLayer(rotationZ = -90f),
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }

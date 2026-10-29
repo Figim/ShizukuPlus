@@ -23,6 +23,7 @@ object AdaptiveRecommendationManager {
     const val ID_FORCE_START_WADB = "force_start_wadb"
     const val ID_STABILITY_TIPS = "stability_tips"
     const val ID_WATCHDOG_KEEPALIVE = "watchdog_keepalive"
+    const val ID_TCP_NETWORK_GUARD = "tcp_network_guard"
 
     // In-memory session guard so we don't prompt the same recommendation twice in one process session
     private val shownThisSession = mutableSetOf<String>()
@@ -165,6 +166,42 @@ object AdaptiveRecommendationManager {
                     .makeText(
                         context,
                         R.string.diagnostics_tcp_mode_enabled_toast,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                onEnabled()
+            },
+        )
+    }
+
+    /**
+     * Recommends enabling Open & Public Wi-Fi Protection when the user enables TCP Mode while
+     * Network Protection is currently Off.
+     */
+    @JvmStatic
+    fun maybeRecommendTcpNetworkGuard(
+        context: Context,
+        onEnabled: () -> Unit = {},
+    ): Boolean {
+        if (NetworkTrust.mode() != NetworkTrust.MODE_OFF) return false
+
+        return showRecommendationDialog(
+            context = context,
+            id = ID_TCP_NETWORK_GUARD,
+            title = context.getString(R.string.recommendation_tcp_guard_title),
+            message = context.getString(R.string.recommendation_tcp_guard_message),
+            positiveLabel = context.getString(R.string.recommendation_tcp_guard_enable),
+            iconRes = R.drawable.ic_shield_24,
+            onAccept = {
+                ShizukuSettings
+                    .getPreferences()
+                    ?.edit()
+                    ?.putString(NetworkTrust.KEY_MODE, NetworkTrust.MODE_OPEN)
+                    ?.putBoolean(NetworkTrust.KEY_AUTO_CLOSE, true)
+                    ?.apply()
+                Toast
+                    .makeText(
+                        context,
+                        R.string.recommendation_tcp_guard_enabled_toast,
                         Toast.LENGTH_SHORT,
                     ).show()
                 onEnabled()

@@ -290,6 +290,17 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         val statusOutlineStylePreference = findPreference<Preference>("status_card_outline_style")
         statusOutlineStylePreference?.let { setChildAvailable(it, showStatusOutlinePreference?.isChecked ?: true) }
 
+        findPreference<Preference>("rearrange_home_cards")?.setOnPreferenceClickListener {
+            af.shizuku.manager.home.HomeEditMode
+                .enter(force = true)
+            startActivity(
+                android.content
+                    .Intent(requireContext(), af.shizuku.manager.home.HomeActivity::class.java)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            )
+            true
+        }
+
         // Experimental (Developer options): hide the whole App icon & name section unless enabled.
         findPreference<Preference>("category_app_identity")?.isVisible =
             ShizukuSettings.isExperimentalAppIdentityEnabled()

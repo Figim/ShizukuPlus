@@ -52,7 +52,14 @@ object HomeEditMode {
     /** Moves the card hosting the given view by [delta] positions (-1 up, +1 down); false if not possible. */
     var moveCardCallback: ((android.view.View, Int) -> Boolean)? = null
 
-    fun enter() {
+    @JvmOverloads
+    fun enter(force: Boolean = false) {
+        if (!force &&
+            af.shizuku.manager.ShizukuSettings
+                .isHomeLayoutLocked()
+        ) {
+            return
+        }
         if (!isActive) {
             isActive = true
             io.sentry.Sentry.addBreadcrumb("HomeEditMode: enter()")

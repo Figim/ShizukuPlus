@@ -144,8 +144,7 @@ class AppViewHolder(
 
     override fun onLongClick(v: View): Boolean {
         val appsAdapter = adapter as AppsAdapter
-        if (!appsAdapter.isSelectionMode()) {
-            appsAdapter.isSelectionMode = true
+        if (appsAdapter.isSelectionMode()) {
             appsAdapter.toggleSelection(packageName)
             return true
         }
@@ -165,9 +164,9 @@ class AppViewHolder(
             withContext(Dispatchers.Main) {
                 when {
                     enabled.isEmpty() -> {
-                        // consume silently
+                        appsAdapter.isSelectionMode = true
+                        appsAdapter.toggleSelection(capturedPackage)
                     }
-                    enabled.size == 1 -> enabled[0].run()
                     else ->
                         MaterialAlertDialogBuilder(context)
                             .setTitle(appLabel)
@@ -260,6 +259,22 @@ class AppViewHolder(
                     },
                 )
             }
+
+            // Granular per-app API access scopes (#645)
+            add(
+                LpAction(context.getString(R.string.app_management_context_api_scopes)) {
+                    showApiScopesDialog(context, capturedPackage, appLabel)
+                },
+            )
+
+            // Bulk selection mode (#1)
+            add(
+                LpAction(context.getString(R.string.app_management_context_select_multiple)) {
+                    val appsAdapter = adapter as AppsAdapter
+                    appsAdapter.isSelectionMode = true
+                    appsAdapter.toggleSelection(capturedPackage)
+                },
+            )
 
             // Freeze/Unfreeze — binder calls are safe here since buildEnabledActions runs on IO
             if (ShizukuSettings.isCustomApiEnabled()) {
@@ -422,6 +437,60 @@ class AppViewHolder(
         runCatching { dialog.show() }
     }
 
+    private fun showApiScopesDialog(
+        context: Context,
+        pkgName: String,
+        appLabel: String,
+    ) {
+        val scopeKeys =
+            arrayOf(
+                "shell",
+                "package_manager",
+                "activity_manager",
+                "appops",
+                "system_settings",
+            )
+        val scopeLabels =
+            arrayOf(
+                context.getString(R.string.api_scope_shell),
+                context.getString(R.string.api_scope_package_manager),
+                context.getString(R.string.api_scope_activity_manager),
+                context.getString(R.string.api_scope_appops),
+                context.getString(R.string.api_scope_system_settings),
+            )
+        val disabled = ShizukuSettings.getAppDisabledScopes(pkgName)
+        val checked = BooleanArray(scopeKeys.size) { i -> scopeKeys[i] !in disabled }
+
+        MaterialAlertDialogBuilder(context)
+            .setIcon(R.drawable.ic_shield_24)
+            .setTitle(context.getString(R.string.api_scopes_dialog_title, appLabel))
+            .setMultiChoiceItems(scopeLabels, checked) { _, which, isChecked ->
+                checked[which] = isChecked
+            }.setPositiveButton(android.R.string.ok) { _, _ ->
+                val newDisabled = mutableSetOf<String>()
+                for (i in scopeKeys.indices) {
+                    if (!checked[i]) {
+                        newDisabled.add(scopeKeys[i])
+                    }
+                }
+                ShizukuSettings.setAppDisabledScopes(pkgName, newDisabled)
+                ActivityLogManager.log(
+                    appLabel,
+                    pkgName,
+                    if (newDisabled.isEmpty()) {
+                        "API Scopes: all allowed"
+                    } else {
+                        "API Scopes: restricted (${newDisabled.joinToString(", ")})"
+                    },
+                )
+                val pos = adapterPosition
+                if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                    adapter.notifyItemChanged(pos)
+                }
+            }.setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
     /** Snackbar on the Apps screen; toast if this row was recycled before an async result came back. */
     private fun notifyUser(message: String) {
         if (itemView.isAttachedToWindow) {
@@ -495,7 +564,17 @@ class AppViewHolder(
         pkg.text = appInfo.packageName
 
         val metadata = AppContextManager.getMetadata(capturedPackage)
-        if (metadata != null) {
+        val disabledScopes = ShizukuSettings.getAppDisabledScopes(capturedPackage)
+        if (disabledScopes.isNotEmpty()) {
+            appContextView.visibility = View.VISIBLE
+            val badge = context.getString(R.string.api_scopes_restricted_badge, 5 - disabledScopes.size, 5)
+            appContextView.text =
+                if (metadata != null) {
+                    "$badge · ${metadata.description}"
+                } else {
+                    badge
+                }
+        } else if (metadata != null) {
             appContextView.visibility = View.VISIBLE
             appContextView.text = metadata.description
         } else {

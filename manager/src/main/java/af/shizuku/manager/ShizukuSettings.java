@@ -229,6 +229,8 @@ public class ShizukuSettings {
         public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
         public static final String KEY_WATCHDOG_CRASH_ALERTS = "watchdog_crash_alerts";
         public static final String KEY_NOTIFICATION_SYSTEM_ENABLED = "notification_system_enabled";
+        public static final String KEY_LOCK_HOME_LAYOUT = "lock_home_layout";
+        public static final String KEY_PER_APP_DISABLED_SCOPES = "per_app_disabled_scopes";
         /** Keep the manager process alive while the privileged server runs (legacy rish clients). */
         public static final String KEY_LEGACY_RISH_KEEPALIVE = "legacy_rish_keepalive";
     }
@@ -1786,6 +1788,7 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("binder_logging", isBinderLoggingEnabled());
                 service.updatePlusFeatureEnabled("shadow_binder", isShadowBinderEnabled());
                 service.setPlusSetting("shadow_hidden_packages", getShadowBinderHiddenPackages());
+                service.setPlusSetting("per_app_disabled_scopes", getPerAppDisabledScopesSerialized());
                 service.updatePlusFeatureEnabled("samsung_system_uid_escalation", isSamsungSystemUidEscalationEnabled());
                 service.updatePlusFeatureEnabled("software_keystore_fallback", isSoftwareKeystoreFallbackEnabled());
                 service.updatePlusFeatureEnabled("overlay_fs_proxy", isOverlayFsProxyEnabled());
@@ -2146,5 +2149,65 @@ public class ShizukuSettings {
     public static void setHighContrastEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_HIGH_CONTRAST, enabled).apply();
+    }
+
+    public static boolean isHomeLayoutLocked() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_LOCK_HOME_LAYOUT, false);
+    }
+
+    public static void setHomeLayoutLocked(boolean locked) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_LOCK_HOME_LAYOUT, locked).apply();
+    }
+
+    @NonNull
+    public static String getPerAppDisabledScopesSerialized() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return "";
+        String val = p.getString(Keys.KEY_PER_APP_DISABLED_SCOPES, "");
+        return val != null ? val : "";
+    }
+
+    @NonNull
+    public static java.util.Set<String> getAppDisabledScopes(String packageName) {
+        java.util.Set<String> result = new java.util.HashSet<>();
+        if (packageName == null || packageName.isEmpty()) return result;
+        String serialized = getPerAppDisabledScopesSerialized();
+        if (serialized.isEmpty()) return result;
+        String prefix = packageName + ":";
+        for (String entry : serialized.split(";")) {
+            if (entry.startsWith(prefix)) {
+                String scopesPart = entry.substring(prefix.length());
+                for (String s : scopesPart.split("\\|")) {
+                    if (!s.trim().isEmpty()) {
+                        result.add(s.trim());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public static void setAppDisabledScopes(String packageName, java.util.Set<String> disabledScopes) {
+        if (packageName == null || packageName.isEmpty()) return;
+        SharedPreferences p = getPreferences();
+        if (p == null) return;
+        String serialized = getPerAppDisabledScopesSerialized();
+        java.util.List<String> entries = new java.util.ArrayList<>();
+        String prefix = packageName + ":";
+        if (!serialized.isEmpty()) {
+            for (String entry : serialized.split(";")) {
+                if (!entry.trim().isEmpty() && !entry.startsWith(prefix)) {
+                    entries.add(entry.trim());
+                }
+            }
+        }
+        if (disabledScopes != null && !disabledScopes.isEmpty()) {
+            entries.add(prefix + android.text.TextUtils.join("|", disabledScopes));
+        }
+        String updated = android.text.TextUtils.join(";", entries);
+        p.edit().putString(Keys.KEY_PER_APP_DISABLED_SCOPES, updated).apply();
+        syncAllPlusFeaturesToServer();
     }
 }

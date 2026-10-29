@@ -147,6 +147,22 @@ open class ApplicationManagementActivity :
             onBackPressedDispatcher.addCallback(this, it)
         }
 
+        adapter.setSelectionListener { inSelectionMode, selectedCount ->
+            backCallback?.isEnabled = inSelectionMode
+            invalidateOptionsMenu()
+            if (inSelectionMode) {
+                val titleText = getString(R.string.app_management_selected_count, selectedCount)
+                supportActionBar?.title = titleText
+                toolbar?.title = titleText
+            } else {
+                val oneUi = ShizukuSettings.isOneUiThemeEnabled()
+                val oneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                val defaultTitle = if (oneUi || oneHanded) "" else getString(R.string.home_app_management_title)
+                supportActionBar?.title = defaultTitle
+                toolbar?.title = defaultTitle
+            }
+        }
+
         // One UI & One-Handed mode: spacious header with live authorized app count
         val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
         val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
@@ -455,6 +471,10 @@ open class ApplicationManagementActivity :
             }
             R.id.action_swipe_hint -> {
                 showSwipeHint()
+                true
+            }
+            R.id.action_select_multiple -> {
+                adapter.isSelectionMode = true
                 true
             }
             R.id.sort_name -> {

@@ -104,6 +104,9 @@ object ActivityLogManager {
     
     private var retentionCount = 100
     private const val CONNECTION_RETENTION = 300
+    private const val COALESCE_WINDOW_MS = 10_000L
+    private val COALESCE_ACTIONS = setOf("Bound user service", "Connected to Shizuku")
+    private val REPEAT_SUFFIX_REGEX = Regex("^(.*) \\(×(\\d+)\\)$")
     private var appContext: Context? = null
     private var settings: ActivityLogSettings? = null
     
@@ -195,20 +198,42 @@ object ActivityLogManager {
             s.showNotification(appName, action)
         }
         
-        val record = ActivityLogRecord(
-            timestamp = System.currentTimeMillis(),
+        val now = System.currentTimeMillis()
+        var recordToSave = ActivityLogRecord(
+            timestamp = now,
             appName = appName,
             packageName = packageName,
             action = action
         )
-        
+
         synchronized(records) {
-            records.add(0, record)
+            val head = records.firstOrNull()
+            if (head != null &&
+                action in COALESCE_ACTIONS &&
+                head.packageName == packageName &&
+                now - head.timestamp in 0L..COALESCE_WINDOW_MS
+            ) {
+                val match = REPEAT_SUFFIX_REGEX.matchEntire(head.action)
+                val baseAction = match?.groupValues?.get(1) ?: head.action
+                val prevCount = match?.groupValues?.get(2)?.toIntOrNull() ?: 1
+                if (baseAction == action) {
+                    val coalesced = ActivityLogRecord(
+                        timestamp = now,
+                        appName = appName,
+                        packageName = packageName,
+                        action = "$action (×${prevCount + 1})"
+                    )
+                    records[0] = coalesced
+                    _logs.value = records.toList()
+                    return
+                }
+            }
+            records.add(0, recordToSave)
             trimLocked()
             _logs.value = records.toList()
         }
-        
-        saveToDatabase(record)
+
+        saveToDatabase(recordToSave)
         
         if (!isCleaningUp.get()) {
             cleanupOldRecords()

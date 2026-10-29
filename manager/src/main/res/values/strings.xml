@@ -1894,4 +1894,22 @@
     <string name="settings_reset_recommendations_toast">Dismissed recommendations reset</string>
     <string name="settings_startup_scripts_title">Startup &amp; Watchdog scripts</string>
     <string name="settings_startup_scripts_summary">Manage shell snippets that auto-run on service start and Watchdog restart</string>
+    <string name="settings_lock_home_layout">Lock Home Screen layout</string>
+    <string name="settings_lock_home_layout_summary">Prevent long-pressing cards on the Home Screen from entering rearrange mode</string>
+    <string name="settings_rearrange_home_cards">Rearrange Home Screen cards</string>
+    <string name="settings_rearrange_home_cards_summary">Open the Home Screen in card rearrange mode</string>
+    <string name="app_management_context_api_scopes">API Access &amp; Scopes…</string>
+    <string name="app_management_context_select_multiple">Select multiple apps</string>
+    <string name="app_management_selected_count">%1$d selected</string>
+    <string name="api_scopes_dialog_title">API Scopes · %1$s</string>
+    <string name="api_scopes_restricted_badge">Scopes: %1$d/%2$d allowed</string>
+    <string name="api_scope_shell">Shell &amp; Process Execution (newProcess)</string>
+    <string name="api_scope_package_manager">Package Manager (install, uninstall, suspend)</string>
+    <string name="api_scope_activity_manager">Activity &amp; Process Manager (force-stop, tasks)</string>
+    <string name="api_scope_appops">AppOps &amp; Runtime Permissions</string>
+    <string name="api_scope_system_settings">System Settings &amp; Power Control</string>
+    <string name="recommendation_tcp_guard_title">Protect TCP Port on Public Wi-Fi?</string>
+    <string name="recommendation_tcp_guard_message">When TCP Mode is active, ADB listens on port 5555. Enabling Open &amp; Public Wi-Fi Protection automatically closes the port whenever you join an unencrypted or captive-portal Wi-Fi network.</string>
+    <string name="recommendation_tcp_guard_enable">Enable Protection</string>
+    <string name="recommendation_tcp_guard_enabled_toast">Open &amp; Public Wi-Fi Protection enabled</string>
 </resources>

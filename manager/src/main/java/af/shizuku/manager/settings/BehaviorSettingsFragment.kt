@@ -256,7 +256,14 @@ class BehaviorSettingsFragment :
                         applyChange = apply,
                     )
                 } else {
-                    maybePromptRestart(KEY_TCP_MODE, enable) { apply() }
+                    maybePromptRestart(KEY_TCP_MODE, enable) {
+                        apply()
+                        if (enable) {
+                            af.shizuku.manager.utils.AdaptiveRecommendationManager.maybeRecommendTcpNetworkGuard(context) {
+                                notifyChanged()
+                            }
+                        }
+                    }
                 }
             }
             onPortChangeRequest = { port, randomized, apply ->
