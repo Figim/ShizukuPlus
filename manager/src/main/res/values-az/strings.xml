@@ -503,7 +503,6 @@
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, başladıcı binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
     <string name="device_hardening_applied">Cihaz təhlükəsizliyi və Doze optimizasiyaları tətbiq edildi</string>
-
     <string name="settings_tcp_mode_summary">Shizuku+-ın Wi-Fi olmadan yenidən başlamasına icazə verir. (Shizuku+ yenidən başladıqdan sonra ən azı bir dəfə işə düşmüş olmalıdır)</string>
     <string name="settings_tcp_mode_dialog_close_port">TCP portu dərhal bağlanacaq. TCP rejimini yenidən yandırmaq üçün Wi-Fi lazım olacaq. Davam edilsin?</string>
     <string name="settings_tcp_mode_closing_port">TCP portu bağlanır...</string>
