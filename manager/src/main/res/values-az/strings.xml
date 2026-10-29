@@ -1839,7 +1839,7 @@
     <string name="server_metrics_server_not_running">Shizuku işləmir</string>
     <string name="server_metrics_server_not_running_summary">Canlı server işləmə müddətini, yaddaş istifadəsini və aktiv bağlantıları görmək üçün Shizuku-nu başladın.</string>
     <string name="server_metrics_stock_server">Orijinal Shizuku serverinə qoşulub</string>
-    <server_metrics_stock_server_summary>Server göstəriciləri və qabaqcıl diaqnostika imkanları Shizuku+ serverini tələb edir.</server_metrics_stock_server_summary>
+    <string name="server_metrics_stock_server_summary">Server göstəriciləri və qabaqcıl diaqnostika imkanları Shizuku+ serverini tələb edir.</string>
     <string name="server_metrics_server_running">Shizuku+ Serveri Aktivdir</string>
     <string name="server_metrics_patch_label">Yamaq v%d</string>
 
@@ -1906,7 +1906,7 @@
     <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
     <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
     <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
-    <api_scope_package_manager>Paket İdarəedicisi (install, uninstall, suspend)</api_scope_package_manager>
+    <string name="api_scope_package_manager">Paket İdarəedicisi (install, uninstall, suspend)</string>
     <string name="api_scope_activity_manager">Fəaliyyət və Proses Meneceri (force-stop, tasks)</string>
     <string name="api_scope_appops">AppOps və İşləmə Müddəti İcazələri</string>
     <string name="api_scope_system_settings">Sistem Tənzimləmələri və Enerji Nəzarəti</string>
