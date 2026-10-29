@@ -866,6 +866,9 @@ open class HomeActivity :
         isOneUi = ShizukuSettings.isOneUiThemeEnabled()
         isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
         isServerRunning = ShizukuStateMachine.isRunning()
+        if (ShizukuSettings.isHomeLayoutLocked() && HomeEditMode.isActive && !HomeEditMode.wasForced) {
+            HomeEditMode.exit()
+        }
         // Synchronously rebind all visible cards so appearance-setting changes (icon style, shape
         // style, etc.) are visible immediately when returning from SettingsActivity. The async
         // checkServerStatus() / homeModel.reload() path updates service-status content but involves
@@ -882,11 +885,17 @@ open class HomeActivity :
                 af.shizuku.manager.settings.SettingsShareManager
                     .checkAndPerformAutoSync(this@HomeActivity)
             if (synced) {
+                ShizukuSettings.syncAllPlusFeaturesToServer()
                 withContext(Dispatchers.Main) {
                     isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
                     isOneUi = ShizukuSettings.isOneUiThemeEnabled()
                     isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+                    if (ShizukuSettings.isHomeLayoutLocked() && HomeEditMode.isActive && !HomeEditMode.wasForced) {
+                        HomeEditMode.exit()
+                    }
                     adapter.notifyDataSetChanged()
+                    homeModel.reload()
+                    appsModel.load()
                 }
             }
         }

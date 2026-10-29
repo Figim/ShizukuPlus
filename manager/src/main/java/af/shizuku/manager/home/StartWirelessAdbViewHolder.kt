@@ -62,27 +62,45 @@ class StartWirelessAdbViewHolder(
             scope: CoroutineScope,
             discoveredPort: Int = -1,
         ) {
-            val sysPropPort = EnvironmentUtils.getAdbTcpPort()
-            val tcpPort = if (sysPropPort in 1..65535) sysPropPort else discoveredPort
-            val lastPort = ShizukuSettings.getLastPort()
-            val validTcpPort =
-                when {
-                    tcpPort in 1..65535 -> tcpPort
-                    lastPort in 1..65535 -> lastPort
-                    else -> -1
-                }
-            // If the port is already known (TLS-discovered or TCP mode), start immediately.
-            // This path is taken from the mDNS notification, where the port was already resolved.
-            if (validTcpPort > 0) {
-                val intent =
-                    android.content.Intent(context, StarterActivity::class.java).apply {
-                        putExtra(StarterActivity.EXTRA_PORT, validTcpPort)
-                        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            scope.launch {
+                val sysPropPort = EnvironmentUtils.getAdbTcpPort()
+                val activeLoopbackPort =
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        af.shizuku.manager.adb.AdbPortProber
+                            .findActiveLoopbackPort(context)
                     }
-                context.startActivity(intent)
-            } else {
-                (context as? androidx.fragment.app.FragmentActivity)?.supportFragmentManager?.let { fm ->
-                    AdbDialogFragment().show(fm)
+                val validTcpPort =
+                    when {
+                        discoveredPort in 1..65535 -> discoveredPort
+                        activeLoopbackPort in 1..65535 -> activeLoopbackPort
+                        sysPropPort in 1..65535 -> sysPropPort
+                        else -> -1
+                    }
+                // If the port is confirmed active or TLS-discovered, start immediately; otherwise
+                // open the discovery dialog so mDNS can resolve the current port instead of
+                // connecting to a stale cached port.
+                if (validTcpPort > 0) {
+                    val intent =
+                        android.content.Intent(context, StarterActivity::class.java).apply {
+                            putExtra(StarterActivity.EXTRA_PORT, validTcpPort)
+                            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                    context.startActivity(intent)
+                } else {
+                    val fm = (context as? androidx.fragment.app.FragmentActivity)?.supportFragmentManager
+                    if (fm != null) {
+                        AdbDialogFragment().show(fm)
+                    } else {
+                        val lastPort = ShizukuSettings.getLastPort()
+                        if (lastPort in 1..65535) {
+                            val intent =
+                                android.content.Intent(context, StarterActivity::class.java).apply {
+                                    putExtra(StarterActivity.EXTRA_PORT, lastPort)
+                                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            context.startActivity(intent)
+                        }
+                    }
                 }
             }
         }
@@ -244,10 +262,37 @@ class StartWirelessAdbViewHolder(
             context.showAccessibilityDialog()
             return
         }
+        val activity = context.asActivity<FragmentActivity>() ?: return
+        if (!af.shizuku.manager.adb.AdbPairingClient
+                .isNativeAvailable()
+        ) {
+            val detail =
+                af.shizuku.manager.adb.AdbPairingClient.nativeLoadError
+                    ?.let { "\n\n($it)" }
+                    .orEmpty()
+            com.google.android.material.dialog
+                .MaterialAlertDialogBuilder(activity)
+                .setTitle(R.string.adb_pairing_fallback_title)
+                .setMessage(activity.getString(R.string.adb_pairing_fallback_message) + detail)
+                .setPositiveButton(R.string.adb_pairing_fallback_enable_tcp) { _, _ ->
+                    ShizukuSettings.setTcpMode(true)
+                    ShizukuSettings.setTcpPort(5555)
+                    Toast
+                        .makeText(
+                            activity,
+                            activity.getString(R.string.recommendation_tcp_mode_enabled_toast),
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    StartAdbDialogFragment().show(activity.supportFragmentManager)
+                }.setNeutralButton(R.string.home_adb_button_view_command) { _, _ ->
+                    StartAdbDialogFragment().show(activity.supportFragmentManager)
+                }.setNegativeButton(android.R.string.cancel, null)
+                .show()
+            return
+        }
         // AdbPairingTutorialActivity provides a dedicated pairing flow: it starts the pairing
         // service, shows step-by-step instructions, handles notification permission, and
         // auto-dismisses once Shizuku is running.
-        val activity = context.asActivity<FragmentActivity>() ?: return
         val intent = Intent(context, AdbPairingTutorialActivity::class.java)
         activity.startWithSceneTransition(intent, binding.icon, "icon_wireless_adb")
     }

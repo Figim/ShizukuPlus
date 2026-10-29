@@ -156,6 +156,7 @@ private class PairingContext private constructor(
 
     companion object {
         fun create(password: ByteArray): PairingContext? {
+            if (!AdbPairingClient.isNativeAvailable()) return null
             val nativePtr = nativeConstructor(true, password)
             return if (nativePtr != 0L) PairingContext(nativePtr) else null
         }
@@ -402,9 +403,33 @@ class AdbPairingClient(
     }
 
     companion object {
+        @Volatile
+        private var nativeLoaded: Boolean = false
+
+        @Volatile
+        var nativeLoadError: String? = null
+            private set
+
         init {
-            System.loadLibrary("adb")
+            try {
+                System.loadLibrary("adb")
+                nativeLoaded = true
+            } catch (t: Throwable) {
+                nativeLoaded = false
+                nativeLoadError = "${t.javaClass.simpleName}: ${t.message}"
+                Timber.tag(TAG).e(t, "Failed to load native libadb.so — wireless pairing JNI unavailable")
+            }
         }
+
+        @JvmStatic
+        fun isNativeAvailable(): Boolean =
+            nativeLoaded &&
+                try {
+                    available()
+                } catch (t: Throwable) {
+                    Timber.tag(TAG).w(t, "libadb.so available() check failed")
+                    false
+                }
 
         @JvmStatic
         external fun available(): Boolean

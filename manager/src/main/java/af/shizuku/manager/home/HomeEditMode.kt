@@ -45,6 +45,9 @@ object HomeEditMode {
     var isActive: Boolean = false
         private set
 
+    var wasForced: Boolean = false
+        private set
+
     var onChanged: (() -> Unit)? = null
     var startDragCallback: ((RecyclerView.ViewHolder) -> Unit)? = null
     var removeCardCallback: ((Long) -> Unit)? = null
@@ -60,6 +63,9 @@ object HomeEditMode {
         ) {
             return
         }
+        if (force) {
+            wasForced = true
+        }
         if (!isActive) {
             isActive = true
             io.sentry.Sentry.addBreadcrumb("HomeEditMode: enter()")
@@ -68,6 +74,7 @@ object HomeEditMode {
     }
 
     fun exit() {
+        wasForced = false
         if (isActive) {
             isActive = false
             onChanged?.invoke()

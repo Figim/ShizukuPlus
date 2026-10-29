@@ -1912,4 +1912,8 @@
     <string name="recommendation_tcp_guard_message">When TCP Mode is active, ADB listens on port 5555. Enabling Open &amp; Public Wi-Fi Protection automatically closes the port whenever you join an unencrypted or captive-portal Wi-Fi network.</string>
     <string name="recommendation_tcp_guard_enable">Enable Protection</string>
     <string name="recommendation_tcp_guard_enabled_toast">Open &amp; Public Wi-Fi Protection enabled</string>
+    <string name="recommendation_tcp_mode_enabled_toast">TCP Mode (port 5555) enabled</string>
+    <string name="adb_pairing_fallback_title">Native Pairing Unavailable</string>
+    <string name="adb_pairing_fallback_message">Your device firmware restricted the native wireless pairing library (libadb.so). You can still start and use Shizuku+ reliably by enabling TCP Mode (port 5555) or running the starter command once from ADB.</string>
+    <string name="adb_pairing_fallback_enable_tcp">Use TCP Mode (5555)</string>
 </resources>

@@ -260,7 +260,7 @@ class BehaviorSettingsFragment :
                         apply()
                         if (enable) {
                             af.shizuku.manager.utils.AdaptiveRecommendationManager.maybeRecommendTcpNetworkGuard(context) {
-                                notifyChanged()
+                                reload()
                             }
                         }
                     }

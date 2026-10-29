@@ -344,7 +344,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         BinderSender.register(this);
 
         ((Logger) LOGGER).setEventDispatcher((priority, tag, message, throwable) -> {
-            List<ClientRecord> records = clientManager.findClients(managerAppId);
+            List<ClientRecord> records = new java.util.ArrayList<>(clientManager.findClients(managerAppId));
+            if (secondaryManagerAppId != -1) {
+                records.addAll(clientManager.findClients(secondaryManagerAppId));
+            }
             for (ClientRecord record : records) {
                 if (record.client != null) {
                     try {
@@ -1223,7 +1226,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             ApplicationInfo ai = getManagerApplicationInfo();
             if (ai == null) return;
 
-            List<ClientRecord> records = clientManager.findClients(ai.uid);
+            List<ClientRecord> records = new java.util.ArrayList<>(clientManager.findClients(ai.uid));
+            if (secondaryManagerAppId != -1 && secondaryManagerAppId != ai.uid) {
+                records.addAll(clientManager.findClients(secondaryManagerAppId));
+            }
             for (ClientRecord record : records) {
                 try {
                     record.client.dispatchLog("", packageName, action);
@@ -2428,7 +2434,19 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // dialog instead of dropping the request.
         ApplicationInfo ai = Android17Compat.getApplicationInfo(clientRecord.packageName, 0, userId);
 
-        PackageInfo pi = Android17Compat.getPackageInfo(MANAGER_APPLICATION_ID, 0, userId);
+        String targetManagerPkg = MANAGER_APPLICATION_ID;
+        if (secondaryManagerAppId != -1 &&
+                clientManager.findClients(managerAppId).isEmpty() &&
+                !clientManager.findClients(secondaryManagerAppId).isEmpty()) {
+            targetManagerPkg = ServerConstants.DROPIN_APPLICATION_ID.equals(MANAGER_APPLICATION_ID)
+                    ? ServerConstants.PLUS_APPLICATION_ID
+                    : ServerConstants.DROPIN_APPLICATION_ID;
+        }
+        PackageInfo pi = Android17Compat.getPackageInfo(targetManagerPkg, 0, userId);
+        if (pi == null && !targetManagerPkg.equals(MANAGER_APPLICATION_ID)) {
+            targetManagerPkg = MANAGER_APPLICATION_ID;
+            pi = Android17Compat.getPackageInfo(targetManagerPkg, 0, userId);
+        }
         UserInfo userInfo = UserManagerApis.getUserInfo(userId);
         boolean isWorkProfileUser = BuildUtils.INSTANCE.getAtLeast30() ?
                 "android.os.usertype.profile.MANAGED".equals(userInfo.userType) :
@@ -2439,8 +2457,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             return;
         }
 
-        Intent intent = new Intent(ServerConstants.getRequestPermissionAction())
-                .setPackage(MANAGER_APPLICATION_ID)
+        Intent intent = new Intent(targetManagerPkg + ".intent.action.REQUEST_PERMISSION")
+                .setPackage(targetManagerPkg)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
                 .putExtra("uid", callingUid)
                 .putExtra("pid", callingPid)
@@ -2905,12 +2923,24 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         sendBinderToManager(this);
     }
 
+    private static String getSecondaryManagerPackage() {
+        String other = ServerConstants.DROPIN_APPLICATION_ID.equals(MANAGER_APPLICATION_ID)
+                ? ServerConstants.PLUS_APPLICATION_ID
+                : ServerConstants.DROPIN_APPLICATION_ID;
+        ApplicationInfo ai = Android17Compat.getApplicationInfo(other, 0, 0);
+        return (ai != null && isSignedLikeManager(other)) ? other : null;
+    }
+
     private static void sendBinderToManager(Binder binder) {
+        String secondaryPkg = getSecondaryManagerPackage();
         java.util.List<Integer> failedUserIds = new java.util.ArrayList<>();
         for (int userId : UserManagerApis.getUserIdsNoThrow()) {
             boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
             if (!success) {
                 failedUserIds.add(userId);
+            }
+            if (secondaryPkg != null) {
+                sendBinderToUserApp(binder, secondaryPkg, userId);
             }
         }
         if (!failedUserIds.isEmpty()) {
@@ -2946,6 +2976,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     static void sendBinderToManager(Binder binder, int userId) {
+        String secondaryPkg = getSecondaryManagerPackage();
+        if (secondaryPkg != null) {
+            sendBinderToUserApp(binder, secondaryPkg, userId);
+        }
         boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
         if (!success) {
             // For unknown reason, sometimes this could happens

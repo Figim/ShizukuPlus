@@ -20,6 +20,23 @@ class ShizukuManagerProvider : ShizukuProvider() {
         return super.onCreate()
     }
 
+    private fun waitForBinderGracefully() {
+        if (!Shizuku.pingBinder()) {
+            // Cold-start grace period: wait up to 1500ms for binder delivery from server daemon
+            val deadline = System.currentTimeMillis() + 1500L
+            while (System.currentTimeMillis() < deadline) {
+                try {
+                    Thread.sleep(50)
+                } catch (_: InterruptedException) {
+                    break
+                }
+                if (Shizuku.pingBinder()) {
+                    break
+                }
+            }
+        }
+    }
+
     override fun call(
         method: String,
         arg: String?,
@@ -32,22 +49,14 @@ class ShizukuManagerProvider : ShizukuProvider() {
                 extras.classLoader = BinderContainer::class.java.classLoader
 
                 val token = extras.getString(USER_SERVICE_ARG_TOKEN) ?: return null
-                val binder = extras.getParcelable<BinderContainer>(EXTRA_BINDER)?.binder ?: return null
+                val binder =
+                    extras.getBinder("binder")
+                        ?: extras.getParcelable<BinderContainer>(EXTRA_BINDER)?.binder
+                        ?: extras.getParcelable<moe.shizuku.api.BinderContainer>("moe.shizuku.privileged.api.intent.extra.BINDER")?.binder
+                        ?: extras.getParcelable<rikka.shizuku.BinderContainer>("rikka.shizuku.intent.extra.BINDER")?.binder
+                        ?: return null
 
-                if (!Shizuku.pingBinder()) {
-                    // Cold-start grace period: wait up to 1500ms for binder delivery from server daemon
-                    val deadline = System.currentTimeMillis() + 1500L
-                    while (System.currentTimeMillis() < deadline) {
-                        try {
-                            Thread.sleep(50)
-                        } catch (_: InterruptedException) {
-                            break
-                        }
-                        if (Shizuku.pingBinder()) {
-                            break
-                        }
-                    }
-                }
+                waitForBinderGracefully()
                 ShizukuStateMachine.update()
 
                 if (!ShizukuStateMachine.isRunning()) {
@@ -60,6 +69,9 @@ class ShizukuManagerProvider : ShizukuProvider() {
                     val serviceBinder = Shizuku.getBinder() ?: return null
                     val reply = Bundle()
                     reply.putParcelable(EXTRA_BINDER, BinderContainer(serviceBinder))
+                    reply.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", moe.shizuku.api.BinderContainer(serviceBinder))
+                    reply.putParcelable("rikka.shizuku.intent.extra.BINDER", rikka.shizuku.BinderContainer(serviceBinder))
+                    reply.putBinder("binder", serviceBinder)
                     reply
                 } catch (e: Throwable) {
                     LOGGER.e(e, "attachUserService $token")
@@ -70,6 +82,9 @@ class ShizukuManagerProvider : ShizukuProvider() {
                 null
             }
         } else {
+            if (method == METHOD_GET_BINDER) {
+                waitForBinderGracefully()
+            }
             super.call(method, arg, extras)
         }
     }

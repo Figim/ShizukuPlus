@@ -1034,6 +1034,7 @@ open class ApplicationManagementActivity :
             isFirstResume = false
         } else {
             viewModel.refresh()
+            adapter.notifyDataSetChanged()
         }
         // Re-read swipe settings: setupSwipe()'s callback closes over these fields, so a
         // change made in Settings while this activity was backgrounded takes effect here

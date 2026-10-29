@@ -104,8 +104,10 @@ class AdbStartWorker(
                 throw SecurityException("Wireless debugging start blocked: current network is untrusted")
             }
 
-            Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
-            Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+            runCatching {
+                Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
+                Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+            }
 
             // Fast path: if TCP mode is on and the port is already listening, connect directly —
             // no Wireless Debugging or Wi-Fi required.
@@ -152,10 +154,17 @@ class AdbStartWorker(
                 }
             }
 
+            val verifiedSavedPort =
+                if (savedPort in 1..65535 && isWifiOk && runAttemptCount == 0 && AdbPortProber.isPortOpen(savedPort, 400)) {
+                    savedPort
+                } else {
+                    -1
+                }
+
             val port =
                 when {
-                    tcpPort > 0 && isWifiOk -> tcpPort
-                    savedPort > 0 && isWifiOk && runAttemptCount == 0 -> savedPort
+                    tcpPort > 0 && isWifiOk && AdbPortProber.isPortOpen(tcpPort, 400) -> tcpPort
+                    verifiedSavedPort > 0 -> verifiedSavedPort
                     else ->
                         callbackFlow {
                             val adbMdns =
@@ -186,7 +195,18 @@ class AdbStartWorker(
                                 timeoutJob =
                                     launch {
                                         delay(15_000)
-                                        close(TimeoutException("Timed out during mDNS port discovery"))
+                                        val fallbackLoopbackPort =
+                                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                                AdbPortProber.findActiveLoopbackPort(applicationContext)
+                                            }
+                                        if (fallbackLoopbackPort in 1..65535) {
+                                            timber.log.Timber
+                                                .tag("AdbStartWorker")
+                                                .i("mDNS timed out, falling back to active loopback port %d", fallbackLoopbackPort)
+                                            trySend(fallbackLoopbackPort)
+                                        } else {
+                                            close(TimeoutException("Timed out during mDNS port discovery"))
+                                        }
                                     }
                             }
 
@@ -242,7 +262,7 @@ class AdbStartWorker(
                                                     if (NetworkTrust.shouldBlockTcp(context)) {
                                                         close(SecurityException("Wireless debugging suppressed on unlock: network is not trusted"))
                                                     } else {
-                                                        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                                                        runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                                                     }
                                                 }
                                             }
@@ -274,7 +294,7 @@ class AdbStartWorker(
                                                     samsungResetCount++
                                                     launch {
                                                         delay(300L * samsungResetCount)
-                                                        Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                                                        runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                                                     }
                                                 } else {
                                                     handleAuth()
@@ -284,7 +304,7 @@ class AdbStartWorker(
                                     }
                                 }
 
-                            Settings.Global.putInt(cr, "adb_wifi_enabled", 1)
+                            runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
                             cr.registerContentObserver(Settings.Global.getUriFor("adb_wifi_enabled"), false, observer)
                             startDiscoveryWithTimeout()
 
