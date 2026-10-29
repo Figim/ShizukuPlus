@@ -1917,4 +1917,13 @@
     <string name="adb_pairing_fallback_title">Yerli Cütləşmə Əlçatan Deyil</string>
     <string name="adb_pairing_fallback_message">Cihazınızın proqram təminatı yerli simsiz cütləşmə kitabxanasını (libadb.so) məhdudlaşdırıb. TCP Rejimini (port 5555) aktivləşdirərək və ya ADB-dən bir dəfə başladıcı əmri işlədərək Shizuku+-ı etibarlı şəkildə başlada və istifadə edə bilərsiniz.</string>
     <string name="adb_pairing_fallback_enable_tcp">TCP Rejimini İstifadə Et (5555)</string>
+    <string name="app_management_context_plus_benefits">Bu tətbiqin faydalandığı Plus funksiyaları…</string>
+    <string name="plus_benefits_dialog_title">Plus Funksiyaları · %1$s</string>
+    <string name="plus_benefits_item_status_on">%1$s (Açıq) →</string>
+    <string name="plus_benefits_item_status_off">%1$s (Bağlı) →</string>
+    <string name="plus_benefits_badge_hint">Faydalandığı funksiyalar: %1$s (bağlı) →</string>
+    <string name="lp_action_enable_freeform">Sərbəst forma / ölçü dəyişməsinə icazə ver</string>
+    <string name="lp_action_disable_freeform">Məcburi sərbəst formanı / ölçü dəyişməni söndür</string>
+    <string name="toast_freeform_enabled">%1$s üçün sərbəst formada ölçü dəyişməsi aktivləşdirildi</string>
+    <string name="toast_freeform_disabled">%1$s üçün sərbəst formada ölçü dəyişməsi sıfırlandı</string>
 </resources>
