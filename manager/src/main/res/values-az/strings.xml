@@ -397,6 +397,11 @@
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Sürüşdürmə jestləri</string>
+    <string name="swipe_hint_subtitle">Sürətli əməliyyatları işə salmaq üçün istənilən tətbiq sətrini sürüşdürün</string>
+    <string name="swipe_hint_direction_right">SAĞA SÜRÜŞDÜR →</string>
+    <string name="swipe_hint_direction_left">← SOLA SÜRÜŞDÜR</string>
+    <string name="swipe_hint_customize">Fərdiləşdir</string>
+    <string name="swipe_hint_got_it">Anladım</string>
     <string name="swipe_hint_right">Sürətli əməliyyat üçün sağa sürüşdürün</string>
     <string name="swipe_hint_left">Sürətli əməliyyat üçün sola sürüşdürün</string>
     <string name="swipe_hint_dismiss">Bağlamaq üçün istənilən yerə toxunun</string>
@@ -413,7 +418,7 @@
     <string name="settings_show_home_cards_outline_summary">Əsas ekran kartlarının ətrafında incə kontur xətti göstər</string>
     <string name="settings_custom_icon_studio_title">Xüsusi İkon Studiyası</string>
     <string name="settings_custom_icon_studio_summary">Öz şəklinizi yükləyin, formanı, boşluqları və fonu fərdiləşdirin və başlatıcı ikonu olaraq təyin edin</string>
-    <string name="custom_icon_studio_shape"> Forma</string>
+    <string name="custom_icon_studio_shape">Forma</string>
     <string name="custom_icon_studio_bg">Fon</string>
     <string name="custom_icon_studio_pin_shortcut">Ana ekrana əlavə et</string>
     <string name="custom_icon_studio_pinned_success">Xüsusi ikon Ana Ekranınıza əlavə edildi!</string>
@@ -498,8 +503,8 @@
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, başladıcı binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
     <string name="device_hardening_applied">Cihaz təhlükəsizliyi və Doze optimizasiyaları tətbiq edildi</string>
-    <string name="settings_tcp_mode_summary">"Shizuku+-ın Wi-Fi olmadan yenidən başlamasına icazə verir. (Shizuku+ yenidən başladıqdan sonra ən azı bir dəfə işə düşmüş olmalıdır)"</string>
-    <string name="settings_tcp_mode_dialog_close_port">"TCP portu dərhal bağlanacaq. TCP rejimini yenidən yandırmaq üçün Wi-Fi lazım olacaq. Davam edilsin?"</string>
+    <string name="settings_tcp_mode_summary">Shizuku+-ın Wi-Fi olmadan yenidən başlamasına icazə verir. (Shizuku+ yenidən başladıqdan sonra ən azı bir dəfə işə düşmüş olmalıdır)</string>
+    <string name="settings_tcp_mode_dialog_close_port">TCP portu dərhal bağlanacaq. TCP rejimini yenidən yandırmaq üçün Wi-Fi lazım olacaq. Davam edilsin?</string>
     <string name="settings_tcp_mode_closing_port">TCP portu bağlanır...</string>
     <string name="settings_restart_dialog_title">Yenidən Başlatılma Tələb Olunur</string>
     <string name="settings_restart_dialog_message">Bu parametri tətbiq etmək üçün Shizuku+ yenidən başladılmalıdır.</string>
@@ -740,7 +745,7 @@
     <string name="su_bridge_magic_setup_all_no_apps">Avtomatlaşdırma üçün dəstəklənən root tətbiqi tapılmadı.</string>
     <string name="su_bridge_copy_open">Yolu kopyala və aç</string>
     <string name="su_bridge_no_export">SU yolu təyin edilməyib. Əvvəlcə Əsas ekrandan Shizuku fayllarını ixrac edin.</string>
-    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri birbaşa körpüyə yönəltmək üçün isə \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
+    <string name="root_hub_shizuku_aware_note">SU Bridge root olunmamış cihazlara Shizuku shell və ya müvəqqəti root imtiyazlarından istifadə edərək root-a bənzər əmr girişi verir. Dəstəklənən tətbiqləri avtomatik konfiqurasiya etmək üçün \"Sehrli quraşdırma\", xüsusi SU tənzimləmələri olan tətbiqləri isə birbaşa körpüyə yönəltmək üçün \"Yolu kopyala və aç\" düyməsinə toxunun.</string>
     <string name="su_bridge_how_to_use">Necə istifadə etməli:</string>
     <string name="su_bridge_step_1">1. Shizuku fayllarını ixrac edin və ya SU bridge-i Əsas ekranından /data/local/tmp qovluğuna yerləşdirin.</string>
     <string name="su_bridge_step_2">2. Xüsusi binar faylları dəstəkləyən tətbiqlərdə (məs. AdAway, Solid Explorer), onların \"SU Yolu\" tənzimləməsini bridge yoluna yönəldin.</string>
@@ -821,7 +826,7 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Xidmət Həkimi</string>
-    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çəkirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
+    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çəkirsiniz? Diaqnostika yoxlaması aparmaq üçün toxunun.</string>
     <string name="doctor_tips_title">İpucları &amp; həllər</string>
     <string name="doctor_action_rerun">Yenidən icra et</string>
     <string name="doctor_action_auto_fix_all">Adaptiv Avtomatik Bərpa</string>
@@ -996,7 +1001,7 @@
     <string name="adb_error_generic">Gözlənilməz xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.</string>
 
     <!-- WADB Starter -->
-    <string name="wadb_notification_title">Shizuku işə düşür…</string>
+    <string name="wadb_notification_title">Shizuku-nu başladır…</string>
     <string name="wadb_notification_wifi_required">Davam etməzdən əvvəl Wi-Fi bağlantısı gözlənilir</string>
     <string name="wadb_notification_retry">Yenidən cəhd etmək üçün gözlənilir</string>
     <string name="wadb_mdns_blocked_title">mDNS aşkarlanması dəfələrlə uğursuz olur</string>
@@ -1032,7 +1037,7 @@
     <string name="dialog_cannot_open_browser_title">Veb-brauzer açıla bilmir</string>
     <string name="toast_copied_to_clipboard">Mübadilə buferinə kopyalandı</string>
     <string name="accessibility_service_label">Shizuku+ Cütləşmə Köməkçisi</string>
-    <string name="accessibility_service_description">Bildirişlərin və ya bölünmüş ekranın asanlıqla istifadə oluna bilmədiyi cihazlar (məsələn, TV-lər və Samsung One UI telefonları) üçün cütləşmə dəstəyi təmin edir.\n\nShizuku+-a cütləşmə kodunu simsiz sazlama cütləşmə ekranından çıxarmağa imkan verir. Cütləşmə kodu tapıldıqdan sonra özünü söndürəcək.</string>
+    <string name="accessibility_service_description">Bildirişlərin və ya bölünmüş ekranın asanlıqla istifadə edilə bilmədiyi cihazlar (məsələn, televizorlar və Samsung One UI telefonları) üçün cütləşmə dəstəyi təmin edir.\n\nShizuku+-u simsiz sazlama cütləşmə ekranından qoşma kodunu çıxarmaq üçün aktivləşdirir. Cütləşmə kodu tapıldıqdan sonra özünü qapadacaq.</string>
 
     <!-- Messages for legacy -->
     <string name="dialog_legacy_not_support_title">%1$s müasir Shizuku-nu dəstəkləmir</string>
@@ -1059,7 +1064,7 @@
     <string name="settings_main_category_system">Sistem</string>
     <string name="settings_main_nav_root_compat_title">Root və Uyğunluq</string>
     <string name="settings_main_nav_root_compat_summary">SU bridge, Cihaz Sahibi alətləri və stok tətbiq uyğunluğu</string>
-    <string name="settings_main_nav_appearance_summary">Tema, formalar, ikonlar, hərəkət, əsas ekran düzəni və dil</string>
+    <string name="settings_main_nav_appearance_summary">Tema, ikonlar, jestlər, qarşılıqlı toxunuşlar və tərtibat</string>
     <string name="settings_main_nav_app_interactions_title">Tətbiq Qarşılıqlı Əlaqələri</string>
     <string name="settings_main_nav_app_interactions_summary">Jestlər, uzun basma əməliyyatları və tətbiq verilənlər bazası</string>
     <string name="settings_main_nav_startup_behavior_title">Başlanğıc və Davranış</string>
@@ -1215,7 +1220,7 @@
     <string name="settings_haptics_always">Həmişə aktiv</string>
     <string name="settings_personalization_category_app_identity">Tətbiq ikonu &amp; adı</string>
     <string name="settings_personalization_category_motion_haptics">Hərəkət &amp; əks-əlaqə</string>
-    <string name="settings_personalization_category_layout_nav"> Mətn &amp; tərtibat</string>
+    <string name="settings_personalization_category_layout_nav">Mətn &amp; tərtibat</string>
     <string name="settings_plus_category_system_performance">Sistem və Performans</string>
     <string name="settings_plus_category_security_access">Təhlükəsizlik və Giriş</string>
     <string name="settings_plus_category_backup_restore">Ehtiyat Nüsxə və Bərpa</string>
@@ -1261,6 +1266,8 @@
     <!-- Developer Options -->
     <string name="settings_developer_options">Tərtibatçı Seçimləri</string>
     <string name="settings_developer_options_summary">Virtualizasiya, cihazın saxtalaşdırılması və eksperimental xüsusiyyətlər</string>
+    <string name="settings_notification_system_title">Bildiriş sistemi</string>
+    <string name="settings_notification_system_summary">Shizuku+-ın status, diaqnostika və qəza bərpası bildirişləri göndərməsinə icazə verin</string>
     <string name="settings_auto_update_title">Yeniləmələri avtomatik yoxla</string>
     <string name="settings_auto_update_summary">Tətbiq işə düşərkən avtomatik olaraq yeni versiyaları yoxlayın</string>
     <string name="settings_auto_install_title">Yeniləmələri avtomatik quraşdır</string>
@@ -1324,6 +1331,10 @@
     <string name="shell_export_partial">%2$d fayldan %1$d-i ixrac edildi (bəziləri uğursuz oldu)</string>
 
     <!-- Settings backup/restore -->
+    <string name="onboarding_restore_backup_title">Əvvəlki Tənzimləmələr Tapıldı</string>
+    <string name="onboarding_restore_backup_desc">Bu cihazda tənzimləmələrinizin və konfiqurasiyalarınızın ehtiyat nüsxəsi tapıldı. Quraşdırmanı ötürmək və tənzimləmələri qorumaq üçün onu indi bərpa edin.</string>
+    <string name="onboarding_restore_backup_action">Tənzimləmələri Bərpa et və Davam et</string>
+    <string name="onboarding_restore_pick_file">Ehtiyat nüsxə faylını seçin (.json)</string>
     <string name="adb_native_unavailable">ADB cütləşməsi bu cihazda əlçatan deyil</string>
 
     <string name="changelog_title">Yeniliklər Nələrdir</string>
@@ -1865,4 +1876,54 @@
     <string name="settings_about_category_app_info">Tətbiq məlumatı</string>
     <string name="settings_about_category_project">Layihə məlumatı</string>
     <string name="settings_check_for_update_title">Yeniləməni yoxla</string>
+
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <string name="action_close">Bağla</string>
+    <string name="settings_tcp_mode">TCP rejimi (port 5555)</string>
+    <string name="recommendation_dont_show_again">Bu tövsiyəni bir daha göstərmə</string>
+    <string name="recommendation_not_now">İndi deyil</string>
+    <string name="recommendation_tcp_mode_title">TCP Rejimi (Port 5555) aktivləşdirilsin?</string>
+    <string name="recommendation_tcp_mode_message">TCP rejiminin aktivləşdirilməsi Simsiz Sazlamanı 5555 portunda dinlənilən vəziyyətdə saxlayır, beləliklə Shizuku+ Wi-Fi və ya mDNS port aşkarlanması olmadan dərhal işə düşə, yenidən qoşula və avtomatik bərpa oluna bilər.\n\nTCP Rejimini aktivləşdirmək və Wi-Fi olmadan Məcburi Başlatmaq istəyirsiniz?</string>
+    <string name="recommendation_tcp_mode_enable">TCP Rejimini Aktivləşdir</string>
+    <string name="tip_tcp_mode_desc">Shizuku+-ın Wi-Fi və ya mDNS aşkarlanması olmadan yenidən qoşulub başlaya bilməsi üçün ADB-ni 5555 portunda dinlənilən saxlayın</string>
+    <string name="tip_device_hardening_desc">Fantom proses öldürülməsinin və arxa fon donmalarının qarşısını almaq üçün imtiyazlı ƏS optimizasiyalarını tətbiq edin</string>
+    <string name="diagnostics_warning_tcp_mode_disabled">TCP Rejimi (port 5555) söndürülüb. Wi-Fi olmadan dərhal Simsiz ADB yenidən qoşulmasını aktivləşdirmək üçün toxunun.</string>
+    <string name="diagnostics_warning_device_hardening_disabled">Cihazın Təhlükəsizləşdirilməsi söndürülüb. Shizuku+-ı arxa fon prosesləri öldürülməsindən qorumaq üçün toxunun.</string>
+    <string name="diagnostics_tcp_mode_enabled_toast">TCP Rejimi (port 5555) aktivləşdirildi</string>
+    <string name="settings_reset_recommendations_title">Rədd edilmiş tövsiyələri sıfırla</string>
+    <string name="settings_reset_recommendations_summary">Bütün rədd edilmiş adaptiv ipuclarını və diaqnostika xəbərdarlıqlarını bərpa edin</string>
+    <string name="settings_reset_recommendations_toast">Rədd edilmiş tövsiyələr sıfırlandı</string>
+    <string name="settings_startup_scripts_title">Başlanğıc və Gözətçi skriptləri</string>
+    <string name="settings_startup_scripts_summary">Xidmət başladıldıqda və Gözətçi yenidən işə düşdükdə avtomatik işləyən shell skriptlərini idarə edin</string>
+    <string name="settings_lock_home_layout">Əsas ekran düzənini kilidlə</string>
+    <string name="settings_lock_home_layout_summary">Əsas ekrandakı kartlara uzun basaraq yenidən sıralama rejiminə keçməyin qarşısını alın</string>
+    <string name="settings_rearrange_home_cards">Əsas ekran kartlarını yenidən sırala</string>
+    <string name="settings_rearrange_home_cards_summary">Əsas ekranı kartların yenidən sıralanması rejimində açın</string>
+    <string name="app_management_context_api_scopes">API Girişləri və Səlahiyyətləri…</string>
+    <string name="app_management_context_select_multiple">Çoxlu tətbiq seçin</string>
+    <string name="app_management_selected_count">%1$d seçildi</string>
+    <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
+    <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
+    <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
+    <string name="api_scope_package_manager">Paket İdarəedicisi (quraşdır, sil, dayandır)</string>
+    <string name="api_scope_activity_manager">Fəaliyyət və Proses Meneceri (məcburi dayandır, tapşırıqlar)</string>
+    <string name="api_scope_appops">AppOps və İşləmə Müddəti İcazələri</string>
+    <string name="api_scope_system_settings">Sistem Tənzimləmələri və Enerji Nəzarəti</string>
+    <string name="recommendation_tcp_guard_title">İctimai Wi-Fi-da TCP Portu Qorunsun?</string>
+    <string name="recommendation_tcp_guard_message">TCP Rejimi aktiv olduqda, ADB 5555 portunda dinləyir. Açıq və İctimai Wi-Fi Mühafizəsinin aktivləşdirilməsi şifrələnməmiş və ya captive-portal Wi-Fi şəbəkəsinə qoşulduqda portu avtomatik bağlayır.</string>
+    <string name="recommendation_tcp_guard_enable">Mühafizəni Aktivləşdir</string>
+    <string name="recommendation_tcp_guard_enabled_toast">Açıq və İctimai Wi-Fi Mühafizəsi aktivləşdirildi</string>
+    <string name="recommendation_tcp_mode_enabled_toast">TCP Rejimi (port 5555) aktivləşdirildi</string>
+    <string name="adb_pairing_fallback_title">Yerli Cütləşmə Əlçatan Deyil</string>
+    <string name="adb_pairing_fallback_message">Cihazınızın proqram təminatı yerli simsiz cütləşmə kitabxanasını (libadb.so) məhdudlaşdırıb. TCP Rejimini (port 5555) aktivləşdirərək və ya ADB-dən bir dəfə başladıcı əmri işlədərək Shizuku+-ı etibarlı şəkildə başlada və istifadə edə bilərsiniz.</string>
+    <string name="adb_pairing_fallback_enable_tcp">TCP Rejimini İstifadə Et (5555)</string>
+    <string name="app_management_context_plus_benefits">Bu tətbiqin faydalandığı Plus funksiyaları…</string>
+    <string name="plus_benefits_dialog_title">Plus Funksiyaları · %1$s</string>
+    <string name="plus_benefits_item_status_on">%1$s (Açıq) →</string>
+    <string name="plus_benefits_item_status_off">%1$s (Bağlı) →</string>
+    <string name="plus_benefits_badge_hint">Faydalandığı funksiyalar: %1$s (bağlı) →</string>
+    <string name="lp_action_enable_freeform">Sərbəst forma / ölçü dəyişməsinə icazə ver</string>
+    <string name="lp_action_disable_freeform">Məcburi sərbəst formanı / ölçü dəyişməni söndür</string>
+    <string name="toast_freeform_enabled">%1$s üçün sərbəst formada ölçü dəyişməsi aktivləşdirildi</string>
+    <string name="toast_freeform_disabled">%1$s üçün sərbəst formada ölçü dəyişməsi sıfırlandı</string>
 </resources>
