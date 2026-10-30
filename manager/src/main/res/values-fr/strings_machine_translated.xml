@@ -694,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">Paquets masqués</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Liste de noms de paquets, séparés par des virgules, à masquer aux autres applications. Si Shizuku d\'origine et Shizuku+ sont tous deux installés, ajoutez les deux (moe.shizuku.privileged.api, af.shizuku.manager) pour éviter les conflits.</string>
     <string name="settings_automation_trusted_networks">Réseaux de confiance</string>
-    <string name="settings_automation_trusted_networks_summary">Noms de réseaux Wi-Fi (SSID) séparés par des virgules. Le pare-feu Binder est désactivé automatiquement tant que vous êtes connecté à l\'un d\'eux, et activé automatiquement partout ailleurs (y compris en données mobiles). Laissez vide pour contrôler le pare-feu Binder manuellement.</string>
     <string name="settings_automation_auto_hide_packages">Masquage automatique au premier plan</string>
     <string name="settings_automation_auto_hide_packages_summary">Applications automatiquement ajoutées à la liste masquée de Shadow Binder uniquement tant qu\'elles sont ouvertes, en plus de la liste des paquets masqués ci-dessus. Laissez vide pour gérer les paquets masqués manuellement.</string>
     <string name="settings_companion_mode">Afficher la carte compagnon</string>
@@ -1158,9 +1157,7 @@
     <string name="settings_tcp_protection_open">Réseaux ouverts</string>
     <string name="settings_tcp_protection_trusted">Approuvé uniquement</string>
     <string name="settings_tcp_trusted_networks_label">Réseaux Wi-Fi approuvés</string>
-    <string name="settings_tcp_add_network">+ Ajouter un réseau</string>
     <string name="settings_tcp_auto_close_untrusted">Fermeture automatique sur réseaux non approuvés</string>
-    <string name="settings_tcp_add_network_dialog_title">Ajouter un réseau approuvé</string>
     <string name="settings_tcp_ssid_label">Nom du réseau (SSID)</string>
     <string name="tcp_protection_off">Désactivé</string>
     <string name="tcp_protection_open">Wi-Fi ouvert et public</string>

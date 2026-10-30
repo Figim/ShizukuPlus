@@ -695,7 +695,6 @@
     <string name="settings_shadow_binder_hidden_packages">Pacchetti nascosti</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Elenco di nomi di pacchetto separati da virgola da nascondere alle altre app. Se hai installato sia Shizuku originale che Shizuku+, aggiungi entrambi (moe.shizuku.privileged.api, af.shizuku.manager) per evitare conflitti.</string>
     <string name="settings_automation_trusted_networks">Reti attendibili</string>
-    <string name="settings_automation_trusted_networks_summary">Nomi di reti Wi-Fi (SSID) separati da virgola. Il Firewall Binder viene disattivato automaticamente quando sei connesso a una di queste reti e attivato automaticamente ovunque altrove (compresi i dati mobili). Lascia vuoto per controllare il Firewall Binder manualmente.</string>
     <string name="settings_automation_auto_hide_packages">Nascondi automaticamente in primo piano</string>
     <string name="settings_automation_auto_hide_packages_summary">App che vengono aggiunte automaticamente all\'elenco nascosto di Shadow Binder solo mentre sono aperte, oltre all\'elenco Pacchetti nascosti qui sopra. Lascia vuoto per gestire i pacchetti nascosti manualmente.</string>
     <string name="settings_companion_mode">Mostra scheda Companion</string>
@@ -1206,9 +1205,7 @@
     <string name="settings_tcp_protection_open">Reti aperte</string>
     <string name="settings_tcp_protection_trusted">Solo attendibili</string>
     <string name="settings_tcp_trusted_networks_label">Reti Wi-Fi attendibili</string>
-    <string name="settings_tcp_add_network">+ Aggiungi rete</string>
     <string name="settings_tcp_auto_close_untrusted">Chiudi automaticamente su reti non attendibili</string>
-    <string name="settings_tcp_add_network_dialog_title">Aggiungi rete attendibile</string>
     <string name="settings_tcp_ssid_label">Nome rete (SSID)</string>
     <string name="settings_tcp_remove_network">Rimuovi %1$s</string>
     <string name="tcp_protection_off">Disattivato</string>

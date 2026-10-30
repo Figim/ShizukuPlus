@@ -929,7 +929,6 @@
     <string name="settings_shadow_binder_hidden_packages">แพ็กเกจที่ซ่อนอยู่</string>
     <string name="settings_shadow_binder_hidden_packages_summary">รายชื่อชื่อแพ็กเกจที่คั่นด้วยเครื่องหมายจุลภาคเพื่อซ่อนจากแอปอื่น หากคุณติดตั้งทั้ง Shizuku ดั้งเดิมและ Shizuku+ ให้เพิ่มทั้งคู่ (moe.shizuku.privileged.api, af.shizuku.manager) เพื่อป้องกันข้อขัดแย้ง</string>
     <string name="settings_automation_trusted_networks">เครือข่ายที่เชื่อถือได้</string>
-    <string name="settings_automation_trusted_networks_summary">ชื่อเครือข่าย Wi-Fi (SSID) ที่คั่นด้วยเครื่องหมายจุลภาค Binder Firewall จะถูกปิดใช้งานโดยอัตโนมัติขณะเชื่อมต่อกับเครือข่ายเหล่านี้ และเปิดใช้งานโดยอัตโนมัติในที่อื่นๆ (รวมถึงข้อมูลมือถือ) ปล่อยว่างไว้เพื่อควบคุม Binder Firewall ด้วยตนเองแทน</string>
     <string name="settings_automation_auto_hide_packages">ซ่อนอัตโนมัติขณะเปิดใช้งานเบื้องหน้า</string>
     <string name="settings_automation_auto_hide_packages_summary">แอปที่จะถูกเพิ่มเข้าไปในรายการที่ซ่อนของ Shadow Binder โดยอัตโนมัติเฉพาะขณะที่เปิดใช้งานอยู่ นอกเหนือจากรายการแพ็กเกจที่ซ่อนอยู่ด้านบน ปล่อยว่างไว้เพื่อจัดการแพ็กเกจที่ซ่อนด้วยตนเองแทน</string>
     <string name="settings_companion_mode">แสดงการ์ดแอปคู่หู (Companion)</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">เครือข่ายแบบเปิด</string>
     <string name="settings_tcp_protection_trusted">เฉพาะที่เชื่อถือได้</string>
     <string name="settings_tcp_trusted_networks_label">เครือข่าย Wi-Fi ที่เชื่อถือได้</string>
-    <string name="settings_tcp_add_network">+ เพิ่มเครือข่าย</string>
     <string name="settings_tcp_auto_close_untrusted">ปิดอัตโนมัติบนเครือข่ายที่ไม่น่าเชื่อถือ</string>
-    <string name="settings_tcp_add_network_dialog_title">เพิ่มเครือข่ายที่เชื่อถือได้</string>
     <string name="settings_tcp_ssid_label">ชื่อเครือข่าย (SSID)</string>
     <string name="settings_tcp_remove_network">ลบ %1$s</string>
     <string name="tcp_protection_off">ปิด</string>

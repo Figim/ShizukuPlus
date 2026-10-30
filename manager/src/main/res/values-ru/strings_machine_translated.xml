@@ -695,7 +695,6 @@
     <string name="settings_shadow_binder_hidden_packages">Скрытые пакеты</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Список имён пакетов через запятую, которые нужно скрыть от других приложений. Если установлены и оригинальный Shizuku, и Shizuku+, добавьте оба (moe.shizuku.privileged.api, af.shizuku.manager), чтобы избежать конфликтов.</string>
     <string name="settings_automation_trusted_networks">Доверенные сети</string>
-    <string name="settings_automation_trusted_networks_summary">Имена Wi-Fi сетей (SSID) через запятую. Брандмауэр Binder автоматически отключается при подключении к одной из них и включается везде в остальных случаях (включая мобильные данные). Оставьте пустым, чтобы управлять брандмауэром Binder вручную.</string>
     <string name="settings_automation_auto_hide_packages">Автоскрытие на переднем плане</string>
     <string name="settings_automation_auto_hide_packages_summary">Приложения, которые автоматически добавляются в список скрытых Shadow Binder только пока они открыты, помимо списка скрытых пакетов выше. Оставьте пустым, чтобы управлять скрытыми пакетами вручную.</string>
     <string name="settings_companion_mode">Показывать карточку компаньона</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">Открытые сети</string>
     <string name="settings_tcp_protection_trusted">Только доверенные</string>
     <string name="settings_tcp_trusted_networks_label">Доверенные сети Wi-Fi</string>
-    <string name="settings_tcp_add_network">+ Добавить сеть</string>
     <string name="settings_tcp_auto_close_untrusted">Автоматическое закрытие на недоверенных сетях</string>
-    <string name="settings_tcp_add_network_dialog_title">Добавить доверенную сеть</string>
     <string name="settings_tcp_ssid_label">Имя сети (SSID)</string>
     <string name="settings_tcp_remove_network">Удалить %1$s</string>
     <string name="tcp_protection_off">Выключено</string>

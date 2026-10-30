@@ -929,7 +929,6 @@
     <string name="settings_shadow_binder_hidden_packages">Gói ứng dụng bị ẩn</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Danh sách tên gói cách nhau bằng dấu phẩy cần ẩn khỏi các ứng dụng khác. Nếu bạn cài đặt cả Shizuku gốc và Shizuku+, hãy thêm cả hai (moe.shizuku.privileged.api, af.shizuku.manager) để tránh xung đột.</string>
     <string name="settings_automation_trusted_networks">Mạng đáng tin cậy</string>
-    <string name="settings_automation_trusted_networks_summary">Tên mạng Wi-Fi (SSID) cách nhau bằng dấu phẩy. Tường lửa Binder sẽ tự động tắt khi kết nối với một trong các mạng này và tự động bật ở mọi nơi khác (bao gồm cả dữ liệu di động). Để trống để kiểm soát Tường lửa Binder theo cách thủ công.</string>
     <string name="settings_automation_auto_hide_packages">Tự động ẩn khi mở ứng dụng</string>
     <string name="settings_automation_auto_hide_packages_summary">Các ứng dụng được tự động thêm vào danh sách ẩn của Shadow Binder chỉ khi chúng đang mở, bên cạnh danh sách Gói ẩn ở trên. Để trống để quản lý các gói ẩn theo cách thủ công.</string>
     <string name="settings_companion_mode">Hiển thị thẻ đồng hành</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">Mạng mở</string>
     <string name="settings_tcp_protection_trusted">Chỉ mạng đáng tin cậy</string>
     <string name="settings_tcp_trusted_networks_label">Mạng Wi-Fi đáng tin cậy</string>
-    <string name="settings_tcp_add_network">+ Thêm mạng</string>
     <string name="settings_tcp_auto_close_untrusted">Tự động đóng trên các mạng không đáng tin cậy</string>
-    <string name="settings_tcp_add_network_dialog_title">Thêm mạng đáng tin cậy</string>
     <string name="settings_tcp_ssid_label">Tên mạng (SSID)</string>
     <string name="settings_tcp_remove_network">Xóa %1$s</string>
     <string name="tcp_protection_off">Tắt</string>

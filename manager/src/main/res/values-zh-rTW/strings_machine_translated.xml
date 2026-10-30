@@ -677,7 +677,6 @@
     <string name="settings_shadow_binder_hidden_packages">隱藏的套件</string>
     <string name="settings_shadow_binder_hidden_packages_summary">要對其他應用程式隱藏的套件名稱清單，以逗號分隔。若同時安裝了原版 Shizuku 與 Shizuku+，請將兩者都加入（moe.shizuku.privileged.api、af.shizuku.manager）以避免衝突。</string>
     <string name="settings_automation_trusted_networks">信任的網路</string>
-    <string name="settings_automation_trusted_networks_summary">以逗號分隔的 Wi-Fi 網路名稱 (SSID)。連線到其中任一網路時會自動停用 Binder 防火牆，其他位置（包括行動數據）則自動啟用。留空則改為手動控制 Binder 防火牆。</string>
     <string name="settings_automation_auto_hide_packages">前景執行時自動隱藏</string>
     <string name="settings_automation_auto_hide_packages_summary">僅在這些應用程式開啟期間，才會自動加入 Shadow Binder 的隱藏清單（疊加於上方的隱藏套件清單之上）。留空則改為手動管理隱藏套件。</string>
     <string name="settings_companion_mode">顯示 Companion 卡片</string>

@@ -316,9 +316,7 @@
     <string name="settings_tcp_protection_open">Відкриті мережі</string>
     <string name="settings_tcp_protection_trusted">Тільки надійні</string>
     <string name="settings_tcp_trusted_networks_label">Надійні мережи Wi-Fi</string>
-    <string name="settings_tcp_add_network">+ Додати мережу</string>
     <string name="settings_tcp_auto_close_untrusted">Автоматичне закриття на ненадійних мережах</string>
-    <string name="settings_tcp_add_network_dialog_title">Додати надійну мережу</string>
     <string name="settings_tcp_ssid_label">Назва мережі (SSID)</string>
     <string name="settings_tcp_remove_network">Видалити %1$s</string>
     <string name="tcp_protection_off">Вимк</string>

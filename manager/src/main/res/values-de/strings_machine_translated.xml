@@ -689,7 +689,6 @@
     <string name="settings_shadow_binder_hidden_packages">Versteckte Pakete</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Kommagetrennte Liste von Paketnamen, die vor anderen Apps verborgen werden sollen. Wenn sowohl das Original-Shizuku als auch Shizuku+ installiert sind, füge beide hinzu (moe.shizuku.privileged.api, af.shizuku.manager), um Konflikte zu vermeiden.</string>
     <string name="settings_automation_trusted_networks">Vertrauenswürdige Netzwerke</string>
-    <string name="settings_automation_trusted_networks_summary">Kommagetrennte Wi-Fi-Netzwerknamen (SSIDs). Die Binder-Firewall wird automatisch deaktiviert, solange du mit einem davon verbunden bist, und überall sonst (auch bei mobilen Daten) automatisch aktiviert. Leer lassen, um die Binder-Firewall stattdessen manuell zu steuern.</string>
     <string name="settings_automation_auto_hide_packages">Im Vordergrund automatisch verbergen</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps, die nur solange sie geöffnet sind automatisch zur Liste versteckter Pakete von Shadow Binder hinzugefügt werden, zusätzlich zur obigen Liste „Versteckte Pakete“. Leer lassen, um versteckte Pakete stattdessen manuell zu verwalten.</string>
     <string name="settings_companion_mode">Companion-Karte anzeigen</string>
@@ -1048,9 +1047,7 @@
     <string name="settings_tcp_protection_open">Offene Netzwerke</string>
     <string name="settings_tcp_protection_trusted">Nur vertrauenswürdig</string>
     <string name="settings_tcp_trusted_networks_label">Vertrauenswürdige Wi-Fi-Netzwerke</string>
-    <string name="settings_tcp_add_network">+ Netzwerk hinzufügen</string>
     <string name="settings_tcp_auto_close_untrusted">Automatisch in nicht vertrauenswürdigen Netzwerken schließen</string>
-    <string name="settings_tcp_add_network_dialog_title">Vertrauenswürdiges Netzwerk hinzufügen</string>
     <string name="settings_tcp_ssid_label">Netzwerkname (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s entfernen</string>
     <string name="tcp_protection_off">Aus</string>

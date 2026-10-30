@@ -929,7 +929,6 @@
     <string name="settings_shadow_binder_hidden_packages">Ukryte pakiety</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Rozdzielona przecinkami lista nazw pakietów do ukrycia przed innymi aplikacjami. Jeśli masz zainstalowane zarówno oryginalne Shizuku, jak i Shizuku+, dodaj oba (moe.shizuku.privileged.api, af.shizuku.manager), aby zapobiec konfliktom.</string>
     <string name="settings_automation_trusted_networks">Zaufane sieci</string>
-    <string name="settings_automation_trusted_networks_summary">Rozdzielone przecinkami nazwy sieci Wi-Fi (SSID). Zapora Binder jest wyłączana automatycznie po połączeniu z jedną z nich i włączana automatycznie w innych miejscach (w tym w sieci komórkowej). Pozostaw puste, aby kontrolować zaporę Binder ręcznie.</string>
     <string name="settings_automation_auto_hide_packages">Ukrywaj automatycznie na pierwszym planie</string>
     <string name="settings_automation_auto_hide_packages_summary">Aplikacje automatycznie dodawane do listy ukrytych Shadow Binder tylko wtedy, gdy są otwarte, oprócz powyższej listy Ukrytych pakietów. Pozostaw puste, aby zarządzać ukrytymi pakietami ręcznie.</string>
     <string name="settings_companion_mode">Pokaż kartę aplikacji towarzyszącej</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">Otwarte sieci</string>
     <string name="settings_tcp_protection_trusted">Tylko zaufane</string>
     <string name="settings_tcp_trusted_networks_label">Zaufane sieci Wi-Fi</string>
-    <string name="settings_tcp_add_network">+ Dodaj sieć</string>
     <string name="settings_tcp_auto_close_untrusted">Automatycznie zamykaj w niezaufanych sieciach</string>
-    <string name="settings_tcp_add_network_dialog_title">Dodaj zaufaną sieć</string>
     <string name="settings_tcp_ssid_label">Nazwa sieci (SSID)</string>
     <string name="settings_tcp_remove_network">Usuń %1$s</string>
     <string name="tcp_protection_off">Wył.</string>

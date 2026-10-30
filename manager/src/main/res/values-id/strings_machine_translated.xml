@@ -695,7 +695,6 @@
     <string name="settings_shadow_binder_hidden_packages">Paket Tersembunyi</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Daftar nama paket yang dipisahkan koma untuk disembunyikan dari aplikasi lain. Jika Anda memasang OG Shizuku dan Shizuku+, tambahkan keduanya (moe.shizuku.privileged.api, af.shizuku.manager) untuk mencegah konflik.</string>
     <string name="settings_automation_trusted_networks">Jaringan Tepercaya</string>
-    <string name="settings_automation_trusted_networks_summary">Nama jaringan Wi-Fi (SSID) yang dipisahkan koma. Binder Firewall dinonaktifkan otomatis saat terhubung ke salah satunya, dan diaktifkan otomatis di tempat lain (termasuk data seluler). Biarkan kosong untuk mengontrol Binder Firewall secara manual.</string>
     <string name="settings_automation_auto_hide_packages">Sembunyikan Otomatis Saat di Latar Depan</string>
     <string name="settings_automation_auto_hide_packages_summary">Aplikasi yang otomatis ditambahkan ke daftar tersembunyi Shadow Binder hanya saat sedang dibuka, selain daftar Paket Tersembunyi di atas. Biarkan kosong untuk mengelola paket tersembunyi secara manual.</string>
     <string name="settings_companion_mode">Tampilkan Kartu Pendamping</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">Jaringan terbuka</string>
     <string name="settings_tcp_protection_trusted">Hanya tepercaya</string>
     <string name="settings_tcp_trusted_networks_label">Jaringan Wi-Fi tepercaya</string>
-    <string name="settings_tcp_add_network">+ Tambah jaringan</string>
     <string name="settings_tcp_auto_close_untrusted">Tutup otomatis di jaringan tidak tepercaya</string>
-    <string name="settings_tcp_add_network_dialog_title">Tambah jaringan tepercaya</string>
     <string name="settings_tcp_ssid_label">Nama jaringan (SSID)</string>
     <string name="settings_tcp_remove_network">Hapus %1$s</string>
     <string name="tcp_protection_off">Mati</string>

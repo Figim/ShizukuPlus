@@ -695,7 +695,6 @@
     <string name="settings_shadow_binder_hidden_packages">Paquetes ocultos</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Lista de nombres de paquete separados por comas que se ocultarán de otras apps. Si tienes instalados tanto Shizuku original como Shizuku+, añade ambos (moe.shizuku.privileged.api, af.shizuku.manager) para evitar conflictos.</string>
     <string name="settings_automation_trusted_networks">Redes de confianza</string>
-    <string name="settings_automation_trusted_networks_summary">Nombres de redes Wi-Fi (SSID) separados por comas. Binder Firewall se desactiva automáticamente mientras estés conectado a una de ellas y se activa automáticamente en cualquier otro lugar (incluidos los datos móviles). Déjalo vacío para controlar Binder Firewall manualmente.</string>
     <string name="settings_automation_auto_hide_packages">Ocultar automáticamente en primer plano</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps que se añaden automáticamente a la lista de ocultos de Shadow Binder solo mientras están abiertas, además de la lista de paquetes ocultos de arriba. Déjalo vacío para gestionar los paquetes ocultos manualmente.</string>
     <string name="settings_companion_mode">Mostrar tarjeta complementaria</string>
@@ -1160,9 +1159,7 @@
     <string name="settings_tcp_protection_open">Redes abiertas</string>
     <string name="settings_tcp_protection_trusted">Solo redes confiables</string>
     <string name="settings_tcp_trusted_networks_label">Redes Wi-Fi confiables</string>
-    <string name="settings_tcp_add_network">+ Añadir red</string>
     <string name="settings_tcp_auto_close_untrusted">Cerrar automáticamente en redes no confiables</string>
-    <string name="settings_tcp_add_network_dialog_title">Añadir red confiable</string>
     <string name="settings_tcp_ssid_label">Nombre de red (SSID)</string>
     <string name="settings_tcp_remove_network">Eliminar %1$s</string>
     <string name="tcp_protection_off">Desactivado</string>

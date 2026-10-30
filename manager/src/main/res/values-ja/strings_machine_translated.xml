@@ -694,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">非表示のパッケージ</string>
     <string name="settings_shadow_binder_hidden_packages_summary">他のアプリから隠すパッケージ名のカンマ区切りリストです。元のShizukuとShizuku+ の両方をインストールしている場合は、競合を防ぐため両方 (moe.shizuku.privileged.api、af.shizuku.manager) を追加してください。</string>
     <string name="settings_automation_trusted_networks">信頼するネットワーク</string>
-    <string name="settings_automation_trusted_networks_summary">Wi-Fiネットワーク名 (SSID) のカンマ区切りリストです。これらのいずれかに接続している間はBinderファイアウォールが自動的に無効になり、それ以外の場所 (モバイルデータを含む) では自動的に有効になります。空のままにすると、Binderファイアウォールを手動で制御します。</string>
     <string name="settings_automation_auto_hide_packages">前面表示中に自動で非表示</string>
     <string name="settings_automation_auto_hide_packages_summary">上の非表示のパッケージリストに加えて、開いている間のみShadow Binderの非表示リストに自動で追加されるアプリです。空のままにすると、非表示のパッケージを手動で管理します。</string>
     <string name="settings_companion_mode">コンパニオンカードを表示</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">オープンネットワーク</string>
     <string name="settings_tcp_protection_trusted">信頼できるネットワークのみ</string>
     <string name="settings_tcp_trusted_networks_label">信頼できる Wi-Fi ネットワーク</string>
-    <string name="settings_tcp_add_network">+ ネットワークを追加</string>
     <string name="settings_tcp_auto_close_untrusted">信頼できないネットワークで自動切断</string>
-    <string name="settings_tcp_add_network_dialog_title">信頼できるネットワークの追加</string>
     <string name="settings_tcp_ssid_label">ネットワーク名 (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s を削除</string>
     <string name="tcp_protection_off">オフ</string>

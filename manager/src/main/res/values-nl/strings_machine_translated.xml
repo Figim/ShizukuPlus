@@ -929,7 +929,6 @@
     <string name="settings_shadow_binder_hidden_packages">Verborgen pakketten</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Kommagescheiden lijst van pakketnamen om voor andere apps te verbergen. Als je zowel originele Shizuku als Shizuku+ hebt geïnstalleerd, voeg dan beide toe (moe.shizuku.privileged.api, af.shizuku.manager) om conflicten te voorkomen.</string>
     <string name="settings_automation_trusted_networks">Vertrouwde netwerken</string>
-    <string name="settings_automation_trusted_networks_summary">Kommagescheiden Wi-Fi-netwerknamen (SSID\'s). Binder Firewall is automatisch uitgeschakeld terwijl verbonden met een van deze, en overal elders automatisch ingeschakeld (inclusief mobiele data). Laat leeg om Binder Firewall handmatig te beheren.</string>
     <string name="settings_automation_auto_hide_packages">Automatisch verbergen op voorgrond</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps die automatisch worden toegevoegd aan de verborgen lijst van Shadow Binder zolang ze geopend zijn, bovenop de bovenstaande lijst van verborgen pakketten. Laat leeg om verborgen pakketten handmatig te beheren.</string>
     <string name="settings_companion_mode">Companion-kaart weergeven</string>
@@ -1153,9 +1152,7 @@
     <string name="settings_tcp_protection_open">Open netwerken</string>
     <string name="settings_tcp_protection_trusted">Alleen vertrouwd</string>
     <string name="settings_tcp_trusted_networks_label">Vertrouwde Wi-Fi-netwerken</string>
-    <string name="settings_tcp_add_network">+ Netwerk toevoegen</string>
     <string name="settings_tcp_auto_close_untrusted">Automatisch sluiten op niet-vertrouwde netwerken</string>
-    <string name="settings_tcp_add_network_dialog_title">Vertrouwd netwerk toevoegen</string>
     <string name="settings_tcp_ssid_label">Netwerknaam (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s verwijderen</string>
     <string name="tcp_protection_off">Uit</string>

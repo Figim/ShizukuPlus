@@ -692,7 +692,6 @@
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketler</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Diğer uygulamalardan gizlenecek paket adlarının virgülle ayrılmış listesi. Hem orijinal Shizuku hem de Shizuku+ yüklüyse çakışmaları önlemek için ikisini de ekleyin (moe.shizuku.privileged.api, af.shizuku.manager).</string>
     <string name="settings_automation_trusted_networks">Güvenilir Ağlar</string>
-    <string name="settings_automation_trusted_networks_summary">Virgülle ayrılmış Wi-Fi ağ adları (SSID). Bunlardan birine bağlıyken Binder Güvenlik Duvarı otomatik olarak devre dışı bırakılır, başka her yerde (mobil veri dahil) otomatik olarak etkinleştirilir. Binder Güvenlik Duvarı\'nı elle denetlemek için boş bırakın.</string>
     <string name="settings_automation_auto_hide_packages">Ön Plandayken Otomatik Gizle</string>
     <string name="settings_automation_auto_hide_packages_summary">Yukarıdaki Gizli Paketler listesine ek olarak, yalnızca açık oldukları sürece Shadow Binder\'ın gizli listesine otomatik eklenen uygulamalar. Gizli paketleri elle yönetmek için boş bırakın.</string>
     <string name="settings_companion_mode">Yardımcı Kartı Göster</string>
@@ -1154,9 +1153,7 @@
     <string name="settings_tcp_protection_open">Açık ağlar</string>
     <string name="settings_tcp_protection_trusted">Yalnızca güvenilenler</string>
     <string name="settings_tcp_trusted_networks_label">Güvenilen Wi-Fi ağları</string>
-    <string name="settings_tcp_add_network">+ Ağ ekle</string>
     <string name="settings_tcp_auto_close_untrusted">Güvenilmeyen ağlarda otomatik kapat</string>
-    <string name="settings_tcp_add_network_dialog_title">Güvenilen ağ ekle</string>
     <string name="settings_tcp_ssid_label">Ağ adı (SSID)</string>
     <string name="settings_tcp_remove_network">Kaldır: %1$s</string>
     <string name="tcp_protection_off">Kapalı</string>

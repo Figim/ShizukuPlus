@@ -695,7 +695,6 @@
     <string name="settings_shadow_binder_hidden_packages">الحزم المخفية</string>
     <string name="settings_shadow_binder_hidden_packages_summary">قائمة مفصولة بفواصل لأسماء الحزم المراد إخفاؤها عن التطبيقات الأخرى. إذا كان Shizuku الأصلي وShizuku+ مثبّتين معًا، أضف كليهما (moe.shizuku.privileged.api وaf.shizuku.manager) لمنع التعارض.</string>
     <string name="settings_automation_trusted_networks">الشبكات الموثوقة</string>
-    <string name="settings_automation_trusted_networks_summary">أسماء شبكات Wi-Fi (SSID) مفصولة بفواصل. يُعطَّل جدار حماية Binder تلقائيًا أثناء الاتصال بإحداها، ويُفعَّل تلقائيًا في كل مكان آخر (بما في ذلك بيانات الجوال). اتركها فارغة للتحكم بجدار حماية Binder يدويًا.</string>
     <string name="settings_automation_auto_hide_packages">إخفاء تلقائي أثناء العمل في المقدمة</string>
     <string name="settings_automation_auto_hide_packages_summary">التطبيقات التي تُضاف تلقائيًا إلى قائمة الإخفاء في Shadow Binder فقط أثناء فتحها، إضافة إلى قائمة الحزم المخفية أعلاه. اتركها فارغة لإدارة الحزم المخفية يدويًا.</string>
     <string name="settings_companion_mode">إظهار بطاقة المرافق</string>
@@ -1154,9 +1153,7 @@
     <string name="settings_tcp_protection_open">الشبكات المفتوحة</string>
     <string name="settings_tcp_protection_trusted">الموثوقة فقط</string>
     <string name="settings_tcp_trusted_networks_label">شبكات Wi-Fi الموثوقة</string>
-    <string name="settings_tcp_add_network">+ إضافة شبكة</string>
     <string name="settings_tcp_auto_close_untrusted">الإغلاق التلقائي على الشبكات غير الموثوقة</string>
-    <string name="settings_tcp_add_network_dialog_title">إضافة شبكة موثوقة</string>
     <string name="settings_tcp_ssid_label">اسم الشبكة (SSID)</string>
     <string name="settings_tcp_remove_network">إزالة %1$s</string>
     <string name="tcp_protection_off">إيقاف</string>
