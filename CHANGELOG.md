@@ -17,6 +17,12 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Starter "Wireless ADB" fallback button** opens port discovery instead of closing silently.
 - **Per-app command scopes catch more ways of running a tool** — `sh -c "pm …"`, `/system/bin/pm` and chained commands are now blocked when that scope is off ([#648](https://github.com/thejaustin/ShizukuPlus/issues/648)).
 - **Never two Shizuku servers at once** — restarting the server from adb or a PC while the Watchdog also restarted it could leave two servers running.
+- **Restoring settings is your choice** — after a reinstall, the welcome page offers the backup it found. Restored settings (theme, language, start on boot, app icon, Watchdog, Plus features) apply immediately without restarting, and settings that widen access ask before turning on. The app no longer silently re-restored an old backup on every launch.
+- **Safer settings backup** — the copy that survives a reinstall is no longer kept in public Downloads, where any app could read or replace it. Scanner API keys and the hidden-apps list aren't stored in it.
+- **AMOLED dark styles are true black on the Home screen**, and turning a setting on no longer puts a black block behind its row.
+- **Icon style changes apply right away** — switching to Two-tone (or any style) no longer showed the previous style until the next change.
+- **Expressive icon shapes are centered** behind their icons (cookie and star were off-center).
+- **Settings toggles update their own row** and keep the tap ripple when switched on or off.
 - **Fewer background errors on Samsung devices with Secure Folder** when checking frozen apps or listing apps for backup.
 
 ### 🎬 Screen Transitions & Motion Experience
