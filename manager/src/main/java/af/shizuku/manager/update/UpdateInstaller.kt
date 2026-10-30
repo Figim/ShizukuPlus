@@ -14,9 +14,9 @@ object UpdateInstaller {
 
     /** Reinstall copy kept by [SettingsBackupManager.saveAutoBackup] (shell-owned, survives uninstall). */
     const val REINSTALL_BACKUP_DIR = "/data/local/tmp/shizukuplus"
-    const val REINSTALL_BACKUP_FILENAME = "settings_backup.json"
 
-    fun reinstallBackupFile(): File = File(REINSTALL_BACKUP_DIR, REINSTALL_BACKUP_FILENAME)
+    /** Per flavor: Plus and Drop-In each keep their own copy instead of overwriting each other. */
+    fun reinstallBackupFile(context: Context): File = File(REINSTALL_BACKUP_DIR, "settings_backup_${context.packageName}.json")
 
     /**
      * Where the force-update script hands the settings over across its uninstall/reinstall. Only
@@ -30,7 +30,7 @@ object UpdateInstaller {
             context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let { File(it, AUTO_BACKUP_FILENAME) },
         )
 
-    fun trustedBackupCandidates(context: Context): List<File> = handoffBackupCandidates(context) + reinstallBackupFile()
+    fun trustedBackupCandidates(context: Context): List<File> = handoffBackupCandidates(context) + reinstallBackupFile(context)
 
     /**
      * Public Downloads copies (older builds wrote one there). Any app with storage access can
@@ -47,7 +47,9 @@ object UpdateInstaller {
     private fun File.usable(): Boolean = runCatching { isFile && length() > 0 }.getOrDefault(false)
 
     const val KEY_RESTORED_BACKUP_FINGERPRINT = "restored_backup_fingerprint"
-    private const val AUTO_RESTORE_MAX_AGE_MS = 24 * 60 * 60 * 1000L
+
+    // The force-update script relaunches the app right after reinstalling it.
+    private const val AUTO_RESTORE_MAX_AGE_MS = 10 * 60 * 1000L
 
     private fun fingerprint(file: File): String = "${file.length()}:${file.lastModified()}"
 
@@ -97,7 +99,7 @@ object UpdateInstaller {
         if (handoff != null) return handoff
         // The reinstall copy only on an install that hasn't checked yet (fresh install or data
         // cleared); afterwards it is this install's own, continuously updated snapshot.
-        val reinstall = reinstallBackupFile()
+        val reinstall = reinstallBackupFile(context)
         if (!SettingsBackupManager.isRestoreChecked() && reinstall.usable() && !wasRestored(context, reinstall)) {
             return reinstall
         }
@@ -116,7 +118,11 @@ object UpdateInstaller {
                 consumeBackup(context, file)
                 return false
             }
-            if (!SettingsBackupManager.importAndCommit(context, json, trustPrivileged = true)) return false
+            // Any app authorized for Shizuku can write /data/local/tmp as shell, so the reinstall
+            // copy is restored with privileged settings held back (they ask). Only the
+            // force-update handoff, written seconds earlier by this app, applies them as stored.
+            val trusted = file != reinstallBackupFile(context)
+            if (!SettingsBackupManager.importAndCommit(context, json, trustPrivileged = trusted)) return false
             consumeBackup(context, file)
             Timber.tag(TAG).i("Restored settings from %s", file.absolutePath)
             return true
@@ -142,8 +148,15 @@ object UpdateInstaller {
      */
     fun deleteAllBackupCopies(context: Context) {
         // Not the reinstall copy: saveAutoBackup keeps rewriting it on purpose.
-        (handoffBackupCandidates(context) + publicBackupCandidates() + File(context.filesDir, AUTO_BACKUP_FILENAME)).forEach { f ->
-            runCatching { if (f.exists()) f.delete() }
+        val leftovers = handoffBackupCandidates(context) + publicBackupCandidates() + File(context.filesDir, AUTO_BACKUP_FILENAME)
+        leftovers.forEach { f -> runCatching { if (f.exists()) f.delete() } }
+        // The /data/local/tmp handoff copies are shell-owned (and hold API keys): remove them as
+        // shell when the service is up.
+        val shellOwned = leftovers.filter { it.absolutePath.startsWith("/data/local/tmp/") && runCatching { it.exists() }.getOrDefault(false) }
+        if (shellOwned.isNotEmpty() && runCatching { Shizuku.pingBinder() }.getOrDefault(false)) {
+            runCatching {
+                Shizuku.newProcess(arrayOf("rm", "-f") + shellOwned.map { it.absolutePath }, null, null).waitFor()
+            }
         }
     }
 
@@ -192,7 +205,7 @@ object UpdateInstaller {
 
                     if [ -f /data/local/tmp/shizukuplus_settings.json ]; then
                         cp /data/local/tmp/shizukuplus_settings.json "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
-                        chmod 666 "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
+                        chmod 644 "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
 
                         DEST_DIR="/sdcard/Android/data/$packageName/files/Download"
                         mkdir -p "${'$'}DEST_DIR" 2>/dev/null

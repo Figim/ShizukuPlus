@@ -148,7 +148,7 @@ class OnboardingActivity : AppActivity() {
                     candidate.length() > 10 &&
                     !UpdateInstaller.wasRestored(this, candidate) &&
                     // The reinstall copy is this install's own snapshot once the check ran.
-                    !(candidate == UpdateInstaller.reinstallBackupFile() && SettingsBackupManager.isRestoreChecked()) &&
+                    !(candidate == UpdateInstaller.reinstallBackupFile(this) && SettingsBackupManager.isRestoreChecked()) &&
                     !SettingsBackupManager.matchesCurrent(this, candidate.readText())
                 ) {
                     return candidate

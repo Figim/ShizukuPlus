@@ -172,6 +172,8 @@ object SettingsBackupManager {
         setOf(
             ShizukuSettings.Keys.KEY_VIRUSTOTAL_API_KEY,
             ShizukuSettings.Keys.KEY_PITHUS_API_KEY,
+            // Which apps are hidden from other apps: readable here, it would defeat the point.
+            ShizukuSettings.Keys.KEY_SHADOW_BINDER_HIDDEN_PACKAGES,
         )
 
     /** Set once this install has checked for a backup to restore; excluded from backups. */
@@ -229,7 +231,7 @@ object SettingsBackupManager {
             val hash = sanitized.hashCode()
             if (hash == lastReinstallCopyHash) return
             val dir = UpdateInstaller.REINSTALL_BACKUP_DIR
-            val target = "$dir/${UpdateInstaller.REINSTALL_BACKUP_FILENAME}"
+            val target = UpdateInstaller.reinstallBackupFile(context).absolutePath
             val script = "mkdir -p $dir && chmod 755 $dir && cat > $target.tmp && chmod 644 $target.tmp && mv -f $target.tmp $target"
             val process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", script), null, null)
             process.outputStream.use { it.write(sanitized.toByteArray()) }
