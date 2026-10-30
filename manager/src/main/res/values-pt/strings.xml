@@ -176,7 +176,6 @@
         esta definição.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>É obrigatório Wi-Fi. A Shizuku continua a funcionar e espera pela ligação Wi-Fi antes de reiniciar em segundo plano.</b>]]></string>
     <string name="settings_language">Idioma</string>
-    <string name="settings_translation_contributors">Colaboradores de tradução</string>
     <string name="settings_translation">Participe da tradução</string>
     <string name="settings_translation_summary">Ajude-nos a traduzir %s para o seu idioma</string>
     <string name="settings_help">Ajuda</string>
@@ -219,7 +218,6 @@
     <string name="action_stop">Parar Shizuku</string>
     <string name="dialog_stop_message">O serviço de Shizuku será interrompido.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Falha ao solicitar permissão de root.</string>
     <string name="notification_channel_adb_pairing">Emparelhamento de depuração sem fio</string>
     <string name="notification_adb_pairing_input_paring_code">Digite o código de pareamento</string>
     <string name="notification_adb_pairing_searching_for_service_title">Procurando serviço de

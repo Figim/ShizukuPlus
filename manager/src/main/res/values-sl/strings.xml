@@ -170,7 +170,6 @@
         nastavitev.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi je obvezen. Shizuku bo še naprej delovala in počakala na Wi-Fi povezavo, preden se bo v ozadju ponovno zagnala.</b>]]></string>
     <string name="settings_language">Jezik</string>
-    <string name="settings_translation_contributors">Sodelavci prevodov</string>
     <string name="settings_translation">Sodelujte pri prevajanju</string>
     <string name="settings_translation_summary">Pomagajte nam prevajati %s v vaš jezik</string>
     <string name="settings_help">Pomoč</string>
@@ -214,7 +213,6 @@
     <string name="action_stop">Ustavi Shizuku</string>
     <string name="dialog_stop_message">Storitev Shizuku bo bila ustavljena.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Neuspešna zahteva za root dovoljenje.</string>
     <string name="notification_channel_adb_pairing">Seznanjanje brezžičnega razhroščevanja</string>
     <string name="notification_adb_pairing_input_paring_code">Vnesite seznantitveno kodo</string>
     <string name="notification_adb_pairing_searching_for_service_title">Iskanje storitve za

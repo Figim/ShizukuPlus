@@ -168,7 +168,6 @@
         te pas.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi word vereis. Shizuku sal aanhou loop en wag vir \'n Wi-Fi-verbinding voordat dit in die agtergrond herbegin.</b>]]></string>
     <string name="settings_language">Taal</string>
-    <string name="settings_translation_contributors">Vertalingsbydraers</string>
     <string name="settings_translation">Neem deel aan vertaling</string>
     <string name="settings_translation_summary">Help ons om %s in jou taal te vertaal</string>
     <string name="settings_help">Hulp</string>
@@ -212,7 +211,6 @@
     <string name="action_stop">Stop Shizuku</string>
     <string name="dialog_stop_message">Shizuku-diens sal gestaak word.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Kon nie worteltoestemming aanvra nie.</string>
     <string name="notification_channel_adb_pairing">Draadlose ontfouting-paring</string>
     <string name="notification_adb_pairing_input_paring_code">Voer paringskode in</string>
     <string name="notification_adb_pairing_searching_for_service_title">Soek tans na paringsdiens</string>

@@ -23,7 +23,15 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Icon style changes apply right away** — switching to Two-tone (or any style) no longer showed the previous style until the next change.
 - **Expressive icon shapes are centered** behind their icons (cookie and star were off-center).
 - **Settings toggles update their own row** and keep the tap ripple when switched on or off.
+- **App Backup's temp-debug mode survives a service restart** — if the Shizuku service restarted while an app was in temp-debug mode, "restore original" stopped working and the saved copy of the app stayed on the device. The session is now picked back up, and leftover copies of apps that were already restored are cleaned up.
 - **Fewer background errors on Samsung devices with Secure Folder** when checking frozen apps or listing apps for backup.
+
+### 👆 Swipe actions settings
+- **Simpler Swipe actions settings** — a row from your app list swipes each way on its own, showing exactly what each swipe does. Below it, "Swipe right", "Swipe left" and "Long-press menu" are normal settings rows that open a short picker, replacing the grid of chips.
+- **Swipe settings sandbox** (Developer options) — try a version where you drag the preview row yourself and choose the action after letting go.
+
+### 📦 Storage
+- **Downloaded updates are deleted once installed** — each in-app update left its APK (about 16 MB) in Shizuku+'s storage for good. Old ones are now removed when the app starts; an update you downloaded but haven't installed yet is kept.
 
 ### 🎬 Screen Transitions & Motion Experience
 - **Unified Material 3 Expressive Screen Navigation** — completely eradicated legacy Android 5.0 `Explode()` transitions across the app, replacing them with fluid Material Design `MaterialSharedAxis.Z` (depth zoom and fade) transitions as the default across all activities (`AppActivity` and `AppBarActivity`).

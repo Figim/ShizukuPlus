@@ -6,7 +6,6 @@
     <string name="server_clients_connected">%1$d aplicativos conectados</string>
 
     <!--Para tradutores: você pode deixar o seu aqui-->
-    <string name="translation_contributors">thejaustin</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!--Configurações da interface - Expressiva-->
@@ -20,9 +19,7 @@
 
     <!--Configurações da interface - Tela-->
     <string name="settings_edge_to_edge">Layout de ponta a ponta</string>
-    <string name="settings_edge_to_edge_summary">Estender o conteúdo por trás das barras do sistema. Desative se as barras do sistema sobrepuserem controles importantes</string>
     <string name="settings_blur_ui">Efeito de vidro fosco</string>
-    <string name="settings_blur_ui_summary">Aplicar desfoque e transparência aos diálogos e à barra superior. Melhor no Android 12+</string>
 
     <!--Configurações da interface - Tema One UI-->
     <string name="settings_oneui_theme">Estilo One UI</string>
@@ -237,8 +234,6 @@
     <string name="rish_description"><![CDATA[Com o %1$s, você pode executar comandos de shell em qualquer aplicativo de terminal.<p>Toque para saber mais sobre como usá-lo.]]></string>
 
     <!--Configurações — personalização de deslize-->
-    <string name="settings_swipe_right">Ação ao deslizar para a direita</string>
-    <string name="settings_swipe_left">Ação ao deslizar para a esquerda</string>
     <string name="settings_action_none">Nenhuma</string>
     <string name="settings_action_open_app">Abrir aplicativo</string>
     <string name="settings_action_app_info">Informações do aplicativo</string>
@@ -276,7 +271,6 @@
     <string name="swipe_hint_title">Gestos de deslizar</string>
     <string name="swipe_hint_right">Deslize para a direita para ação rápida</string>
     <string name="swipe_hint_left">Deslize para a esquerda para ação rápida</string>
-    <string name="swipe_hint_dismiss">Toque em qualquer lugar para dispensar</string>
 
     <!--Configurações-->
     <string name="settings_title">Configurações</string>
@@ -295,7 +289,6 @@
     <string name="settings_auto_disable_usb_debugging">Desativar automaticamente a depuração USB</string>
     <string name="settings_auto_disable_usb_debugging_summary">Desativar a depuração USB ao parar o Shizuku</string>
     <string name="settings_language">Idioma</string>
-    <string name="settings_translation_contributors">Colaboradores da tradução</string>
     <string name="settings_translation">Participe da tradução</string>
     <string name="settings_translation_summary">Ajude-nos a traduzir o %s para o seu idioma</string>
     <string name="settings_version">Versão</string>
@@ -454,7 +447,6 @@ Execute este comando no PC (a depuração USB deve estar ativada):
     <string name="su_bridge_setup_all">Configurar Todos</string>
     <string name="su_bridge_magic_setup">Configuração Mágica</string>
     <string name="su_bridge_magic_setup_success">Configuração Mágica concluída! O Shizuku+ configurou %s para você.</string>
-    <string name="su_bridge_magic_setup_fail">A Configuração Mágica falhou. Por favor, use a cópia manual do caminho.</string>
     <string name="su_bridge_magic_setup_all_summary">O Shizuku+ configurou %d aplicativos para você!</string>
     <string name="su_bridge_magic_setup_all_no_apps">Nenhum aplicativo root compatível encontrado para automação.</string>
     <string name="su_bridge_copy_open">Copiar caminho e abrir</string>
@@ -590,7 +582,6 @@ Reinicie completamente o dispositivo para encerrar o servidor original e, em seg
     <!--Notificação-->
     <string name="notification_channel_automation">Serviço de automação</string>
     <string name="notification_automation_title">Automação em execução</string>
-    <string name="notification_service_start_no_root">Falha ao solicitar permissão root.</string>
     <string name="notification_channel_adb_pairing">Pareamento de depuração sem fio</string>
     <string name="notification_adb_pairing_input_paring_code">Digite o código de pareamento</string>
     <string name="notification_adb_pairing_searching_for_service_title">Procurando serviço de pareamento</string>
@@ -662,7 +653,6 @@ Reinicie completamente o dispositivo para encerrar o servidor original e, em seg
     <string name="settings_main_nav_root_compat_summary">Conexão ADB, ponte SU, integração sem root e compatibilidade com o Shizuku original</string>
     <string name="settings_main_nav_appearance_summary">Tema, formas, ícones, animações, layout da tela inicial e idioma</string>
     <string name="settings_main_nav_app_interactions_title">Interações com aplicativos</string>
-    <string name="settings_main_nav_app_interactions_summary">Gestos, ações de toque prolongado e verificação de instalação</string>
     <string name="settings_main_nav_startup_behavior_title">Inicialização e comportamento</string>
     <string name="settings_main_nav_startup_behavior_summary">Opções de inicialização, watchdog, rede e status de atividade</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Avançado e diagnósticos</string>
@@ -698,13 +688,8 @@ Impressão digital da chave RSA:
     <string name="accessibility_icon_drag_handle">Arrastar para reordenar</string>
     <string name="accessibility_icon_info">Informação</string>
     <string name="accessibility_button_start">Botão de iniciar</string>
-    <string name="accessibility_button_restart">Botão de reiniciar</string>
-    <string name="accessibility_button_view_command">Botão de ver comando</string>
-    <string name="accessibility_button_view_guide">Botão de ver guia</string>
     <string name="accessibility_state_expanded">Expandido</string>
     <string name="accessibility_state_collapsed">Recolhido</string>
-    <string name="accessibility_button_view_intents">Botão de ver intents</string>
-    <string name="accessibility_button_pairing">Botão de pareamento</string>
     <string name="accessibility_action_app_info">Abrir configurações de informações do aplicativo</string>
     <string name="accessibility_permission_granted">Permissão concedida</string>
 
@@ -751,7 +736,6 @@ Impressão digital da chave RSA:
     <string name="update_download_failed_http">Um erro de rede interrompeu o download. Verifique sua conexão e tente novamente.</string>
 
     <!--Diálogo de migração-->
-    <string name="migration_success_message">Suas configurações foram copiadas da versão antiga. Agora você pode desinstalar com segurança o moe.shizuku.privileged.api.</string>
 
     <!--Diálogos de atualização-->
     <string name="update_available_title">Atualização Disponível</string>
@@ -1169,8 +1153,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_plus_category_device_owner_tools">Ferramentas de proprietário do dispositivo</string>
     <string name="settings_plus_category_security_access">Segurança e acesso</string>
     <string name="settings_plus_category_system_performance">Sistema e desempenho</string>
-    <string name="settings_home_card_shape">Cantos dos cards da tela inicial</string>
-    <string name="settings_settings_card_shape">Cantos dos cards de configurações</string>
     <string name="settings_behavior_category_startup">Inicialização e recuperação</string>
     <string name="settings_backup_settings">Backup de configurações</string>
     <string name="settings_backup_settings_summary">Exporte suas configurações e melhorias com segurança usando criptografia biométrica.</string>
@@ -1189,17 +1171,12 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_personalization_category_language">Idioma</string>
     <string name="settings_personalization_category_shape_style">Forma e estilo de ícone</string>
     <string name="settings_bold_typography">Tipografia em negrito</string>
-    <string name="settings_bold_typography_summary">Usar pesos de fonte mais pesados para títulos e cabeçalhos</string>
     <string name="settings_expanded_headers">Cabeçalhos de seção expandidos</string>
-    <string name="settings_expanded_headers_summary">Usar cabeçalhos altos e recolháveis nas telas de configurações</string>
-    <string name="settings_rounded_edges">Bordas arredondadas</string>
-    <string name="settings_rounded_edges_summary">Usar cantos arredondados em cards e containers de diálogo</string>
     <string name="settings_corner_rounding_override">Arredondamento de cantos</string>
     <string name="settings_follow_system_animations">Seguir animações do sistema</string>
     <string name="settings_follow_system_animations_summary">Respeitar a velocidade de animação do dispositivo definida nas Opções do desenvolvedor</string>
     <string name="settings_show_status_card_outline">Contorno do card de status</string>
     <string name="settings_show_status_card_outline_summary">Mostrar um contorno colorido no card de status do serviço</string>
-    <string name="settings_status_card_outline_style">Cor do contorno</string>
     <string-array name="status_card_outline_styles">
         <item>Material (cor do tema)</item>
         <item>Verde / Vermelho (cor do status)</item>
@@ -1224,7 +1201,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_advanced_category_diagnostics">Diagnósticos</string>
     <string name="settings_developer_category_debug">Depuração e diagnósticos</string>
     <string name="settings_mode_indicator_root">Executando em modo root — opções exclusivas de ADB estão ocultas</string>
-    <string name="settings_app_management_category_gestures">Gestos e ações</string>
     <string name="settings_app_management_category_verified_install">Instalação verificada</string>
 
     <!-- Settings: Root compatibility -->
@@ -1286,13 +1262,9 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
 
     <!-- Settings: APK verification -->
     <string name="settings_verify_apk_local_title">Correspondência de assinatura local</string>
-    <string name="settings_verify_apk_local_summary">Verificar se as atualizações correspondem à assinatura do app instalado. Rápido e totalmente offline.</string>
     <string name="settings_verify_apk_fdroid_title">Índice F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_fdroid_summary">Verificar hashes de APK localmente em relação a metadados de código aberto confiáveis.</string>
     <string name="settings_verify_apk_virustotal_title">Verificação VirusTotal</string>
-    <string name="settings_verify_apk_virustotal_summary">Verificar hashes de APK no VirusTotal antes da instalação. Requer chave de API.</string>
     <string name="settings_verify_apk_pithus_title">Inteligência de ameaças Pithus</string>
-    <string name="settings_verify_apk_pithus_summary">Verificar hashes no Pithus para detectar características de malware.</string>
 
     <!-- Snackbar -->
     <string name="snackbar_action_check">Verificar</string>

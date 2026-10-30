@@ -25,7 +25,6 @@
     <string name="compat_hub_install_signature_conflict">Quraşdırıla bilmir: fərqli bir tətbiq (məsələn, orijinal Shizuku) uyğun gəlməyən imza ilə moe.shizuku.privileged.api olaraq artıq quraşdırılıb. Əvvəlcə onu silin.</string>
     <string name="compat_hub_install_fail_storage">Quraşdırıla bilmir: cihazda kifayət qədər boş yaddaş yoxdur.</string>
     <string name="compat_hub_install_fail_abi">Quraşdırıla bilmir: Uyğunluq Mərkəzi bu cihazın CPU arxitekturasını dəstəkləmir.</string>
-    <string name="compat_hub_install_manual_launched">Quraşdırıcı açılır — quraşdırmanı tamamlamaq üçün ekrandakı təlimatları izləyin.</string>
     <string name="compat_hub_install_fail_newprocess">Cihazınız Shizuku-nun proses yaratma API-sini məhdudlaşdırır. Bunun əvəzinə sistem quraşdırıcısı açılır — istənildikdə Quraşdır düyməsinə toxunun.</string>
     <string name="compat_hub_progress_preparing">Uyğunluq Mərkəzi hazırlanır…</string>
     <string name="compat_hub_progress_uninstalling">Uyğunluq Mərkəzi silinir…</string>

@@ -180,7 +180,6 @@
         εφαρμοστεί αυτή η ρύθμιση.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Απαιτείται Wi-Fi. Το Shizuku θα συνεχίσει να εκτελείται και θα περιμένει σύνδεση Wi-Fi πριν από την επανεκκίνηση στο παρασκήνιο.</b>]]></string>
     <string name="settings_language">Γλώσσα</string>
-    <string name="settings_translation_contributors">Συνεισφέροντες στη μετάφραση</string>
     <string name="settings_translation">Συμμετοχή στη μετάφραση</string>
     <string name="settings_translation_summary">Βοηθήστε μας να μεταφράσουμε το %s στη γλώσσα σας</string>
     <string name="settings_help">Βοήθεια</string>
@@ -224,7 +223,6 @@
     <string name="action_stop">Σταματήστε το Shizuku</string>
     <string name="dialog_stop_message">Η υπηρεσία Shizuku θα διακοπεί.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Αποτυχία αιτήματος δικαιωμάτων root.</string>
     <string name="notification_channel_adb_pairing">Ασύρματη αντιστοίχιση εντοπισμού σφαλμάτων</string>
     <string name="notification_adb_pairing_input_paring_code">Εισαγάγετε τον κωδικό σύζευξης</string>
     <string name="notification_adb_pairing_searching_for_service_title">Αναζήτηση υπηρεσίας σύζευξης</string>

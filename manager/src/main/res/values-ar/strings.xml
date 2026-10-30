@@ -165,7 +165,6 @@
     <string name="settings_restart_dialog_message">يجب على Shizuku إعادة التشغيل لتطبيق هذا الإعداد.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>يتطلب اتصالاً لاسلكياً. سيستمر شيزوكو بالعمل وينتظر اتصالاً لاسلكياً قبل إعادة التشغيل في الخلفية.</b>]]></string>
     <string name="settings_language">اللغة</string>
-    <string name="settings_translation_contributors">المساهمون في الترجمة</string>
     <string name="settings_translation">شارك في الترجمة</string>
     <string name="settings_translation_summary">ساعدنا في ترجمة %s إلى لغتك</string>
     <string name="settings_help">يساعد</string>
@@ -207,7 +206,6 @@
     <string name="action_stop">إيقاف Shizuku</string>
     <string name="dialog_stop_message">سيتم إيقاف خدمة Shizuku.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">فشل في طلب إذن الجذر (الروت).</string>
     <string name="notification_channel_adb_pairing">اقتران التصحيح/العلاج اللاسلكي</string>
     <string name="notification_adb_pairing_input_paring_code">أدخل رمز الاقتران</string>
     <string name="notification_adb_pairing_searching_for_service_title">البحث عن خدمة الاقتران</string>

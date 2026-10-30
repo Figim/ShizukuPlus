@@ -171,7 +171,6 @@
         tetapan ini.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi diperlukan. Shizuku akan terus berjalan dan menunggu sambungan Wi-Fi sebelum dimulakan semula di latar belakang.</b>]]></string>
     <string name="settings_language">Bahasa</string>
-    <string name="settings_translation_contributors">Penyumbang terjemahan</string>
     <string name="settings_translation">Mengambil bahagian dalam terjemahan</string>
     <string name="settings_translation_summary">Bantu kami menterjemah %s ke dalam bahasa anda</string>
     <string name="settings_help">Tolong</string>
@@ -214,7 +213,6 @@
     <string name="action_stop">Hentikan Shizuku</string>
     <string name="dialog_stop_message">Perkhidmatan Shizuku akan dihentikan.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Gagal meminta kebenaran root.</string>
     <string name="notification_channel_adb_pairing">Penyahpepijatan berpasangan tanpa wayar</string>
     <string name="notification_adb_pairing_input_paring_code">Masukkan kod berpasangan</string>
     <string name="notification_adb_pairing_searching_for_service_title">Mencari perkhidmatan

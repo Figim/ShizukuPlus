@@ -163,7 +163,6 @@
         innstillingen.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi er påkrevd. Shizuku fortsetter å kjøre og venter på Wi-Fi-tilkobling før han starter på nytt i bakgrunnen.</b>]]></string>
     <string name="settings_language">Språk</string>
-    <string name="settings_translation_contributors">Oversettelsesbidragsytere</string>
     <string name="settings_translation">Delta i oversettelse</string>
     <string name="settings_translation_summary">Hjelp oss å oversette %s til ditt språk</string>
     <string name="settings_help">Hjelp</string>
@@ -205,7 +204,6 @@
     <string name="action_stop">Stopp Shizuku</string>
     <string name="dialog_stop_message">Shizuku-tjenesten vil bli stanset.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Mislykkedes i å be om root-tillatelse.</string>
     <string name="notification_channel_adb_pairing">Trådløs feilsøkingsparing</string>
     <string name="notification_adb_pairing_input_paring_code">Skriv inn paringskoden</string>
     <string name="notification_adb_pairing_searching_for_service_title">Søker etter paringstjeneste</string>

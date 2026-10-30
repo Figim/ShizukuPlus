@@ -164,7 +164,6 @@
     <string name="settings_restart_dialog_message">Shizuku cần khởi động lại để áp dụng cài đặt này.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi là bắt buộc. Shizuku sẽ tiếp tục chạy và đợi kết nối Wi-Fi trước khi khởi động lại trong nền.</b>]]></string>
     <string name="settings_language">Ngôn ngữ</string>
-    <string name="settings_translation_contributors">Người đóng góp bản dịch</string>
     <string name="settings_translation">Tham gia phiên dịch</string>
     <string name="settings_translation_summary">Giúp chúng tôi dịch %s sang ngôn ngữ của bạn</string>
     <string name="settings_help">Giúp đỡ</string>
@@ -206,7 +205,6 @@
     <string name="action_stop">Dừng Shizuku</string>
     <string name="dialog_stop_message">Dịch vụ Shizuku sẽ ngừng hoạt động.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Yêu cầu quyền root thất bại.</string>
     <string name="notification_channel_adb_pairing">Ghép nối gỡ lỗi qua Wi-Fi</string>
     <string name="notification_adb_pairing_input_paring_code">Nhập mã ghép nối</string>
     <string name="notification_adb_pairing_searching_for_service_title">Đang tìm kiếm dịch vụ ghép

@@ -11,7 +11,6 @@ plugins {
     id "io.sentry.android.gradle"
     id "org.jetbrains.kotlin.plugin.serialization" version "2.2.20"
     id "com.diffplug.spotless"
-    id "com.mikepenz.aboutlibraries.plugin"
 }
 
 android {
@@ -119,10 +118,6 @@ spotless {
         indentWithSpaces()
         endWithNewline()
     }
-}
-
-aboutLibraries {
-    registerAndroidTasks = true
 }
 
 autoResConfig {
@@ -256,9 +251,7 @@ dependencies {
     implementation libs.androidx.transition
     implementation libs.androidx.dynamicanimation
     implementation libs.androidx.interpolator
-    implementation libs.androidx.glance.appwidget
     implementation libs.androidx.biometric
-    implementation libs.androidx.core.remoteviews
 
     implementation libs.timber
     implementation libs.coil
@@ -276,7 +269,6 @@ dependencies {
     implementation libs.blurview
     implementation libs.graphics.shapes
     
-    implementation libs.aboutlibraries.core
     implementation libs.rikkax.appcompat
     implementation libs.rikkax.compatibility
     implementation libs.rikkax.core

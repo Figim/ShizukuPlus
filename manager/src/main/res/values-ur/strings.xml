@@ -6,7 +6,6 @@
     <string name="server_clients_connected">%1$d ایپلیکیشنز منسلک ہیں</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors">HAMO</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
@@ -20,9 +19,7 @@
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">ایج ٹو ایج لے آؤٹ</string>
-    <string name="settings_edge_to_edge_summary">سسٹم بارز کے پیچھے بھی مواد دکھائیں۔ اگر سسٹم بارز اہم کنٹرولز کو ڈھانپیں تو اسے غیر فعال کریں</string>
     <string name="settings_blur_ui">فراسٹڈ گلاس ایفیکٹ</string>
-    <string name="settings_blur_ui_summary">ڈائیلاگز اور اوپری بار پر بلر اور شفافیت لگائیں۔ Android 12+ پر بہترین ہے</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI انداز</string>
@@ -240,8 +237,6 @@
     <string name="rish_description"><![CDATA[%1$s کے ساتھ آپ کسی بھی terminal ایپ میں shell کمانڈز چلا سکتے ہیں۔<p>اسے استعمال کرنے کا طریقہ جاننے کے لیے ٹیپ کریں۔]]></string>
 
     <!-- Settings — swipe customisation -->
-    <string name="settings_swipe_right">دائیں swipe کی کارروائی</string>
-    <string name="settings_swipe_left">بائیں swipe کی کارروائی</string>
     <string name="settings_action_none">کچھ نہیں</string>
     <string name="settings_action_open_app">ایپ کھولیں</string>
     <string name="settings_action_app_info">ایپ کی معلومات</string>
@@ -279,7 +274,6 @@
     <string name="swipe_hint_title">Swipe gestures</string>
     <string name="swipe_hint_right">فوری کارروائی کے لیے دائیں swipe کریں</string>
     <string name="swipe_hint_left">فوری کارروائی کے لیے بائیں swipe کریں</string>
-    <string name="swipe_hint_dismiss">بند کرنے کے لیے کہیں بھی ٹیپ کریں</string>
 
     <!-- Settings -->
     <string name="settings_title">ترتیبات</string>
@@ -298,7 +292,6 @@
     <string name="settings_auto_disable_usb_debugging">USB debugging خودکار طور پر غیر فعال کریں</string>
     <string name="settings_auto_disable_usb_debugging_summary">Shizuku روکنے پر USB debugging غیر فعال کریں</string>
     <string name="settings_language">زبان</string>
-    <string name="settings_translation_contributors">ترجمہ کرنے والے معاونین</string>
     <string name="settings_translation">ترجمے میں حصہ لیں</string>
     <string name="settings_translation_summary">%s کو اپنی زبان میں ترجمہ کرنے میں ہماری مدد کریں</string>
     <string name="settings_version">ورژن</string>
@@ -439,7 +432,6 @@
     <string name="su_bridge_setup_all">سب کا Setup</string>
     <string name="su_bridge_magic_setup">Magic Setup</string>
     <string name="su_bridge_magic_setup_success">Magic Setup مکمل! Shizuku+ نے %s کو آپ کے لیے configure کر دیا ہے۔</string>
-    <string name="su_bridge_magic_setup_fail">Magic Setup ناکام۔ براہِ کرم manual copy path استعمال کریں۔</string>
     <string name="su_bridge_magic_setup_all_summary">Shizuku+ نے %d ایپس آپ کے لیے configure کر دیں!</string>
     <string name="su_bridge_magic_setup_all_no_apps">Automation کے لیے کوئی supported root ایپس نہیں ملیں۔</string>
     <string name="su_bridge_copy_open">Path کاپی کریں اور کھولیں</string>
@@ -571,7 +563,6 @@
     <!-- Notification -->
     <string name="notification_channel_automation">Automation</string>
     <string name="notification_automation_title">Automation چل رہا ہے</string>
-    <string name="notification_service_start_no_root">Root اجازت کی درخواست ناکام ہو گئی۔</string>
     <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
     <string name="notification_adb_pairing_input_paring_code">Pairing code درج کریں</string>
     <string name="notification_adb_pairing_searching_for_service_title">Pairing service تلاش کی جا رہی ہے</string>
@@ -640,7 +631,6 @@
     <string name="settings_main_nav_root_compat_summary">ADB connection، SU bridge، rootless integration اور stock Shizuku compatibility</string>
     <string name="settings_main_nav_appearance_summary">Theme، shapes، icons، motion، home layout اور language</string>
     <string name="settings_main_nav_app_interactions_title">ایپ Interactions</string>
-    <string name="settings_main_nav_app_interactions_summary">Gestures، long-press actions اور install verification</string>
     <string name="settings_main_nav_startup_behavior_title">Startup &amp; Behavior</string>
     <string name="settings_main_nav_startup_behavior_summary">Boot options، watchdog، network اور activity status</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; Diagnostics</string>
@@ -672,13 +662,8 @@
     <string name="accessibility_icon_drag_handle">ترتیب بدلنے کے لیے گھسیٹیں</string>
     <string name="accessibility_icon_info">معلومات</string>
     <string name="accessibility_button_start">Start button</string>
-    <string name="accessibility_button_restart">Restart button</string>
-    <string name="accessibility_button_view_command">View کمانڈ button</string>
-    <string name="accessibility_button_view_guide">View guide button</string>
     <string name="accessibility_state_expanded">پھیلا ہوا</string>
     <string name="accessibility_state_collapsed">سکیڑا ہوا</string>
-    <string name="accessibility_button_view_intents">View intents button</string>
-    <string name="accessibility_button_pairing">Pairing button</string>
     <string name="accessibility_action_app_info">ایپ info ترتیبات کھولیں</string>
     <string name="accessibility_permission_granted">اجازت دی گئی</string>
 
@@ -725,7 +710,6 @@
     <string name="update_download_failed_http">Network error نے download روک دی۔ اپنا connection چیک کریں اور دوبارہ کوشش کریں۔</string>
 
     <!-- Migration Dialog -->
-    <string name="migration_success_message">آپ کی ترتیبات پرانے version سے کاپی ہو گئی ہیں۔ اب آپ moe.shizuku.privileged.api کو محفوظ طریقے سے uninstall کر سکتے ہیں۔</string>
 
     <!-- Update Dialogs -->
     <string name="update_available_title">Update دستیاب ہے</string>

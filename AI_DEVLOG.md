@@ -120,6 +120,22 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-30 (night) — Claude (swipe design A + sandbox B, cleanup, storage) [master]
+
+- **Swipe actions (user chose A; B behind dev option `swipe_settings_sandbox`):** `SwipePreviewPreference` (auto-play demo row, or drag sandbox), `SwipeActionRowPreference` x3 (plain rows so icon styles apply), `SwipeActionPickerSheet` (BottomSheetDialogFragment + ComposeView). `SwipeActionStyle` is the single action table for the list and the preview. The old AppInteractions/GesturePreview/SwipeActionsConnected files were deleted.
+- **User says the app-wide "scannable" settings design (board C) still doesn't look good:** not implemented; "Toggle style" option untouched. Waiting on specifics.
+- **ApkPatcher:** temp-debug sessions were in-memory only, so they were lost on a server restart and the originals were stranded (58 MB found in `splus_td`, both apps already restored, deleted). Sessions are now recovered from disk, and the sweep is guarded (`preparing` set + `sweepLock`, deletes only when the app is installed and not debuggable).
+- **Size/storage:**
+  - Removed glance, remoteviews and aboutlibraries.
+  - Removed dead classes and ~35 unused strings.
+  - `UpdateManager.cleanup()` was never called. It now runs at startup and keeps only newer APKs.
+  - Pitfalls during the cleanup sweep:
+    - `page_onboarding_m3e` looked unused (the binding is `PageOnboardingM3eBinding`, and Python's `title()` gives `M3E`) but it is used.
+    - `PlusShell` is loaded by name from `ShizukuShellLoader`, so it must not be deleted.
+- **APK 16.5 MB:** classes.dex is stored uncompressed on purpose (server start), ~8.9 MB, and resources.arsc is ~5 MB, mostly 20 near-complete locales. Both trade-offs are left to the user.
+- **Device:** freed ~8 GB of Gradle caches (build-cache, 9.4.1 transforms, 9.4.1-all dist). `/data/local/tmp` still has ~700 MB of user-staged APKs, untouched.
+- **Gotcha:** `pgrep -f "check-build.sh"` in a wait loop matches its own command line, so it never exits; `pkill -f GradleDaemon` killed its own shell.
+
 ### 2026-10-30 (later) — Claude (user reports: AMOLED, icons, toggles, restore by choice, redesign research) [master; r3138 installed]
 
 - **Fixed:**

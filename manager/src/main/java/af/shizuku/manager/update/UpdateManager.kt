@@ -752,12 +752,29 @@ class UpdateManager(
         job.cancel()
     }
 
+    /**
+     * Deletes downloaded update APKs that are no longer needed: anything not newer than the
+     * installed build (already installed or older), or unreadable. A newer update that was
+     * downloaded but not yet installed is kept. Call off the main thread.
+     */
     fun cleanup() {
         try {
+            val installed =
+                androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(
+                    context.packageManager.getPackageInfo(context.packageName, 0),
+                )
             val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
             downloadsDir?.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
-                file.delete()
-                Timber.tag(TAG).d("Cleaned up old APK: ${file.name}")
+                val archive = context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)
+                val version =
+                    archive?.let {
+                        androidx.core.content.pm.PackageInfoCompat
+                            .getLongVersionCode(it)
+                    }
+                if (version == null || version <= installed) {
+                    file.delete()
+                    Timber.tag(TAG).d("Cleaned up old APK: ${file.name}")
+                }
             }
             val updatesCache = File(context.cacheDir, "updates")
             updatesCache.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->

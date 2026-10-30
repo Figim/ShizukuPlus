@@ -173,7 +173,6 @@
         сеттинг.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Требуется Wi-Fi. Шизуку продолжит работу и ждёт Wi-Fi подключения, прежде чем перезагрузить в фоновом режиме.</b>]]></string>
     <string name="settings_language">Язык</string>
-    <string name="settings_translation_contributors">Авторы перевода</string>
     <string name="settings_translation">Участвуйте в переводе</string>
     <string name="settings_translation_summary">Помогите перевести %s на ваш язык</string>
     <string name="settings_help">Помощь</string>
@@ -219,7 +218,6 @@
     <string name="action_stop">Остановить Shizuku</string>
     <string name="dialog_stop_message">Служба Shizuku будет остановлена.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Не удалось запросить root права.</string>
     <string name="notification_channel_adb_pairing">Сопряжение с отладкой по Wi-Fi</string>
     <string name="notification_adb_pairing_input_paring_code">Введите код подключения</string>
     <string name="notification_adb_pairing_searching_for_service_title">Ожидание службы сопряжения</string>

@@ -67,8 +67,6 @@
     <string name="adb_pairing_tutorial_autofill_ready">Тепер відкрийте \"Спарити пристрій із кодом парування\". Код буде прочитано з екрана та введено для вас.</string>
     <string name="home_samsung_system_uid_title"><![CDATA[Запуск (Samsung System UID)]]></string>
     <string name="home_root_description_samsung"><![CDATA[Запуск через підвищення прав Samsung System UID. Magisk чи root не потрібні — Shizuku+ використовує привілейований системний акаунт, доступний на пристроях Samsung.]]></string>
-    <string name="settings_app_management_category_long_press">Дії при довгому натисканні</string>
-    <string name="settings_app_management_category_data">Дані</string>
     <string name="onboarding_m3e_title">Виразний вид та відчуття</string>
     <string name="onboarding_m3e_desc">Персоналізуйте свій досвід адаптивними стилями іконок, контрастом AMOLED+ та плавним рухом.</string>
     <string name="onboarding_icon_style_title">Стиль іконок</string>

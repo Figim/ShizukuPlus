@@ -169,7 +169,6 @@
         primenila ova postavka.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Vi-Fi je potreban. Shizuku će nastaviti da radi i čekati Vi-Fi vezu pre ponovnog pokretanja u pozadini.</b>]]></string>
     <string name="settings_language">Језик</string>
-    <string name="settings_translation_contributors">Сарадници на преводу</string>
     <string name="settings_translation">Учествујте у преводу</string>
     <string name="settings_translation_summary">Помозите нам да преведемо %s на ваш језик</string>
     <string name="settings_help">Помоћ</string>
@@ -212,7 +211,6 @@
     <string name="action_stop">Заустави Шизуку</string>
     <string name="dialog_stop_message">Шизуку линија ће бити обустављена.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Није успело захтевање root дозволе.</string>
     <string name="notification_channel_adb_pairing">Бежично упаривање за отклањање грешака</string>
     <string name="notification_adb_pairing_input_paring_code">Унесите код за упаривање</string>
     <string name="notification_adb_pairing_searching_for_service_title">Тражење услуге упаривања</string>

@@ -166,7 +166,6 @@
         تنظیم را اعمال کند.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>وای فای لازم است. شیزوکو به کار خود ادامه می دهد و منتظر اتصال وای فای می ماند تا در پس زمینه ریستارت شود.</b>]]></string>
     <string name="settings_language">زبان</string>
-    <string name="settings_translation_contributors">مشارکت کنندگان ترجمه</string>
     <string name="settings_translation">در ترجمه شرکت کنید</string>
     <string name="settings_translation_summary">با ما همکاری کنید تا %s را به زبان شما ترجمه کنیم</string>
     <string name="settings_help">کمک</string>
@@ -210,7 +209,6 @@
     <string name="action_stop">توقف Shizuku</string>
     <string name="dialog_stop_message">خدمات Shizuku متوقف خواهد شد.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">درخواست مجوز دسترسی ریشه (روت) انجام نشد.</string>
     <string name="notification_channel_adb_pairing">مرتبط سازی اشکال‌زدایی بی‌سیم</string>
     <string name="notification_adb_pairing_input_paring_code">وارد کردن رمز مرتبط سازی</string>
     <string name="notification_adb_pairing_searching_for_service_title">جستجوی خدمات مرتبط سازی</string>

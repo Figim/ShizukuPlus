@@ -236,8 +236,23 @@
         android:icon="@drawable/ic_swipe_24"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.AppInteractionsPreference
-            android:key="pref_app_interactions_studio" />
+        <af.shizuku.manager.settings.SwipePreviewPreference
+            android:key="swipe_preview" />
+
+        <af.shizuku.manager.settings.SwipeActionRowPreference
+            android:key="swipe_right_row"
+            android:title="@string/swipe_actions_right_title"
+            android:icon="@drawable/ic_arrow_forward_24" />
+
+        <af.shizuku.manager.settings.SwipeActionRowPreference
+            android:key="swipe_left_row"
+            android:title="@string/swipe_actions_left_title"
+            android:icon="@drawable/ic_arrow_back_24" />
+
+        <af.shizuku.manager.settings.SwipeActionRowPreference
+            android:key="long_press_row"
+            android:title="@string/swipe_actions_long_press_title"
+            android:icon="@drawable/ic_touch_app_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_app_descriptions"
