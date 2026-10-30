@@ -682,6 +682,7 @@ object ShizukuReceiverStarter {
         forceStart: Boolean,
     ) {
         if (ShizukuStateMachine.isRunning()) return
+        if (!ShizukuSettings.isRootToAdbFallbackEnabled()) return
         val canTryAdb =
             context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED ||
                 ShizukuSettings.getTcpMode() ||

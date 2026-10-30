@@ -1926,4 +1926,20 @@
     <string name="lp_action_disable_freeform">Məcburi sərbəst formanı / ölçü dəyişməni söndür</string>
     <string name="toast_freeform_enabled">%1$s üçün sərbəst formada ölçü dəyişməsi aktivləşdirildi</string>
     <string name="toast_freeform_disabled">%1$s üçün sərbəst formada ölçü dəyişməsi sıfırlandı</string>
+    <string name="settings_adaptive_recommendations_title">Adaptiv tövsiyələr</string>
+    <string name="settings_adaptive_recommendations_summary">Uyğun olduqda kontekstual quraşdırma və sabitlik tövsiyələrini göstərin</string>
+    <string name="settings_adb_loopback_probe_title">Avtomatik loopback port yoxlanılması</string>
+    <string name="settings_adb_loopback_probe_summary">mDNS aşkarlanmasını gözləməzdən əvvəl yerli loopback portlarını (5555, xüsusi TCP, son port) yoxlayın</string>
+    <string name="settings_root_to_adb_fallback_title">Root-dan Simsiz ADB-yə avtomatik keçid</string>
+    <string name="settings_root_to_adb_fallback_summary">Açılışda və ya Sürətli Tənzimləmələr plitəsindən root ilə başlatma uğursuz olarsa, avtomatik olaraq Simsiz ADB-yə keçin</string>
+    <string name="settings_show_app_descriptions">Tətbiq təsvirlərini göstər</string>
+    <string name="settings_show_app_descriptions_summary">Tətbiqlər siyahısında məlum tətbiqlərin altında seçilmiş imkan təsvirlərini göstərin</string>
+    <string name="settings_show_plus_feature_hints">Plus funksiya ipuclarını göstər</string>
+    <string name="settings_show_plus_feature_hints_summary">Tətbiqin faydalana biləcəyi söndürülmüş qlobal Plus funksiyalarını vurğulayın</string>
+    <string name="settings_dpm_freeze_title">Cihaz Sahibi tətbiq gizlətməsinə üstünlük ver</string>
+    <string name="settings_dpm_freeze_summary">Cihaz Sahibi aktiv olduqda tətbiqləri dondurarkən əvvəlcə DevicePolicyManager.setApplicationHidden istifadə edin</string>
+    <string name="settings_lp_api_scopes">API Səlahiyyətləri</string>
+    <string name="settings_lp_select_multiple">Çoxlu Seçim</string>
+    <string name="settings_lp_freeze_app">Dondur / Aç</string>
+    <string name="settings_lp_freeform_resize">Sərbəst Ölçü</string>
 </resources>

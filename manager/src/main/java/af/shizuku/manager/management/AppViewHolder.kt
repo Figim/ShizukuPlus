@@ -261,15 +261,21 @@ class AppViewHolder(
             }
 
             // Granular per-app API access scopes (#645)
-            add(
-                LpAction(context.getString(R.string.app_management_context_api_scopes)) {
-                    showApiScopesDialog(context, capturedPackage, appLabel)
-                },
-            )
+            if (ShizukuSettings.getLongPressApiScopes()) {
+                add(
+                    LpAction(context.getString(R.string.app_management_context_api_scopes)) {
+                        showApiScopesDialog(context, capturedPackage, appLabel)
+                    },
+                )
+            }
 
             // Read-only global Plus features hint & link (#631)
             val metadata = AppContextManager.getMetadata(capturedPackage)
-            if (metadata != null && metadata.recommendedPlusFeatures.isNotEmpty()) {
+            if (ShizukuSettings.isShowPlusFeatureHintsEnabled() &&
+                !ShizukuSettings.isHideDisabledPlusFeaturesEnabled() &&
+                metadata != null &&
+                metadata.recommendedPlusFeatures.isNotEmpty()
+            ) {
                 add(
                     LpAction(context.getString(R.string.app_management_context_plus_benefits)) {
                         showPlusBenefitsDialog(context, appLabel, metadata.recommendedPlusFeatures)
@@ -278,13 +284,15 @@ class AppViewHolder(
             }
 
             // Bulk selection mode (#1)
-            add(
-                LpAction(context.getString(R.string.app_management_context_select_multiple)) {
-                    val appsAdapter = adapter as AppsAdapter
-                    appsAdapter.isSelectionMode = true
-                    appsAdapter.toggleSelection(capturedPackage)
-                },
-            )
+            if (ShizukuSettings.getLongPressSelectMultiple()) {
+                add(
+                    LpAction(context.getString(R.string.app_management_context_select_multiple)) {
+                        val appsAdapter = adapter as AppsAdapter
+                        appsAdapter.isSelectionMode = true
+                        appsAdapter.toggleSelection(capturedPackage)
+                    },
+                )
+            }
 
             // Freeze/Unfreeze & Per-App Free-Form Window Resizing (#635) — binder calls are safe here on IO
             if (ShizukuSettings.isCustomApiEnabled()) {
@@ -302,7 +310,7 @@ class AppViewHolder(
                         } catch (_: Exception) {
                             null
                         }
-                    if (ShizukuSettings.isWindowManagerPlusEnabled()) {
+                    if (ShizukuSettings.getLongPressFreeformResize() && ShizukuSettings.isWindowManagerPlusEnabled()) {
                         val wmPlus =
                             try {
                                 serviceStub?.windowManagerPlus
@@ -345,43 +353,45 @@ class AppViewHolder(
                             )
                         }
                     }
-                    val amPlus =
-                        try {
-                            serviceStub?.activityManagerPlus
-                        } catch (_: Exception) {
-                            null
-                        }
-                    if (amPlus != null) {
-                        val isFrozen =
+                    if (ShizukuSettings.getLongPressFreezeApp()) {
+                        val amPlus =
                             try {
-                                amPlus.isAppFrozen(capturedPackage)
+                                serviceStub?.activityManagerPlus
                             } catch (_: Exception) {
-                                false
+                                null
                             }
-                        val freezeLabel = context.getString(if (isFrozen) R.string.lp_action_unfreeze_app else R.string.lp_action_freeze_app)
-                        add(
-                            LpAction(freezeLabel) {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    try {
-                                        val success = if (isFrozen) amPlus.unfreezeApp(capturedPackage) else amPlus.freezeApp(capturedPackage)
-                                        withContext(Dispatchers.Main) {
-                                            if (success) {
-                                                notifyUser(context.getString(if (isFrozen) R.string.toast_app_unfrozen else R.string.toast_app_frozen))
-                                                ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
-                                                val pos = adapterPosition
-                                                if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
-                                            } else {
-                                                notifyUser(context.getString(R.string.toast_operation_failed))
+                        if (amPlus != null) {
+                            val isFrozen =
+                                try {
+                                    amPlus.isAppFrozen(capturedPackage)
+                                } catch (_: Exception) {
+                                    false
+                                }
+                            val freezeLabel = context.getString(if (isFrozen) R.string.lp_action_unfreeze_app else R.string.lp_action_freeze_app)
+                            add(
+                                LpAction(freezeLabel) {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        try {
+                                            val success = if (isFrozen) amPlus.unfreezeApp(capturedPackage) else amPlus.freezeApp(capturedPackage)
+                                            withContext(Dispatchers.Main) {
+                                                if (success) {
+                                                    notifyUser(context.getString(if (isFrozen) R.string.toast_app_unfrozen else R.string.toast_app_frozen))
+                                                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
+                                                    val pos = adapterPosition
+                                                    if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
+                                                } else {
+                                                    notifyUser(context.getString(R.string.toast_operation_failed))
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            withContext(Dispatchers.Main) {
+                                                notifyUser(context.getString(R.string.toast_error_with_message, e.message))
                                             }
                                         }
-                                    } catch (e: Exception) {
-                                        withContext(Dispatchers.Main) {
-                                            notifyUser(context.getString(R.string.toast_error_with_message, e.message))
-                                        }
                                     }
-                                }
-                            },
-                        )
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -698,13 +708,21 @@ class AppViewHolder(
 
         pkg.text = appInfo.packageName
 
-        val metadata = AppContextManager.getMetadata(capturedPackage)
+        val showDescriptions = ShizukuSettings.isShowAppDescriptionsEnabled()
+        val showHints =
+            ShizukuSettings.isShowPlusFeatureHintsEnabled() &&
+                !ShizukuSettings.isHideDisabledPlusFeaturesEnabled()
+        val metadata = if (showDescriptions) AppContextManager.getMetadata(capturedPackage) else null
         val disabledScopes = ShizukuSettings.getAppDisabledScopes(capturedPackage)
         val firstDisabledPlusBenefit =
-            metadata
-                ?.recommendedPlusFeatures
-                ?.mapNotNull { resolveGlobalPlusFeature(context, it) }
-                ?.firstOrNull { !it.isEnabled }
+            if (showHints) {
+                metadata
+                    ?.recommendedPlusFeatures
+                    ?.mapNotNull { resolveGlobalPlusFeature(context, it) }
+                    ?.firstOrNull { !it.isEnabled }
+            } else {
+                null
+            }
         if (disabledScopes.isNotEmpty()) {
             appContextView.visibility = View.VISIBLE
             val badge = context.getString(R.string.api_scopes_restricted_badge, 5 - disabledScopes.size, 5)
@@ -727,7 +745,7 @@ class AppViewHolder(
                 }
             } else {
                 appContextView.text = metadata.description
-                if (metadata.recommendedPlusFeatures.isNotEmpty()) {
+                if (showHints && metadata.recommendedPlusFeatures.isNotEmpty()) {
                     appContextView.setOnClickListener {
                         showPlusBenefitsDialog(context, appLabel, metadata.recommendedPlusFeatures)
                     }

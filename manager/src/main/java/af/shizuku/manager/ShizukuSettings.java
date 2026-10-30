@@ -184,6 +184,16 @@ public class ShizukuSettings {
         public static final String KEY_ALLOW_AUTOMATION_PLUGIN = "allow_automation_plugin";
         public static final String KEY_SECURITY_DEFAULTS_DECIDED = "security_defaults_decided";
         public static final String KEY_FORCE_RESIZABLE_PACKAGES = "force_resizable_packages";
+        public static final String KEY_ADAPTIVE_RECOMMENDATIONS_ENABLED = "adaptive_recommendations_enabled";
+        public static final String KEY_ROOT_TO_ADB_FALLBACK_ENABLED = "root_to_adb_fallback_enabled";
+        public static final String KEY_ADB_LOOPBACK_PROBE_ENABLED = "adb_loopback_probe_enabled";
+        public static final String KEY_SHOW_APP_DESCRIPTIONS = "show_app_descriptions";
+        public static final String KEY_SHOW_PLUS_FEATURE_HINTS = "show_plus_feature_hints";
+        public static final String KEY_DPM_FREEZE_ENABLED = "dpm_freeze_enabled";
+        public static final String KEY_LP_API_SCOPES = "lp_api_scopes";
+        public static final String KEY_LP_SELECT_MULTIPLE = "lp_select_multiple";
+        public static final String KEY_LP_FREEZE_APP = "lp_freeze_app";
+        public static final String KEY_LP_FREEFORM_RESIZE = "lp_freeform_resize";
         public static final String KEY_CRASH_REPORTING = "crash_reporting_enabled";
         public static final String KEY_CRASH_REPORTING_ASKED = "crash_reporting_asked";
         public static final String KEY_EXPERIMENTAL_APP_IDENTITY = "experimental_app_identity";
@@ -1045,7 +1055,27 @@ public class ShizukuSettings {
 
     public static boolean getLongPressHideFromList() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_LP_HIDE_FROM_LIST, true);
+        return p != null && p.getBoolean(Keys.KEY_LP_HIDE_FROM_LIST, false);
+    }
+
+    public static boolean getLongPressApiScopes() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_API_SCOPES, true);
+    }
+
+    public static boolean getLongPressSelectMultiple() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_SELECT_MULTIPLE, true);
+    }
+
+    public static boolean getLongPressFreezeApp() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_FREEZE_APP, true);
+    }
+
+    public static boolean getLongPressFreeformResize() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_LP_FREEFORM_RESIZE, false);
     }
 
     public static String getSwipeRightAction() {
@@ -1770,6 +1800,7 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("package_governor_plus", isPackageGovernorPlusEnabled());
                 service.updatePlusFeatureEnabled("display_tuner_plus", isDisplayTunerPlusEnabled());
                 service.updatePlusFeatureEnabled("activity_manager_plus", isActivityManagerPlusEnabled());
+                service.updatePlusFeatureEnabled("dpm_freeze", isDpmFreezeEnabled());
                 service.updatePlusFeatureEnabled("su_bridge", isSuBridgeEnabled());
                 service.setPlusSetting("custom_su_path", getCustomSuPath());
                 service.updatePlusFeatureEnabled("root_magisk_mocking", isRootMagiskMockingEnabled());
@@ -2247,5 +2278,68 @@ public class ShizukuSettings {
             current.remove(packageName);
         }
         p.edit().putStringSet(Keys.KEY_FORCE_RESIZABLE_PACKAGES, current).apply();
+    }
+
+    public static boolean isAdaptiveRecommendationsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_ADAPTIVE_RECOMMENDATIONS_ENABLED, true);
+    }
+
+    public static void setAdaptiveRecommendationsEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ADAPTIVE_RECOMMENDATIONS_ENABLED, enabled).apply();
+    }
+
+    public static boolean isRootToAdbFallbackEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_ROOT_TO_ADB_FALLBACK_ENABLED, true);
+    }
+
+    public static void setRootToAdbFallbackEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ROOT_TO_ADB_FALLBACK_ENABLED, enabled).apply();
+    }
+
+    public static boolean isAdbLoopbackProbeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_ADB_LOOPBACK_PROBE_ENABLED, true);
+    }
+
+    public static void setAdbLoopbackProbeEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ADB_LOOPBACK_PROBE_ENABLED, enabled).apply();
+    }
+
+    public static boolean isShowAppDescriptionsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_APP_DESCRIPTIONS, true);
+    }
+
+    public static void setShowAppDescriptionsEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_APP_DESCRIPTIONS, enabled).apply();
+    }
+
+    public static boolean isShowPlusFeatureHintsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_PLUS_FEATURE_HINTS, true);
+    }
+
+    public static void setShowPlusFeatureHintsEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_PLUS_FEATURE_HINTS, enabled).apply();
+    }
+
+    public static boolean isDpmFreezeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_DPM_FREEZE_ENABLED, true);
+    }
+
+    public static void setDpmFreezeEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) {
+            p.edit().putBoolean(Keys.KEY_DPM_FREEZE_ENABLED, enabled).apply();
+            syncAllPlusFeaturesToServer();
+        }
     }
 }

@@ -99,6 +99,14 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<TwoStatePreference>("dpm_freeze_enabled")?.apply {
+            isChecked = ShizukuSettings.isDpmFreezeEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) ShizukuSettings.setDpmFreezeEnabled(newValue)
+                true
+            }
+        }
+
         findPreference<TwoStatePreference>("dhizuku_disable_screencap")?.setOnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as? Boolean ?: false
             val ctx = context ?: return@setOnPreferenceChangeListener false

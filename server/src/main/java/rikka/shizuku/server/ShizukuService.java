@@ -864,7 +864,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // root_magisk_mocking default to OFF there, so they must not be ON here either: a server
         // started by the watchdog or at boot would otherwise run them even for a user who turned
         // them off. Only features that default on in the manager default on here.
-        if (key.equals("shell_interceptor") || key.equals("ai_core_plus")) {
+        if (key.equals("shell_interceptor") || key.equals("ai_core_plus") || key.equals("dpm_freeze")) {
             return true;
         }
         return featureEnabledMap.getOrDefault(key, false);
@@ -1189,6 +1189,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         boolean isAutoGrantKey = "root_auto_grant".equals(key) || "root_auto_grant_enabled".equals(key);
         boolean wasAutoGrant = isAutoGrantKey && isFeatureEnabled("root_auto_grant");
         featureEnabledMap.put(key, enabled);
+        if ("dpm_freeze".equals(key) || "dpm_freeze_enabled".equals(key)) {
+            ActivityManagerPlusImpl.setDpmFreezeEnabled(enabled);
+        }
         // Also when this server never saw it on (turned off while the server was down, or grants left
         // from an older build): any tracked grant left over means it is still to be taken back.
         if (isAutoGrantKey && !enabled && (wasAutoGrant || !configManager.getAutoGrantedPermissions().isEmpty())) {

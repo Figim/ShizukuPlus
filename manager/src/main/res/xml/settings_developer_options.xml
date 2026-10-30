@@ -15,6 +15,20 @@
             android:icon="@drawable/ic_outline_notifications_active_24"
             android:defaultValue="true" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="adaptive_recommendations_enabled"
+            android:title="@string/settings_adaptive_recommendations_title"
+            android:summary="@string/settings_adaptive_recommendations_summary"
+            android:icon="@drawable/ic_settings_suggest_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="adb_loopback_probe_enabled"
+            android:title="@string/settings_adb_loopback_probe_title"
+            android:summary="@string/settings_adb_loopback_probe_summary"
+            android:icon="@drawable/ic_adb_24"
+            android:defaultValue="true" />
+
         <Preference
             android:key="reset_recommendations"
             android:title="@string/settings_reset_recommendations_title"
@@ -84,8 +98,7 @@
             android:title="@string/settings_overlay_manager_plus"
             android:summary="@string/settings_overlay_manager_plus_summary"
             android:icon="@drawable/ic_palette_24"
-            android:defaultValue="false"
-            android:dependency="window_manager_plus_enabled"
+            android:defaultValue="true"
             app:infoTitle="@string/help_overlay_manager_plus_title"
             app:infoDetail="@string/help_overlay_manager_plus_detail"
             app:badgeType="experimental" />

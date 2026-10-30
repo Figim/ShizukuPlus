@@ -239,6 +239,21 @@
         <af.shizuku.manager.settings.AppInteractionsPreference
             android:key="pref_app_interactions_studio" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_app_descriptions"
+            android:title="@string/settings_show_app_descriptions"
+            android:summary="@string/settings_show_app_descriptions_summary"
+            android:icon="@drawable/ic_outline_info_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_plus_feature_hints"
+            android:title="@string/settings_show_plus_feature_hints"
+            android:summary="@string/settings_show_plus_feature_hints_summary"
+            android:icon="@drawable/ic_bolt_24"
+            android:defaultValue="true"
+            android:dependency="show_app_descriptions" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

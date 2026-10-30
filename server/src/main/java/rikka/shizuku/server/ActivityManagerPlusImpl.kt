@@ -18,6 +18,10 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
     companion object {
         private const val TAG = "ActivityManagerPlus"
 
+        @JvmStatic
+        @Volatile
+        var dpmFreezeEnabled: Boolean = true
+
         private fun packageManagerService(): Any? = try {
             val binder = ServiceManager.getService("package") ?: return null
             Class.forName("android.content.pm.IPackageManager\$Stub")
@@ -184,8 +188,8 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
 
     override fun freezeApp(packageName: String?): Boolean {
         if (packageName == null) return false
-        // Stage 1 (#632): DevicePolicyManager.setApplicationHidden when DO/PO is active
-        if (tryDpmSetApplicationHidden(packageName, true)) return true
+        // Stage 1 (#632): DevicePolicyManager.setApplicationHidden when DO/PO is active and enabled
+        if (dpmFreezeEnabled && tryDpmSetApplicationHidden(packageName, true)) return true
         // Stage 2: COMPONENT_ENABLED_STATE_DISABLED_USER = 3 — user-level disable, reversible
         if (setApplicationEnabledSetting(packageName, 3)) return true
         if (!InputValidationUtils.isValidPackageName(packageName)) return false

@@ -30,6 +30,7 @@ object AdaptiveRecommendationManager {
 
     @JvmStatic
     fun isDismissed(id: String): Boolean {
+        if (!ShizukuSettings.isAdaptiveRecommendationsEnabled()) return true
         val sp = ShizukuSettings.getPreferences() ?: return false
         val dismissed = sp.getStringSet(KEY_DISMISSED_RECOMMENDATIONS, emptySet()) ?: emptySet()
         return id in dismissed
@@ -55,6 +56,7 @@ object AdaptiveRecommendationManager {
     @JvmStatic
     fun resetAll() {
         shownThisSession.clear()
+        ShizukuSettings.setAdaptiveRecommendationsEnabled(true)
         val sp = ShizukuSettings.getPreferences() ?: return
         sp
             .edit()

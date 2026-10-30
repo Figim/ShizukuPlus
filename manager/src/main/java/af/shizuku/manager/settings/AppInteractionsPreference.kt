@@ -92,6 +92,10 @@ class AppInteractionsPreference
                 LongPressOption("lp_app_info", R.string.settings_lp_app_info, R.drawable.ic_outline_info_24),
                 LongPressOption("lp_toggle_permission", R.string.settings_lp_toggle_permission, R.drawable.ic_shield_24),
                 LongPressOption("lp_hide_from_list", R.string.settings_lp_hide_from_list, R.drawable.ic_visibility_off_24, defaultVal = false),
+                LongPressOption("lp_api_scopes", R.string.settings_lp_api_scopes, R.drawable.ic_shield_24, defaultVal = true),
+                LongPressOption("lp_select_multiple", R.string.settings_lp_select_multiple, R.drawable.ic_select_all_24, defaultVal = true),
+                LongPressOption("lp_freeze_app", R.string.settings_lp_freeze_app, R.drawable.ic_close_24, defaultVal = true),
+                LongPressOption("lp_freeform_resize", R.string.settings_lp_freeform_resize, R.drawable.ic_window_24, defaultVal = false),
             )
 
         private val swipeRight = mutableStateOf("open_app")
@@ -301,57 +305,27 @@ private fun AppInteractionsCardContent(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Compact 2x2 expressive toggle grid for long press
+            // Compact 2-column expressive toggle grid for long press
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                // Row 1
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (longPressActions.isNotEmpty()) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            LongPressTogglePill(
-                                item = longPressActions[0],
-                                checked = longPressStates[longPressActions[0].key] ?: longPressActions[0].defaultVal,
-                                onToggle = onToggleLongPress,
-                            )
+                longPressActions.chunked(2).forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        rowItems.forEach { item ->
+                            Box(modifier = Modifier.weight(1f)) {
+                                LongPressTogglePill(
+                                    item = item,
+                                    checked = longPressStates[item.key] ?: item.defaultVal,
+                                    onToggle = onToggleLongPress,
+                                )
+                            }
                         }
-                    }
-                    if (longPressActions.size > 1) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            LongPressTogglePill(
-                                item = longPressActions[1],
-                                checked = longPressStates[longPressActions[1].key] ?: longPressActions[1].defaultVal,
-                                onToggle = onToggleLongPress,
-                            )
-                        }
-                    }
-                }
-
-                // Row 2
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    if (longPressActions.size > 2) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            LongPressTogglePill(
-                                item = longPressActions[2],
-                                checked = longPressStates[longPressActions[2].key] ?: longPressActions[2].defaultVal,
-                                onToggle = onToggleLongPress,
-                            )
-                        }
-                    }
-                    if (longPressActions.size > 3) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            LongPressTogglePill(
-                                item = longPressActions[3],
-                                checked = longPressStates[longPressActions[3].key] ?: longPressActions[3].defaultVal,
-                                onToggle = onToggleLongPress,
-                            )
+                        if (rowItems.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }

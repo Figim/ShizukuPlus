@@ -125,6 +125,13 @@ class ShizukuTileService : TileService() {
                     }
                     return@launch
                 }
+                if (!ShizukuSettings.isRootToAdbFallbackEnabled()) {
+                    withContext(Dispatchers.Main) {
+                        ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                        updateTile()
+                    }
+                    return@launch
+                }
             }
 
             val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()

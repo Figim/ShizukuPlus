@@ -258,6 +258,13 @@
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="dpm_freeze_enabled"
+            android:title="@string/settings_dpm_freeze_title"
+            android:summary="@string/settings_dpm_freeze_summary"
+            android:icon="@drawable/ic_admin_panel_settings_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="dhizuku_disable_screencap"
             android:title="@string/settings_dhizuku_screencap_lockdown"
             android:summary="@string/settings_dhizuku_screencap_lockdown_summary"

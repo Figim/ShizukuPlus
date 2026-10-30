@@ -115,10 +115,14 @@ class StarterActivity : AppBarActivity() {
                         }
                     }
                     is NotRootedException -> {
-                        if (af.shizuku.manager.utils.EnvironmentUtils
-                                .isTlsSupported() ||
-                            af.shizuku.manager.utils.EnvironmentUtils
-                                .getAdbTcpPort() > 0
+                        if (af.shizuku.manager.ShizukuSettings
+                                .isRootToAdbFallbackEnabled() &&
+                            (
+                                af.shizuku.manager.utils.EnvironmentUtils
+                                    .isTlsSupported() ||
+                                    af.shizuku.manager.utils.EnvironmentUtils
+                                        .getAdbTcpPort() > 0
+                            )
                         ) {
                             builder.setNeutralButton(R.string.home_wireless_adb_title) { _, _ ->
                                 finish()

@@ -1925,4 +1925,20 @@
     <string name="lp_action_disable_freeform">Disable forced free-form / resizing</string>
     <string name="toast_freeform_enabled">Free-form resizing enabled for %1$s</string>
     <string name="toast_freeform_disabled">Free-form resizing reset for %1$s</string>
+    <string name="settings_adaptive_recommendations_title">Adaptive recommendations</string>
+    <string name="settings_adaptive_recommendations_summary">Show contextual setup and stability recommendations when relevant</string>
+    <string name="settings_adb_loopback_probe_title">Automatic loopback port probing</string>
+    <string name="settings_adb_loopback_probe_summary">Probe local loopback ports (5555, custom TCP, last port) before waiting for mDNS discovery</string>
+    <string name="settings_root_to_adb_fallback_title">Automatic Root-to-Wireless-ADB fallback</string>
+    <string name="settings_root_to_adb_fallback_summary">Fall back to Wireless ADB automatically if root startup fails on boot or from the Quick Settings tile</string>
+    <string name="settings_show_app_descriptions">Show app descriptions</string>
+    <string name="settings_show_app_descriptions_summary">Display curated capability descriptions under known apps in the Apps list</string>
+    <string name="settings_show_plus_feature_hints">Show Plus feature hints</string>
+    <string name="settings_show_plus_feature_hints_summary">Highlight disabled global Plus features that an app can benefit from</string>
+    <string name="settings_dpm_freeze_title">Prefer Device Owner app hiding</string>
+    <string name="settings_dpm_freeze_summary">Use DevicePolicyManager.setApplicationHidden first when freezing apps while Device Owner is active</string>
+    <string name="settings_lp_api_scopes">API Scopes</string>
+    <string name="settings_lp_select_multiple">Select Multiple</string>
+    <string name="settings_lp_freeze_app">Freeze / Unfreeze</string>
+    <string name="settings_lp_freeform_resize">Free-Form Resize</string>
 </resources>

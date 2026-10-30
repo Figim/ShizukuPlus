@@ -101,6 +101,7 @@ object AdbPortProber {
      */
     suspend fun findActiveLoopbackPort(context: Context? = null): Int =
         withContext(Dispatchers.IO) {
+            if (!ShizukuSettings.isAdbLoopbackProbeEnabled()) return@withContext -1
             val candidates = LinkedHashSet<Int>()
 
             val sysPropPort = EnvironmentUtils.getAdbTcpPort()
