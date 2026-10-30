@@ -266,36 +266,46 @@ class RootCompatibilityActivity : AppBarActivity() {
         ContextCompat.registerReceiver(this, packageReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
+    private data class ResumeProbe(
+        val alive: Boolean,
+        val uid: Int,
+        val suPath: String?,
+        val kernelSu: Boolean,
+    )
+
     override fun onResume() {
         super.onResume()
         val prevRoot = isRoot
         val prevAdb = isAdbMode
         val prevPath = resolvedSuPath
-        isRoot =
-            try {
-                Shizuku.pingBinder() && Shizuku.getUid() == 0
-            } catch (_: Exception) {
-                false
+        // Shizuku binder calls never on the main thread: a hung server would ANR on every resume.
+        lifecycleScope.launch {
+            val (alive, uid, latestExportPath, kernelSu) =
+                withContext(Dispatchers.IO) {
+                    val ping = runCatching { Shizuku.pingBinder() }.getOrDefault(false)
+                    ResumeProbe(
+                        alive = ping,
+                        uid = if (ping) runCatching { Shizuku.getUid() }.getOrDefault(-1) else -1,
+                        suPath = resolveSuPath(),
+                        kernelSu = RootCompatHelper.isKernelSuInstalled(this@RootCompatibilityActivity),
+                    )
+                }
+            if (isFinishing || isDestroyed) return@launch
+            isRoot = uid == 0
+            isAdbMode = uid == 2000
+            if (latestExportPath != null && resolvedSuPath == null) {
+                resolvedSuPath = latestExportPath
             }
-        isAdbMode =
-            try {
-                Shizuku.pingBinder() && Shizuku.getUid() == 2000
-            } catch (_: Exception) {
-                false
+            val path = resolvedSuPath
+            if (path != null) {
+                binding.globalSuPath.text = path
             }
-        val latestExportPath = resolveSuPath()
-        if (latestExportPath != null && resolvedSuPath == null) {
-            resolvedSuPath = latestExportPath
-        }
-        val path = resolvedSuPath
-        if (path != null) {
-            binding.globalSuPath.text = path
-        }
-        binding.globalSetupCard.isVisible = path != null || runCatching { Shizuku.pingBinder() }.getOrDefault(false)
-        binding.kernelsuUpgradeCard.visibility =
-            if (RootCompatHelper.isKernelSuInstalled(this) && isAdbMode) View.VISIBLE else View.GONE
-        if (prevRoot != isRoot || prevAdb != isAdbMode || prevPath != resolvedSuPath) {
-            refreshList()
+            binding.globalSetupCard.isVisible = path != null || alive
+            binding.kernelsuUpgradeCard.visibility =
+                if (kernelSu && isAdbMode) View.VISIBLE else View.GONE
+            if (prevRoot != isRoot || prevAdb != isAdbMode || prevPath != resolvedSuPath) {
+                refreshList()
+            }
         }
     }
 

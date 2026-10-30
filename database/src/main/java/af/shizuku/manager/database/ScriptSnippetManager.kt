@@ -19,8 +19,9 @@ object ScriptSnippetManager {
     @Volatile
     private var dao: ScriptSnippetDao? = null
 
-    @Volatile
-    private var lastAutoRunAtMs: Long = 0L
+    // The app-level RUNNING collector and the state machine's RUNNING handler both call
+    // runAutoRunSnippets for the same transition, on different IO threads: claim the slot atomically.
+    private val lastAutoRunAtMs = java.util.concurrent.atomic.AtomicLong(0L)
     private const val AUTO_RUN_DEBOUNCE_MS = 3_000L
 
     fun initialize(context: Context) {
@@ -55,10 +56,11 @@ object ScriptSnippetManager {
     suspend fun runAutoRunSnippets(trigger: String = "service start") = withContext(Dispatchers.IO) {
         val d = dao ?: return@withContext
         val now = System.currentTimeMillis()
-        if (now - lastAutoRunAtMs in 0L until AUTO_RUN_DEBOUNCE_MS) return@withContext
+        val last = lastAutoRunAtMs.get()
+        if (now - last in 0L until AUTO_RUN_DEBOUNCE_MS) return@withContext
+        if (!lastAutoRunAtMs.compareAndSet(last, now)) return@withContext
         val snippets = d.getAutoRun()
         if (snippets.isEmpty()) return@withContext
-        lastAutoRunAtMs = now
         for (snippet in snippets) {
             try {
                 val result = run(snippet.script)

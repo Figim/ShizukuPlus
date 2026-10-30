@@ -1800,7 +1800,6 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("package_governor_plus", isPackageGovernorPlusEnabled());
                 service.updatePlusFeatureEnabled("display_tuner_plus", isDisplayTunerPlusEnabled());
                 service.updatePlusFeatureEnabled("activity_manager_plus", isActivityManagerPlusEnabled());
-                service.updatePlusFeatureEnabled("dpm_freeze", isDpmFreezeEnabled());
                 service.updatePlusFeatureEnabled("su_bridge", isSuBridgeEnabled());
                 service.setPlusSetting("custom_su_path", getCustomSuPath());
                 service.updatePlusFeatureEnabled("root_magisk_mocking", isRootMagiskMockingEnabled());
@@ -2339,7 +2338,6 @@ public class ShizukuSettings {
         SharedPreferences p = getPreferences();
         if (p != null) {
             p.edit().putBoolean(Keys.KEY_DPM_FREEZE_ENABLED, enabled).apply();
-            syncAllPlusFeaturesToServer();
         }
     }
 }

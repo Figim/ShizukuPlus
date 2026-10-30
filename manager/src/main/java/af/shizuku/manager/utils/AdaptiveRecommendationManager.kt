@@ -31,6 +31,12 @@ object AdaptiveRecommendationManager {
     @JvmStatic
     fun isDismissed(id: String): Boolean {
         if (!ShizukuSettings.isAdaptiveRecommendationsEnabled()) return true
+        return isDismissedById(id)
+    }
+
+    /** Whether [id] itself was dismissed, ignoring the master switch. */
+    @JvmStatic
+    fun isDismissedById(id: String): Boolean {
         val sp = ShizukuSettings.getPreferences() ?: return false
         val dismissed = sp.getStringSet(KEY_DISMISSED_RECOMMENDATIONS, emptySet()) ?: emptySet()
         return id in dismissed
@@ -84,6 +90,10 @@ object AdaptiveRecommendationManager {
         onDecline: () -> Unit = {},
     ): Boolean {
         if (isDismissed(id)) return false
+        // Callers often post this from async state callbacks; a dialog on a finishing or
+        // destroyed activity throws BadTokenException.
+        val activity = context as? android.app.Activity
+        if (activity != null && (activity.isFinishing || activity.isDestroyed)) return false
         if (respectSessionGuard && !shownThisSession.add(id)) return false
 
         val density = context.resources.displayMetrics.density
@@ -119,27 +129,33 @@ object AdaptiveRecommendationManager {
             }
         container.addView(dontShowBox)
 
-        MaterialAlertDialogBuilder(context)
-            .setIcon(iconRes)
-            .setTitle(title)
-            .setView(container)
-            .setPositiveButton(positiveLabel) { _, _ ->
-                if (dontShowBox.isChecked) {
-                    setDismissed(id, true)
+        val builder =
+            MaterialAlertDialogBuilder(context)
+                .setIcon(iconRes)
+                .setTitle(title)
+                .setView(container)
+                .setPositiveButton(positiveLabel) { _, _ ->
+                    if (dontShowBox.isChecked) {
+                        setDismissed(id, true)
+                    }
+                    onAccept()
+                }.setNegativeButton(negativeLabel) { _, _ ->
+                    if (dontShowBox.isChecked) {
+                        setDismissed(id, true)
+                    }
+                    onDecline()
+                }.setOnCancelListener {
+                    if (dontShowBox.isChecked) {
+                        setDismissed(id, true)
+                    }
                 }
-                onAccept()
-            }.setNegativeButton(negativeLabel) { _, _ ->
-                if (dontShowBox.isChecked) {
-                    setDismissed(id, true)
-                }
-                onDecline()
-            }.setOnCancelListener {
-                if (dontShowBox.isChecked) {
-                    setDismissed(id, true)
-                }
-            }.show()
-
-        return true
+        return try {
+            builder.show()
+            true
+        } catch (e: android.view.WindowManager.BadTokenException) {
+            shownThisSession.remove(id)
+            false
+        }
     }
 
     /**
@@ -171,6 +187,9 @@ object AdaptiveRecommendationManager {
                         Toast.LENGTH_SHORT,
                     ).show()
                 onEnabled()
+                // Same follow-up as turning TCP Mode on in Settings: offer open Wi-Fi protection
+                // while the port is about to stay open.
+                maybeRecommendTcpNetworkGuard(context)
             },
         )
     }

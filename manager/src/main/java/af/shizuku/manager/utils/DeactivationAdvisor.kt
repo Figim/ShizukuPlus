@@ -5,7 +5,6 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.settings.ServiceDoctorActivity
 import android.content.Context
 import android.content.Intent
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -200,34 +199,32 @@ object DeactivationAdvisor {
                 }
 
             val divider =
-                View(context).apply {
-                    val lp =
+                com.google.android.material.divider.MaterialDivider(context).apply {
+                    layoutParams =
                         LinearLayout
                             .LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
-                                (1 * density).toInt().coerceAtLeast(1),
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
                             ).apply {
                                 topMargin = (8 * density).toInt()
                                 bottomMargin = (4 * density).toInt()
                             }
-                    layoutParams = lp
-                    setBackgroundColor(0x22888888)
                 }
             contentLayout.addView(divider)
 
             val dontShowCheck =
                 MaterialCheckBox(context).apply {
                     text = context.getString(R.string.recommendation_dont_show_again)
-                    isChecked = AdaptiveRecommendationManager.isDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
+                    // The stored choice only; isDismissed() also reads true when the master
+                    // switch is off, which would pre-check this on a manual open.
+                    isChecked = AdaptiveRecommendationManager.isDismissedById(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
                     contentLayout.addView(this)
                 }
 
             builder
                 .setView(scrollView)
                 .setPositiveButton(R.string.stability_tips_apply_selected) { _, _ ->
-                    if (dontShowCheck.isChecked) {
-                        AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, true)
-                    }
+                    AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, dontShowCheck.isChecked)
                     disabledTips.forEachIndexed { index, tip ->
                         if (checkBoxes[index].isChecked) {
                             tip.onEnable(context)
@@ -235,14 +232,10 @@ object DeactivationAdvisor {
                     }
                     onDismiss()
                 }.setNeutralButton(R.string.home_service_doctor_title) { _, _ ->
-                    if (dontShowCheck.isChecked) {
-                        AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, true)
-                    }
+                    AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, dontShowCheck.isChecked)
                     context.startActivity(Intent(context, ServiceDoctorActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }.setNegativeButton(android.R.string.cancel) { _, _ ->
-                    if (dontShowCheck.isChecked) {
-                        AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, true)
-                    }
+                    AdaptiveRecommendationManager.setDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS, dontShowCheck.isChecked)
                 }
         }
 

@@ -89,7 +89,9 @@ class StartWirelessAdbViewHolder(
                 } else {
                     val fm = (context as? androidx.fragment.app.FragmentActivity)?.supportFragmentManager
                     if (fm != null) {
-                        AdbDialogFragment().show(fm)
+                        // The port probe above suspends; the activity may have been stopped or
+                        // destroyed meanwhile, and show() would throw IllegalStateException.
+                        if (!fm.isStateSaved && !fm.isDestroyed) AdbDialogFragment().show(fm)
                     } else {
                         val lastPort = ShizukuSettings.getLastPort()
                         if (lastPort in 1..65535) {

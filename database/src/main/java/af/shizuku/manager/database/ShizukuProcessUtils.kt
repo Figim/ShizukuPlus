@@ -87,7 +87,9 @@ object ShizukuProcessUtils {
             val process =
                 Shizuku.newProcess(
                     arrayOf("sh", "-c", wrapper),
-                    arrayOf("SHIZUKU_DETACHED=1"),
+                    // null inherits the server's environment; a non-null array replaces it
+                    // entirely (no PATH, so `setsid` would not resolve).
+                    null,
                     null,
                 )
             try {

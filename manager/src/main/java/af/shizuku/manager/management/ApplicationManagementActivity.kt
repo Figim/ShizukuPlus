@@ -39,6 +39,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
@@ -412,37 +413,46 @@ open class ApplicationManagementActivity :
         return true
     }
 
+    /** Grant/revoke every selected app. Authorization calls are Shizuku binder IPC: off main. */
+    private fun bulkSetAuthorized(grant: Boolean) {
+        val targets =
+            adapter.selectedPackages.toList().mapNotNull { pkg ->
+                viewModel.packages.value
+                    ?.data
+                    ?.find { it.packageName == pkg }
+                    ?.applicationInfo
+                    ?.uid
+                    ?.let { uid -> pkg to uid }
+            }
+        adapter.isSelectionMode = false
+        lifecycleScope.launch(Dispatchers.IO) {
+            var failed = 0
+            for ((pkg, uid) in targets) {
+                runCatching {
+                    if (grant) AuthorizationManager.grant(pkg, uid) else AuthorizationManager.revoke(pkg, uid)
+                }.onFailure { failed++ }
+            }
+            withContext(Dispatchers.Main) {
+                if (isFinishing || isDestroyed) return@withContext
+                if (failed > 0) {
+                    Toast.makeText(this@ApplicationManagementActivity, getString(R.string.toast_operation_failed), Toast.LENGTH_SHORT).show()
+                }
+                viewModel.load()
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (adapter.isSelectionMode) {
             when (item.itemId) {
-                10 -> { // Select all
+                10 -> { // Select all (through the adapter so the toolbar count updates)
                     viewModel.packages.value
                         ?.data
-                        ?.forEach { adapter.selectedPackages.add(it.packageName) }
-                    adapter.notifyItemRangeChanged(0, adapter.itemCount)
+                        ?.map { it.packageName }
+                        ?.let { adapter.selectAll(it) }
                 }
-                11 -> { // Grant all
-                    adapter.selectedPackages.toList().forEach { pkg ->
-                        val pi =
-                            viewModel.packages.value
-                                ?.data
-                                ?.find { it.packageName == pkg }
-                        pi?.applicationInfo?.uid?.let { uid -> AuthorizationManager.grant(pkg, uid) }
-                    }
-                    adapter.isSelectionMode = false
-                    viewModel.load()
-                }
-                12 -> { // Revoke all
-                    adapter.selectedPackages.toList().forEach { pkg ->
-                        val pi =
-                            viewModel.packages.value
-                                ?.data
-                                ?.find { it.packageName == pkg }
-                        pi?.applicationInfo?.uid?.let { uid -> AuthorizationManager.revoke(pkg, uid) }
-                    }
-                    adapter.isSelectionMode = false
-                    viewModel.load()
-                }
+                11 -> bulkSetAuthorized(grant = true)
+                12 -> bulkSetAuthorized(grant = false)
                 13 -> { // Hide all
                     adapter.selectedPackages.toList().forEach { viewModel.hidePackage(it) }
                     adapter.isSelectionMode = false

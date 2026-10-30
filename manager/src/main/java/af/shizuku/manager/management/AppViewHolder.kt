@@ -10,6 +10,7 @@ import af.shizuku.manager.database.AppContextManager
 import af.shizuku.manager.databinding.AppListItemBinding
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.utils.AppIconCache
+import af.shizuku.manager.utils.DpmAppHider
 import af.shizuku.manager.utils.ShizukuSystemApis
 import android.app.Activity
 import android.app.ActivityOptions
@@ -295,6 +296,7 @@ class AppViewHolder(
             }
 
             // Freeze/Unfreeze & Per-App Free-Form Window Resizing (#635) — binder calls are safe here on IO
+            var freezeService: af.shizuku.server.IActivityManagerPlus? = null
             if (ShizukuSettings.isCustomApiEnabled()) {
                 val shizukuService =
                     try {
@@ -353,46 +355,63 @@ class AppViewHolder(
                             )
                         }
                     }
-                    if (ShizukuSettings.getLongPressFreezeApp()) {
-                        val amPlus =
+                    freezeService =
+                        try {
+                            serviceStub?.activityManagerPlus
+                        } catch (_: Exception) {
+                            null
+                        }
+                }
+            }
+
+            // Freeze/Unfreeze (#632): DevicePolicyManager when Shizuku+ is device/profile owner
+            // (only the admin's owner may hide apps), else the server's disable/suspend chain.
+            if (ShizukuSettings.getLongPressFreezeApp()) {
+                val amPlus = freezeService
+                val useDpm = ShizukuSettings.isDpmFreezeEnabled() && DpmAppHider.isAvailable(context)
+                if (useDpm || amPlus != null) {
+                    val dpmHidden = useDpm && DpmAppHider.isHidden(context, capturedPackage)
+                    val isFrozen =
+                        dpmHidden ||
                             try {
-                                serviceStub?.activityManagerPlus
+                                amPlus?.isAppFrozen(capturedPackage) == true
                             } catch (_: Exception) {
-                                null
+                                false
                             }
-                        if (amPlus != null) {
-                            val isFrozen =
+                    val freezeLabel = context.getString(if (isFrozen) R.string.lp_action_unfreeze_app else R.string.lp_action_freeze_app)
+                    add(
+                        LpAction(freezeLabel) {
+                            CoroutineScope(Dispatchers.IO).launch {
                                 try {
-                                    amPlus.isAppFrozen(capturedPackage)
-                                } catch (_: Exception) {
-                                    false
-                                }
-                            val freezeLabel = context.getString(if (isFrozen) R.string.lp_action_unfreeze_app else R.string.lp_action_freeze_app)
-                            add(
-                                LpAction(freezeLabel) {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        try {
-                                            val success = if (isFrozen) amPlus.unfreezeApp(capturedPackage) else amPlus.freezeApp(capturedPackage)
-                                            withContext(Dispatchers.Main) {
-                                                if (success) {
-                                                    notifyUser(context.getString(if (isFrozen) R.string.toast_app_unfrozen else R.string.toast_app_frozen))
-                                                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
-                                                    val pos = adapterPosition
-                                                    if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
-                                                } else {
-                                                    notifyUser(context.getString(R.string.toast_operation_failed))
-                                                }
+                                    val success =
+                                        if (isFrozen) {
+                                            var restored = dpmHidden && DpmAppHider.setHidden(context, capturedPackage, false)
+                                            if (amPlus != null && amPlus.isAppFrozen(capturedPackage)) {
+                                                restored = amPlus.unfreezeApp(capturedPackage) || restored
                                             }
-                                        } catch (e: Exception) {
-                                            withContext(Dispatchers.Main) {
-                                                notifyUser(context.getString(R.string.toast_error_with_message, e.message))
-                                            }
+                                            restored
+                                        } else {
+                                            (useDpm && DpmAppHider.setHidden(context, capturedPackage, true)) ||
+                                                amPlus?.freezeApp(capturedPackage) == true
+                                        }
+                                    withContext(Dispatchers.Main) {
+                                        if (success) {
+                                            notifyUser(context.getString(if (isFrozen) R.string.toast_app_unfrozen else R.string.toast_app_frozen))
+                                            ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
+                                            val pos = adapterPosition
+                                            if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
+                                        } else {
+                                            notifyUser(context.getString(R.string.toast_operation_failed))
                                         }
                                     }
-                                },
-                            )
-                        }
-                    }
+                                } catch (e: Exception) {
+                                    withContext(Dispatchers.Main) {
+                                        notifyUser(context.getString(R.string.toast_error_with_message, e.message))
+                                    }
+                                }
+                            }
+                        },
+                    )
                 }
             }
         }

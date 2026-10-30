@@ -18,6 +18,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.CallbackList
@@ -125,10 +126,11 @@ class StarterActivity : AppBarActivity() {
                             )
                         ) {
                             builder.setNeutralButton(R.string.home_wireless_adb_title) { _, _ ->
-                                finish()
+                                // Not finish() first: with no known port, start() shows the
+                                // discovery dialog on this activity's fragment manager.
                                 af.shizuku.manager.home.StartWirelessAdbViewHolder.start(
                                     this,
-                                    kotlinx.coroutines.MainScope(),
+                                    lifecycleScope,
                                 )
                             }
                         }

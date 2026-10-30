@@ -246,6 +246,15 @@ class SettingsActivity :
                                         .beginTransaction()
                                         .replace(R.id.fragment_container, SettingsFragment())
                                         .commitNowAllowingStateLoss()
+                                }.onFailure {
+                                    // commitNow throws while the FM is mid-transaction; a queued
+                                    // commit still fills the container instead of leaving it blank.
+                                    runCatching {
+                                        supportFragmentManager
+                                            .beginTransaction()
+                                            .replace(R.id.fragment_container, SettingsFragment())
+                                            .commitAllowingStateLoss()
+                                    }
                                 }
                             }
                         } else if (existing.view == null) {

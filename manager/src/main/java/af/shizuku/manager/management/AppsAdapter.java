@@ -59,6 +59,12 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
         return selectedPackages;
     }
 
+    public void selectAll(java.util.Collection<String> packageNames) {
+        selectedPackages.addAll(packageNames);
+        notifyDataSetChanged();
+        notifySelectionListener();
+    }
+
     public void toggleSelection(String packageName) {
         if (selectedPackages.contains(packageName)) {
             selectedPackages.remove(packageName);
