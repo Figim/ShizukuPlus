@@ -4,6 +4,19 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+### 🛠 Fixes
+- **In-app updates no longer end in "There was a problem parsing the package"** — the downloaded update is checked before installing. If it's damaged it is downloaded again once; if that fails you get a clear error with a link to GitHub, instead of the system installer failing.
+- **Per-app API scopes now apply even with the Binder Firewall off** ([#645](https://github.com/thejaustin/ShizukuPlus/issues/645)).
+- **Per-app free-form resizing changes only that app** — it no longer flips the device-wide "force resizable" developer option, and it no longer force-stops apps when you change other Plus settings. The change applies the next time the app opens ([#635](https://github.com/thejaustin/ShizukuPlus/issues/635)).
+- **Freeze works with Shizuku+ as Device Owner** — it suspends the app through device policy, and the app stays in the list so it can be unfrozen ([#632](https://github.com/thejaustin/ShizukuPlus/issues/632)).
+- **Startup scripts run once per service start** instead of sometimes twice.
+- **Root start fallback can't hang** — starting through a custom `su` path gives up after 15 seconds and falls back to Wireless ADB when enabled.
+- **No permission-error notification when the TCP fallback is already starting the service.**
+- **Apps using Shizuku aren't held up for 1.5 s** while the service is stopped.
+- **Bulk grant/revoke in Authorized Apps no longer freezes the screen**, and "Select all" updates the selected count.
+- **Starter "Wireless ADB" fallback button** opens port discovery instead of closing silently.
+- **Fewer background errors on Samsung devices with Secure Folder** when checking frozen apps or listing apps for backup.
+
 ### 🎬 Screen Transitions & Motion Experience
 - **Unified Material 3 Expressive Screen Navigation** — completely eradicated legacy Android 5.0 `Explode()` transitions across the app, replacing them with fluid Material Design `MaterialSharedAxis.Z` (depth zoom and fade) transitions as the default across all activities (`AppActivity` and `AppBarActivity`).
 - **Fluid Screen Back-Navigation & Reverse Transitions** — aligned back navigation in `PermissionManagerActivity`, `DeviceControlActivity`, and `SystemHubActivity` to invoke `finishAfterTransition()` to play reverse `MaterialSharedAxis.Z` animations smoothly instead of abruptly killing the window.
