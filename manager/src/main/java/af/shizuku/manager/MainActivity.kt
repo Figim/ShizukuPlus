@@ -93,7 +93,8 @@ class MainActivity : HomeActivity() {
                         .importAndCommit(this@MainActivity, json, trustPrivileged = true)
                 ) {
                     Timber.i("Successfully auto-restored settings from backup")
-                    backupFile.delete()
+                    af.shizuku.manager.update.UpdateInstaller
+                        .consumeBackup(this@MainActivity, backupFile)
                     Toast.makeText(this@MainActivity, R.string.migration_success_message, Toast.LENGTH_LONG).show()
                 }
             }

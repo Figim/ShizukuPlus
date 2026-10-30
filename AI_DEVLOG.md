@@ -120,6 +120,26 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-30 — Claude (device testing r3124, follow-ups) [master; f4821b82 pushed, later commits local]
+
+- Installed CI r3124 over r3085 with `pm install -r`, keeping data. No FATAL or ANR.
+- **Found on device:** two `shizuku_plus_server` processes after a starter restart raced the manager's AdbStartWorker. Fixed with a server single-instance lock (verified: a duplicate exits) and a 1.5 s Watchdog grace.
+- **Verified from adb shell (uid 2000):**
+  - `am compat --no-kill FORCE_RESIZE_APP` works on non-debuggable apps. `ALLOW_RESIZEABLE_ACTIVITY` is an invalid change name, so it was dropped.
+  - `cmd package suspend/unsuspend` and `pm disable-user/enable` work.
+  - `pm list` without `--user` errors on Secure Folder (user 150), so `--user` was added.
+- **#648:** `ScopeCommandMatcher` plus tests, so sh -c, full paths and chained commands are caught.
+- **Backup restore (security + data loss):**
+  - Auto-restore read public `/sdcard/Download` with trustPrivileged=true, so any app could plant settings.
+  - The shell-owned `Android/data` copy couldn't be deleted, so the Oct 27 backup was re-imported on **every launch**, reverting settings. The "restored" toast was seen on device.
+  - Now: trusted locations only, at most 24 h old, and a restored fingerprint is kept (`restored_backup_fingerprint`, excluded from backups). Public copies are restored only from the onboarding card, without trust. All copies are deleted after a restore.
+  - On the phone, the stale copies were renamed to `/sdcard/Download/shizukuplus-backup-2026-10-27*.json` (data kept).
+- **Open:**
+  - (a) The app itself writes a fresh `shizuku_plus_auto_backup.json` into `Android/data/.../files/Download` on settings changes. With the new logic, a launch may still re-import it once per change and show the toast. Separate the app's own periodic backup from the force-update handoff file (different name).
+  - (b) The failed r3116 in-app download is byte-identical to the release (sha256 match), so the "problem parsing" error comes from the install step (FileProvider / cache copy), not the download. It needs a logcat of a real attempt.
+  - (c) User report: dark modes / AMOLED don't give a pure black home-screen background. Not started.
+  - (d) The local test server `/data/local/tmp/sptest` is still on the phone; remove it.
+
 ### 2026-10-29 (late) — Claude (review of Antigravity Oct 22–29 work, CI fix, fallback hardening) [master, unpushed]
 
 - **CI was red on `87e4de84`** (build, lint, unit-tests): `R.drawable.ic_select_all_24` didn't exist. Added it, plus `ic_ac_unit_24` for Freeze (was reusing the close icon). API Scopes now uses `ic_admin_panel_settings_24` instead of the Toggle Permission shield.

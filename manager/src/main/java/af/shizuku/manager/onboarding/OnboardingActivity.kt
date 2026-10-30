@@ -34,7 +34,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -141,22 +140,12 @@ class OnboardingActivity : AppActivity() {
         }
 
     private fun findAvailableBackupFile(): File? {
-        val candidates =
-            listOfNotNull(
-                UpdateInstaller.getBackupFile(this),
-                File(filesDir, UpdateInstaller.AUTO_BACKUP_FILENAME),
-                File("/data/local/tmp", UpdateInstaller.AUTO_BACKUP_FILENAME),
-                File("/data/local/tmp", "shizukuplus_settings.json"),
-                getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let {
-                    File(it, UpdateInstaller.AUTO_BACKUP_FILENAME)
-                },
-                File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), UpdateInstaller.AUTO_BACKUP_FILENAME),
-                File("/sdcard/Download", UpdateInstaller.AUTO_BACKUP_FILENAME),
-                File("/storage/emulated/0/Download", UpdateInstaller.AUTO_BACKUP_FILENAME),
-            )
+        val candidates = UpdateInstaller.trustedBackupCandidates(this) + UpdateInstaller.publicBackupCandidates()
         for (candidate in candidates) {
             try {
-                if (candidate.exists() && candidate.isFile && candidate.length() > 10) {
+                if (candidate.exists() && candidate.isFile && candidate.length() > 10 &&
+                    !UpdateInstaller.wasRestored(this, candidate)
+                ) {
                     return candidate
                 }
             } catch (_: Exception) {
@@ -182,7 +171,8 @@ class OnboardingActivity : AppActivity() {
                 if (af.shizuku.manager.utils.SettingsBackupManager
                         .importAndCommit(this, json, trustPrivileged = true)
                 ) {
-                    backupFile.delete()
+                    af.shizuku.manager.update.UpdateInstaller
+                        .consumeBackup(this, backupFile)
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                     return
@@ -459,8 +449,11 @@ class OnboardingActivity : AppActivity() {
                 binding.btnRestoreBackup.setOnClickListener {
                     try {
                         val json = foundBackup.readText()
-                        if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = true)) {
-                            foundBackup.delete()
+                        // A copy in public Downloads may have been written by another app: hold
+                        // its privileged settings back so they ask, as for a picked file.
+                        val trusted = UpdateInstaller.isTrustedBackupLocation(this@OnboardingActivity, foundBackup)
+                        if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = trusted)) {
+                            UpdateInstaller.consumeBackup(this@OnboardingActivity, foundBackup)
                             Toast.makeText(this@OnboardingActivity, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
                             completeOnboarding()
                         } else {

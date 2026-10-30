@@ -12,31 +12,98 @@ object UpdateInstaller {
     private const val TAG = "UpdateInstaller"
     const val AUTO_BACKUP_FILENAME = "shizuku_plus_auto_backup.json"
 
+    /**
+     * Where the force-update script leaves the settings backup, in the order to try. Only
+     * locations other apps can't write: this app's private dirs and /data/local/tmp (shell/root
+     * only). These backups are restored with privileged settings applied as stored.
+     */
+    fun trustedBackupCandidates(context: Context): List<File> =
+        listOfNotNull(
+            File(context.filesDir, AUTO_BACKUP_FILENAME),
+            File("/data/local/tmp", AUTO_BACKUP_FILENAME),
+            File("/data/local/tmp", "shizukuplus_settings.json"),
+            context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let { File(it, AUTO_BACKUP_FILENAME) },
+        )
+
+    /**
+     * Public Downloads copies (older builds wrote one there). Any app with storage access can
+     * create or replace these, so they are never restored automatically and never with
+     * privileged settings trusted.
+     */
+    fun publicBackupCandidates(): List<File> =
+        listOf(
+            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), AUTO_BACKUP_FILENAME),
+            File("/sdcard/Download", AUTO_BACKUP_FILENAME),
+            File("/storage/emulated/0/Download", AUTO_BACKUP_FILENAME),
+        )
+
+    private fun File.usable(): Boolean = runCatching { isFile && length() > 0 }.getOrDefault(false)
+
+    const val KEY_RESTORED_BACKUP_FINGERPRINT = "restored_backup_fingerprint"
+    private const val AUTO_RESTORE_MAX_AGE_MS = 24 * 60 * 60 * 1000L
+
+    private fun fingerprint(file: File): String = "${file.length()}:${file.lastModified()}"
+
+    /**
+     * True once this exact file (size + mtime) was restored. Deleting it isn't enough: the script
+     * writes the Android/data copy as shell, so the app often can't delete it, and the same old
+     * backup was restored again on every launch, reverting the user's later changes.
+     */
+    fun wasRestored(
+        context: Context,
+        file: File,
+    ): Boolean =
+        runCatching {
+            af.shizuku.manager.ShizukuSettings
+                .getPreferences()
+                .getString(KEY_RESTORED_BACKUP_FINGERPRINT, null)
+                ?.split('|')
+                ?.contains(fingerprint(file)) == true
+        }.getOrDefault(false)
+
+    /** Record [file] as restored, then remove every copy that can be removed. */
+    fun consumeBackup(
+        context: Context,
+        file: File,
+    ) {
+        runCatching {
+            val prefs =
+                af.shizuku.manager.ShizukuSettings
+                    .getPreferences()
+            val seen = prefs.getString(KEY_RESTORED_BACKUP_FINGERPRINT, null)?.split('|').orEmpty()
+            val updated = (seen + fingerprint(file)).distinct().takeLast(8).joinToString("|")
+            prefs.edit().putString(KEY_RESTORED_BACKUP_FINGERPRINT, updated).commit()
+        }
+        deleteAllBackupCopies(context)
+    }
+
+    /**
+     * The backup to restore automatically after a force update, or null: a trusted copy that is
+     * recent (the force-update script restores within seconds) and not restored before.
+     */
     fun getBackupFile(context: Context): File? {
-        val internalFile = File(context.filesDir, AUTO_BACKUP_FILENAME)
-        if (internalFile.exists() && internalFile.length() > 0) return internalFile
+        val now = System.currentTimeMillis()
+        return trustedBackupCandidates(context).firstOrNull {
+            it.usable() && now - it.lastModified() in 0L..AUTO_RESTORE_MAX_AGE_MS && !wasRestored(context, it)
+        }
+    }
 
-        val tmpFile = File("/data/local/tmp", AUTO_BACKUP_FILENAME)
-        if (tmpFile.exists() && tmpFile.length() > 0) return tmpFile
+    fun isTrustedBackupLocation(
+        context: Context,
+        file: File,
+    ): Boolean {
+        val path = runCatching { file.canonicalPath }.getOrDefault(file.absolutePath)
+        return trustedBackupCandidates(context).any { runCatching { it.canonicalPath }.getOrDefault(it.absolutePath) == path }
+    }
 
-        val tmpAlt = File("/data/local/tmp", "shizukuplus_settings.json")
-        if (tmpAlt.exists() && tmpAlt.length() > 0) return tmpAlt
-
-        val appExtDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        val primaryFile = if (appExtDir != null) File(appExtDir, AUTO_BACKUP_FILENAME) else null
-        if (primaryFile?.exists() == true && primaryFile.length() > 0) return primaryFile
-
-        val publicDownloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val fallbackPublic = File(publicDownloadDir, AUTO_BACKUP_FILENAME)
-        if (fallbackPublic.exists() && fallbackPublic.length() > 0) return fallbackPublic
-
-        val sdcardDownload = File("/sdcard/Download", AUTO_BACKUP_FILENAME)
-        if (sdcardDownload.exists() && sdcardDownload.length() > 0) return sdcardDownload
-
-        val storageDownload = File("/storage/emulated/0/Download", AUTO_BACKUP_FILENAME)
-        if (storageDownload.exists() && storageDownload.length() > 0) return storageDownload
-
-        return internalFile
+    /**
+     * After a restore, remove every copy: a leftover one was restored again on the next launch
+     * (reverting changes made since), and copies hold settings such as scanner API keys.
+     */
+    fun deleteAllBackupCopies(context: Context) {
+        (trustedBackupCandidates(context) + publicBackupCandidates()).forEach { f ->
+            runCatching { if (f.exists()) f.delete() }
+        }
     }
 
     /**
@@ -89,8 +156,6 @@ object UpdateInstaller {
                         DEST_DIR="/sdcard/Android/data/$packageName/files/Download"
                         mkdir -p "${'$'}DEST_DIR" 2>/dev/null
                         cp /data/local/tmp/shizukuplus_settings.json "${'$'}DEST_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
-
-                        cp /data/local/tmp/shizukuplus_settings.json "/sdcard/Download/$AUTO_BACKUP_FILENAME" 2>/dev/null
 
                         for DATA_DIR in "/data/data/$packageName/files" "/data/user/0/$packageName/files"; do
                             mkdir -p "${'$'}DATA_DIR" 2>/dev/null
