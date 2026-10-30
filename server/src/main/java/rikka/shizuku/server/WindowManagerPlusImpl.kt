@@ -98,9 +98,10 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
                 // --no-kill: am compat force-stops the app by default, and the manager replays
                 // this for every saved package on each Plus settings sync. The override persists
                 // and applies on the app's next launch.
-                val allow = ShellExecutor.execBool("am", "compat", action, "--no-kill", "ALLOW_RESIZEABLE_ACTIVITY", packageName)
-                val force = ShellExecutor.execBool("am", "compat", action, "--no-kill", "FORCE_RESIZE_APP", packageName)
-                compatApplied = allow || force
+                // FORCE_RESIZE_APP (174042936) is overridable, so shell may set it for
+                // non-debuggable apps on user builds. (There is no ALLOW_RESIZEABLE_ACTIVITY
+                // change: am compat rejects that name, verified on Android 16.)
+                compatApplied = ShellExecutor.execBool("am", "compat", action, "--no-kill", "FORCE_RESIZE_APP", packageName)
             }
             if (compatApplied) {
                 Log.d(TAG, "Applied per-app resize compat override for $packageName: $enabled")

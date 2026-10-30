@@ -161,7 +161,9 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         // Fallback: pm list packages -d lists only disabled packages
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
         // The filter is a substring match, so compare whole lines ("package:<name>").
-        return ShellExecutor.exec("pm", "list", "packages", "-d", packageName)
+        // --user: without it pm walks every user and errors on profiles shell can't access
+        // (Samsung Secure Folder, user 150).
+        return ShellExecutor.exec("pm", "list", "packages", "-d", "--user", callingUserId().toString(), packageName)
             .lineSequence()
             .any { it.trim() == "package:$packageName" }
     }

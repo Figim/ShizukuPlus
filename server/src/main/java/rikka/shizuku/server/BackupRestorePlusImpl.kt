@@ -107,14 +107,17 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         }
         // Fallback: pm list packages — get disabled set once for isFrozen, versionName/allowBackup
         // are unavailable without per-package queries in this path so left as safe defaults.
+        // --user: without it pm walks every user and errors on profiles shell can't access
+        // (Samsung Secure Folder, user 150), and other users' packages would mix in.
+        val user = callingUserId().toString()
         val disabledPkgs = try {
-            ShellExecutor.exec("pm", "list", "packages", "-d").lines()
+            ShellExecutor.exec("pm", "list", "packages", "-d", "--user", user).lines()
                 .map { it.removePrefix("package:").trim() }.toHashSet()
         } catch (_: Exception) { emptySet<String>() }
         val args = if (includeSystem)
-            arrayOf("pm", "list", "packages", "-f", "--show-versioncode")
+            arrayOf("pm", "list", "packages", "-f", "--show-versioncode", "--user", user)
         else
-            arrayOf("pm", "list", "packages", "-f", "--show-versioncode", "-3")
+            arrayOf("pm", "list", "packages", "-f", "--show-versioncode", "-3", "--user", user)
         val output = ShellExecutor.exec(*args)
         val result = mutableListOf<Bundle>()
         for (line in output.lines()) {
