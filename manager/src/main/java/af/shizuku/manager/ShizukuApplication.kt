@@ -954,6 +954,10 @@ class ShizukuApplication :
                     .saveAutoBackup(this@ShizukuApplication)
                 af.shizuku.manager.settings.SettingsShareManager
                     .checkAndPerformAutoSync(this@ShizukuApplication)
+                // Downloaded update APKs were never removed after installing (~16 MB each).
+                af.shizuku.manager.update
+                    .UpdateManager(this@ShizukuApplication)
+                    .cleanup()
             } catch (e: Exception) {
                 Timber.tag("ShizukuApplication").w(e, "Peer settings initial auto-sync or backup failed")
             }
