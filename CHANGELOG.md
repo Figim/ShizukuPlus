@@ -21,7 +21,9 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Safer settings backup** — the copy that survives a reinstall is no longer kept in public Downloads, where any app could read or replace it. Scanner API keys and the hidden-apps list aren't stored in it.
 - **AMOLED dark styles are true black on the Home screen**, and turning a setting on no longer puts a black block behind its row.
 - **Icon style changes apply right away** — switching to Two-tone (or any style) no longer showed the previous style until the next change.
-- **Expressive icon shapes are centered** behind their icons (cookie and star were off-center).
+- **Expressive icon shapes are centered** behind their icons (cookie and star were off-center). The shapes now come from Material's own Expressive set, each icon is sized to stay inside its shape (flower and star dip in further, so their icons are a little smaller), and settings icons use the same 40dp container whichever shape you pick.
+- **Smoother card rearranging on Home** — cards no longer jump over each other when a tall card passes a short one, the held card no longer covers its neighbours, the dropped card settles without a jump, and cards that appear or move afterwards slide into place instead of popping. On wide screens with several columns, cards can also be dragged sideways.
+- **No more backup file in Downloads on every launch** ([#651](https://github.com/thejaustin/ShizukuPlus/issues/651)) — copies that older versions left in Downloads and in Shizuku+'s own Download folder are removed once.
 - **Settings toggles update their own row** and keep the tap ripple when switched on or off.
 - **App Backup's temp-debug mode survives a service restart** — if the Shizuku service restarted while an app was in temp-debug mode, "restore original" stopped working and the saved copy of the app stayed on the device. The session is now picked back up, and leftover copies of apps that were already restored are cleaned up.
 - **Fewer background errors on Samsung devices with Secure Folder** when checking frozen apps or listing apps for backup.
