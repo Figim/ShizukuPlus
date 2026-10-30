@@ -134,6 +134,21 @@ Things discussed or sketched that we never formally decided to build.
   - `ShizukuProcessUtils.runDetached` (#531) has no callers. Its env array may replace the whole environment (no PATH for `setsid`).
   - The `isAppScopeDisabled` shell checks are substring matches, so some false positives are possible, but only when a scope is off.
 - Verified locally: Plus and Drop-In `compile*DebugKotlin` + server compile, `scripts/dev/lint.sh` clean. No device pass: loopback ADB refused, rish hung.
+- **Round 2 (same session):**
+  - DPM freeze (#632) moved to the manager (`utils/DpmAppHider.kt`). DPMS only lets the admin's own app hide packages, so the server's reflection stage could never succeed; it is removed along with the `dpm_freeze` server flag. The long-press Freeze uses DPM when Shizuku+ is DO/PO and the toggle is on, otherwise the server chain. Freeze is now offered even without the Custom API when DPM is available.
+  - `isAppFrozen` fallback: `pm list packages -d <pkg>` is a substring filter; it now matches whole `package:<name>` lines.
+  - `runDetached` (#531): passes a null env (a non-null array replaced the whole environment, dropping PATH).
+  - Auto-run snippets could run twice per start (two RUNNING handlers on different threads, non-atomic debounce): the debounce is now an `AtomicLong` CAS.
+  - `ShizukuManagerProvider` binder grace wait only during the first 5 s of process life (it stalled every client `getBinder` by 1.5 s while the service was stopped).
+  - StarterActivity "Wireless ADB" fallback button no longer `finish()`es before showing the discovery dialog. `StartWirelessAdbViewHolder.start` skips `show()` when the FM state is saved.
+  - Adaptive recommendations: activity-finishing and BadToken guard; accepting the TCP recommendation chains the open Wi-Fi guard prompt (as the Settings toggle does). Stability tips: "Don't show again" reflects and stores the real choice, and the divider is a MaterialDivider.
+  - Bulk grant/revoke ran Shizuku binder IPC on the main thread: now on IO, with a failure toast. Select all goes through `AppsAdapter.selectAll` so the toolbar count updates.
+  - RootCompatibilityActivity.onResume probes off the main thread. SettingsActivity root-fragment commit has a queued-commit fallback.
+- **In-app updater "problem parsing the package" (user report, device on r3085 CI build):** the r3116 release assets are valid. Both are complete and signed with the same cert as the installed app (sha256 `31:7C:5E:CA…5B:80`), so the file was damaged or lost between download and install. Root cause not confirmed without device logs. Changes:
+  - The download is validated before any installer sees it: exists, at least 1 MB, `PK` magic, `getPackageArchiveInfo` parses, package matches. On failure it re-downloads once over direct HTTP, then shows `update_download_corrupt`. Before this, an unparseable file made `checkSignaturesMatch` "assume match" and went to the system installer.
+  - DownloadManager success uses `COLUMN_LOCAL_URI` (where the file actually landed) instead of the requested path. The filename is ASCII-only (`ShizukuPlus-v…apk`; it was `Shizuku+-v…`).
+  - The 16 MB cache copy and validation moved off the main thread. `launchSystemInstaller` refuses a missing file.
+  - Users on r3085 still run the old updater. The fix only helps from the next build on, so r3085 → next needs a manual install, or Shizuku running so the pm-stdin path is used.
 
 ### 2026-10-28 — Antigravity (Screen opening animations, Explode elimination, Activity Log fluid transitions, M3E gestures) [master]
 

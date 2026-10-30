@@ -1291,6 +1291,7 @@
     <string name="update_install_now">Install now</string>
     <string name="update_download_failed_title">Download failed</string>
     <string name="update_download_failed_message">Failed to download the update. Please try again.</string>
+    <string name="update_download_corrupt">The downloaded update is damaged (%1$s). Try again, or download it from GitHub.</string>
     <string name="update_download_failed_storage">Not enough free storage to download the update.</string>
     <string name="update_download_failed_cannot_resume">The download couldn\'t resume after being interrupted. Please try again.</string>
     <string name="update_download_failed_http">A network error interrupted the download. Please check your connection and try again.</string>
@@ -1888,7 +1889,7 @@
     <string name="tip_device_hardening_desc">Apply privileged OS optimizations to prevent phantom process kills and background freezes</string>
     <string name="diagnostics_warning_tcp_mode_disabled">TCP Mode (port 5555) is disabled. Tap to enable instant Wireless ADB reconnection without Wi-Fi.</string>
     <string name="diagnostics_warning_device_hardening_disabled">Device Hardening is disabled. Tap to protect Shizuku+ from background process kills.</string>
-    <string name="diagnostics_tcp_mode_enabled_toast">TCP Mode (port 5555) enabled</string>
+    <string name="diagnostics_tcp_mode_enabled_toast">TCP Mode (port 5555) enabled. It applies the next time Shizuku+ starts.</string>
     <string name="settings_reset_recommendations_title">Reset dismissed recommendations</string>
     <string name="settings_reset_recommendations_summary">Restore all dismissed adaptive tips and diagnostic warnings</string>
     <string name="settings_reset_recommendations_toast">Dismissed recommendations reset</string>
@@ -1936,7 +1937,7 @@
     <string name="settings_show_plus_feature_hints">Show Plus feature hints</string>
     <string name="settings_show_plus_feature_hints_summary">Highlight disabled global Plus features that an app can benefit from</string>
     <string name="settings_dpm_freeze_title">Prefer Device Owner app hiding</string>
-    <string name="settings_dpm_freeze_summary">Use DevicePolicyManager.setApplicationHidden first when freezing apps while Device Owner is active</string>
+    <string name="settings_dpm_freeze_summary">When Shizuku+ is the device or profile owner, freezing hides the app instead of disabling it. Hidden apps keep their data and are restored with Unfreeze.</string>
     <string name="settings_lp_api_scopes">API Scopes</string>
     <string name="settings_lp_select_multiple">Select Multiple</string>
     <string name="settings_lp_freeze_app">Freeze / Unfreeze</string>

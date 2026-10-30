@@ -107,6 +107,11 @@ class UpdateManager(
     private var monitorJob: Job? = null
     private var isManualDownload = false
 
+    // URL of the current download, so a damaged DownloadManager result can be fetched again
+    // once over the direct HTTP path before giving up.
+    private var currentDownloadUrl: String? = null
+    private var retriedDirect = false
+
     private fun createNotificationChannel() {
         val channel =
             NotificationChannelCompat
@@ -129,10 +134,14 @@ class UpdateManager(
         manual: Boolean = false,
     ) {
         isManualDownload = manual
+        currentDownloadUrl = downloadUrl
+        retriedDirect = false
         createNotificationChannel()
 
         scope.launch(Dispatchers.IO) {
-            val fileName = "Shizuku+-v$versionName.apk"
+            // Plain ASCII name: '+' and other reserved characters in a file:// destination are
+            // decoded inconsistently by DownloadProvider and FileProvider.
+            val fileName = "ShizukuPlus-v${versionName.replace(Regex("[^A-Za-z0-9._-]"), "_")}.apk"
             val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: context.cacheDir, fileName)
 
             if (file.exists()) {
@@ -296,9 +305,19 @@ class UpdateManager(
 
                             when (status) {
                                 DownloadManager.STATUS_SUCCESSFUL -> {
+                                    // DownloadManager may store the file under a different name
+                                    // than requested; use where it actually landed.
+                                    val localIdx = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)
+                                    val localPath =
+                                        if (localIdx >= 0) {
+                                            cursor.getString(localIdx)?.let { runCatching { Uri.parse(it).path }.getOrNull() }
+                                        } else {
+                                            null
+                                        }
                                     cursor.close()
-                                    Timber.tag(TAG).d("Download completed: ${file.absolutePath}")
-                                    onDownloadComplete(file, versionName)
+                                    val actual = localPath?.let { File(it) }?.takeIf { it.exists() } ?: file
+                                    Timber.tag(TAG).d("Download completed: ${actual.absolutePath}")
+                                    onDownloadComplete(actual, versionName)
                                     break
                                 }
                                 DownloadManager.STATUS_FAILED -> {
@@ -348,29 +367,53 @@ class UpdateManager(
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun onDownloadComplete(
+    private suspend fun onDownloadComplete(
         file: File,
         versionName: String,
     ) {
         notificationManager.cancel(NOTIFICATION_ID)
 
         if (!isManualDownload && !ShizukuSettings.isAutoUpdateEnabled()) {
-            file.delete()
+            withContext(Dispatchers.IO) { file.delete() }
             return
         }
 
-        // Cache the APK on internal storage to bypass Android 14+ FUSE SELinux restrictions
+        // Cache the APK on internal storage to bypass Android 14+ FUSE SELinux restrictions.
+        // A 16 MB copy and an APK parse: never on the main thread.
         val readyApk =
-            try {
-                val updatesDir = File(context.cacheDir, "updates").apply { mkdirs() }
-                val cached = File(updatesDir, file.name)
-                file.copyTo(cached, overwrite = true)
-                cached.setReadable(true, false)
-                cached
-            } catch (e: Exception) {
-                Timber.tag(TAG).w(e, "Failed to copy APK to cacheDir; using original")
-                file
+            withContext(Dispatchers.IO) {
+                try {
+                    val updatesDir = File(context.cacheDir, "updates").apply { mkdirs() }
+                    val cached = File(updatesDir, file.name)
+                    if (cached.absolutePath != file.absolutePath) file.copyTo(cached, overwrite = true)
+                    cached.setReadable(true, false)
+                    cached
+                } catch (e: Exception) {
+                    Timber.tag(TAG).w(e, "Failed to copy APK to cacheDir; using original")
+                    file
+                }
             }
+
+        // Never hand an unparseable file to the system installer ("There was a problem parsing
+        // the package"): validate first, re-download once over direct HTTP, then fail clearly.
+        val problem = withContext(Dispatchers.IO) { validateApk(readyApk) }
+        if (problem != null) {
+            Timber.tag(TAG).w("Downloaded update is invalid (%s): %s", problem, readyApk.absolutePath)
+            withContext(Dispatchers.IO) {
+                readyApk.delete()
+                if (file.absolutePath != readyApk.absolutePath) file.delete()
+            }
+            val url = currentDownloadUrl
+            if (!retriedDirect && url != null) {
+                retriedDirect = true
+                _state.value = UpdateState.Downloading(0, 0, 0, versionName)
+                downloadDirectly(url, file, versionName)
+            } else {
+                _state.value = UpdateState.Error(context.getString(R.string.update_download_corrupt, problem))
+                showDownloadErrorNotification()
+            }
+            return
+        }
 
         _state.value = UpdateState.Ready(readyApk, versionName)
 
@@ -394,6 +437,23 @@ class UpdateManager(
         } else {
             showInstallNotification(readyApk, versionName)
         }
+    }
+
+    /**
+     * Returns null if [apk] is a complete APK of this app, else a short reason. Catches truncated
+     * or HTML/JSON downloads and a wrong-flavor asset before any installer sees them.
+     */
+    private fun validateApk(apk: File): String? {
+        if (!apk.exists()) return "file missing"
+        if (apk.length() < 1024 * 1024) return "file too small (${apk.length()} bytes)"
+        val magic = ByteArray(4)
+        val read = runCatching { apk.inputStream().use { it.read(magic) } }.getOrDefault(-1)
+        if (read != 4 || magic[0] != 'P'.code.toByte() || magic[1] != 'K'.code.toByte()) return "not an APK"
+        val info =
+            runCatching { context.packageManager.getPackageArchiveInfo(apk.absolutePath, 0) }.getOrNull()
+                ?: return "package could not be parsed"
+        if (info.packageName != context.packageName) return "wrong package (${info.packageName})"
+        return null
     }
 
     /**
@@ -457,8 +517,14 @@ class UpdateManager(
      * Launches the system PackageInstaller using an internal cacheDir FileProvider URI
      * that system_server and com.google.android.packageinstaller can safely access without FUSE denials.
      */
-    fun launchSystemInstaller(file: File): Boolean =
-        try {
+    fun launchSystemInstaller(file: File): Boolean {
+        if (!file.exists() || file.length() == 0L) {
+            // The cached APK was cleared (cache trim, reinstall); the installer would only
+            // report a parse error for a missing file.
+            _state.value = UpdateState.Error(context.getString(R.string.update_download_corrupt, "file missing"))
+            return false
+        }
+        return try {
             val apkUri = shareableApkUri(file)
             val installIntent =
                 Intent(Intent.ACTION_VIEW).apply {
@@ -472,6 +538,7 @@ class UpdateManager(
             Timber.tag(TAG).e(e, "launchSystemInstaller failed")
             false
         }
+    }
 
     /**
      * Compares the signing certificate of the downloaded APK with the installed app.
