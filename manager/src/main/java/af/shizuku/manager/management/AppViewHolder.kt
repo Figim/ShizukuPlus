@@ -370,9 +370,9 @@ class AppViewHolder(
                 val amPlus = freezeService
                 val useDpm = ShizukuSettings.isDpmFreezeEnabled() && DpmAppHider.isAvailable(context)
                 if (useDpm || amPlus != null) {
-                    val dpmHidden = useDpm && DpmAppHider.isHidden(context, capturedPackage)
+                    val dpmFrozen = useDpm && DpmAppHider.isFrozen(context, capturedPackage)
                     val isFrozen =
-                        dpmHidden ||
+                        dpmFrozen ||
                             try {
                                 amPlus?.isAppFrozen(capturedPackage) == true
                             } catch (_: Exception) {
@@ -385,13 +385,13 @@ class AppViewHolder(
                                 try {
                                     val success =
                                         if (isFrozen) {
-                                            var restored = dpmHidden && DpmAppHider.setHidden(context, capturedPackage, false)
+                                            var restored = dpmFrozen && DpmAppHider.setFrozen(context, capturedPackage, false)
                                             if (amPlus != null && amPlus.isAppFrozen(capturedPackage)) {
                                                 restored = amPlus.unfreezeApp(capturedPackage) || restored
                                             }
                                             restored
                                         } else {
-                                            (useDpm && DpmAppHider.setHidden(context, capturedPackage, true)) ||
+                                            (useDpm && DpmAppHider.setFrozen(context, capturedPackage, true)) ||
                                                 amPlus?.freezeApp(capturedPackage) == true
                                         }
                                     withContext(Dispatchers.Main) {

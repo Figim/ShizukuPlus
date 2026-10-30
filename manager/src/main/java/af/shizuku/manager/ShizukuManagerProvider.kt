@@ -20,11 +20,14 @@ class ShizukuManagerProvider : ShizukuProvider() {
         return super.onCreate()
     }
 
-    private fun waitForBinderGracefully() {
-        // Only while this process is cold-starting: the server's binder delivery may still be in
-        // flight. Otherwise a stopped service would stall every client's getBinder call by 1.5 s.
-        val processAgeMs = android.os.SystemClock.elapsedRealtime() - android.os.Process.getStartElapsedRealtime()
-        if (processAgeMs !in 0L until 5_000L) return
+    private fun waitForBinderGracefully(onlyDuringColdStart: Boolean = false) {
+        if (onlyDuringColdStart) {
+            // Client getBinder: only while this process is cold-starting and the server's binder
+            // delivery may still be in flight. Otherwise a stopped service would stall every
+            // client's getBinder call by 1.5 s.
+            val processAgeMs = android.os.SystemClock.elapsedRealtime() - android.os.Process.getStartElapsedRealtime()
+            if (processAgeMs !in 0L until 5_000L) return
+        }
         if (!Shizuku.pingBinder()) {
             // Cold-start grace period: wait up to 1500ms for binder delivery from server daemon
             val deadline = System.currentTimeMillis() + 1500L
@@ -87,7 +90,7 @@ class ShizukuManagerProvider : ShizukuProvider() {
             }
         } else {
             if (method == METHOD_GET_BINDER) {
-                waitForBinderGracefully()
+                waitForBinderGracefully(onlyDuringColdStart = true)
             }
             super.call(method, arg, extras)
         }

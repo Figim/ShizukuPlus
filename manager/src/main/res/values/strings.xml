@@ -1936,8 +1936,8 @@
     <string name="settings_show_app_descriptions_summary">Display curated capability descriptions under known apps in the Apps list</string>
     <string name="settings_show_plus_feature_hints">Show Plus feature hints</string>
     <string name="settings_show_plus_feature_hints_summary">Highlight disabled global Plus features that an app can benefit from</string>
-    <string name="settings_dpm_freeze_title">Prefer Device Owner app hiding</string>
-    <string name="settings_dpm_freeze_summary">When Shizuku+ is the device or profile owner, freezing hides the app instead of disabling it. Hidden apps keep their data and are restored with Unfreeze.</string>
+    <string name="settings_dpm_freeze_title">Freeze with Device Owner</string>
+    <string name="settings_dpm_freeze_summary">When Shizuku+ is the device or profile owner, freezing suspends the app through device policy instead of disabling it. Suspended apps keep their data and stay in the list for Unfreeze.</string>
     <string name="settings_lp_api_scopes">API Scopes</string>
     <string name="settings_lp_select_multiple">Select Multiple</string>
     <string name="settings_lp_freeze_app">Freeze / Unfreeze</string>
