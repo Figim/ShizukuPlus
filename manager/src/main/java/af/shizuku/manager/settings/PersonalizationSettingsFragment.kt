@@ -33,12 +33,23 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+    // Change listeners run before the new value is saved (they return true to accept it), so
+    // anything that reads the setting back must run on a post. Applied inline, the icon style and
+    // header refresh showed the previous choice, one change behind.
     private fun applyTheme(requiresRecreate: Boolean = false) {
-        if (requiresRecreate) {
-            (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition()
-        } else {
-            (activity as? SettingsActivity)?.onThemeChanged()
+        val v = view
+        val apply = {
+            if (requiresRecreate) {
+                (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition()
+            } else {
+                (activity as? SettingsActivity)?.onThemeChanged()
+            }
         }
+        if (v != null) v.post { apply() } else apply()
+    }
+
+    private fun postRefreshIconStyles() {
+        view?.post { refreshIconStyles() } ?: refreshIconStyles()
     }
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_category_appearance)
@@ -190,7 +201,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 syncMorphAvailability(shapesOn = newValue)
             }
             applyTheme(requiresRecreate = false)
-            refreshIconStyles()
+            postRefreshIconStyles()
             true
         }
         morphShapePreference?.setOnPreferenceChangeListener { _, newValue ->
@@ -199,7 +210,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             // Restyle once the new value has been persisted.
             view?.post {
                 applyTheme(requiresRecreate = false)
-                refreshIconStyles()
+                postRefreshIconStyles()
             }
             true
         }
@@ -218,13 +229,13 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             // Show/hide the color-mode sub-option immediately rather than on next recreate.
             setChildAvailable(iconColorModePreference, newValue == "twotone")
             applyTheme(requiresRecreate = false)
-            refreshIconStyles()
+            postRefreshIconStyles()
             true
         }
 
         iconColorModePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
-            refreshIconStyles()
+            postRefreshIconStyles()
             true
         }
 
