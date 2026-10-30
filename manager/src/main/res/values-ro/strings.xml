@@ -170,7 +170,6 @@
         această setare.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi este necesar. Shizuku va continua să ruleze și va aștepta o conexiune Wi-Fi înainte de a reporni în fundal.</b>]]></string>
     <string name="settings_language">Limba</string>
-    <string name="settings_translation_contributors">Colaboratori de traduceri</string>
     <string name="settings_translation">Participă la traducere</string>
     <string name="settings_translation_summary">Ajută-ne să traducem %s în limba ta</string>
     <string name="settings_help">Ajutor</string>
@@ -213,7 +212,6 @@
     <string name="action_stop">Oprire Shizuku</string>
     <string name="dialog_stop_message">Serviciul Shizuku va fi oprit.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Nu s-a putut solicita permisiunea root.</string>
     <string name="notification_channel_adb_pairing">Asociere prin depanare fără fir</string>
     <string name="notification_adb_pairing_input_paring_code">Introdu codul de asociere</string>
     <string name="notification_adb_pairing_searching_for_service_title">Se caută serviciul de

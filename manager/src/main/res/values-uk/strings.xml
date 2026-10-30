@@ -7,7 +7,6 @@
     <string name="server_clients_connected">Підключено %1$d додатків</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors">thejaustin, [Твоє ім\'я/нікнейм]</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
@@ -21,9 +20,7 @@
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Макет від краю до краю</string>
-    <string name="settings_edge_to_edge_summary">Розширити контент за системні панелі. Вимкніть, якщо системні панелі перекривають важливі елементи керування</string>
     <string name="settings_blur_ui">Ефект матового скла</string>
-    <string name="settings_blur_ui_summary">Застосувати розмиття та напівпрозорість до діалогів та верхньої панелі. Найкраще виглядає на Android 12+</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">Стиль One UI</string>
@@ -33,9 +30,7 @@
 
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">Жирна типографіка</string>
-    <string name="settings_bold_typography_summary">Використовувати більш насичені шрифти для заголовків та назв</string>
     <string name="settings_expanded_headers">Розширені заголовки розділів</string>
-    <string name="settings_expanded_headers_summary">Використовувати високі заголовки, що згортаються, на екранах налаштувань</string>
 
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Округлення кутів</string>
@@ -260,8 +255,6 @@
     <string name="rish_description"><![CDATA[За допомогою %1$s ви можете виконувати команди оболонки в будь-якому термінальному додатку.<p>Натисніть, щоб дізнатися більше про те, як цим користуватися.]]></string>
 
     <!-- Settings — swipe customisation -->
-    <string name="settings_swipe_right">Дія при свайпі вправо</string>
-    <string name="settings_swipe_left">Дія при свайпі вліво</string>
     <string name="settings_action_none">Немає</string>
     <string name="settings_action_open_app">Відкрити додаток</string>
     <string name="settings_action_app_info">Інформація про додаток</string>
@@ -299,7 +292,6 @@
     <string name="swipe_hint_title">Жести свайпу</string>
     <string name="swipe_hint_right">Свайп вправо для швидкої дії</string>
     <string name="swipe_hint_left">Свайп вліво для швидкої дії</string>
-    <string name="swipe_hint_dismiss">Натисніть будь-де, щоб закрити</string>
 
     <!-- Settings -->
     <string name="settings_title">Налаштування</string>
@@ -318,7 +310,6 @@
     <string name="settings_auto_disable_usb_debugging">Авто-вимкнення налагодження USB</string>
     <string name="settings_auto_disable_usb_debugging_summary">Вимикати налагодження USB при зупинці Shizuku</string>
     <string name="settings_language">Мова</string>
-    <string name="settings_translation_contributors">Співавтори перекладу</string>
     <string name="settings_translation">Долучитися до перекладу</string>
     <string name="settings_translation_summary">Допоможіть нам перекласти %s вашою мовою</string>
     <string name="settings_version">Версія</string>
@@ -472,7 +463,6 @@
     <string name="su_bridge_setup_all">Налаштувати все</string>
     <string name="su_bridge_magic_setup">Магічне налаштування</string>
     <string name="su_bridge_magic_setup_success">Магічне налаштування завершено! Shizuku+ налаштував %s для вас.</string>
-    <string name="su_bridge_magic_setup_fail">Магічне налаштування не вдалося. Будь ласка, використайте ручне копіювання шляху.</string>
     <string name="su_bridge_magic_setup_all_summary">Shizuku+ налаштував %d додатків для вас!</string>
     <string name="su_bridge_magic_setup_all_no_apps">Не знайдено підтримуваних root-додатків для автоматизації.</string>
     <string name="su_bridge_copy_open">Копіювати шлях і відкрити</string>
@@ -606,7 +596,6 @@
     <!-- Notification -->
     <string name="notification_channel_automation">Автоматизація</string>
     <string name="notification_automation_title">Автоматизація працює</string>
-    <string name="notification_service_start_no_root">Помилка запиту на root доступ.</string>
     <string name="notification_channel_adb_pairing">Створення пари для бездротового налагодження</string>
     <string name="notification_adb_pairing_input_paring_code">Введіть код створення пари</string>
     <string name="notification_adb_pairing_searching_for_service_title">Пошук пристрою для створення пари</string>
@@ -679,7 +668,6 @@
     <string name="settings_main_nav_root_compat_summary">Підключення ADB, міст SU, інтеграція без root та сумісність зі стоковим Shizuku</string>
     <string name="settings_main_nav_appearance_summary">Тема, форми, іконки, рух, макет головного екрана та мова</string>
     <string name="settings_main_nav_app_interactions_title">Взаємодія з додатками</string>
-    <string name="settings_main_nav_app_interactions_summary">Жести, дії при довгому натисканні та перевірка встановлення</string>
     <string name="settings_main_nav_startup_behavior_title">Запуск та поведінка</string>
     <string name="settings_main_nav_startup_behavior_summary">Запуск, мережа, активність та оновлення</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Розширені та діагностика</string>
@@ -712,13 +700,8 @@
     <string name="accessibility_icon_drag_handle">Потягніть, щоб змінити порядок</string>
     <string name="accessibility_icon_info">Інформація</string>
     <string name="accessibility_button_start">Кнопка Запуск</string>
-    <string name="accessibility_button_restart">Кнопка Перезапуск</string>
-    <string name="accessibility_button_view_command">Кнопка Переглянути команду</string>
-    <string name="accessibility_button_view_guide">Кнопка Переглянути інструкцію</string>
     <string name="accessibility_state_expanded">Розгорнуто</string>
     <string name="accessibility_state_collapsed">Згорнуто</string>
-    <string name="accessibility_button_view_intents">Кнопка Переглянути наміри</string>
-    <string name="accessibility_button_pairing">Кнопка Створення пари</string>
     <string name="accessibility_action_app_info">Відкрити системну інформацію про додаток</string>
     <string name="accessibility_permission_granted">Дозвіл надано</string>
 
@@ -734,7 +717,6 @@
     <!-- Settings category titles -->
     <string name="settings_advanced_category_diagnostics">Діагностика</string>
     <string name="settings_advanced_category_adb_tools">Інструменти ADB</string>
-    <string name="settings_app_management_category_gestures">Жести та дії</string>
     <string name="settings_app_management_category_verified_install">Перевірене встановлення</string>
     <string name="settings_personalization_category_color_theme">Колір та тема</string>
     <string name="settings_personalization_category_shape_style">Форма та стиль іконок</string>
@@ -787,7 +769,6 @@
     <string name="update_download_failed_http">Помилка мережі перервала завантаження. Будь ласка, перевірте з\'єднання та спробуйте ще раз.</string>
 
     <!-- Migration Dialog -->
-    <string name="migration_success_message">Ваші налаштування успішно скопійовано зі старої версії. Тепер ви можете безпечно видалити moe.shizuku.privileged.api.</string>
 
     <!-- Update Dialogs -->
     <string name="update_available_title">Доступне оновлення</string>
@@ -1034,8 +1015,6 @@
     <string name="help_display_tuner_plus_detail">Надає привілейовану конфігурацію дисплея за допомогою інструменту wm оболонки: перевизначення роздільної здатності (wm size) та щільності (wm density) на льоту, читання поточних і фізичних значень, а також скидання перевизначень до заводських налаштувань пристрою. Корисно для виправлення проблем із макетом додатків, примусового встановлення певного співвідношення сторін для запису екрана, налаштувань режиму робочого столу та масштабування доступності — історично функція лише для root, яка тепер доступна через процес оболонки ADB.</string>
 
     <!-- ==== Full Ukraine additions: missing keys sync ==== -->
-    <string name="settings_rounded_edges">Округлені краї</string>
-    <string name="settings_rounded_edges_summary">Використовувати округлені кути на картках та контейнерах діалогів</string>
     <string-array name="status_card_outline_styles">
         <item>Material (колір теми)</item>
         <item>Зелений / Червоний (колір статусу)</item>
@@ -1064,7 +1043,6 @@
     <string name="device_hardening_applied">Захист пристрою та оптимізації Doze застосовано</string>
     <string name="settings_show_status_card_outline">Контур картки статусу</string>
     <string name="settings_show_status_card_outline_summary">Показувати кольоровий контур на картці статусу служби</string>
-    <string name="settings_status_card_outline_style">Колір контуру</string>
     <string name="home_edit_mode_title">Розташування карток</string>
     <string name="home_edit_mode_done">Готово</string>
     <string name="doctor_check_xiaomi_adb">Налагодження USB Xiaomi/HyperOS (Параметри безпеки)</string>
@@ -1229,8 +1207,6 @@
 
     <!-- Settings: Plus features -->
     <string name="settings_custom_accent_title">Власний акцентний колір</string>
-    <string name="settings_home_card_shape">Кути карток головного екрана</string>
-    <string name="settings_settings_card_shape">Кути карток налаштувань</string>
     <string name="settings_behavior_category_startup">Запуск та відновлення</string>
     <string name="settings_backup_settings">Резервне копіювання налаштувань</string>
     <string name="settings_backup_settings_summary">Експортуйте конфігурації та покращення безпечно за допомогою біометричного шифрування.</string>
@@ -1294,13 +1270,9 @@
 
     <!-- Settings: APK verification -->
     <string name="settings_verify_apk_local_title">Локальне зіставлення підписів</string>
-    <string name="settings_verify_apk_local_summary">Перевіряти, що оновлення відповідають підпису встановленого застосунку. Швидко та повністю офлайн.</string>
     <string name="settings_verify_apk_fdroid_title">Індекс F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_fdroid_summary">Перевіряти хеші APK локально на основі перевірених відкритих метаданих.</string>
     <string name="settings_verify_apk_virustotal_title">Сканування VirusTotal</string>
-    <string name="settings_verify_apk_virustotal_summary">Сканувати хеші APK через VirusTotal перед встановленням. Потрібен API-ключ.</string>
     <string name="settings_verify_apk_pithus_title">Розвідка загроз Pithus</string>
-    <string name="settings_verify_apk_pithus_summary">Перевіряти хеші через Pithus для виявлення ознак шкідливого ПЗ.</string>
 
     <!-- SU path validation -->
     <string name="su_path_invalid">Неприпустимий шлях. Має бути абсолютним шляхом (починається з /), що містить лише літери, цифри, слеші, підкреслення, крапки та дефіси.</string>

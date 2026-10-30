@@ -68,8 +68,6 @@
     <string name="adb_pairing_tutorial_autofill_ready">이제 "페어링 코드로 기기 페어링"을 열어주세요. 화면에서 코드를 읽어 자동으로 입력합니다.</string>
     <string name="home_samsung_system_uid_title"><![CDATA[시작 (Samsung System UID)]]></string>
     <string name="home_root_description_samsung"><![CDATA[Samsung 시스템 UID 에스컬레이션을 통해 실행 중입니다. Magisk 또는 root가 필요하지 않습니다 — Shizuku+는 Samsung 기기에서 사용 가능한 권한이 있는 시스템 계정을 사용합니다.]]></string>
-    <string name="settings_app_management_category_long_press">길게 누르기 작업</string>
-    <string name="settings_app_management_category_data">데이터</string>
     <string name="onboarding_m3e_title">익스프레시브 외관 및 감각</string>
     <string name="onboarding_m3e_desc">적응형 아이콘 스타일, AMOLED+ 대비, 매끄러운 동작으로 경험을 개인 설정합니다.</string>
     <string name="onboarding_icon_style_title">아이콘 스타일</string>

@@ -7,7 +7,6 @@
     <string name="server_clients_connected">已连接 %1$d 个应用</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors">thejaustin, Yizutt</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
@@ -17,15 +16,11 @@
     <string name="settings_expressive_animations_summary">启用 M3 弹性预测性返回与拖拽缩放</string>
     <string name="settings_icon_style">图标样式</string>
     <string name="settings_shape_style">容器形状样式</string>
-    <string name="settings_rounded_edges">圆角边缘</string>
-    <string name="settings_rounded_edges_summary">为卡片与对话框容器使用圆角</string>
     <string name="settings_animation_intensity">动画强度</string>
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">边到边布局</string>
-    <string name="settings_edge_to_edge_summary">让内容延伸到系统栏之后。若系统栏遮挡重要控件，请关闭此项</string>
     <string name="settings_blur_ui">毛玻璃效果</string>
-    <string name="settings_blur_ui_summary">为对话框和顶栏应用模糊与半透明效果。在 Android 12 及以上效果最佳</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI 风格</string>
@@ -33,9 +28,7 @@
     <string name="settings_one_handed_mode">单手模式</string>
     <string name="settings_one_handed_mode_summary">将交互内容下移，方便拇指触达</string>
     <string name="settings_bold_typography">粗体排版</string>
-    <string name="settings_bold_typography_summary">为标题和题头使用更粗的字重</string>
     <string name="settings_expanded_headers">展开式分组标题</string>
-    <string name="settings_expanded_headers_summary">在设置页面使用可折叠的高标题栏</string>
     <string name="settings_corner_rounding_override">圆角半径</string>
     <string name="settings_follow_system_animations">跟随系统动画</string>
     <string name="settings_follow_system_animations_summary">遵循开发者选项中的动画速度设置</string>
@@ -281,8 +274,6 @@
     <string name="rish_description"><![CDATA[使用 %1$s，您可以在任何终端应用程序中运行 shell 命令。<p>点击了解更多使用方法。]]></string>
 
     <!-- Settings — swipe customisation -->
-    <string name="settings_swipe_right">右滑操作</string>
-    <string name="settings_swipe_left">左滑操作</string>
     <string name="settings_action_none">无</string>
     <string name="settings_action_open_app">打开应用</string>
     <string name="settings_action_app_info">应用信息</string>
@@ -320,7 +311,6 @@
     <string name="swipe_hint_title">滑动手势</string>
     <string name="swipe_hint_right">右滑执行快捷操作</string>
     <string name="swipe_hint_left">左滑执行快捷操作</string>
-    <string name="swipe_hint_dismiss">点按任意位置关闭</string>
 
     <!-- Settings -->
     <string name="settings_title">设置</string>
@@ -347,7 +337,6 @@
     <string name="settings_auto_disable_usb_debugging">自动关闭 USB 调试</string>
     <string name="settings_auto_disable_usb_debugging_summary">停止 Shizuku 时关闭 USB 调试</string>
     <string name="settings_language">语言</string>
-    <string name="settings_translation_contributors">翻译贡献者</string>
     <string name="settings_translation">参与翻译</string>
     <string name="settings_translation_summary">帮助我们将 %s 翻译至您的语言</string>
     <string name="settings_version">版本</string>
@@ -363,7 +352,6 @@
     <string name="settings_show_activity_log_home">显示活动日志</string>
     <string name="settings_show_status_card_outline">状态卡片描边</string>
     <string name="settings_show_status_card_outline_summary">在服务状态卡片上显示彩色描边</string>
-    <string name="settings_status_card_outline_style">描边颜色</string>
     <string name="settings_update_app_database">更新应用数据库</string>
     <string name="settings_update_app_database_summary">从 GitHub 获取最新的应用描述与增强建议。</string>
     <string name="settings_update_app_database_error">数据库更新失败</string>
@@ -538,7 +526,6 @@
     <string name="su_bridge_setup_all">一键设置全部</string>
     <string name="su_bridge_magic_setup">魔法设置</string>
     <string name="su_bridge_magic_setup_success">魔法设置完成！Shizuku+ 已为你配置好 %s。</string>
-    <string name="su_bridge_magic_setup_fail">魔法设置失败。请改用手动复制路径。</string>
     <string name="su_bridge_magic_setup_all_summary">Shizuku+ 已为你配置了 %d 个应用！</string>
     <string name="su_bridge_magic_setup_all_no_apps">未找到可用于自动化的受支持 root 应用。</string>
     <string name="su_bridge_copy_open">复制路径并打开</string>
@@ -722,7 +709,6 @@
     <!-- Notification -->
     <string name="notification_channel_automation">自动化</string>
     <string name="notification_automation_title">自动化正在运行</string>
-    <string name="notification_service_start_no_root">请求 root 权限失败。</string>
     <string name="notification_channel_adb_pairing">无线调试配对</string>
     <string name="notification_adb_pairing_input_paring_code">输入配对码</string>
     <string name="notification_adb_pairing_searching_for_service_title">正在搜索配对服务</string>
@@ -807,7 +793,6 @@
     <string name="settings_main_nav_root_compat_summary">ADB 连接、SU 桥接、无 root 集成与原版 Shizuku 兼容性</string>
     <string name="settings_main_nav_appearance_summary">主题、形状、图标、动效、主界面布局与语言</string>
     <string name="settings_main_nav_app_interactions_title">应用交互</string>
-    <string name="settings_main_nav_app_interactions_summary">手势、长按操作与安装验证</string>
     <string name="settings_main_nav_startup_behavior_title">启动与行为</string>
     <string name="settings_main_nav_startup_behavior_summary">开机选项、看门狗、网络与活动状态</string>
     <string name="settings_main_nav_advanced_diagnostics_title">进阶与诊断</string>
@@ -841,13 +826,8 @@
     <string name="accessibility_icon_toggle_visibility">切换卡片可见性</string>
     <string name="accessibility_icon_info">信息</string>
     <string name="accessibility_button_start">启动按钮</string>
-    <string name="accessibility_button_restart">重启按钮</string>
-    <string name="accessibility_button_view_command">查看命令按钮</string>
-    <string name="accessibility_button_view_guide">查看指南按钮</string>
     <string name="accessibility_state_expanded">已展开</string>
     <string name="accessibility_state_collapsed">已折叠</string>
-    <string name="accessibility_button_view_intents">查看 intent 按钮</string>
-    <string name="accessibility_button_pairing">配对按钮</string>
     <string name="accessibility_action_app_info">打开应用信息设置</string>
     <string name="accessibility_permission_granted">已授予权限</string>
 
@@ -864,20 +844,15 @@
     <string name="settings_diagnostics_enabled">设置诊断</string>
     <string name="settings_diagnostics_enabled_summary">主动扫描配置中的冲突与异常</string>
     <string name="settings_verify_apk_local_title">本地签名比对</string>
-    <string name="settings_verify_apk_local_summary">校验更新包与已安装应用的签名是否一致。速度快且完全离线。</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 索引</string>
-    <string name="settings_verify_apk_fdroid_summary">在本地将 APK 哈希与可信开源元数据比对。</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal 扫描</string>
-    <string name="settings_verify_apk_virustotal_summary">安装前将 APK 哈希提交 VirusTotal 扫描。需要 API 密钥。</string>
     <string name="settings_verify_apk_pithus_title">Pithus 威胁情报</string>
-    <string name="settings_verify_apk_pithus_summary">将哈希与 Pithus 比对，以识别恶意软件特征。</string>
     <string name="settings_custom_accent_title">自定义强调色</string>
 
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">启动与恢复</string>
     <string name="settings_advanced_category_diagnostics">诊断</string>
     <string name="settings_advanced_category_adb_tools">ADB 工具</string>
-    <string name="settings_app_management_category_gestures">手势与操作</string>
     <string name="settings_app_management_category_verified_install">校验安装</string>
     <string name="settings_personalization_category_color_theme">颜色与主题</string>
     <string name="settings_personalization_category_shape_style">形状与图标样式</string>
@@ -947,7 +922,6 @@
     <string name="update_download_failed_http">网络错误导致下载中断。请检查网络连接后重试。</string>
 
     <!-- Migration Dialog -->
-    <string name="migration_success_message">你的设置已从旧版本复制完成。现在可以安全卸载 moe.shizuku.privileged.api 了。</string>
 
     <!-- Update Dialogs -->
     <string name="update_available_title">有可用更新</string>
@@ -1267,8 +1241,6 @@
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">隐身模式</string>
     <string name="help_stealth_mode_detail">在 Binder 层拦截 PackageManager 查询，对 ShizukuPlus 与 Shizuku 包返回「未安装」。使用 PM 检测 root 工具的应用（银行类应用、DRM 检查）将无法找到它们。注意：这只会让它们在 PackageManager 查询中不可见——直接读取 Android 设置的应用仍能发现开发者模式与 USB 调试。</string>
-    <string name="settings_home_card_shape">主页卡片圆角</string>
-    <string name="settings_settings_card_shape">设置卡片圆角</string>
     <string name="corner_style_global">跟随全局设置</string>
     <string name="corner_style_sharp">直角 / 扁平</string>
     <string name="corner_style_rounded">圆角（M3）</string>

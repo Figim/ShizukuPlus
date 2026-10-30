@@ -138,6 +138,7 @@ public class ShizukuSettings {
         // Swipe action preferences (Shizuku+ additions)
         public static final String KEY_SWIPE_RIGHT_ACTION = "swipe_right_action";
         public static final String KEY_SWIPE_LEFT_ACTION = "swipe_left_action";
+        public static final String KEY_SWIPE_SETTINGS_SANDBOX = "swipe_settings_sandbox";
 
         // APK verification API keys (Shizuku+ additions)
         public static final String KEY_VIRUSTOTAL_API_KEY = "virustotal_api_key";
@@ -1086,6 +1087,12 @@ public class ShizukuSettings {
     public static String getSwipeLeftAction() {
         SharedPreferences p = getPreferences();
         return p == null ? "app_info" : p.getString(Keys.KEY_SWIPE_LEFT_ACTION, "app_info");
+    }
+
+    /** Developer option: Swipe actions settings show a drag-it-yourself sandbox instead of the preview. */
+    public static boolean isSwipeSettingsSandboxEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_SWIPE_SETTINGS_SANDBOX, false);
     }
 
     public static String getVirusTotalApiKey() {

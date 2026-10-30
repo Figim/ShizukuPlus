@@ -6,7 +6,6 @@
     <string name="server_memory_uncapped">제한 없음</string>
     <string name="server_clients_connected">연결된 앱 %1$d개</string>
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors">thejaustin</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
     <!-- UI Settings - Expressive -->
     <string name="settings_expressive_shapes">익스프레시브 아이콘 모양</string>
@@ -15,14 +14,10 @@
     <string name="settings_expressive_animations_summary">M3 탄성 예측 백과 드래그 스케일링을 활성화합니다</string>
     <string name="settings_icon_style">아이콘 스타일</string>
     <string name="settings_shape_style">컨테이너 모양 스타일</string>
-    <string name="settings_rounded_edges">둥근 모서리</string>
-    <string name="settings_rounded_edges_summary">카드와 대화상자 컨테이너에 둥근 모서리를 사용합니다</string>
     <string name="settings_animation_intensity">애니메이션 강도</string>
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">전체 화면 레이아웃</string>
-    <string name="settings_edge_to_edge_summary">시스템 바 뒤로 콘텐츠를 확장합니다. 시스템 바가 중요한 컨트롤을 가리면 비활성화하세요</string>
     <string name="settings_blur_ui">프로스트 글래스 효과</string>
-    <string name="settings_blur_ui_summary">대화상자와 상단 바에 블러와 반투명 효과를 적용합니다. Android 12 이상에서 가장 잘 작동합니다</string>
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI 스타일</string>
     <string name="settings_oneui_theme_summary">Samsung One UI의 디자인 언어에 맞춥니다 — 크고 둥근 모서리와 굵은 타이포그래피. 색상은 영향을 받지 않으므로, 색상은 위의 Material You나 사용자 지정 강조색으로 설정하세요.</string>
@@ -30,9 +25,7 @@
     <string name="settings_one_handed_mode_summary">편안한 엄지 조작을 위해 대화형 콘텐츠를 화면 하단으로 이동합니다</string>
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">굵은 타이포그래피</string>
-    <string name="settings_bold_typography_summary">제목과 헤딩에 더 굵은 글꼴 두께를 사용합니다</string>
     <string name="settings_expanded_headers">확장된 섹션 헤더</string>
-    <string name="settings_expanded_headers_summary">설정 화면에 크고 접을 수 있는 헤더를 사용합니다</string>
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">모서리 둥글기</string>
     <!-- UI Settings - System-following -->
@@ -259,8 +252,6 @@
 <string name="terminal_tutorial_3">다음 명령으로 셸을 엽니다.</string>
 <string name="rish_description"><![CDATA[%1$s를 사용하면 모든 터미널 앱에서 셸 명령을 실행할 수 있습니다.<p>탭하여 사용 방법에 대한 자세한 내용을 알아보세요.]]></string>
     <!-- Settings — swipe customisation -->
-    <string name="settings_swipe_right">오른쪽으로 스와이프 동작</string>
-    <string name="settings_swipe_left">왼쪽으로 스와이프 동작</string>
     <string name="settings_action_none">없음</string>
     <string name="settings_action_open_app">앱 열기</string>
     <string name="settings_action_app_info">앱 정보</string>
@@ -295,7 +286,6 @@
     <string name="swipe_hint_title">스와이프 제스처</string>
     <string name="swipe_hint_right">빠른 동작을 위해 오른쪽으로 스와이프</string>
     <string name="swipe_hint_left">빠른 동작을 위해 왼쪽으로 스와이프</string>
-    <string name="swipe_hint_dismiss">닫으려면 아무 곳이나 탭</string>
     <!-- Settings -->
 <string name="settings_title">설정</string>
 <string name="settings_start_on_boot">부팅 시 시작</string>
@@ -322,7 +312,6 @@
     <string name="settings_auto_disable_usb_debugging">USB 디버깅 자동 비활성화</string>
     <string name="settings_auto_disable_usb_debugging_summary">Shizuku를 중지할 때 USB 디버깅을 비활성화합니다</string>
 <string name="settings_language">언어</string>
-<string name="settings_translation_contributors">번역 기여자</string>
 <string name="settings_translation">번역 참여</string>
 <string name="settings_translation_summary">%s를 당신의 언어로 번역할 수 있도록 도와주세요</string>
     <string name="settings_version">버전</string>
@@ -337,7 +326,6 @@
     <string name="settings_show_activity_log_home">활동 로그 표시</string>
     <string name="settings_show_status_card_outline">상태 카드 외곽선</string>
     <string name="settings_show_status_card_outline_summary">서비스 상태 카드에 색상 외곽선을 표시합니다</string>
-    <string name="settings_status_card_outline_style">외곽선 색상</string>
     <string name="settings_update_app_database">앱 데이터베이스 업데이트</string>
     <string name="settings_update_app_database_summary">GitHub에서 최신 앱 설명과 개선 제안을 가져옵니다.</string>
     <string name="settings_update_app_database_error">데이터베이스 업데이트에 실패했습니다</string>
@@ -499,7 +487,6 @@
     <string name="su_bridge_setup_all">모두 설정</string>
     <string name="su_bridge_magic_setup">자동 설정</string>
     <string name="su_bridge_magic_setup_success">자동 설정이 완료되었습니다! Shizuku+가 %s를 구성했습니다.</string>
-    <string name="su_bridge_magic_setup_fail">자동 설정에 실패했습니다. 대신 수동으로 경로를 복사하세요.</string>
     <string name="su_bridge_magic_setup_all_summary">Shizuku+가 %d개의 앱을 구성했습니다!</string>
     <string name="su_bridge_magic_setup_all_no_apps">자동화를 지원하는 루트 앱이 없습니다.</string>
     <string name="su_bridge_copy_open">경로 복사 및 열기</string>
@@ -672,7 +659,6 @@
     <!-- Notification -->
     <string name="notification_channel_automation">자동화</string>
     <string name="notification_automation_title">자동화가 실행 중입니다</string>
-<string name="notification_service_start_no_root">루트 권한을 요청하지 못했습니다.</string>
 <string name="notification_channel_adb_pairing">무선 디버깅 페어링</string>
 <string name="notification_adb_pairing_input_paring_code">페어링 코드 입력</string>
 <string name="notification_adb_pairing_searching_for_service_title">페어링 서비스 검색중</string>
@@ -748,7 +734,6 @@
     <string name="settings_main_nav_root_compat_summary">ADB 연결, SU 브리지, 루트리스 통합 및 순정 Shizuku 호환성</string>
     <string name="settings_main_nav_appearance_summary">테마, 모양, 아이콘, 모션, 홈 레이아웃 및 언어</string>
     <string name="settings_main_nav_app_interactions_title">앱 상호작용</string>
-    <string name="settings_main_nav_app_interactions_summary">제스처, 길게 누르기 동작 및 설치 확인</string>
     <string name="settings_main_nav_startup_behavior_title">시작 및 동작</string>
     <string name="settings_main_nav_startup_behavior_summary">부팅 옵션, 워치독, 네트워크, 활동 및 업데이트</string>
     <string name="settings_main_nav_advanced_diagnostics_title">고급 및 진단</string>
@@ -780,13 +765,8 @@
     <string name="accessibility_icon_toggle_visibility">카드 표시 전환</string>
     <string name="accessibility_icon_info">정보</string>
     <string name="accessibility_button_start">시작 버튼</string>
-    <string name="accessibility_button_restart">다시 시작 버튼</string>
-    <string name="accessibility_button_view_command">명령 보기 버튼</string>
-    <string name="accessibility_button_view_guide">가이드 보기 버튼</string>
     <string name="accessibility_state_expanded">확장됨</string>
     <string name="accessibility_state_collapsed">축소됨</string>
-    <string name="accessibility_button_view_intents">인텐트 보기 버튼</string>
-    <string name="accessibility_button_pairing">페어링 버튼</string>
     <string name="accessibility_action_app_info">앱 정보 설정 열기</string>
     <string name="accessibility_permission_granted">권한이 부여됨</string>
     <!-- Empty State Views -->
@@ -804,13 +784,9 @@
     <string name="settings_diagnostics_enabled_summary">충돌과 이상을 찾기 위해 구성을 선제적으로 검사합니다</string>
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">로컬 서명 일치</string>
-    <string name="settings_verify_apk_local_summary">업데이트가 설치된 앱의 서명과 일치하는지 확인합니다. 빠르고 완전 오프라인으로 동작합니다.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 인덱스</string>
-    <string name="settings_verify_apk_fdroid_summary">신뢰할 수 있는 오픈소스 메타데이터와 로컬에서 APK 해시를 비교합니다.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal 스캔</string>
-    <string name="settings_verify_apk_virustotal_summary">설치 전에 APK 해시를 VirusTotal에 조회합니다. API 키가 필요합니다.</string>
     <string name="settings_verify_apk_pithus_title">Pithus 위협 인텔리전스</string>
-    <string name="settings_verify_apk_pithus_summary">해시를 Pithus에 조회하여 멀웨어 특성을 탐지합니다.</string>
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">사용자 지정 강조 색상</string>
     <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
@@ -819,7 +795,6 @@
     <string name="settings_behavior_category_startup">시작 및 복구</string>
     <string name="settings_advanced_category_diagnostics">진단</string>
     <string name="settings_advanced_category_adb_tools">ADB 도구</string>
-    <string name="settings_app_management_category_gestures">제스처 및 동작</string>
     <string name="settings_app_management_category_verified_install">확인된 설치</string>
     <string name="settings_personalization_category_color_theme">색상 및 테마</string>
     <string name="settings_personalization_category_shape_style">모양 및 아이콘 스타일</string>
@@ -890,7 +865,6 @@
     <string name="update_download_failed_cannot_resume">다운로드가 중단된 후 재개할 수 없습니다. 다시 시도하세요.</string>
     <string name="update_download_failed_http">네트워크 오류로 다운로드가 중단되었습니다. 연결을 확인하고 다시 시도하세요.</string>
     <!-- Migration Dialog -->
-    <string name="migration_success_message">이전 버전에서 설정이 복사되었습니다. 이제 moe.shizuku.privileged.api를 안전하게 삭제할 수 있습니다.</string>
     <!-- Update Dialogs -->
     <string name="update_available_title">업데이트 가능</string>
     <string name="update_available_message">새 버전 %1$s을(를) 다운로드할 수 있습니다.</string>
@@ -1169,8 +1143,6 @@
     <string name="help_stealth_mode_title">스텔스 모드</string>
     <string name="help_stealth_mode_detail">Binder 수준에서 PackageManager 쿼리를 가로채 ShizukuPlus 및 Shizuku 패키지에 대해 "설치되지 않음"을 반환합니다. PM을 사용해 루트 도구를 감지하는 앱(뱅킹 앱, DRM 검사)은 이를 찾지 못합니다. 참고: 이는 PackageManager 쿼리에서만 숨기는 것으로, 개발자 모드와 USB 디버깅은 Android 설정을 직접 확인하는 앱에 여전히 표시됩니다.</string>
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="settings_home_card_shape">홈 카드 모서리</string>
-    <string name="settings_settings_card_shape">설정 카드 모서리</string>
     <string name="corner_style_global">전역 설정 따르기</string>
     <string name="corner_style_sharp">샤프 / 플랫</string>
     <string name="corner_style_rounded">둥글게 (M3)</string>

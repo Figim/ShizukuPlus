@@ -173,7 +173,6 @@
         վերագործարկվի։</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Պահանջվում է Wi-Fi: Shizuku-ն կշարունակի աշխատել և կսպասի Wi-Fi կապի, նախքան ֆոնային ռեժիմով վերագործարկվելը:</b>]]></string>
     <string name="settings_language">Լեզու</string>
-    <string name="settings_translation_contributors">Թարգմանության աջակցողներ</string>
     <string name="settings_translation">Մասնակցել թարգմանության մեջ</string>
     <string name="settings_translation_summary">Օգնեք մեզ թարգմանել %s-ը Ձեր լեզվով</string>
     <string name="settings_help">Օգնություն</string>
@@ -217,7 +216,6 @@
     <string name="action_stop">Անջատել Shizuku-ն</string>
     <string name="dialog_stop_message">Shizuku-ի ծառայությունը կանջատվի։</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Չհաջողվեց ստանալ root թույլտվություն։</string>
     <string name="notification_channel_adb_pairing">Անլար կարգաբերման զուգավորում</string>
     <string name="notification_adb_pairing_input_paring_code">Մուտքագրեք զուգավորման կոդը</string>
     <string name="notification_adb_pairing_searching_for_service_title">Զուգավորման ծառայության

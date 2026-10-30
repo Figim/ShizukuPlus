@@ -6,12 +6,8 @@
   must live in only one file). Thank you! See TRANSLATING.md.
 -->
 <resources>
-    <string name="settings_rounded_edges">گول کنارے</string>
-    <string name="settings_rounded_edges_summary">کارڈز اور ڈائیلاگ کنٹینرز پر گول کونے استعمال کریں</string>
     <string name="settings_bold_typography">گہری ٹائپوگرافی</string>
-    <string name="settings_bold_typography_summary">سرخیوں اور عنوانات کے لیے زیادہ موٹے فونٹ استعمال کریں</string>
     <string name="settings_expanded_headers">پھیلے ہوئے سیکشن ہیڈر</string>
-    <string name="settings_expanded_headers_summary">سیٹنگز اسکرینز میں لمبے سمٹنے والے ہیڈر استعمال کریں</string>
     <string name="settings_corner_rounding_override">کونوں کی گولائی</string>
     <string name="settings_follow_system_animations">سسٹم اینیمیشنز کی پیروی کریں</string>
     <string name="settings_follow_system_animations_summary">ڈیولپر آپشنز سے اپنے آلے کی اینیمیشن رفتار کی سیٹنگ کا احترام کریں</string>
@@ -44,7 +40,6 @@
     <string name="settings_auto_reconnect_mdns_summary">اگر وائرلیس ADB پورٹ پہلے سے فعال ہو تو ایپ کھلنے پر سرور خودکار طور پر ری اسٹارٹ کریں</string>
     <string name="settings_show_status_card_outline">اسٹیٹس کارڈ کی آؤٹ لائن</string>
     <string name="settings_show_status_card_outline_summary">سروس اسٹیٹس کارڈ پر رنگین آؤٹ لائن دکھائیں</string>
-    <string name="settings_status_card_outline_style">آؤٹ لائن کا رنگ</string>
     <string name="home_edit_mode_title">کارڈز ترتیب دیں</string>
     <string name="home_edit_mode_done">مکمل</string>
     <string name="settings_network_governor_plus_title">DNS گورنر</string>
@@ -146,18 +141,13 @@
     <string name="settings_diagnostics_enabled">سیٹنگز کی تشخیص</string>
     <string name="settings_diagnostics_enabled_summary">تنازعات اور بے قاعدگیوں کے لیے ترتیبات کو پیشگی اسکین کریں</string>
     <string name="settings_verify_apk_local_title">مقامی دستخط کی مطابقت</string>
-    <string name="settings_verify_apk_local_summary">تصدیق کریں کہ اپڈیٹس انسٹال شدہ ایپ کے دستخط سے مطابقت رکھتی ہیں۔ تیز اور مکمل طور پر آف لائن۔</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid انڈیکس</string>
-    <string name="settings_verify_apk_fdroid_summary">قابل اعتماد اوپن سورس میٹا ڈیٹا کے مقابل APK ہیش مقامی طور پر جانچیں۔</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal اسکین</string>
-    <string name="settings_verify_apk_virustotal_summary">انسٹالیشن سے پہلے APK ہیش VirusTotal کے مقابل اسکین کریں۔ API کلید درکار ہے۔</string>
     <string name="settings_verify_apk_pithus_title">Pithus تھریٹ انٹیل</string>
-    <string name="settings_verify_apk_pithus_summary">میل ویئر کی خصوصیات پکڑنے کے لیے ہیش Pithus کے مقابل جانچیں۔</string>
     <string name="settings_custom_accent_title">حسب ضرورت ایکسنٹ رنگ</string>
     <string name="settings_behavior_category_startup">آغاز اور بحالی</string>
     <string name="settings_advanced_category_diagnostics">تشخیص</string>
     <string name="settings_advanced_category_adb_tools">ADB ٹولز</string>
-    <string name="settings_app_management_category_gestures">اشارے اور اعمال</string>
     <string name="settings_app_management_category_verified_install">تصدیق شدہ انسٹالیشن</string>
     <string name="settings_personalization_category_color_theme">رنگ اور تھیم</string>
     <string name="settings_personalization_category_shape_style">شکل اور آئیکن اسٹائل</string>
@@ -301,8 +291,6 @@
     <string name="nav_back">واپس</string>
     <string name="help_stealth_mode_title">اسٹیلتھ موڈ</string>
     <string name="help_stealth_mode_detail">Binder کی سطح پر PackageManager کوئریز کو روکتا ہے اور ShizukuPlus اور Shizuku پیکیجز کے لیے "انسٹال نہیں" لوٹاتا ہے۔ جو ایپس root ٹولز کی شناخت کے لیے PM استعمال کرتی ہیں (بینکنگ ایپس، DRM چیکس) وہ انہیں نہیں ڈھونڈ سکیں گی۔ نوٹ: یہ انہیں صرف PackageManager کوئریز سے چھپاتا ہے — ڈیولپر موڈ اور USB ڈیبگنگ ان ایپس کو اب بھی نظر آتے ہیں جو Android سیٹنگز براہ راست چیک کرتی ہیں۔</string>
-    <string name="settings_home_card_shape">ہوم کارڈ کے کونے</string>
-    <string name="settings_settings_card_shape">سیٹنگز کارڈ کے کونے</string>
     <string name="corner_style_global">گلوبل سیٹنگ کی پیروی کریں</string>
     <string name="corner_style_sharp">تیز / سیدھے</string>
     <string name="corner_style_rounded">گول (M3)</string>
@@ -343,7 +331,6 @@
     <string name="compat_hub_install_signature_conflict">انسٹال نہیں ہو سکتا: ایک مختلف ایپ (مثلاً اسٹاک Shizuku) پہلے ہی moe.shizuku.privileged.api کے طور پر ناموافق دستخط کے ساتھ انسٹال ہے۔ پہلے اسے ان انسٹال کریں۔</string>
     <string name="compat_hub_install_fail_storage">انسٹال نہیں ہو سکتا: آلے پر کافی خالی اسٹوریج نہیں ہے۔</string>
     <string name="compat_hub_install_fail_abi">انسٹال نہیں ہو سکتا: Compat Hub اس آلے کے CPU آرکیٹیکچر کو سپورٹ نہیں کرتا۔</string>
-    <string name="compat_hub_install_manual_launched">انسٹالر کھل رہا ہے — انسٹالیشن مکمل کرنے کے لیے اسکرین کی ہدایات پر عمل کریں۔</string>
     <string name="compat_hub_install_fail_newprocess">آپ کا آلہ Shizuku کی پروسیس اسپون کرنے والی API پر پابندی لگاتا ہے۔ اس کے بجائے سسٹم انسٹالر کھولا جا رہا ہے — کہا جانے پر Install پر ٹیپ کریں۔</string>
     <string name="icon_style_filled">Filled</string>
     <string name="icon_style_outlined">Outlined</string>
@@ -357,8 +344,6 @@
     <string name="adb_pairing_tutorial_autofill_ready">اب "ہم مثل کوڈ کے ساتھ ڈیوائس ہم مثل کریں" کھولیں۔ اسکرین سے کوڈ پڑھا جائے گا اور آپ کے لیے درج کیا جائے گا۔</string>
     <string name="home_samsung_system_uid_title"><![CDATA[(Samsung System UID) شروع کریں]]></string>
     <string name="home_root_description_samsung"><![CDATA[Samsung سسٹم UID سے چل رہا ہے۔ Magisk یا root کی ضرورت نہیں — Shizuku+ Samsung ڈیوائسز پر دستیاب ایک مخصوص سسٹم اکاؤنٹ استعمال کرتا ہے۔]]></string>
-    <string name="settings_app_management_category_long_press">لمبی دبائی سے کی جانے والی حرکتیں</string>
-    <string name="settings_app_management_category_data">ڈیٹا</string>
     <string name="onboarding_m3e_title">اظہار کی نمائیہ</string>
     <string name="onboarding_m3e_desc">موافق آئیکن سبکوں، AMOLED+ کنٹراسٹ، اور روانی کی حرکت کے ساتھ اپنا تجربہ ذاتی بنائیں۔</string>
     <string name="onboarding_icon_style_title">آئیکن کا انداز</string>

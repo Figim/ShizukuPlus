@@ -118,7 +118,6 @@
     <string name="settings_restart_dialog_message">Aby se toto nastavení projevilo, je nutné restartovat Shizuku.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Je vyžadováno připojení k Wi-Fi. Shizuku bude pokračovat v běhu a počká na připojení k Wi-Fi, než se restartuje na pozadí.</b>]]></string>
     <string name="settings_language">Jazyk</string>
-    <string name="settings_translation_contributors">Přispěvatelé překladu</string>
     <string name="settings_translation">Podílet se na překladu</string>
     <string name="settings_translation_summary">Pomozte nám přeložit %s do vašeho jazyka</string>
     <string name="settings_help">Pomoc</string>
@@ -156,7 +155,6 @@
     <string name="action_stop">Zastavit Shizuku</string>
     <string name="dialog_stop_message">Služba Shizuku bude zastavena.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Nepodařilo se požádat o oprávnění root.</string>
     <string name="notification_channel_adb_pairing">Párování bezdrátového ladění</string>
     <string name="notification_adb_pairing_input_paring_code">Vložte párovací kód</string>
     <string name="notification_adb_pairing_searching_for_service_title">Hledání párovací služby</string>

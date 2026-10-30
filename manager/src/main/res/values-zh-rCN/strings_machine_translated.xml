@@ -11,8 +11,6 @@
     <string name="adb_pairing_status_found_text">在 Shizuku 通知中输入“设置”中显示的配对码。</string>
     <string name="adb_pairing_tutorial_autofill">帮我自动填写配对码</string>
     <string name="adb_pairing_tutorial_autofill_ready">现在打开“使用配对码配对设备”。系统将从屏幕读取配对码并自动为您输入。</string>
-    <string name="settings_app_management_category_long_press">长按操作</string>
-    <string name="settings_app_management_category_data">数据</string>
     <string name="settings_custom_icon_studio_title">自定义图标工作室</string>
     <string name="settings_custom_icon_studio_summary">上传自己的图片，自定义形状、内边距和背景，并将其固定为启动器图标</string>
     <string name="custom_icon_studio_shape">形状</string>

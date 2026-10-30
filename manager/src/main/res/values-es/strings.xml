@@ -176,7 +176,6 @@
         esta configuración.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Se requiere Wi-Fi. Shizuku seguirá funcionando y esperará a que se conecte Wi-Fi antes de reiniciar en segundo plano.</b>]]></string>
     <string name="settings_language">Idioma</string>
-    <string name="settings_translation_contributors">Colaboradores de la traducción</string>
     <string name="settings_translation">Participar en la traducción</string>
     <string name="settings_translation_summary">Ayúdanos a traducir %s a tu idioma</string>
     <string name="settings_help">Ayuda</string>
@@ -220,7 +219,6 @@
     <string name="action_stop">Detener Shizuku</string>
     <string name="dialog_stop_message">El servicio Shizuku se detendrá.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Fallo al pedir permisos root.</string>
     <string name="notification_channel_adb_pairing">Emparejamiento de depuración inalámbrica</string>
     <string name="notification_adb_pairing_input_paring_code">Introducir el código de emparejamiento</string>
     <string name="notification_adb_pairing_searching_for_service_title">Buscando servicios de

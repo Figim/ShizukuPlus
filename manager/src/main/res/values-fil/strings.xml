@@ -177,7 +177,6 @@
         ang setting na ito.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Kinakailangan ang Wi-Fi. Magpapatuloy sa pagtakbo ang Shizuku at maghihintay ng koneksyon sa Wi-Fi bago mag-restart sa background.</b>]]></string>
     <string name="settings_language">Wika</string>
-    <string name="settings_translation_contributors">Mga nag-ambag sa pagsasalin</string>
     <string name="settings_translation">Sumali sa pagsasalin</string>
     <string name="settings_translation_summary">Tulungan kaming isalin ang %s sa iyong wika</string>
     <string name="settings_help">Tulong</string>
@@ -222,7 +221,6 @@
     <string name="action_stop">Ihinto ang Shizuku</string>
     <string name="dialog_stop_message">Ihihinto ang serbisyo ng Shizuku.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Hindi nakakuha ng pahintulot sa root.</string>
     <string name="notification_channel_adb_pairing">Pagpapares ng wireless na pag-debug</string>
     <string name="notification_adb_pairing_input_paring_code">Ilagay ang code ng pagpapares</string>
     <string name="notification_adb_pairing_searching_for_service_title">Naghahanap ng serbisyo sa

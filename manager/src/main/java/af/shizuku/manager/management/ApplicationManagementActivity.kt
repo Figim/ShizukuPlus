@@ -557,42 +557,8 @@ open class ApplicationManagementActivity :
     )
 
     private fun getSwipeActionConfig(action: String): SwipeActionConfig =
-        when (action) {
-            "open_app" ->
-                SwipeActionConfig(
-                    com.google.android.material.R.attr.colorPrimaryContainer,
-                    com.google.android.material.R.attr.colorOnPrimaryContainer,
-                    R.drawable.ic_outline_play_arrow_24,
-                    R.string.settings_action_open_app,
-                )
-            "app_info" ->
-                SwipeActionConfig(
-                    com.google.android.material.R.attr.colorSecondaryContainer,
-                    com.google.android.material.R.attr.colorOnSecondaryContainer,
-                    R.drawable.ic_outline_info_24,
-                    R.string.settings_action_app_info,
-                )
-            "toggle_permission" ->
-                SwipeActionConfig(
-                    com.google.android.material.R.attr.colorTertiaryContainer,
-                    com.google.android.material.R.attr.colorOnTertiaryContainer,
-                    R.drawable.ic_shield_24,
-                    R.string.settings_action_toggle_permission,
-                )
-            "hide_from_list" ->
-                SwipeActionConfig(
-                    com.google.android.material.R.attr.colorErrorContainer,
-                    com.google.android.material.R.attr.colorOnErrorContainer,
-                    R.drawable.ic_visibility_off_24,
-                    R.string.settings_action_hide_from_list,
-                )
-            else ->
-                SwipeActionConfig(
-                    com.google.android.material.R.attr.colorSurfaceVariant,
-                    com.google.android.material.R.attr.colorOnSurfaceVariant,
-                    R.drawable.ic_outline_info_24,
-                    R.string.settings_action_none,
-                )
+        SwipeActionStyle.of(action).let {
+            SwipeActionConfig(it.role.containerAttr, it.role.onContainerAttr, it.iconRes, it.labelRes)
         }
 
     private fun setupSwipe(rv: RecyclerView) {
@@ -606,7 +572,7 @@ open class ApplicationManagementActivity :
             ) {
                 private var thresholdActivated = false
 
-                override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.38f
+                override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = SwipeActionStyle.THRESHOLD
 
                 override fun getSwipeEscapeVelocity(defaultValue: Float): Float = defaultValue * 1.4f
 
@@ -657,7 +623,7 @@ open class ApplicationManagementActivity :
                     val v = vh.itemView
                     val action = if (dX > 0) swipeRightAction else swipeLeftAction
                     if (action != "none") {
-                        val threshold = 0.38f * v.width
+                        val threshold = SwipeActionStyle.THRESHOLD * v.width
                         val absDx = kotlin.math.abs(dX)
                         val pastThreshold = absDx >= threshold
 
@@ -778,7 +744,7 @@ open class ApplicationManagementActivity :
         val bgColor = MaterialColors.getColor(v, config.bgAttr)
         val onColor = MaterialColors.getColor(v, config.onAttr)
         val density = resources.displayMetrics.density
-        val threshold = 0.38f * v.width
+        val threshold = SwipeActionStyle.THRESHOLD * v.width
         val progress = (absDx / threshold).coerceIn(0f, 1f)
 
         // Rounded container background

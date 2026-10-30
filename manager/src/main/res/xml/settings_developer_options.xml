@@ -29,6 +29,13 @@
             android:icon="@drawable/ic_adb_24"
             android:defaultValue="true" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="swipe_settings_sandbox"
+            android:title="@string/settings_swipe_sandbox_title"
+            android:summary="@string/settings_swipe_sandbox_summary"
+            android:icon="@drawable/ic_swipe_24"
+            android:defaultValue="false" />
+
         <Preference
             android:key="reset_recommendations"
             android:title="@string/settings_reset_recommendations_title"

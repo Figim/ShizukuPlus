@@ -170,7 +170,6 @@
         გადატვირთვაა საჭირო.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>საჭიროა Wi-Fi. Shizuku გააგრძელებს მუშაობას და დაელოდება Wi-Fi კავშირს, სანამ ფონურ რეჟიმში გადაიტვირთება.</b>]]></string>
     <string name="settings_language">ენა</string>
-    <string name="settings_translation_contributors">თარგმანის კონტრიბუტორები</string>
     <string name="settings_translation">მონაწილეობა მიუღეთ თარგმანში</string>
     <string name="settings_translation_summary">დაგვეხმარეთ თარგმნაში %s თქვენს ენაზე</string>
     <string name="settings_help">დახმარება</string>
@@ -214,7 +213,6 @@
     <string name="action_stop">შეაჩერე შიზუკუ</string>
     <string name="dialog_stop_message">Shizuku მომსახურება შეწყდება.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">root ნებართვის მოთხოვნა ვერ მოხერხდა.</string>
     <string name="notification_channel_adb_pairing">უსადენო გამართვის დაწყვილება</string>
     <string name="notification_adb_pairing_input_paring_code">შეიყვანეთ დაწყვილების კოდი</string>
     <string name="notification_adb_pairing_searching_for_service_title">დაწყვილების სერვისის ძიება</string>

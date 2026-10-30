@@ -163,7 +163,6 @@
     <string name="settings_restart_dialog_message">Shizuku ต้องรีสตาร์ทเพื่อใช้การตั้งค่านี้</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>จําเป็นต้องใช้ Wi-Fi Shizuku จะทํางานต่อไปและรอการเชื่อมต่อ Wi-Fi ก่อนที่จะรีสตาร์ทในพื้นหลัง</b>]]></string>
     <string name="settings_language">ภาษา</string>
-    <string name="settings_translation_contributors">ผู้มีส่วนร่วมในการแปลภาษา</string>
     <string name="settings_translation">มีส่วนร่วมในการแปล</string>
     <string name="settings_translation_summary">ช่วยเราแปล %s เป็นภาษาของคุณ</string>
     <string name="settings_help">ช่วย</string>
@@ -204,7 +203,6 @@
     <string name="action_stop">หยุดทำงาน Shizuku</string>
     <string name="dialog_stop_message">บริการ Shizuku จะถูกหยุดทำงาน</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">ล้มเหลวในการขอการอนุญาตรูท</string>
     <string name="notification_channel_adb_pairing">การจับคู่การแก้ไขข้อบกพร่องผ่าน Wi-Fi</string>
     <string name="notification_adb_pairing_input_paring_code">ป้อนรหัสการจับคู่</string>
     <string name="notification_adb_pairing_searching_for_service_title">กำลังค้นหาบริการการจับคู่</string>

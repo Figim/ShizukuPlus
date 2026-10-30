@@ -176,7 +176,6 @@
         Shizuku-t.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi szükséges. A Shizuku továbbra is fut, és Wi-Fi kapcsolatra vár, mielőtt újraindulna a háttérben.</b>]]></string>
     <string name="settings_language">Nyelv</string>
-    <string name="settings_translation_contributors">Fordítási közreműködők</string>
     <string name="settings_translation">Vegyen részt a fordításban</string>
     <string name="settings_translation_summary">Segítsen nekünk lefordítani a %s-t az Ön nyelvére</string>
     <string name="settings_help">Segítség</string>
@@ -220,7 +219,6 @@
     <string name="action_stop">A Shizuku leállítása</string>
     <string name="dialog_stop_message">A Shizuku szolgáltatás leáll.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Nem sikerült root engedélyt kérni.</string>
     <string name="notification_channel_adb_pairing">Vezeték nélküli hibakeresés pairing</string>
     <string name="notification_adb_pairing_input_paring_code">Írja be a párosítási kódot</string>
     <string name="notification_adb_pairing_searching_for_service_title">Párosítási szolgáltatás

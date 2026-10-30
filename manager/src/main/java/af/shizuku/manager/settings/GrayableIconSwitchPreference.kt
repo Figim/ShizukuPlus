@@ -36,7 +36,7 @@ open class GrayableIconSwitchPreference
             holder.itemView.setTag(R.id.tag_switch_row_owner, this)
             // The row's own ripple background, captured once per view before we replace it.
             if (holder.itemView.getTag(R.id.tag_switch_row_default_bg) == null) {
-                holder.itemView.setTag(R.id.tag_switch_row_default_bg, holder.itemView.background ?: NO_BACKGROUND)
+                holder.itemView.setTag(R.id.tag_switch_row_default_bg, holder.itemView.background ?: NoBackground)
             }
             holder.itemView.applySpringTouch(scale = 0.985f)
 
@@ -187,7 +187,7 @@ private fun activeRowColor(
     return ColorUtils.setAlphaComponent(tonal, 110)
 }
 
-private object NO_BACKGROUND
+private object NoBackground
 
 /** The row's original (ripple) background, as a fresh copy. */
 private fun defaultBackground(view: android.view.View): android.graphics.drawable.Drawable? {

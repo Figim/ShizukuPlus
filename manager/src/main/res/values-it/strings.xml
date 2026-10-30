@@ -172,7 +172,6 @@
         questa impostazione.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Il Wi-Fi è necessario. Shizuku continuerà a funzionare e aspetterà una connessione Wi-Fi prima di riavviare in background.</b>]]></string>
     <string name="settings_language">Lingua</string>
-    <string name="settings_translation_contributors">Contributori alla traduzione</string>
     <string name="settings_translation">Partecipa alla traduzione</string>
     <string name="settings_translation_summary">Aiutaci a tradurre %s nella tua lingua</string>
     <string name="settings_help">Aiuto</string>
@@ -215,7 +214,6 @@
     <string name="action_stop">Interrompi Shizuku</string>
     <string name="dialog_stop_message">Il servizio Shizuku verrà interrotto.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Impossibile richiedere i permessi di root.</string>
     <string name="notification_channel_adb_pairing">Accoppiamento debug wireless</string>
     <string name="notification_adb_pairing_input_paring_code">Inserire codice di associazione</string>
     <string name="notification_adb_pairing_searching_for_service_title">Ricerca del servizio di

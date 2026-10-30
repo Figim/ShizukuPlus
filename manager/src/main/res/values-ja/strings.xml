@@ -143,7 +143,6 @@
     <string name="settings_restart_dialog_message">雫はこの設定を適用するために再起動が必要です。</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fiは必須です。雫は走り続け、Wi-Fi接続を待ってからバックグラウンドで再起動する。</b>]]></string>
     <string name="settings_language">言語</string>
-    <string name="settings_translation_contributors">翻訳協力者</string>
     <string name="settings_translation">翻訳作業に参加</string>
     <string name="settings_translation_summary">%sをあなたの言語に翻訳するのを手伝ってください</string>
     <string name="settings_help">ヘルプ</string>
@@ -182,7 +181,6 @@
     <string name="action_stop">Shizukuを停止する</string>
     <string name="dialog_stop_message">Shizukuのサービスを停止します。</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">root権限の要求に失敗しました。</string>
     <string name="notification_channel_adb_pairing">ワイヤレスデバックペアリング</string>
     <string name="notification_adb_pairing_input_paring_code">ペアリングコードを入力</string>
     <string name="notification_adb_pairing_searching_for_service_title">ペアリングサービスを探しています</string>

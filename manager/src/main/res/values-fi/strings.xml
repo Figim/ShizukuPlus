@@ -169,7 +169,6 @@
         asetus otetaan käyttöön.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi-yhteys vaaditaan. Shizuku jatkaa toimintaansa ja odottaa Wi-Fi-yhteyttä ennen uudelleenkäynnistystä taustalla.</b>]]></string>
     <string name="settings_language">Kieli</string>
-    <string name="settings_translation_contributors">Käännösavustajat</string>
     <string name="settings_translation">Osallistu käännöksiin</string>
     <string name="settings_translation_summary">Auta meitä kääntämään %s kielellesi</string>
     <string name="settings_help">Apua</string>
@@ -211,7 +210,6 @@
     <string name="action_stop">Pysäyttäkää Shizuku</string>
     <string name="dialog_stop_message">Shizukun palvelu lopetetaan.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">Root-luvan pyytäminen epäonnistui.</string>
     <string name="notification_channel_adb_pairing">Langaton debuggausparitus</string>
     <string name="notification_adb_pairing_input_paring_code">Syötä parituskoodi</string>
     <string name="notification_adb_pairing_searching_for_service_title">Etsitään parituspalvelua</string>

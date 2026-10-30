@@ -174,7 +174,6 @@
         செய்ய வேண்டும்.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi தேவை. Shizuku தொடர்ந்து இயங்கும் மற்றும் பின்னணியில் மறுதொடக்கம் செய்வதற்கு முன் Wi-Fi இணைப்புக்காக காத்திருக்கும்.</b>]]></string>
     <string name="settings_language">மொழி</string>
-    <string name="settings_translation_contributors">மொழிபெயர்ப்பு பங்களிப்பாளர்கள்</string>
     <string name="settings_translation">மொழிபெயர்ப்பில் பங்கேற்கவும்.</string>
     <string name="settings_translation_summary">%s ஐ உங்கள் மொழியில் மொழிபெயர்க்க எங்களுக்கு
         உதவுங்கள்.</string>
@@ -220,7 +219,6 @@
     <string name="action_stop">ஷிசுகுவை நிறுத்து</string>
     <string name="dialog_stop_message">ஷிசுகு சேவை நிறுத்தப்படும்.</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">ரூட் அனுமதியைக் கோர முடியவில்லை.</string>
     <string name="notification_channel_adb_pairing">வயர்லெஸ் பிழைத்திருத்த இணைத்தல்</string>
     <string name="notification_adb_pairing_input_paring_code">இணைத்தல் குறியீட்டை உள்ளிடவும்</string>
     <string name="notification_adb_pairing_searching_for_service_title">இணைத்தல் சேவையைத் தேடுகிறது</string>

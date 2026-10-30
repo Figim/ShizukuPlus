@@ -6,7 +6,6 @@
     <string name="server_clients_connected">%1$d applications connected</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors">thejaustin</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
@@ -16,15 +15,11 @@
     <string name="settings_expressive_animations_summary">Springy, expressive motion across the app. Turn off for no in-app animation</string>
     <string name="settings_icon_style">Icon style</string>
     <string name="settings_shape_style">Container shape style</string>
-    <string name="settings_rounded_edges">Rounded edges</string>
-    <string name="settings_rounded_edges_summary">Use rounded corners on cards and dialog containers</string>
     <string name="settings_animation_intensity">Animation intensity</string>
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Edge-to-edge layout</string>
-    <string name="settings_edge_to_edge_summary">Extend content behind system bars. Disable if system bars overlap important controls</string>
     <string name="settings_blur_ui">Frosted glass effect</string>
-    <string name="settings_blur_ui_summary">Apply blur and translucency to dialogs and the top bar. Best on Android 12+</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI style</string>
@@ -34,9 +29,7 @@
 
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">Bold typography</string>
-    <string name="settings_bold_typography_summary">Use heavier font weights for headings and titles</string>
     <string name="settings_expanded_headers">Expanded section headers</string>
-    <string name="settings_expanded_headers_summary">Display large collapsing title headers at the top of settings screens that smoothly shrink as you scroll</string>
 
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Corner rounding</string>
@@ -56,9 +49,6 @@
         <item>twotone</item>
     </string-array>
 
-    <string name="icon_style_filled">Filled</string>
-    <string name="icon_style_outlined">Outlined</string>
-    <string name="icon_style_twotone">Two-Tone</string>
     <string name="home_edit_mode_banner">Hold and drag cards to customize your home layout</string>
 
     <string name="settings_icon_color_mode">Two-tone icon colors</string>
@@ -325,9 +315,23 @@
     <string name="rish_description"><![CDATA[With %1$s, you can run shell commands in any terminal app.<p>Tap to learn more about how to use it.]]></string>
 
     <!-- Settings — swipe customisation -->
-    <string name="settings_swipe_right">Swipe right action</string>
-    <string name="settings_swipe_left">Swipe left action</string>
-    <string name="settings_swipe_preview_hint">Drag card to test actions</string>
+    <string name="swipe_actions_right_title">Swipe right</string>
+    <string name="swipe_actions_left_title">Swipe left</string>
+    <string name="swipe_actions_long_press_title">Long-press menu</string>
+    <string name="swipe_actions_long_press_summary">%1$d of %2$d actions on</string>
+    <string name="swipe_picker_right_subtitle">What happens when you swipe an app to the right</string>
+    <string name="swipe_picker_left_subtitle">What happens when you swipe an app to the left</string>
+    <string name="swipe_preview_caption">How a swipe looks in your app list</string>
+    <string name="swipe_sandbox_hint">Drag the row either way. Let go past the line, then choose what that swipe does.</string>
+    <string name="swipe_sandbox_right_will">Swipe right will…</string>
+    <string name="swipe_sandbox_left_will">Swipe left will…</string>
+    <string name="swipe_action_desc_open_app">Launch the app</string>
+    <string name="swipe_action_desc_app_info">Open Android\'s app details page</string>
+    <string name="swipe_action_desc_toggle_permission">Grant or revoke its Shizuku access</string>
+    <string name="swipe_action_desc_hide_from_list">Hide it from the list, with an undo</string>
+    <string name="swipe_action_desc_none">Swiping this way does nothing</string>
+    <string name="settings_swipe_sandbox_title">Swipe settings sandbox</string>
+    <string name="settings_swipe_sandbox_summary">In Swipe actions, replace the preview with a row you drag yourself, then pick what that swipe does</string>
     <string name="settings_action_none">None</string>
     <string name="settings_action_open_app">Open app</string>
     <string name="settings_action_app_info">App info</string>
@@ -335,8 +339,6 @@
     <string name="settings_action_hide_from_list">Hide from list</string>
 
     <!-- Settings — long-press customisation -->
-    <string name="settings_app_management_category_long_press">Long-press actions</string>
-    <string name="settings_app_management_category_data">Data</string>
     <string name="settings_lp_category_summary">Choose which actions appear when you long-press an app in the management list. If only one is enabled it triggers directly — no menu shown.</string>
     <string name="settings_lp_open_app">Open app</string>
     <string name="settings_lp_app_info">App info</string>
@@ -362,13 +364,6 @@
     <string name="onboarding_setup_wadb_desc">Android 11+, no computer needed. Uses wireless debugging.</string>
     <string name="onboarding_setup_root_desc">Your device is rooted. Start Shizuku with root access.</string>
     <string name="onboarding_setup_adb_desc">Any device. Run one ADB command from a computer to get started.</string>
-    <string name="onboarding_m3e_title">Expressive Look &amp; Feel</string>
-    <string name="onboarding_m3e_desc">Personalize your experience with adaptive icon styles, AMOLED+ contrast, and fluid motion.</string>
-    <string name="onboarding_icon_style_title">Icon Style</string>
-    <string name="onboarding_amoled_title">AMOLED+ True Black</string>
-    <string name="onboarding_amoled_desc">Pure black backgrounds in dark mode</string>
-    <string name="onboarding_animations_title">Expressive Animations</string>
-    <string name="onboarding_animations_desc">Fluid spring physics and tactile motion</string>
     <string name="onboarding_layout_nav_title">Home &amp; Navigation</string>
     <string name="onboarding_layout_nav_desc">Tailor your daily workspace. Drag to reorder cards on Home, or use the floating pill navigation bar.</string>
     <string name="onboarding_floating_nav_title">Floating Navigation Bar</string>
@@ -403,7 +398,6 @@
     <string name="swipe_hint_got_it">Got it</string>
     <string name="swipe_hint_right">Swipe right for quick action</string>
     <string name="swipe_hint_left">Swipe left for quick action</string>
-    <string name="swipe_hint_dismiss">Tap anywhere to dismiss</string>
 
     <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <string name="app_name_classic">Shizuku</string>
@@ -515,7 +509,6 @@
     <string name="settings_auto_disable_usb_debugging">Auto-disable USB debugging</string>
     <string name="settings_auto_disable_usb_debugging_summary">Disable USB debugging when stopping Shizuku</string>
     <string name="settings_language">Language</string>
-    <string name="settings_translation_contributors">Translation contributors</string>
     <string name="settings_translation">Participate in translation</string>
     <string name="settings_translation_summary">Help us translate %s into your language</string>
     <string name="settings_version">Version</string>
@@ -530,7 +523,6 @@
     <string name="settings_show_activity_log_home">Show activity log</string>
     <string name="settings_show_status_card_outline">Status card outline</string>
     <string name="settings_show_status_card_outline_summary">Show a colored outline on the service status card</string>
-    <string name="settings_status_card_outline_style">Outline color</string>
     <string name="settings_update_app_database">Update app database</string>
     <string name="settings_update_app_database_summary">Fetch latest app descriptions and enhancement suggestions from GitHub.</string>
     <string name="settings_update_app_database_error">Failed to update database</string>
@@ -739,7 +731,6 @@
     <string name="su_bridge_setup_all">Setup All</string>
     <string name="su_bridge_magic_setup">Magic Setup</string>
     <string name="su_bridge_magic_setup_success">Magic Setup completed! Shizuku+ has configured %s for you.</string>
-    <string name="su_bridge_magic_setup_fail">Magic Setup failed. Please use manual copy path instead.</string>
     <string name="su_bridge_magic_setup_all_summary">Shizuku+ configured %d apps for you!</string>
     <string name="su_bridge_magic_setup_all_no_apps">No supported root apps found for automation.</string>
     <string name="su_bridge_copy_open">Copy path &amp; open</string>
@@ -962,7 +953,6 @@
     <!-- Notification -->
     <string name="notification_channel_automation">Automation</string>
     <string name="notification_automation_title">Automation is running</string>
-    <string name="notification_service_start_no_root">Failed to request root permission.</string>
     <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
     <string name="notification_adb_pairing_input_paring_code">Enter pairing code</string>
     <string name="notification_adb_pairing_searching_for_service_title">Searching for pairing service</string>
@@ -1065,7 +1055,6 @@
     <string name="settings_main_nav_root_compat_summary">SU bridge, Device Owner &amp; stock app compatibility</string>
     <string name="settings_main_nav_appearance_summary">Theme, icons, gestures, interactions, and layout</string>
     <string name="settings_main_nav_app_interactions_title">App interactions</string>
-    <string name="settings_main_nav_app_interactions_summary">Gestures, long-press actions and the app database</string>
     <string name="settings_main_nav_startup_behavior_title">Startup &amp; behavior</string>
     <string name="settings_main_nav_startup_behavior_summary">Boot options, watchdog, ADB, firewall and install checks</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; diagnostics</string>
@@ -1099,13 +1088,8 @@
     <string name="accessibility_icon_toggle_visibility">Toggle card visibility</string>
     <string name="accessibility_icon_info">Information</string>
     <string name="accessibility_button_start">Start button</string>
-    <string name="accessibility_button_restart">Restart button</string>
-    <string name="accessibility_button_view_command">View command button</string>
-    <string name="accessibility_button_view_guide">View guide button</string>
     <string name="accessibility_state_expanded">Expanded</string>
     <string name="accessibility_state_collapsed">Collapsed</string>
-    <string name="accessibility_button_view_intents">View intents button</string>
-    <string name="accessibility_button_pairing">Pairing button</string>
     <string name="accessibility_action_app_info">Open app info settings</string>
     <string name="accessibility_permission_granted">Permission granted</string>
 
@@ -1142,13 +1126,9 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Local Signature Matching</string>
-    <string name="settings_verify_apk_local_summary">Verify updates match the installed app\'s signature. Fast and fully offline.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid Index</string>
-    <string name="settings_verify_apk_fdroid_summary">Verify APK hashes locally against trusted open-source metadata.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Scan</string>
-    <string name="settings_verify_apk_virustotal_summary">Scan APK hashes against VirusTotal before installation. Requires API key.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Threat Intel</string>
-    <string name="settings_verify_apk_pithus_summary">Check hashes against Pithus to detect malware traits.</string>
     <string name="settings_verify_apk_local_badge">Offline Certificate</string>
     <string name="settings_verify_apk_fdroid_badge">F-Droid Metadata</string>
     <string name="settings_verify_apk_virustotal_badge">70+ Cloud Scanners</string>
@@ -1170,7 +1150,6 @@
     <string name="settings_behavior_category_startup">Startup &amp; recovery</string>
     <string name="settings_advanced_category_diagnostics">Diagnostics</string>
     <string name="settings_advanced_category_adb_tools">ADB tools</string>
-    <string name="settings_app_management_category_gestures">Gestures &amp; actions</string>
     <string name="settings_app_management_category_verified_install">Verified installation</string>
     <string name="settings_personalization_category_color_theme">Color &amp; theme</string>
     <string name="settings_personalization_category_shape_style">Shape &amp; icon style</string>
@@ -1306,7 +1285,6 @@
     <string name="update_open_backup_settings">Backup &amp; Restore</string>
 
     <!-- Migration Dialog -->
-    <string name="migration_success_message">Your settings have been copied from the old version. You can now safely uninstall moe.shizuku.privileged.api.</string>
 
     <!-- Update Dialogs -->
     <string name="update_available_title">Update Available</string>
@@ -1691,8 +1669,6 @@
     <string name="help_stealth_mode_detail">Intercepts PackageManager queries at the Binder level and returns "not installed" for ShizukuPlus and Shizuku packages. Apps that use PM to detect root tools (banking apps, DRM checks) will not find them. Note: this only hides them from PackageManager queries — developer mode and USB debugging are still visible to apps that check Android settings directly.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="settings_home_card_shape">Home card corners</string>
-    <string name="settings_settings_card_shape">Settings card corners</string>
     <string name="corner_style_global">Follow global setting</string>
     <string name="corner_style_sharp">Sharp / Flat</string>
     <string name="corner_style_rounded">Rounded (M3)</string>
@@ -1943,4 +1919,14 @@
     <string name="settings_lp_select_multiple">Select Multiple</string>
     <string name="settings_lp_freeze_app">Freeze / Unfreeze</string>
     <string name="settings_lp_freeform_resize">Free-Form Resize</string>
+    <string name="icon_style_filled">Filled</string>
+    <string name="icon_style_outlined">Outlined</string>
+    <string name="icon_style_twotone">Two-Tone</string>
+    <string name="onboarding_amoled_desc">Pure black backgrounds in dark mode</string>
+    <string name="onboarding_amoled_title">AMOLED+ True Black</string>
+    <string name="onboarding_animations_desc">Fluid spring physics and tactile motion</string>
+    <string name="onboarding_animations_title">Expressive Animations</string>
+    <string name="onboarding_icon_style_title">Icon Style</string>
+    <string name="onboarding_m3e_desc">Personalize your experience with adaptive icon styles, AMOLED+ contrast, and fluid motion.</string>
+    <string name="onboarding_m3e_title">Expressive Look &amp; Feel</string>
 </resources>

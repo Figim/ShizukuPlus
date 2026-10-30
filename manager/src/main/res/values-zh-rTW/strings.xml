@@ -125,7 +125,6 @@
     <string name="settings_restart_dialog_message">Shizuku 需要重啟才能套用此設定。</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>需要 Wi-Fi。Shizuku 會在後台繼續運作並等待 Wi-Fi 連接，連線成功後才會重新啟動。</b>]]></string>
     <string name="settings_language">語言</string>
-    <string name="settings_translation_contributors">翻譯貢獻者</string>
     <string name="settings_translation">參與翻譯</string>
     <string name="settings_translation_summary">協助我們將 %s 翻譯至您的語言</string>
     <string name="settings_help">幫助</string>
@@ -163,7 +162,6 @@
     <string name="action_stop">停止 Shizuku</string>
     <string name="dialog_stop_message">Shizuku 服務將被停止。</string>
     <!-- Notification -->
-    <string name="notification_service_start_no_root">無法要求 Root 權限。</string>
     <string name="notification_channel_adb_pairing">無線偵錯配對</string>
     <string name="notification_adb_pairing_input_paring_code">輸入配對碼</string>
     <string name="notification_adb_pairing_searching_for_service_title">正在尋找配對服務</string>
@@ -333,7 +331,6 @@
     <string name="wadb_notification_wait_ends">本次等待將於 %1$s 結束</string>
 
     <!-- ===== Machine-translation review (2026-10-18): corrected entries moved from strings_machine_translated.xml ===== -->
-    <string name="settings_expanded_headers_summary">在設定畫面頂端顯示大型可收合標題，捲動時會平滑縮小</string>
     <string name="settings_device_hardening_summary">讓 Shizuku 與終端機用戶端不受 Doze 限制、自動授予 WRITE_SECURE_SETTINGS、同步啟動器二進位檔，並在看門狗開啟時解除此應用程式的背景與電池限制</string>
     <string name="settings_samsung_uid_escalation_summary">嘗試利用針對未修補 Samsung 裝置的漏洞（作者 pascua28）提權至 UID 1000 (system)，無需 root。注意：Samsung 已在較新的 One UI（Android 12+）修補此漏洞。</string>
     <string name="settings_fake_su">Root 應用程式轉譯器（SU Bridge）</string>
@@ -345,7 +342,6 @@
     <string name="su_bridge_step_3">3. 若使用終端機（例如 Termux），請執行「export PATH=\"/data/local/tmp:$PATH\"」即可立即使用「su」。</string>
     <string name="su_bridge_step_4">4. 對於沒有自訂 SU 設定的應用程式，當 Shizuku 以 Root 模式執行時，「一鍵設定」可自動設定支援的應用程式。其他應用程式則需要真正的系統 root（/system/bin/su）。</string>
     <string name="settings_main_nav_root_compat_summary">SU 橋接、裝置擁有者工具、安全性存取，以及與原版 Shizuku 的相容性</string>
-    <string name="settings_main_nav_app_interactions_summary">手勢、長按動作、套件調控與安裝驗證</string>
     <string name="settings_main_nav_startup_behavior_summary">開機選項、看門狗、TCP/ADB 連接埠、防火牆與保持運作</string>
     <string name="settings_main_nav_advanced_diagnostics_summary">增強 API、系統調控、診斷儀表板與備份</string>
     <string name="settings_main_nav_about_summary">版本、版本更新記錄、授權與開發人員選項</string>

@@ -7,7 +7,6 @@
     <string name="server_clients_connected">%1$d tətbiq qoşuldu</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors">thejaustin</string>
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
@@ -17,15 +16,11 @@
     <string name="settings_expressive_animations_summary">Tətbiq daxilində elastik və ifadəli hərəkətlər. Daxili animasiyaları söndürmək üçün bağlayın</string>
     <string name="settings_icon_style">İkon Üslubu</string>
     <string name="settings_shape_style">Konteyner Forması Üslubu</string>
-    <string name="settings_rounded_edges">Dairəvi Künclər</string>
-    <string name="settings_rounded_edges_summary">Kartlarda və dialoq konteynerlərində dairəvi künclərdən istifadə edin</string>
     <string name="settings_animation_intensity">Animasiya İntensivliyi</string>
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Kənardan-kənara tərtibat</string>
-    <string name="settings_edge_to_edge_summary">Məzmunu sistem panellərinin arxasına uzadın. Sistem panelləri vacib idarəetmə elementlərini örtürsə, söndürün</string>
     <string name="settings_blur_ui">Buzlu Şüşə Effekti</string>
-    <string name="settings_blur_ui_summary">Dialoq pəncərələrinə və yuxarı panelə bulanıqlıq və şəffaflıq tətbiq edin. Ən yaxşı Android 12+ üzərində işləyir</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI Üslubu</string>
@@ -35,9 +30,7 @@
 
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">Qalın Şriftlər</string>
-    <string name="settings_bold_typography_summary">Başlıqlar üçün daha qalın şrift ştrixləri istifadə edin</string>
     <string name="settings_expanded_headers">Genişləndirilmiş Bölmə Başlıqları</string>
-    <string name="settings_expanded_headers_summary">Tənzimləmələr ekranlarının yuxarısında sürüşdürdükcə rəvan şəkildə kiçilən böyük yığılan başlıqları göstər</string>
 
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Künc Dairəviliyi</string>
@@ -326,9 +319,6 @@
     <string name="rish_description"><![CDATA[%1$s ilə istənilən terminal tətbiqində shell əmrləri icra edə bilərsiniz.<p>Onun necə istifadə olunacağını öyrənmək üçün toxunun.]]></string>
 
     <!-- Settings — swipe customisation -->
-    <string name="settings_swipe_right">Sola sürüşdürmə əməliyyatı</string>
-    <string name="settings_swipe_left">Sağa sürüşdürmə əməliyyatı</string>
-    <string name="settings_swipe_preview_hint">Əməliyyatları sınamaq üçün kartı sürüşdürün</string>
     <string name="settings_action_none">Heç biri</string>
     <string name="settings_action_open_app">Tətbiqi aç</string>
     <string name="settings_action_app_info">Tətbiq məlumatı</string>
@@ -336,8 +326,6 @@
     <string name="settings_action_hide_from_list">Siyahıdan gizlət</string>
 
     <!-- Settings — long-press customisation -->
-    <string name="settings_app_management_category_long_press">Uzun basma əməliyyatları</string>
-    <string name="settings_app_management_category_data">Məlumat</string>
     <string name="settings_lp_category_summary">İdarəetmə siyahısındakı tətbiqə uzun basdıqda hansı əməliyyatların görünəcəyini seçin. Yalnız biri aktivdirsə, o, birbaşa işə düşür — heç bir menyu göstərilmir.</string>
     <string name="settings_lp_open_app">Tətbiqi aç</string>
     <string name="settings_lp_app_info">Tətbiq məlumatı</string>
@@ -404,7 +392,6 @@
     <string name="swipe_hint_got_it">Anladım</string>
     <string name="swipe_hint_right">Sürətli əməliyyat üçün sağa sürüşdürün</string>
     <string name="swipe_hint_left">Sürətli əməliyyat üçün sola sürüşdürün</string>
-    <string name="swipe_hint_dismiss">Bağlamaq üçün istənilən yerə toxunun</string>
 
     <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <string name="app_name_classic">Shizuku</string>
@@ -516,7 +503,6 @@
     <string name="settings_auto_disable_usb_debugging">USB sazlamanı avtomatik söndür</string>
     <string name="settings_auto_disable_usb_debugging_summary">Shizuku dayandırıldıqda USB sazlamanı söndürün</string>
     <string name="settings_language">Dil</string>
-    <string name="settings_translation_contributors">Tərcüməçilər</string>
     <string name="settings_translation">Tərcümədə iştirak et</string>
     <string name="settings_translation_summary">%s dilini öz dilinizə tərcümə etməyə kömək edin</string>
     <string name="settings_version">Versiya</string>
@@ -531,7 +517,6 @@
     <string name="settings_show_activity_log_home">Fəaliyyət Jurnalını Göstər</string>
     <string name="settings_show_status_card_outline">Status kartının konturu</string>
     <string name="settings_show_status_card_outline_summary">Xidmət statusu kartında rəngli kontur göstər</string>
-    <string name="settings_status_card_outline_style">Kontur rəngi</string>
     <string name="settings_update_app_database">Tətbiq verilənlər bazasını yenilə</string>
     <string name="settings_update_app_database_summary">GitHub-dan ən son tətbiq təsvirlərini və təkmilləşdirmə təkliflərini əldə edin.</string>
     <string name="settings_update_app_database_error">Verilənlər bazası yenilənə bilmədi</string>
@@ -740,7 +725,6 @@
     <string name="su_bridge_setup_all">Hamısını Quraşdır</string>
     <string name="su_bridge_magic_setup">Sehrli Quraşdırma</string>
     <string name="su_bridge_magic_setup_success">Sehrli Quraşdırma tamamlandı! Shizuku+ sizin üçün %s konfiqurasiya etdi.</string>
-    <string name="su_bridge_magic_setup_fail">Sehrli Quraşdırma uğursuz oldu. Zəhmət olmasa əvəzinə əl ilə yol kopyalamasından istifadə edin.</string>
     <string name="su_bridge_magic_setup_all_summary">Shizuku+ sizin üçün %d tətbiq konfiqurasiya etdi!</string>
     <string name="su_bridge_magic_setup_all_no_apps">Avtomatlaşdırma üçün dəstəklənən root tətbiqi tapılmadı.</string>
     <string name="su_bridge_copy_open">Yolu kopyala və aç</string>
@@ -963,7 +947,6 @@
     <!-- Notification -->
     <string name="notification_channel_automation">Avtomatlaşdırma</string>
     <string name="notification_automation_title">Avtomatlaşdırma işləyir</string>
-    <string name="notification_service_start_no_root">Root icazəsi almaq mümkün olmadı.</string>
     <string name="notification_channel_adb_pairing">Simsiz sazlama cütləşməsi</string>
     <string name="notification_adb_pairing_input_paring_code">Cütləşmə kodunu daxil edin</string>
     <string name="notification_adb_pairing_searching_for_service_title">Cütləşmə xidməti axtarılır</string>
@@ -1066,7 +1049,6 @@
     <string name="settings_main_nav_root_compat_summary">SU bridge, Cihaz Sahibi alətləri və stok tətbiq uyğunluğu</string>
     <string name="settings_main_nav_appearance_summary">Tema, ikonlar, jestlər, qarşılıqlı toxunuşlar və tərtibat</string>
     <string name="settings_main_nav_app_interactions_title">Tətbiq Qarşılıqlı Əlaqələri</string>
-    <string name="settings_main_nav_app_interactions_summary">Jestlər, uzun basma əməliyyatları və tətbiq verilənlər bazası</string>
     <string name="settings_main_nav_startup_behavior_title">Başlanğıc və Davranış</string>
     <string name="settings_main_nav_startup_behavior_summary">Açılış seçimləri, nəzarətçi, ADB, firewall və quraşdırma yoxlamaları</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Qabaqcıl və Diaqnostika</string>
@@ -1100,13 +1082,8 @@
     <string name="accessibility_icon_toggle_visibility">Kartın görünürlüyünü dəyiş</string>
     <string name="accessibility_icon_info">Məlumat</string>
     <string name="accessibility_button_start">Başlat düyməsi</string>
-    <string name="accessibility_button_restart">Yenidən başlat düyməsi</string>
-    <string name="accessibility_button_view_command">Əmrə bax düyməsi</string>
-    <string name="accessibility_button_view_guide">Bələdçiyə bax düyməsi</string>
     <string name="accessibility_state_expanded">Genişləndirilib</string>
     <string name="accessibility_state_collapsed">Yığılıb</string>
-    <string name="accessibility_button_view_intents">Intentlərə bax düyməsi</string>
-    <string name="accessibility_button_pairing">Cütləşmə düyməsi</string>
     <string name="accessibility_action_app_info">Tətbiq məlumatı tənzimləmələrini aç</string>
     <string name="accessibility_permission_granted">İcazə verildi</string>
 
@@ -1143,13 +1120,9 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
-    <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə meta verilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
-    <string name="settings_verify_apk_virustotal_summary">Quraşdırmadan əvvəl APK heşlərini VirusTotal-a qarşı skan edin. API açarı tələb olunur.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Təhlükə Kəşfiyyatı</string>
-    <string name="settings_verify_apk_pithus_summary">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın.</string>
     <string name="settings_verify_apk_local_badge">Oflayn Sertifikat</string>
     <string name="settings_verify_apk_fdroid_badge">F-Droid Meta-məlumatı</string>
     <string name="settings_verify_apk_virustotal_badge">70+ Bulud Skaneri</string>
@@ -1171,7 +1144,6 @@
     <string name="settings_behavior_category_startup">Başlanğıc və Bərpa</string>
     <string name="settings_advanced_category_diagnostics">Diaqnostika</string>
     <string name="settings_advanced_category_adb_tools">ADB Alətləri</string>
-    <string name="settings_app_management_category_gestures">Jestlər və Əməliyyatlar</string>
     <string name="settings_app_management_category_verified_install">Təsdiqlənmiş Quraşdırma</string>
     <string name="settings_personalization_category_color_theme">Rəng və Tema</string>
     <string name="settings_personalization_category_shape_style">Forma və İkon Üslubu</string>
@@ -1306,7 +1278,6 @@
     <string name="update_open_backup_settings">Ehtiyat Nüsxə və Bərpa</string>
 
     <!-- Migration Dialog -->
-    <string name="migration_success_message">Tənzimləmələriniz köhnə versiyadan kopyalandı. İndi moe.shizuku.privileged.api tətbiqini təhlükəsiz şəkildə silə bilərsiniz.</string>
 
     <!-- Update Dialogs -->
     <string name="update_available_title">Yeniləmə Mövcuddur</string>
@@ -1691,8 +1662,6 @@
     <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="settings_home_card_shape">Əsas ekran Kartının Küncləri</string>
-    <string name="settings_settings_card_shape">Tənzimləmələr Kartının Küncləri</string>
     <string name="corner_style_global">Qlobal parametri izlə</string>
     <string name="corner_style_sharp">İti / Düz</string>
     <string name="corner_style_rounded">Dairəvi (M3)</string>
