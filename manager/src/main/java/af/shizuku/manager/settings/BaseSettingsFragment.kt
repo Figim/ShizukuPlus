@@ -124,7 +124,10 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             }
             val key = getPrefIconCacheKey(pref, i)
             val original = originalIcons[key] ?: continue
-            pref.icon = IconStyleHelper.stylize(ctx, original.mutate(), style, colorMode, pref.key)
+            // A fresh copy each time: mutate() on the cached original returns that same object, so
+            // tinting it also changed the copy the previous styled icon still held.
+            val fresh = original.constantState?.newDrawable(ctx.resources)?.mutate() ?: original.mutate()
+            pref.icon = IconStyleHelper.stylize(ctx, fresh, style, colorMode, pref.key)
             count++
         }
         timber.log.Timber.tag("BaseSettings").d(
