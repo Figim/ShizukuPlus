@@ -90,6 +90,8 @@ class MainActivity : HomeActivity() {
         ) {
             af.shizuku.manager.utils.SettingsBackupManager
                 .markRestoreChecked()
+            af.shizuku.manager.update.UpdateInstaller
+                .deleteAllBackupCopies(this)
         }
     }
 

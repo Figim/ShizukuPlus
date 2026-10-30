@@ -938,6 +938,18 @@ class ShizukuApplication :
         // On startup: check for initial import or auto-sync and persist current settings backup
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             try {
+                // Past onboarding this install has its own settings: keep its reinstall copy
+                // current even if no screen is opened, and once remove the copies older builds
+                // left in app storage and public Downloads (they held API keys).
+                if (ShizukuSettings.isOnboardingSeen() &&
+                    !af.shizuku.manager.utils.SettingsBackupManager
+                        .isRestoreChecked()
+                ) {
+                    af.shizuku.manager.utils.SettingsBackupManager
+                        .markRestoreChecked()
+                    af.shizuku.manager.update.UpdateInstaller
+                        .deleteAllBackupCopies(this@ShizukuApplication)
+                }
                 af.shizuku.manager.utils.SettingsBackupManager
                     .saveAutoBackup(this@ShizukuApplication)
                 af.shizuku.manager.settings.SettingsShareManager
