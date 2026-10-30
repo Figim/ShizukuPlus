@@ -84,8 +84,41 @@ import rikka.shizuku.server.ClientRecord;
 
 public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuClientManager, ShizukuConfigManager> {
 
+    // Held for the life of the process; the kernel releases the abstract socket name on exit.
+    @SuppressWarnings("unused")
+    private static android.net.LocalServerSocket instanceLock;
+
+    /**
+     * One server at a time. Two starters running close together (the manager's auto-restart
+     * reacting to a restart started from adb, a PC or automation) each kill the old server
+     * before either new one exists, and both new servers then ran, each sending its binder to
+     * every client. The second one now waits briefly (the old server may still be dying after
+     * the starter's kill) and exits if another live server keeps the name.
+     */
+    private static boolean acquireInstanceLock() {
+        long deadline = android.os.SystemClock.uptimeMillis() + 3_000;
+        while (true) {
+            try {
+                instanceLock = new android.net.LocalServerSocket("shizuku_plus_server.instance");
+                return true;
+            } catch (java.io.IOException e) {
+                if (android.os.SystemClock.uptimeMillis() >= deadline) return false;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    return false;
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         DdmHandleAppName.setAppName("shizuku_plus_server", 0);
+        if (!acquireInstanceLock()) {
+            LOGGER.w("Another shizuku_plus_server is already running; exiting this duplicate (pid %d)", android.os.Process.myPid());
+            System.exit(0);
+            return;
+        }
         RishConfig.setLibraryPath(System.getProperty("shizuku.library.path"));
 
         Looper.prepareMainLooper();
