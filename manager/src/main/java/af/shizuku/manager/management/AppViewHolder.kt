@@ -548,12 +548,23 @@ class AppViewHolder(
         val disabled = ShizukuSettings.getAppDisabledScopes(pkgName)
         val checked = BooleanArray(scopeKeys.size) { i -> scopeKeys[i] !in disabled }
 
+        // Shown under the list: commands typed into an already open interactive shell can't be
+        // inspected, so only turning off Shell blocks those.
+        val density = context.resources.displayMetrics.density
+        val note =
+            TextView(context).apply {
+                setText(R.string.api_scopes_dialog_note)
+                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
+                val padH = (24 * density).toInt()
+                setPadding(padH, (8 * density).toInt(), padH, (4 * density).toInt())
+            }
         MaterialAlertDialogBuilder(context)
             .setIcon(R.drawable.ic_shield_24)
             .setTitle(context.getString(R.string.api_scopes_dialog_title, appLabel))
             .setMultiChoiceItems(scopeLabels, checked) { _, which, isChecked ->
                 checked[which] = isChecked
-            }.setPositiveButton(android.R.string.ok) { _, _ ->
+            }.setView(note)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 val newDisabled = mutableSetOf<String>()
                 for (i in scopeKeys.indices) {
                     if (!checked[i]) {

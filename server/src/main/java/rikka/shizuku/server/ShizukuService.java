@@ -1319,23 +1319,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             LOGGER.w("newProcess blocked by per-app 'shell' scope for %s (UID=%d)", callingPkg, callingUid);
             throw new SecurityException("Permission denied: Shell execution scope is disabled for " + callingPkg);
         }
-        if (cmd != null && cmd.length > 0) {
-            String fullCmd = String.join(" ", cmd);
-            if ((fullCmd.startsWith("pm ") || fullCmd.contains(" pm ") || fullCmd.contains("cmd package")) &&
-                isAppScopeDisabled(callingUid, callingPkg, "package_manager")) {
-                throw new SecurityException("Permission denied: Package Manager scope is disabled for " + callingPkg);
-            }
-            if ((fullCmd.startsWith("am ") || fullCmd.contains(" am ") || fullCmd.contains("cmd activity")) &&
-                isAppScopeDisabled(callingUid, callingPkg, "activity_manager")) {
-                throw new SecurityException("Permission denied: Activity Manager scope is disabled for " + callingPkg);
-            }
-            if ((fullCmd.startsWith("appops ") || fullCmd.contains(" appops ") || fullCmd.contains("cmd appops")) &&
-                isAppScopeDisabled(callingUid, callingPkg, "appops")) {
-                throw new SecurityException("Permission denied: AppOps scope is disabled for " + callingPkg);
-            }
-            if ((fullCmd.startsWith("settings ") || fullCmd.contains(" settings ") || fullCmd.startsWith("svc ")) &&
-                isAppScopeDisabled(callingUid, callingPkg, "system_settings")) {
-                throw new SecurityException("Permission denied: System Settings & Power scope is disabled for " + callingPkg);
+        // Tools are matched as whole words anywhere in the command, so `sh -c "pm ..."`,
+        // `/system/bin/pm` and chained commands are caught too (#648).
+        for (String scope : rikka.shizuku.server.util.ScopeCommandMatcher.requiredScopes(cmd)) {
+            if (isAppScopeDisabled(callingUid, callingPkg, scope)) {
+                LOGGER.w("newProcess blocked by per-app '%s' scope for %s (UID=%d)", scope, callingPkg, callingUid);
+                throw new SecurityException("Permission denied: the '" + scope + "' API scope is disabled for " + callingPkg + " in Shizuku+");
             }
         }
 
