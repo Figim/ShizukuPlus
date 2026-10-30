@@ -15,6 +15,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Apps using Shizuku aren't held up for 1.5 s** while the service is stopped.
 - **Bulk grant/revoke in Authorized Apps no longer freezes the screen**, and "Select all" updates the selected count.
 - **Starter "Wireless ADB" fallback button** opens port discovery instead of closing silently.
+- **Per-app command scopes catch more ways of running a tool** — `sh -c "pm …"`, `/system/bin/pm` and chained commands are now blocked when that scope is off ([#648](https://github.com/thejaustin/ShizukuPlus/issues/648)).
+- **Never two Shizuku servers at once** — restarting the server from adb or a PC while the Watchdog also restarted it could leave two servers running.
 - **Fewer background errors on Samsung devices with Secure Folder** when checking frozen apps or listing apps for backup.
 
 ### 🎬 Screen Transitions & Motion Experience
