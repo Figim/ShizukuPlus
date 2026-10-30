@@ -31,6 +31,13 @@ open class GrayableIconSwitchPreference
         override fun onBindViewHolder(holder: PreferenceViewHolder) {
             super.onBindViewHolder(holder)
             lastItemView = java.lang.ref.WeakReference(holder.itemView)
+            // Rows are recycled between preferences: remember who owns this view now, so a click
+            // never animates a row that has since been bound to another setting.
+            holder.itemView.setTag(R.id.tag_switch_row_owner, this)
+            // The row's own ripple background, captured once per view before we replace it.
+            if (holder.itemView.getTag(R.id.tag_switch_row_default_bg) == null) {
+                holder.itemView.setTag(R.id.tag_switch_row_default_bg, holder.itemView.background ?: NO_BACKGROUND)
+            }
             holder.itemView.applySpringTouch(scale = 0.985f)
 
             val toggleStyle = ShizukuSettings.getToggleStyle()
@@ -82,9 +89,9 @@ open class GrayableIconSwitchPreference
                                 setColor(color)
                                 setStroke((1f * density).toInt(), outline)
                             }
-                        view.background = InsetDrawable(bg, insetH, insetV, insetH, insetV)
+                        view.background = withRipple(view, InsetDrawable(bg, insetH, insetV, insetH, insetV))
                     } else {
-                        view.background = null
+                        view.background = defaultBackground(view)
                     }
                 }
                 "vibrant" -> {
@@ -96,9 +103,9 @@ open class GrayableIconSwitchPreference
                                 cornerRadius = 16f * density
                                 setColor(ColorUtils.setAlphaComponent(color, 70))
                             }
-                        view.background = InsetDrawable(bg, insetH, insetV, insetH, insetV)
+                        view.background = withRipple(view, InsetDrawable(bg, insetH, insetV, insetH, insetV))
                     } else {
-                        view.background = null
+                        view.background = defaultBackground(view)
                     }
                 }
                 "expressive" -> {
@@ -112,14 +119,14 @@ open class GrayableIconSwitchPreference
                                 setColor(color)
                                 setStroke((1f * density).toInt(), ColorUtils.setAlphaComponent(outline, 80))
                             }
-                        view.background = InsetDrawable(bg, insetH, insetV, insetH, insetV)
+                        view.background = withRipple(view, InsetDrawable(bg, insetH, insetV, insetH, insetV))
                     } else {
-                        view.background = null
+                        view.background = defaultBackground(view)
                     }
                 }
                 else -> {
                     // minimal: clean default selectable row
-                    view.background = null
+                    view.background = defaultBackground(view)
                 }
             }
         }
@@ -128,7 +135,13 @@ open class GrayableIconSwitchPreference
             val willBeChecked = !isChecked
             super.onClick()
             if (isChecked == willBeChecked) {
-                lastItemView?.get()?.let { v ->
+                val row = lastItemView?.get()
+                if (row == null || row.getTag(R.id.tag_switch_row_owner) !== this) {
+                    // Our last view now belongs to another row: rebind ours instead of animating it.
+                    notifyChanged()
+                    return
+                }
+                row.let { v ->
                     if (isChecked) {
                         af.shizuku.manager.utils.HapticUtils
                             .toggleOn(v)
@@ -172,6 +185,23 @@ private fun activeRowColor(
     if (ColorUtils.calculateLuminance(container) > 0.01) return container
     val tonal = MaterialColors.getColor(view, MaterialR.attr.colorSecondaryContainer)
     return ColorUtils.setAlphaComponent(tonal, 110)
+}
+
+private object NO_BACKGROUND
+
+/** The row's original (ripple) background, as a fresh copy. */
+private fun defaultBackground(view: android.view.View): android.graphics.drawable.Drawable? {
+    val original = view.getTag(R.id.tag_switch_row_default_bg) as? android.graphics.drawable.Drawable ?: return null
+    return original.constantState?.newDrawable(view.resources)?.mutate() ?: original
+}
+
+/** [fill] under the row's ripple, so enabled rows keep their touch feedback. */
+private fun withRipple(
+    view: android.view.View,
+    fill: android.graphics.drawable.Drawable,
+): android.graphics.drawable.Drawable {
+    val ripple = defaultBackground(view) ?: return fill
+    return android.graphics.drawable.LayerDrawable(arrayOf(fill, ripple))
 }
 
 /** The morphing background layer of a two-tone icon, if the icon uses one. */
