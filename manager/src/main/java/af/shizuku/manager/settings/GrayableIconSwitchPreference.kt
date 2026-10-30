@@ -73,7 +73,7 @@ open class GrayableIconSwitchPreference
             when (style) {
                 "card" -> {
                     if (checked) {
-                        val color = MaterialColors.getColor(view, MaterialR.attr.colorSurfaceContainerHigh)
+                        val color = activeRowColor(view, MaterialR.attr.colorSurfaceContainerHigh)
                         val outline = MaterialColors.getColor(view, MaterialR.attr.colorOutlineVariant)
                         val bg =
                             GradientDrawable().apply {
@@ -103,7 +103,7 @@ open class GrayableIconSwitchPreference
                 }
                 "expressive" -> {
                     if (checked) {
-                        val color = MaterialColors.getColor(view, MaterialR.attr.colorSurfaceContainerLow)
+                        val color = activeRowColor(view, MaterialR.attr.colorSurfaceContainerLow)
                         val outline = MaterialColors.getColor(view, MaterialR.attr.colorOutlineVariant)
                         val bg =
                             GradientDrawable().apply {
@@ -158,6 +158,21 @@ open class GrayableIconSwitchPreference
             }
         }
     }
+
+/**
+ * Background for an enabled row. On AMOLED themes the surface-container ramp is black (or nearly),
+ * so an enabled row became a black block on the slightly lighter card. Use a soft secondary
+ * container tint there instead, as the Compose controls do (controlContainer).
+ */
+private fun activeRowColor(
+    view: android.view.View,
+    containerAttr: Int,
+): Int {
+    val container = MaterialColors.getColor(view, containerAttr)
+    if (ColorUtils.calculateLuminance(container) > 0.01) return container
+    val tonal = MaterialColors.getColor(view, MaterialR.attr.colorSecondaryContainer)
+    return ColorUtils.setAlphaComponent(tonal, 110)
+}
 
 /** The morphing background layer of a two-tone icon, if the icon uses one. */
 private fun morphShapeOf(iv: ImageView): af.shizuku.manager.utils.MorphShapeDrawable? =

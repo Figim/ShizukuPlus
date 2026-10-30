@@ -433,7 +433,7 @@ fun HomeScreen(
                 top = stableTop.value,
                 bottom = innerPadding.calculateBottomPadding() + navClearance,
             )
-        AnimatedGradientBackground {
+        AnimatedGradientBackground(pureBlack = isOled) {
             Box(modifier = Modifier.fillMaxSize()) {
                 if (showEmptyState) {
                     Box(modifier = Modifier.padding(adjustedPadding)) {
@@ -494,7 +494,18 @@ fun HomeScreen(
 }
 
 @Composable
-fun AnimatedGradientBackground(content: @Composable () -> Unit) {
+fun AnimatedGradientBackground(
+    pureBlack: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    // AMOLED / AMOLED+: the tint (3-8% primary/tertiary/secondary) is what kept the home page
+    // from being true black. Keep it pure black there, no animation running.
+    if (pureBlack) {
+        Box(modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black)) {
+            content()
+        }
+        return
+    }
     val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
