@@ -7,6 +7,7 @@ import af.shizuku.manager.management.AppsViewModel
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.MotionUtils.isSpringing
 import android.os.Build
 import androidx.core.view.isVisible
 import com.airbnb.mvrx.withState
@@ -183,6 +184,7 @@ class HomeAdapter(
                     return@withContext
                 }
 
+                val oldIds = LongArray(itemCount) { getItemId(it) }
                 val fixedCardCount =
                     rebuildItems(
                         status,
@@ -194,7 +196,7 @@ class HomeAdapter(
                         hidden,
                     )
 
-                notifyDataSetChanged()
+                dispatchDiff(oldIds)
 
                 val hasVisibleCards = itemCount > 0
                 onEmptyStateChanged?.invoke(!hasVisibleCards)
@@ -202,6 +204,34 @@ class HomeAdapter(
                 isUpdating = false
             }
         }
+    }
+
+    /**
+     * Notifies the change from [oldIds] to the rebuilt list as moves/inserts/removes instead of
+     * notifyDataSetChanged(), which snapped every card into place (most visibly right after a
+     * drag, while the dropped card was still settling). Every remaining card is still rebound.
+     */
+    private fun dispatchDiff(oldIds: LongArray) {
+        val newIds = LongArray(itemCount) { getItemId(it) }
+        androidx.recyclerview.widget.DiffUtil
+            .calculateDiff(
+                object : androidx.recyclerview.widget.DiffUtil.Callback() {
+                    override fun getOldListSize() = oldIds.size
+
+                    override fun getNewListSize() = newIds.size
+
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int,
+                    ) = oldIds[oldItemPosition] == newIds[newItemPosition]
+
+                    // Card contents come from live state, not the list, so always rebind.
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int,
+                    ) = false
+                },
+            ).dispatchUpdatesTo(this)
     }
 
     /**
@@ -365,8 +395,9 @@ class HomeAdapter(
         // M3E entrance animation — only on first appearance per card id, not every recycle.
         if (!animatedIds.add(id)) {
             // During drag, RecyclerView owns translationX/Y for the move animation; resetting them
-            // here would kill the in-flight slide and make displaced cards snap/vanish.
-            if (!isDragging) {
+            // here would kill the in-flight slide and make displaced cards snap/vanish. A card
+            // still settling after a drop is mid-spring: resetting it made it jump for a frame.
+            if (!isDragging && !holder.itemView.isSpringing()) {
                 holder.itemView.alpha = 1f
                 holder.itemView.translationY = 0f
                 holder.itemView.scaleX = 1f

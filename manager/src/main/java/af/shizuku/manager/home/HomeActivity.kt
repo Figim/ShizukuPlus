@@ -607,7 +607,9 @@ open class HomeActivity :
                     vh: RecyclerView.ViewHolder,
                 ): Int =
                     if (adapter.isDraggable(vh.bindingAdapterPosition)) {
-                        makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+                        // Wide layouts lay cards out in a grid, where neighbours sit to the sides.
+                        val sideways = if (spanCount > 1) ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT else 0
+                        makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN or sideways, 0)
                     } else {
                         makeMovementFlags(0, 0)
                     }
@@ -621,6 +623,51 @@ open class HomeActivity :
                     adapter.moveItem(src.bindingAdapterPosition, target.bindingAdapterPosition)
                     HapticUtils.segmentTick(src.itemView)
                     return true
+                }
+
+                // Fixed cards (status, alerts) never trade places, so don't offer them as targets.
+                override fun canDropOver(
+                    rv: RecyclerView,
+                    current: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder,
+                ) = adapter.isDraggable(target.bindingAdapterPosition)
+
+                /**
+                 * Swap only once the held card's center passes the target's center. The default
+                 * swaps on edge overlap, so a tall card over a short one swapped back and forth
+                 * and the cards jumped over each other.
+                 */
+                override fun chooseDropTarget(
+                    selected: RecyclerView.ViewHolder,
+                    dropTargets: MutableList<RecyclerView.ViewHolder>,
+                    curX: Int,
+                    curY: Int,
+                ): RecyclerView.ViewHolder? {
+                    val view = selected.itemView
+                    val centerX = curX + view.width / 2
+                    val centerY = curY + view.height / 2
+                    var best: RecyclerView.ViewHolder? = null
+                    var bestDistance = Int.MAX_VALUE
+                    for (target in dropTargets) {
+                        val t = target.itemView
+                        val tCenterX = (t.left + t.right) / 2
+                        val tCenterY = (t.top + t.bottom) / 2
+                        val passed =
+                            when {
+                                t.top > view.top -> centerY > tCenterY
+                                t.top < view.top -> centerY < tCenterY
+                                t.left > view.left -> centerX > tCenterX
+                                t.left < view.left -> centerX < tCenterX
+                                else -> false
+                            }
+                        if (!passed) continue
+                        val distance = kotlin.math.abs(centerY - tCenterY) + kotlin.math.abs(centerX - tCenterX)
+                        if (distance < bestDistance) {
+                            bestDistance = distance
+                            best = target
+                        }
+                    }
+                    return best
                 }
 
                 override fun onSelectedChanged(
@@ -644,8 +691,9 @@ open class HomeActivity :
                         if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
                             viewHolder?.itemView?.let { card ->
                                 morphCardRadius(card, lifted = true)
-                                card.springTo(SpringAnimation.SCALE_X, 1.06f, MaterialR.attr.motionSpringFastSpatial)
-                                card.springTo(SpringAnimation.SCALE_Y, 1.06f, MaterialR.attr.motionSpringFastSpatial)
+                                // A small lift: at 1.06 the held card covered its neighbours' gaps.
+                                card.springTo(SpringAnimation.SCALE_X, 1.03f, MaterialR.attr.motionSpringFastSpatial)
+                                card.springTo(SpringAnimation.SCALE_Y, 1.03f, MaterialR.attr.motionSpringFastSpatial)
                                 card.springTo(SpringAnimation.ALPHA, 0.96f, MaterialR.attr.motionSpringFastEffects)
                                 card.springTo(SpringAnimation.TRANSLATION_Z, 24f, MaterialR.attr.motionSpringFastEffects)
                             }
