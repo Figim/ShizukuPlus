@@ -120,6 +120,30 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-30 (later) — Claude (user reports: AMOLED, icons, toggles, restore by choice, redesign research) [master; r3138 installed]
+
+- **Fixed:**
+  - Icon style showed the previous choice: listeners ran before the value was saved, so the refresh is now posted, and each refresh uses a fresh drawable copy.
+  - AMOLED home tint: `AnimatedGradientBackground(pureBlack)`.
+  - Enabled rows turned black on AMOLED: `activeRowColor`.
+  - Shapes were off-center: `normalized()` centers the bbox. Shapes are now centered on the polygon's own center, with `ExpressiveShapesTest`.
+  - Toggles restyled recycled rows: an owner tag on the row view; the ripple is kept under the state fill.
+- **Restore is user-chosen (user request):**
+  - No auto-restore; the onboarding welcome card offers the backup.
+  - `SettingsBackupManager.applyRestoredLive()` applies night mode, locale, boot receiver, launcher alias, Watchdog and the Plus sync without a restart, then the held-back privileged prompt.
+  - Reinstall copy: `/data/local/tmp/shizukuplus/settings_backup_<pkg>.json`, written as shell through Shizuku. It is never trusted, because any app authorized for Shizuku can write there. API keys and the hidden-packages list are excluded.
+  - Only the force-update handoff from the last 10 min is trusted. The public Downloads copies are gone; legacy copies are cleared once.
+  - Termux (targetSdk 28) can read 644 files in `/data/local/tmp`. **Unverified:** whether the targetSdk 36 app domain can (watch for avc denials on the first real reinstall restore).
+- **Device storage was full** (ENOSPC, 458/459 GB). Freed my scratch APKs and `/data/local/tmp/sptest`. Tell the user.
+- **Design research (user):**
+  - Canvas: https://claude.ai/artifact/FmSsBAj8imHPozhSx2joD9
+    - A: live preview plus two direction rows, with picker sheet A2 (recommended).
+    - B: try-it sandbox.
+    - C: app-wide scannable M3E settings — grouped rows, split toggle, segmented control, slider, multi-toggle grid.
+  - Awaiting the user's pick.
+  - `GesturePreviewPreference` and `SwipeActionsConnectedPreference` (~1,080 lines) are unreferenced dead code.
+  - The user wants the "Toggle style" option replaced by one app-wide design.
+
 ### 2026-10-30 — Claude (device testing r3124, follow-ups) [master; f4821b82 pushed, later commits local]
 
 - Installed CI r3124 over r3085 with `pm install -r`, keeping data. No FATAL or ANR.
