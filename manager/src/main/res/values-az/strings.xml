@@ -50,9 +50,6 @@
         <item>twotone</item>
     </string-array>
 
-    <string name="icon_style_filled">Dolu</string>
-    <string name="icon_style_outlined">Konturlu</string>
-    <string name="icon_style_twotone">İkirəngli</string>
     <string name="home_edit_mode_banner">Əsas ekran düzənini fərdiləşdirmək üçün kartları basıb saxlayın və sürükləyin</string>
 
     <string name="settings_icon_color_mode">İki Rəngli İkon Rəngləri</string>
@@ -368,13 +365,6 @@
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
     <string name="onboarding_setup_root_desc">Cihazınız root-ludur. Shizuku-nu root giriş ilə başladın.</string>
     <string name="onboarding_setup_adb_desc">İstənilən cihaz. Başlamaq üçün kompüterdən bir ADB əmri icra edin.</string>
-    <string name="onboarding_m3e_title">İfadəli Görünüş &amp; Hissiyyat</string>
-    <string name="onboarding_m3e_desc">Adaptiv ikon üslubları, AMOLED+ kontrastı və axıcı hərəkətlərlə təcrübənizi fərdiləşdirin.</string>
-    <string name="onboarding_icon_style_title">İkon Üslubu</string>
-    <string name="onboarding_amoled_title">AMOLED+ Xalis Qara</string>
-    <string name="onboarding_amoled_desc">Tünd rejimdə təmiz qara arxa fonlar</string>
-    <string name="onboarding_animations_title">İfadəli Animasiyalar</string>
-    <string name="onboarding_animations_desc">Axıcı yay fizikası və toxunma hərəkəti</string>
     <string name="onboarding_layout_nav_title">Əsas ekran &amp; Naviqasiya</string>
     <string name="onboarding_layout_nav_desc">Gündəlik iş sahənizi uyğunlaşdırın. Əsas ekranda kartların sırasını dəyişmək üçün sürükləyin və ya üzən kapsul naviqasiya panelindən istifadə edin.</string>
     <string name="onboarding_floating_nav_title">Üzən Naviqasiya Paneli</string>
@@ -1677,7 +1667,7 @@
 
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">Gizli Rejim</string>
-    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
+    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, obyektiv olaraq onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="corner_style_global">Qlobal parametri izlə</string>
