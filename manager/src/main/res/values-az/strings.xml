@@ -1932,11 +1932,11 @@
     <string name="settings_adaptive_recommendations_summary">Lazım olduqda kontekstə uyğun quraşdırma və sabitlik tövsiyələrini göstər</string>
     <string name="settings_adb_loopback_probe_title">Avtomatik loopback port yoxlaması</string>
     <string name="settings_adb_loopback_probe_summary">mDNS aşkar edilməsini gözləmədən əvvəl yerli loopback portlarını yoxla (5555, xüsusi TCP, sonuncu port)</string>
-    <string name="settings_root_to_adb_fallback_title">Avtomatik Root-dan Wireless ADB-yə keçid</string>
-    <string name="settings_root_to_adb_fallback_summary">Sistem işə düşərkən və ya Tez Ayarlar panelindən root ilə işə salınma uğursuz olarsa, avtomatik olaraq Wireless ADB-yə keç</string>
+    <string name="settings_root_to_adb_fallback_title">Avtomatik Root-dan Simsiz ADB-yə keçid</string>
+    <string name="settings_root_to_adb_fallback_summary">Sistem işə düşərkən və ya Sürətli tənzimləmələr panelindən root ilə işə salınma uğursuz olarsa, avtomatik olaraq Simsiz ADB-yə keç</string>
     <string name="settings_show_app_descriptions">Tətbiq təsvirlərini göstər</string>
     <string name="settings_show_app_descriptions_summary">Tətbiqlər siyahısındakı tanınmış tətbiqlərin altında xüsusi imkan təsvirlərini göstər</string>
-    <string name="settings_show_plus_feature_hints">Plus funksiya ipuçlarını göstər</string>
+    <string name="settings_show_plus_feature_hints">Plus funksiya ipuclarını göstər</string>
     <string name="settings_show_plus_feature_hints_summary">Tətbiqin faydalana biləcəyi, lakin deaktiv olan qlobal Plus funksiyalarını vurğula</string>
     <string name="settings_dpm_freeze_title">Cihaz Sahibi tətbiq gizlədilməsinə üstünlük ver</string>
     <string name="settings_dpm_freeze_summary">Cihaz Sahibi aktiv olarkən tətbiqləri dondurarkən əvvəlcə DevicePolicyManager.setApplicationHidden metodundan istifadə et</string>
