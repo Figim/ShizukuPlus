@@ -159,11 +159,8 @@ class WatchdogService : Service() {
                                                 }
                                             } ?: false
                                         if (cameBack) {
+                                            // Auto-run snippets run from the RUNNING transition.
                                             ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after restart #1")
-                                            runCatching {
-                                                af.shizuku.manager.database.ScriptSnippetManager
-                                                    .runAutoRunSnippets("Watchdog restart")
-                                            }
                                         } else {
                                             showCrashNotification()
                                         }

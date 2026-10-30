@@ -1783,9 +1783,28 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean(Keys.KEY_HIDE_DISABLED_PLUS_FEATURES, enable).apply();
     }
 
+    // One worker for every sync: requests made while one is queued fold into it.
+    private static final java.util.concurrent.ExecutorService PLUS_SYNC_EXECUTOR =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> new Thread(r, "PlusFeatureSync"));
+    private static final java.util.concurrent.atomic.AtomicBoolean PLUS_SYNC_QUEUED = new java.util.concurrent.atomic.AtomicBoolean(false);
+    private static final android.os.Handler MAIN_HANDLER = new android.os.Handler(android.os.Looper.getMainLooper());
+
+    /**
+     * Pushes every Plus flag to the server. Safe to call from a preference change listener:
+     * the read waits until the current main-thread message is done, by which point the new
+     * value has been saved (listeners run before it is).
+     */
     public static void syncAllPlusFeaturesToServer() {
+        if (!PLUS_SYNC_QUEUED.compareAndSet(false, true)) return;
+        MAIN_HANDLER.post(() -> PLUS_SYNC_EXECUTOR.execute(() -> {
+            PLUS_SYNC_QUEUED.set(false);
+            syncAllPlusFeaturesNow();
+        }));
+    }
+
+    private static void syncAllPlusFeaturesNow() {
         if (!rikka.shizuku.Shizuku.pingBinder()) return;
-        new Thread(() -> {
+        {
             try {
                 android.os.IBinder binder = (android.os.IBinder) rikka.shizuku.Shizuku.getBinder();
                 if (binder == null) return;
@@ -1879,7 +1898,7 @@ public class ShizukuSettings {
             } catch (Throwable tr) {
                 Timber.tag("ShizukuSettings").w(tr, "failed to sync plus features");
             }
-        }).start();
+        }
     }
 
     // Auto Update Settings (Shizuku+ additions)

@@ -256,13 +256,20 @@ class AICorePlusService : AccessibilityService() {
                 mainExecutor,
                 object : AccessibilityService.TakeScreenshotCallback {
                     override fun onSuccess(screenshot: AccessibilityService.ScreenshotResult) {
+                        val hardwareBuffer = screenshot.hardwareBuffer
                         try {
-                            val hardwareBuffer = screenshot.hardwareBuffer
-                            val bitmap = android.graphics.Bitmap.wrapHardwareBuffer(hardwareBuffer, screenshot.colorSpace)
+                            // getPixel isn't supported on a hardware bitmap; read from a software copy.
+                            val bitmap =
+                                android.graphics.Bitmap
+                                    .wrapHardwareBuffer(hardwareBuffer, screenshot.colorSpace)
+                                    ?.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
                             if (bitmap != null && x in 0 until bitmap.width && y in 0 until bitmap.height) {
                                 resultColor = bitmap.getPixel(x, y)
                             }
+                            bitmap?.recycle()
                         } finally {
+                            // A full-screen buffer each call; don't leave it to the GC.
+                            hardwareBuffer.close()
                             latch.countDown()
                         }
                     }
@@ -314,12 +321,13 @@ class AICorePlusService : AccessibilityService() {
                 mainExecutor,
                 object : AccessibilityService.TakeScreenshotCallback {
                     override fun onSuccess(screenshot: AccessibilityService.ScreenshotResult) {
+                        val hardwareBuffer = screenshot.hardwareBuffer
                         try {
-                            val hardwareBuffer = screenshot.hardwareBuffer
                             // Convert to software bitmap so it can be returned/processed
                             val hwBitmap = android.graphics.Bitmap.wrapHardwareBuffer(hardwareBuffer, screenshot.colorSpace)
                             resultBitmap = hwBitmap?.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
                         } finally {
+                            hardwareBuffer.close()
                             latch.countDown()
                         }
                     }

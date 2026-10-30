@@ -131,113 +131,120 @@ object UpdateInstaller {
         context: Context,
         apkFile: File,
     ): Boolean {
-        val hasShizuku = Shizuku.pingBinder()
-        val isRoot =
-            runCatching {
-                Shell.getShell().isRoot
-            }.getOrDefault(false)
-
+        val hasShizuku = runCatching { Shizuku.pingBinder() }.getOrDefault(false)
+        val isRoot = !hasShizuku && runCatching { Shell.getShell().isRoot }.getOrDefault(false)
         if (!hasShizuku && !isRoot) {
             Timber.tag(TAG).w("No root or Shizuku available for force update.")
             return false
         }
+        if (!isNewerThanInstalled(context, apkFile)) {
+            Timber.tag(TAG).w("Force update refused: the APK isn't newer than the installed version")
+            return false
+        }
 
         return try {
-            val packageName = context.packageName
-            val backupJson = SettingsBackupManager.export(context)
-            val apkBytes = apkFile.readBytes()
-
-            val script =
-                """
-                #!/system/bin/sh
-                sleep 1
-                pm uninstall $packageName
-                pm install -r -d /data/local/tmp/update.apk
-                INSTALL_STATUS=${'$'}?
-                if [ ${'$'}INSTALL_STATUS -eq 0 ]; then
-                    pm grant $packageName android.permission.POST_NOTIFICATIONS 2>/dev/null
-                    pm grant $packageName android.permission.WRITE_SECURE_SETTINGS 2>/dev/null
-                    appops set $packageName SYSTEM_ALERT_WINDOW allow 2>/dev/null
-                    appops set $packageName GET_USAGE_STATS allow 2>/dev/null
-                    appops set $packageName MANAGE_EXTERNAL_STORAGE allow 2>/dev/null
-
-                    if [ -f /data/local/tmp/shizukuplus_settings.json ]; then
-                        cp /data/local/tmp/shizukuplus_settings.json "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
-                        chmod 644 "/data/local/tmp/$AUTO_BACKUP_FILENAME" 2>/dev/null
-
-                        DEST_DIR="/sdcard/Android/data/$packageName/files/Download"
-                        mkdir -p "${'$'}DEST_DIR" 2>/dev/null
-                        cp /data/local/tmp/shizukuplus_settings.json "${'$'}DEST_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
-
-                        for DATA_DIR in "/data/data/$packageName/files" "/data/user/0/$packageName/files"; do
-                            mkdir -p "${'$'}DATA_DIR" 2>/dev/null
-                            cp /data/local/tmp/shizukuplus_settings.json "${'$'}DATA_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
-                            chmod 666 "${'$'}DATA_DIR/$AUTO_BACKUP_FILENAME" 2>/dev/null
-                        done
-
-                        rm -f /data/local/tmp/shizukuplus_settings.json
-                    fi
-                    am start -n $packageName/af.shizuku.manager.MainActivity
-                fi
-                rm -f /data/local/tmp/update.apk /data/local/tmp/force_update.sh
-                """.trimIndent()
-
-            if (isRoot) {
-                // Root shell path: libsu writes directly to /data/local/tmp
-                File("/data/local/tmp/update.apk").writeBytes(apkBytes)
-                File("/data/local/tmp/shizukuplus_settings.json").writeText(backupJson)
-                val scriptFile = File("/data/local/tmp/force_update.sh")
-                scriptFile.writeText(script)
-                Shell
-                    .cmd(
-                        "chmod 644 /data/local/tmp/update.apk /data/local/tmp/shizukuplus_settings.json && " +
-                            "chmod 755 /data/local/tmp/force_update.sh && " +
-                            "nohup /system/bin/sh /data/local/tmp/force_update.sh >/dev/null 2>&1 &",
-                    ).exec()
-                Timber.tag(TAG).i("Detached force update initiated via Root.")
-                true
-            } else {
-                // Shizuku (UID 2000 shell) path: pipe data safely over stdin
-                val apkProc =
-                    Shizuku.newProcess(
-                        arrayOf("sh", "-c", "cat > /data/local/tmp/update.apk && chmod 644 /data/local/tmp/update.apk"),
-                        null,
-                        null,
-                    ) ?: return false
-                apkProc.outputStream.use { it.write(apkBytes) }
-                apkProc.waitFor()
-
-                val backupProc =
-                    Shizuku.newProcess(
-                        arrayOf("sh", "-c", "cat > /data/local/tmp/shizukuplus_settings.json && chmod 644 /data/local/tmp/shizukuplus_settings.json"),
-                        null,
-                        null,
-                    ) ?: return false
-                backupProc.outputStream.use { it.write(backupJson.toByteArray(Charsets.UTF_8)) }
-                backupProc.waitFor()
-
-                val scriptProc =
-                    Shizuku.newProcess(
-                        arrayOf("sh", "-c", "cat > /data/local/tmp/force_update.sh && chmod 755 /data/local/tmp/force_update.sh"),
-                        null,
-                        null,
-                    ) ?: return false
-                scriptProc.outputStream.use { it.write(script.toByteArray(Charsets.UTF_8)) }
-                scriptProc.waitFor()
-
-                val execProc =
-                    Shizuku.newProcess(
-                        arrayOf("sh", "-c", "nohup /system/bin/sh /data/local/tmp/force_update.sh >/dev/null 2>&1 &"),
-                        null,
-                        null,
-                    )
-                execProc?.waitFor()
-                Timber.tag(TAG).i("Detached force update initiated via Shizuku.")
-                true
+            // The handoff file is world-readable (the reinstalled app runs as a new user), so it
+            // gets the same secret-free copy as the reinstall backup.
+            val backupJson = SettingsBackupManager.withoutSecrets(SettingsBackupManager.export(context))
+            val files =
+                mapOf(
+                    "$TMP/update.apk" to apkFile.readBytes(),
+                    "$TMP/shizukuplus_settings.json" to backupJson.toByteArray(Charsets.UTF_8),
+                    "$TMP/force_update.sh" to forceUpdateScript(context.packageName).toByteArray(Charsets.UTF_8),
+                )
+            val staged = if (isRoot) stageWithRoot(context, files) else stageWithShizuku(files)
+            if (!staged) {
+                Timber.tag(TAG).e("Force update: staging files failed")
+                return false
             }
+            val launch = "chmod 755 $TMP/force_update.sh && nohup /system/bin/sh $TMP/force_update.sh >/dev/null 2>&1 &"
+            val started =
+                if (isRoot) {
+                    Shell.cmd(launch).exec().isSuccess
+                } else {
+                    @Suppress("DEPRECATION")
+                    Shizuku.newProcess(arrayOf("sh", "-c", launch), null, null)?.waitFor() == 0
+                }
+            Timber.tag(TAG).i("Detached force update started via %s: %s", if (isRoot) "root" else "Shizuku", started)
+            started
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Failed to force update with Shizuku/Root")
             false
         }
     }
+
+    private const val TMP = "/data/local/tmp"
+
+    private fun isNewerThanInstalled(
+        context: Context,
+        apk: File,
+    ): Boolean {
+        val pm = context.packageManager
+        val candidate = pm.getPackageArchiveInfo(apk.absolutePath, 0) ?: return false
+        if (candidate.packageName != context.packageName) return false
+        val installed = pm.getPackageInfo(context.packageName, 0)
+        return androidx.core.content.pm.PackageInfoCompat
+            .getLongVersionCode(candidate) >
+            androidx.core.content.pm.PackageInfoCompat
+                .getLongVersionCode(installed)
+    }
+
+    /** Shell (uid 2000) can't read the app's files, so each one is piped in over stdin. */
+    private fun stageWithShizuku(files: Map<String, ByteArray>): Boolean =
+        files.all { (path, bytes) ->
+            @Suppress("DEPRECATION")
+            val proc = Shizuku.newProcess(arrayOf("sh", "-c", "cat > $path && chmod 644 $path"), null, null) ?: return false
+            proc.outputStream.use { it.write(bytes) }
+            proc.waitFor() == 0
+        }
+
+    /** The app can't write to /data/local/tmp itself; root copies the files in from its cache. */
+    private fun stageWithRoot(
+        context: Context,
+        files: Map<String, ByteArray>,
+    ): Boolean {
+        val dir = File(context.cacheDir, "force_update").apply { mkdirs() }
+        return try {
+            val commands =
+                files.map { (path, bytes) ->
+                    val local = File(dir, File(path).name).apply { writeBytes(bytes) }
+                    "cp '${local.absolutePath}' $path && chmod 644 $path"
+                }
+            Shell.cmd(*commands.toTypedArray()).exec().isSuccess
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
+    /**
+     * Runs detached as shell or root. Tries an in-place install first; only when that fails
+     * (signature mismatch) does it uninstall, and if the new APK then won't install either it
+     * puts the previous version back rather than leaving no app at all.
+     */
+    private fun forceUpdateScript(packageName: String): String =
+        """
+        #!/system/bin/sh
+        sleep 1
+        OLD_APK=${'$'}(pm path $packageName | head -n 1 | cut -d: -f2)
+        [ -n "${'$'}OLD_APK" ] && cp "${'$'}OLD_APK" $TMP/previous.apk 2>/dev/null
+        INSTALLED=1
+        if ! pm install -r $TMP/update.apk; then
+            pm uninstall $packageName
+            if ! pm install $TMP/update.apk; then
+                INSTALLED=0
+                [ -f $TMP/previous.apk ] && pm install $TMP/previous.apk
+            fi
+        fi
+        if [ ${'$'}INSTALLED -eq 1 ]; then
+            pm grant $packageName android.permission.POST_NOTIFICATIONS 2>/dev/null
+            pm grant $packageName android.permission.WRITE_SECURE_SETTINGS 2>/dev/null
+            appops set $packageName SYSTEM_ALERT_WINDOW allow 2>/dev/null
+            appops set $packageName GET_USAGE_STATS allow 2>/dev/null
+            appops set $packageName MANAGE_EXTERNAL_STORAGE allow 2>/dev/null
+            cp $TMP/shizukuplus_settings.json "$TMP/$AUTO_BACKUP_FILENAME" 2>/dev/null
+            chmod 644 "$TMP/$AUTO_BACKUP_FILENAME" 2>/dev/null
+            am start -n $packageName/af.shizuku.manager.MainActivity
+        fi
+        rm -f $TMP/shizukuplus_settings.json $TMP/update.apk $TMP/previous.apk $TMP/force_update.sh
+        """.trimIndent()
 }

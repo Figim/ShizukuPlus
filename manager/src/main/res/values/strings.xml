@@ -1712,6 +1712,7 @@
     <string name="trusted_networks_add">Add</string>
     <string name="trusted_networks_choose">Choose networks</string>
     <string name="trusted_networks_trust_current">Trust %1$s</string>
+    <string name="update_migrate_failed">Couldn\'t switch to this build automatically. Uninstall Shizuku+ and install it manually.</string>
     <string name="app_picker_names_and_more">%1$s +%2$d more</string>
     <string name="trusted_networks_comma">Names with a comma can\'t be used for this list</string>
     <string name="tcp_protection_off">Off</string>
