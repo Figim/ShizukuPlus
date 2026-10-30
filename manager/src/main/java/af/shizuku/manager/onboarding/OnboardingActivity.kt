@@ -143,8 +143,13 @@ class OnboardingActivity : AppActivity() {
         val candidates = UpdateInstaller.trustedBackupCandidates(this) + UpdateInstaller.publicBackupCandidates()
         for (candidate in candidates) {
             try {
-                if (candidate.exists() && candidate.isFile && candidate.length() > 10 &&
-                    !UpdateInstaller.wasRestored(this, candidate)
+                if (candidate.exists() &&
+                    candidate.isFile &&
+                    candidate.length() > 10 &&
+                    !UpdateInstaller.wasRestored(this, candidate) &&
+                    // The reinstall copy is this install's own snapshot once the check ran.
+                    !(candidate == UpdateInstaller.reinstallBackupFile() && SettingsBackupManager.isRestoreChecked()) &&
+                    !SettingsBackupManager.matchesCurrent(this, candidate.readText())
                 ) {
                     return candidate
                 }
@@ -162,23 +167,10 @@ class OnboardingActivity : AppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            val backupFile =
-                af.shizuku.manager.update.UpdateInstaller
-                    .getBackupFile(this)
-            if (backupFile != null && backupFile.exists() && backupFile.length() > 0) {
-                val json = backupFile.readText()
-                if (af.shizuku.manager.utils.SettingsBackupManager
-                        .importAndCommit(this, json, trustPrivileged = true)
-                ) {
-                    af.shizuku.manager.update.UpdateInstaller
-                        .consumeBackup(this, backupFile)
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                    return
-                }
-            }
-        } catch (_: Exception) {
+        if (UpdateInstaller.restorePendingBackup(this)) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
         }
 
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)

@@ -83,23 +83,10 @@ class MainActivity : HomeActivity() {
     }
 
     private fun checkAndRestoreBackupSynchronous() {
-        try {
-            val backupFile =
-                af.shizuku.manager.update.UpdateInstaller
-                    .getBackupFile(this@MainActivity)
-            if (backupFile != null && backupFile.exists() && backupFile.length() > 0) {
-                val json = backupFile.readText()
-                if (af.shizuku.manager.utils.SettingsBackupManager
-                        .importAndCommit(this@MainActivity, json, trustPrivileged = true)
-                ) {
-                    Timber.i("Successfully auto-restored settings from backup")
-                    af.shizuku.manager.update.UpdateInstaller
-                        .consumeBackup(this@MainActivity, backupFile)
-                    Toast.makeText(this@MainActivity, R.string.migration_success_message, Toast.LENGTH_LONG).show()
-                }
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to auto-restore settings")
+        if (af.shizuku.manager.update.UpdateInstaller
+                .restorePendingBackup(this@MainActivity)
+        ) {
+            Toast.makeText(this@MainActivity, R.string.migration_success_message, Toast.LENGTH_LONG).show()
         }
     }
 

@@ -12,18 +12,25 @@ object UpdateInstaller {
     private const val TAG = "UpdateInstaller"
     const val AUTO_BACKUP_FILENAME = "shizuku_plus_auto_backup.json"
 
+    /** Reinstall copy kept by [SettingsBackupManager.saveAutoBackup] (shell-owned, survives uninstall). */
+    const val REINSTALL_BACKUP_DIR = "/data/local/tmp/shizukuplus"
+    const val REINSTALL_BACKUP_FILENAME = "settings_backup.json"
+
+    fun reinstallBackupFile(): File = File(REINSTALL_BACKUP_DIR, REINSTALL_BACKUP_FILENAME)
+
     /**
-     * Where the force-update script leaves the settings backup, in the order to try. Only
-     * locations other apps can't write: this app's private dirs and /data/local/tmp (shell/root
-     * only). These backups are restored with privileged settings applied as stored.
+     * Where the force-update script hands the settings over across its uninstall/reinstall. Only
+     * locations other apps can't write: /data/local/tmp (shell/root only) and this app's own
+     * external dir. Restored with privileged settings applied as stored.
      */
-    fun trustedBackupCandidates(context: Context): List<File> =
+    fun handoffBackupCandidates(context: Context): List<File> =
         listOfNotNull(
-            File(context.filesDir, AUTO_BACKUP_FILENAME),
             File("/data/local/tmp", AUTO_BACKUP_FILENAME),
             File("/data/local/tmp", "shizukuplus_settings.json"),
             context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.let { File(it, AUTO_BACKUP_FILENAME) },
         )
+
+    fun trustedBackupCandidates(context: Context): List<File> = handoffBackupCandidates(context) + reinstallBackupFile()
 
     /**
      * Public Downloads copies (older builds wrote one there). Any app with storage access can
@@ -83,8 +90,41 @@ object UpdateInstaller {
      */
     fun getBackupFile(context: Context): File? {
         val now = System.currentTimeMillis()
-        return trustedBackupCandidates(context).firstOrNull {
-            it.usable() && now - it.lastModified() in 0L..AUTO_RESTORE_MAX_AGE_MS && !wasRestored(context, it)
+        val handoff =
+            handoffBackupCandidates(context).firstOrNull {
+                it.usable() && now - it.lastModified() in 0L..AUTO_RESTORE_MAX_AGE_MS && !wasRestored(context, it)
+            }
+        if (handoff != null) return handoff
+        // The reinstall copy only on an install that hasn't checked yet (fresh install or data
+        // cleared); afterwards it is this install's own, continuously updated snapshot.
+        val reinstall = reinstallBackupFile()
+        if (!SettingsBackupManager.isRestoreChecked() && reinstall.usable() && !wasRestored(context, reinstall)) {
+            return reinstall
+        }
+        return null
+    }
+
+    /**
+     * Restores a pending trusted backup (see [getBackupFile]) and marks this install as checked.
+     * Returns true only if settings actually changed, so callers show "restored" only then.
+     */
+    fun restorePendingBackup(context: Context): Boolean {
+        try {
+            val file = getBackupFile(context) ?: return false
+            val json = file.readText()
+            if (SettingsBackupManager.matchesCurrent(context, json)) {
+                consumeBackup(context, file)
+                return false
+            }
+            if (!SettingsBackupManager.importAndCommit(context, json, trustPrivileged = true)) return false
+            consumeBackup(context, file)
+            Timber.tag(TAG).i("Restored settings from %s", file.absolutePath)
+            return true
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Settings restore failed")
+            return false
+        } finally {
+            SettingsBackupManager.markRestoreChecked()
         }
     }
 
@@ -101,7 +141,8 @@ object UpdateInstaller {
      * (reverting changes made since), and copies hold settings such as scanner API keys.
      */
     fun deleteAllBackupCopies(context: Context) {
-        (trustedBackupCandidates(context) + publicBackupCandidates()).forEach { f ->
+        // Not the reinstall copy: saveAutoBackup keeps rewriting it on purpose.
+        (handoffBackupCandidates(context) + publicBackupCandidates() + File(context.filesDir, AUTO_BACKUP_FILENAME)).forEach { f ->
             runCatching { if (f.exists()) f.delete() }
         }
     }

@@ -4,10 +4,8 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.update.UpdateInstaller
 import android.content.Context
-import android.os.Environment
 import org.json.JSONObject
 import timber.log.Timber
-import java.io.File
 
 object SettingsBackupManager {
     private const val VERSION_KEY = "_version"
@@ -52,6 +50,7 @@ object SettingsBackupManager {
             "auth_token",
             // Which force-update backups were already restored on this install
             af.shizuku.manager.update.UpdateInstaller.KEY_RESTORED_BACKUP_FINGERPRINT,
+            KEY_RESTORE_CHECKED,
             // Device-specific storage URI (path on destination device will differ)
             ShizukuSettings.Keys.KEY_EXPORT_DIR_URI,
             // Peer settings sync metadata (local timestamps and import state)
@@ -168,46 +167,73 @@ object SettingsBackupManager {
     ): Boolean =
         importInternal(json, synchronous = true, trustPrivileged = trustPrivileged)
 
+    /** Settings left out of the reinstall copy: it is world-readable in /data/local/tmp. */
+    private val REINSTALL_COPY_SECRET_KEYS =
+        setOf(
+            ShizukuSettings.Keys.KEY_VIRUSTOTAL_API_KEY,
+            ShizukuSettings.Keys.KEY_PITHUS_API_KEY,
+        )
+
+    /** Set once this install has checked for a backup to restore; excluded from backups. */
+    const val KEY_RESTORE_CHECKED = "backup_restore_checked"
+
+    @Volatile
+    private var lastReinstallCopyHash = 0
+
+    /** True if applying [json] would change nothing (e.g. this install's own older snapshot). */
+    fun matchesCurrent(
+        context: Context,
+        json: String,
+    ): Boolean =
+        runCatching {
+            val backup = JSONObject(json)
+            val current = JSONObject(export(context))
+            val keys =
+                backup
+                    .keys()
+                    .asSequence()
+                    .filter { it != VERSION_KEY && it !in EXCLUDED_KEYS }
+                    .toList()
+            keys.all { k -> current.has(k) && current.get(k).toString() == backup.get(k).toString() }
+        }.getOrDefault(false)
+
+    fun isRestoreChecked(): Boolean = runCatching { ShizukuSettings.getPreferences().getBoolean(KEY_RESTORE_CHECKED, false) }.getOrDefault(false)
+
+    fun markRestoreChecked() {
+        runCatching {
+            ShizukuSettings
+                .getPreferences()
+                .edit()
+                .putBoolean(KEY_RESTORE_CHECKED, true)
+                .apply()
+        }
+    }
+
     /**
-     * Automatically saves a serialized snapshot of settings to persistent storage locations
-     * (internal files, app external download dir, public Downloads, and /sdcard/Download) so
-     * that clean reinstalls, mismatched signature builds, and sideload updates preserve
-     * the user's settings.
+     * Keeps the copy that lets settings survive an uninstall/reinstall: /data/local/tmp, written as
+     * shell through Shizuku. Only shell or root can write there, so a restore can trust it, unlike
+     * public Downloads, where any app could plant a file. Apps can read it, so secrets such as
+     * scanner API keys are left out (re-enter them after a reinstall).
+     *
+     * Nothing is written until this install has checked for a backup to restore: on a fresh
+     * install the startup save would otherwise replace the surviving copy with defaults first.
      */
     fun saveAutoBackup(context: Context) {
         try {
+            if (!isRestoreChecked()) return
             val json = export(context)
             if (json.isBlank() || json == "{}" || json.length < 20) return
-
-            // 1. Internal storage
-            runCatching {
-                val internal = File(context.filesDir, UpdateInstaller.AUTO_BACKUP_FILENAME)
-                internal.writeText(json)
-            }
-
-            // 2. App-specific external storage (no permissions required)
-            runCatching {
-                val extDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-                if (extDir != null) {
-                    File(extDir, UpdateInstaller.AUTO_BACKUP_FILENAME).writeText(json)
-                }
-            }
-
-            // 3. Public Download directory fallback
-            runCatching {
-                val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                if (publicDir != null && (publicDir.exists() || publicDir.mkdirs())) {
-                    File(publicDir, UpdateInstaller.AUTO_BACKUP_FILENAME).writeText(json)
-                }
-            }
-
-            // 4. Direct /sdcard/Download fallback
-            runCatching {
-                val sdcardDir = File("/sdcard/Download")
-                if (sdcardDir.exists() && sdcardDir.canWrite()) {
-                    File(sdcardDir, UpdateInstaller.AUTO_BACKUP_FILENAME).writeText(json)
-                }
-            }
+            if (!runCatching { rikka.shizuku.Shizuku.pingBinder() }.getOrDefault(false)) return
+            val sanitized =
+                JSONObject(json).apply { REINSTALL_COPY_SECRET_KEYS.forEach { remove(it) } }.toString(2)
+            val hash = sanitized.hashCode()
+            if (hash == lastReinstallCopyHash) return
+            val dir = UpdateInstaller.REINSTALL_BACKUP_DIR
+            val target = "$dir/${UpdateInstaller.REINSTALL_BACKUP_FILENAME}"
+            val script = "mkdir -p $dir && chmod 755 $dir && cat > $target.tmp && chmod 644 $target.tmp && mv -f $target.tmp $target"
+            val process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", script), null, null)
+            process.outputStream.use { it.write(sanitized.toByteArray()) }
+            if (process.waitFor() == 0) lastReinstallCopyHash = hash
         } catch (e: Exception) {
             Timber.w(e, "Failed to persist auto backup")
         }
