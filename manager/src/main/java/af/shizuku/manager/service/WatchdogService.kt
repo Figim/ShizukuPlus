@@ -169,7 +169,18 @@ class WatchdogService : Service() {
                                         }
                                     }
                             }
-                            ShizukuReceiverStarter.start(applicationContext)
+                            // Short grace first: whoever killed the server (adb or a PC starting
+                            // it again, automation, the starter) is often already starting a new
+                            // one. Starting ours on top raced it: both starters killed the old
+                            // server and two servers ran. Skip if a binder arrived meanwhile.
+                            scope.launch {
+                                delay(RESTART_GRACE_MS)
+                                if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
+                                    Timber.tag(TAG).d("Watchdog: a server came back by itself; restart skipped")
+                                } else {
+                                    ShizukuReceiverStarter.start(applicationContext)
+                                }
+                            }
                             Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
                         } else {
                             Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms / ${cooldown}ms)")
@@ -333,6 +344,7 @@ class WatchdogService : Service() {
 
         /** How long a first restart waits for RUNNING before the crash heads-up is posted: a successful restart took ~11 s on an API 34 emulator, a loaded device's first start 32 s. A restart slower than this, or one that raises a fresh authorisation dialog answered later, still gets the heads-up — by design for now. */
         const val RECOVERY_WAIT_MS = 60_000L
+        private const val RESTART_GRACE_MS = 1_500L
 
         /** How long the server must remain RUNNING before consecutive crash count resets. */
         const val STABILITY_WINDOW_MS = 60_000L
