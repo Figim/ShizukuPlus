@@ -873,12 +873,7 @@
     <string name="nav_back">رجوع</string>
     <string name="help_stealth_mode_title">وضع التخفي</string>
     <string name="help_stealth_mode_detail">يعترض استعلامات PackageManager على مستوى Binder ويُرجع «غير مثبّت» لحزم ShizukuPlus وShizuku. التطبيقات التي تستخدم PM لاكتشاف أدوات root (تطبيقات البنوك وفحوص DRM) لن تجدهما. ملاحظة: هذا يخفيهما عن استعلامات PackageManager فقط — يظل وضع المطور وتصحيح USB مرئيين للتطبيقات التي تفحص إعدادات Android مباشرة.</string>
-    <string name="corner_style_global">اتباع الإعداد العام</string>
     <string name="corner_style_sharp">حاد / مسطح</string>
-    <string name="corner_style_rounded">مستدير (M3)</string>
-    <string name="corner_style_large">مستدير كبير</string>
-    <string name="corner_style_squircle">شبه دائري</string>
-    <string name="corner_style_extra_large">كبير جدًا</string>
     <string name="home_permission_manager_title">مدير الأذونات</string>
     <string name="home_permission_manager_summary">منح أذونات مستوى الصدفة لأي تطبيق دون root</string>
     <string name="permission_manager_search_hint">البحث في التطبيقات…</string>

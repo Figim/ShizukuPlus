@@ -689,9 +689,8 @@ class ShizukuApplication :
         // foreground-app poll for two rules that, at the time, were non-functional placeholders
         // that could never match real data. Registering rules is cheap and always safe; actually
         // starting the service (and its notification/polling) is gated on real configuration so a
-        // user who never touches either list sees nothing - see ShizukuPlusSettingsFragment's
-        // change listeners for where the service gets started/stopped dynamically as the user
-        // edits those lists after this initial launch-time check.
+        // user who never touches either list sees nothing. Editing the lists later starts or stops
+        // it (TrustedNetworksSheet, the auto-hide picker).
         af.shizuku.manager.automation
             .registerDefaultRules()
         if (ShizukuSettings.isAnyAutomationConfigured()) {

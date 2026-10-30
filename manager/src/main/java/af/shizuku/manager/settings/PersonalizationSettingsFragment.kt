@@ -297,10 +297,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             setChildAvailable(it, !ShizukuSettings.isOneUiThemeEnabled() && !ShizukuSettings.isOneHandedModeEnabled())
         }
 
-        val showStatusOutlinePreference = findPreference<TwoStatePreference>("show_status_card_outline")
-        val statusOutlineStylePreference = findPreference<Preference>("status_card_outline_style")
-        statusOutlineStylePreference?.let { setChildAvailable(it, showStatusOutlinePreference?.isChecked ?: true) }
-
         findPreference<Preference>("rearrange_home_cards")?.setOnPreferenceClickListener {
             af.shizuku.manager.home.HomeEditMode
                 .enter(force = true)
@@ -315,10 +311,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // Experimental (Developer options): hide the whole App icon & name section unless enabled.
         findPreference<Preference>("category_app_identity")?.isVisible =
             ShizukuSettings.isExperimentalAppIdentityEnabled()
-
-        findPreference<Preference>("app_icon_alias")?.apply {
-            // AppIconTilePickerPreference manages its own selection and alias application.
-        }
 
         findPreference<EditTextPreference>("custom_app_name")?.apply {
             // Don't seed `text`: EditTextPreference.setText() persists, which would save this
@@ -356,34 +348,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        val simulatorPref = findPreference<HomeLayoutSimulatorPreference>("home_layout_simulator")
-        simulatorPref?.setFragment(this)
-
         // The Home activity log card needs logging on (Advanced > Diagnostics > Enable activity log):
         // a cross-screen dependency, so grey it out here instead of android:dependency.
         findPreference<Preference>(ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME)?.isEnabled =
             ShizukuSettings.isActivityLogEnabled()
-
-        val switchKeys = listOf("show_activity_log_home", "show_status_card_outline", "show_home_cards_outline")
-
-        for (prefKey in switchKeys) {
-            findPreference<TwoStatePreference>(prefKey)?.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) {
-                    if (prefKey == "show_status_card_outline") {
-                        statusOutlineStylePreference?.let { setChildAvailable(it, newValue) }
-                    }
-                    preferenceManager.sharedPreferences
-                        ?.edit()
-                        ?.putBoolean(prefKey, newValue)
-                        ?.apply()
-                    simulatorPref?.let {
-                        it.isVisible = false
-                        it.isVisible = true
-                    }
-                }
-                true
-            }
-        }
 
         findPreference<TwoStatePreference>(KEY_COMPANION_MODE)?.apply {
             isChecked = ShizukuSettings.isCompanionModeEnabled()

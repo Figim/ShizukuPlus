@@ -123,7 +123,6 @@ open class HomeActivity :
                 ShizukuSettings.Keys.KEY_ROUNDED_EDGES,
                 ShizukuSettings.Keys.KEY_EXPRESSIVE_SHAPES,
                 ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE,
-                "home_card_corner_style",
                 -> {
                     isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
                     adapter.notifyDataSetChanged()

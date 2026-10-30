@@ -873,12 +873,7 @@
     <string name="nav_back">Назад</string>
     <string name="help_stealth_mode_title">Скрытый режим</string>
     <string name="help_stealth_mode_detail">Перехватывает запросы PackageManager на уровне Binder и возвращает «не установлен» для пакетов ShizukuPlus и Shizuku. Приложения, использующие PM для обнаружения root-инструментов (банковские приложения, проверки DRM), не найдут их. Примечание: это скрывает их только от запросов PackageManager — режим разработчика и отладка по USB по-прежнему видны приложениям, которые напрямую проверяют настройки Android.</string>
-    <string name="corner_style_global">Как в общей настройке</string>
     <string name="corner_style_sharp">Острые / плоские</string>
-    <string name="corner_style_rounded">Скруглённые (M3)</string>
-    <string name="corner_style_large">Сильно скруглённые</string>
-    <string name="corner_style_squircle">Сквиркл</string>
-    <string name="corner_style_extra_large">Очень крупные</string>
     <string name="home_permission_manager_title">Менеджер разрешений</string>
     <string name="home_permission_manager_summary">Выдача разрешений уровня shell любому приложению без root</string>
     <string name="permission_manager_search_hint">Поиск приложений…</string>

@@ -867,12 +867,7 @@
     <string name="nav_back">Zurück</string>
     <string name="help_stealth_mode_title">Tarnmodus</string>
     <string name="help_stealth_mode_detail">Fängt PackageManager-Abfragen auf Binder-Ebene ab und gibt für die Pakete ShizukuPlus und Shizuku „nicht installiert“ zurück. Apps, die den PM zur Erkennung von Root-Tools nutzen (Banking-Apps, DRM-Prüfungen), finden sie nicht. Hinweis: Das verbirgt sie nur vor PackageManager-Abfragen — Entwicklermodus und USB-Debugging bleiben für Apps sichtbar, die die Android-Einstellungen direkt prüfen.</string>
-    <string name="corner_style_global">Globaler Einstellung folgen</string>
     <string name="corner_style_sharp">Eckig / Flach</string>
-    <string name="corner_style_rounded">Abgerundet (M3)</string>
-    <string name="corner_style_large">Stark abgerundet</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extragroß</string>
     <string name="home_permission_manager_title">Berechtigungsmanager</string>
     <string name="home_permission_manager_summary">Shell-Berechtigungen für beliebige Apps ohne Root erteilen</string>
     <string name="permission_manager_search_hint">Apps suchen…</string>

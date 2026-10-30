@@ -1118,12 +1118,7 @@
     <string name="nav_back">Wstecz</string>
     <string name="help_stealth_mode_title">Tryb ukryty</string>
     <string name="help_stealth_mode_detail">Przechwytuje zapytania PackageManager na poziomie Bindera i zwraca informację "nie zainstalowano" dla pakietów ShizukuPlus i Shizuku. Aplikacje używające PM do wykrywania narzędzi roota (aplikacje bankowe, kontrole DRM) nie znajdą ich. Uwaga: ukrywa to pakiety tylko przed zapytaniami PackageManager — tryb programisty i debugowanie USB są nadal widoczne dla aplikacji, które bezpośrednio sprawdzają ustawienia Androida.</string>
-    <string name="corner_style_global">Zgodnie z ustawieniem globalnym</string>
     <string name="corner_style_sharp">Ostre / Płaskie</string>
-    <string name="corner_style_rounded">Zaokrąglone (M3)</string>
-    <string name="corner_style_large">Duże zaokrąglenie</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Bardzo duże</string>
     <string name="home_permission_manager_title">Menedżer uprawnień</string>
     <string name="home_permission_manager_summary">Przyznawaj uprawnienia na poziomie powłoki dowolnej aplikacji bez roota</string>
     <string name="permission_manager_search_hint">Szukaj aplikacji…</string>

@@ -1118,12 +1118,7 @@
     <string name="nav_back">Terug</string>
     <string name="help_stealth_mode_title">Onzichtbare modus</string>
     <string name="help_stealth_mode_detail">Onderschept PackageManager-query\'s op het Binder-niveau en retourneert \"niet geïnstalleerd\" voor ShizukuPlus- en Shizuku-pakketten. Apps die PM gebruiken om root-tools te detecteren (bank-apps, DRM-controles) zullen ze niet vinden. Opmerking: dit verbergt ze alleen voor PackageManager-query\'s — ontwikkelaarsmodus en USB-foutopsporing blijven zichtbaar voor apps die Android-instellingen rechtstreeks controleren.</string>
-    <string name="corner_style_global">Algemene instelling volgen</string>
     <string name="corner_style_sharp">Scherp / Vlak</string>
-    <string name="corner_style_rounded">Afgerond (M3)</string>
-    <string name="corner_style_large">Groot afgerond</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extra groot</string>
     <string name="home_permission_manager_title">Machtigingenbeheer</string>
     <string name="home_permission_manager_summary">Shell-machtigingen toekennen aan elke app zonder root</string>
     <string name="permission_manager_search_hint">Apps zoeken…</string>

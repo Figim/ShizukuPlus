@@ -1661,12 +1661,7 @@
     <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="corner_style_global">Qlobal parametri izlə</string>
     <string name="corner_style_sharp">İti / Düz</string>
-    <string name="corner_style_rounded">Dairəvi (M3)</string>
-    <string name="corner_style_large">Böyük Dairəvi</string>
-    <string name="corner_style_squircle">Dairəvi</string>
-    <string name="corner_style_extra_large">Çox Böyük</string>
 
     <!-- Feature Hub experimental category label -->
 

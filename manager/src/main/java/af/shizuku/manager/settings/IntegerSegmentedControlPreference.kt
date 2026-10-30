@@ -16,8 +16,7 @@ import androidx.preference.PreferenceViewHolder
  * Material 3 Expressive integer single-choice preference rendered as an inline
  * segmented button row (e.g., for Dark Theme: Off, On, Follow System).
  *
- * Persists an [Int] value directly, making it an expressive drop-in replacement
- * for [IntegerSimpleMenuPreference].
+ * Persists an [Int] value directly.
  */
 @SuppressLint("RestrictedApi")
 class IntegerSegmentedControlPreference

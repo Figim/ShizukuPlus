@@ -870,12 +870,7 @@
     <string name="nav_back">Geri</string>
     <string name="help_stealth_mode_title">Gizli Mod</string>
     <string name="help_stealth_mode_detail">PackageManager sorgularını Binder düzeyinde yakalar ve ShizukuPlus ile Shizuku paketleri için "yüklü değil" döndürür. Root araçlarını algılamak için PM kullanan uygulamalar (bankacılık uygulamaları, DRM denetimleri) bunları bulamaz. Not: bu yalnızca PackageManager sorgularından gizler; geliştirici modu ve USB hata ayıklama, Android ayarlarını doğrudan denetleyen uygulamalar tarafından hâlâ görülebilir.</string>
-    <string name="corner_style_global">Genel ayarı izle</string>
     <string name="corner_style_sharp">Keskin / Düz</string>
-    <string name="corner_style_rounded">Yuvarlak (M3)</string>
-    <string name="corner_style_large">Büyük Yuvarlak</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Çok Büyük</string>
     <string name="home_permission_manager_title">İzin Yöneticisi</string>
     <string name="home_permission_manager_summary">Herhangi bir uygulamaya root olmadan kabuk düzeyinde izinler verin</string>
     <string name="permission_manager_search_hint">Uygulama ara…</string>

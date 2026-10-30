@@ -290,12 +290,7 @@
     <string name="nav_back">واپس</string>
     <string name="help_stealth_mode_title">اسٹیلتھ موڈ</string>
     <string name="help_stealth_mode_detail">Binder کی سطح پر PackageManager کوئریز کو روکتا ہے اور ShizukuPlus اور Shizuku پیکیجز کے لیے "انسٹال نہیں" لوٹاتا ہے۔ جو ایپس root ٹولز کی شناخت کے لیے PM استعمال کرتی ہیں (بینکنگ ایپس، DRM چیکس) وہ انہیں نہیں ڈھونڈ سکیں گی۔ نوٹ: یہ انہیں صرف PackageManager کوئریز سے چھپاتا ہے — ڈیولپر موڈ اور USB ڈیبگنگ ان ایپس کو اب بھی نظر آتے ہیں جو Android سیٹنگز براہ راست چیک کرتی ہیں۔</string>
-    <string name="corner_style_global">گلوبل سیٹنگ کی پیروی کریں</string>
     <string name="corner_style_sharp">تیز / سیدھے</string>
-    <string name="corner_style_rounded">گول (M3)</string>
-    <string name="corner_style_large">بڑے گول</string>
-    <string name="corner_style_squircle">اسکوئرکل</string>
-    <string name="corner_style_extra_large">بہت بڑے</string>
     <string name="home_permission_manager_title">پرمیشن مینیجر</string>
     <string name="home_permission_manager_summary">بغیر root کسی بھی ایپ کو شیل سطح کی اجازتیں دیں</string>
     <string name="permission_manager_search_hint">ایپس تلاش کریں…</string>

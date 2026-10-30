@@ -854,12 +854,7 @@
     <string name="nav_back">返回</string>
     <string name="help_stealth_mode_title">隱形模式</string>
     <string name="help_stealth_mode_detail">在 Binder 層級攔截 PackageManager 查詢，並對 ShizukuPlus 與 Shizuku 套件回傳「未安裝」。使用 PM 偵測 root 工具的應用程式（銀行應用程式、DRM 檢查）將找不到它們。注意：這只會在 PackageManager 查詢中隱藏它們——直接檢查 Android 設定的應用程式仍能看到開發人員模式與 USB 偵錯。</string>
-    <string name="corner_style_global">跟隨全域設定</string>
     <string name="corner_style_sharp">尖角 / 平面</string>
-    <string name="corner_style_rounded">圓角 (M3)</string>
-    <string name="corner_style_large">大圓角</string>
-    <string name="corner_style_squircle">超橢圓</string>
-    <string name="corner_style_extra_large">特大</string>
     <string name="home_permission_manager_title">權限管理員</string>
     <string name="home_permission_manager_summary">無需 root 即可為任何應用程式授予 shell 層級權限</string>
     <string name="permission_manager_search_hint">搜尋應用程式…</string>

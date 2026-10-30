@@ -872,12 +872,7 @@
     <string name="nav_back">戻る</string>
     <string name="help_stealth_mode_title">ステルスモード</string>
     <string name="help_stealth_mode_detail">Binderレベルでパッケージマネージャーの照会を横取りし、ShizukuPlusとShizukuのパッケージに対して「インストールされていません」と返します。パッケージマネージャーでroot系ツールを検出するアプリ (銀行アプリ、DRMチェックなど) はそれらを見つけられません。注意: これはパッケージマネージャーの照会から隠すだけです。開発者モードとUSBデバッグは、Androidの設定を直接確認するアプリからは引き続き見えます。</string>
-    <string name="corner_style_global">グローバル設定に従う</string>
     <string name="corner_style_sharp">シャープ / フラット</string>
-    <string name="corner_style_rounded">角丸 (M3)</string>
-    <string name="corner_style_large">大きな角丸</string>
-    <string name="corner_style_squircle">スクイークル</string>
-    <string name="corner_style_extra_large">特大</string>
     <string name="home_permission_manager_title">権限マネージャー</string>
     <string name="home_permission_manager_summary">rootなしで任意のアプリにシェルレベルの権限を付与します</string>
     <string name="permission_manager_search_hint">アプリを検索…</string>

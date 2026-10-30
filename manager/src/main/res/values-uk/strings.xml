@@ -1138,12 +1138,7 @@
     <string name="backup_restored_restart_now">Перезапустити</string>
 
     <!-- Corner style options -->
-    <string name="corner_style_extra_large">Дуже великий</string>
-    <string name="corner_style_global">Слідувати глобальному налаштуванню</string>
-    <string name="corner_style_large">Великий заокруглений</string>
-    <string name="corner_style_rounded">Заокруглений (M3)</string>
     <string name="corner_style_sharp">Гострий / Плаский</string>
-    <string name="corner_style_squircle">Сквіркль</string>
 
     <!-- Device Control -->
     <string name="home_device_control_title">Керування пристроєм</string>

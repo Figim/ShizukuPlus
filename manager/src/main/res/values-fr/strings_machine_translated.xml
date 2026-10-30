@@ -872,12 +872,7 @@
     <string name="nav_back">Retour</string>
     <string name="help_stealth_mode_title">Mode furtif</string>
     <string name="help_stealth_mode_detail">Intercepte les requêtes PackageManager au niveau de Binder et renvoie « non installé » pour les paquets ShizukuPlus et Shizuku. Les applications qui utilisent PM pour détecter les outils root (applications bancaires, contrôles DRM) ne les trouveront pas. Remarque : cela ne les masque que des requêtes PackageManager ; le mode développeur et le débogage USB restent visibles pour les applications qui consultent directement les paramètres Android.</string>
-    <string name="corner_style_global">Suivre le réglage global</string>
     <string name="corner_style_sharp">Anguleux / plats</string>
-    <string name="corner_style_rounded">Arrondis (M3)</string>
-    <string name="corner_style_large">Grands arrondis</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Très grands</string>
     <string name="home_permission_manager_title">Gestionnaire d\'autorisations</string>
     <string name="home_permission_manager_summary">Accorder des autorisations de niveau shell à n\'importe quelle application sans root</string>
     <string name="permission_manager_search_hint">Rechercher des applications…</string>

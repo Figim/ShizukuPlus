@@ -1240,12 +1240,7 @@
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">隐身模式</string>
     <string name="help_stealth_mode_detail">在 Binder 层拦截 PackageManager 查询，对 ShizukuPlus 与 Shizuku 包返回「未安装」。使用 PM 检测 root 工具的应用（银行类应用、DRM 检查）将无法找到它们。注意：这只会让它们在 PackageManager 查询中不可见——直接读取 Android 设置的应用仍能发现开发者模式与 USB 调试。</string>
-    <string name="corner_style_global">跟随全局设置</string>
     <string name="corner_style_sharp">直角 / 扁平</string>
-    <string name="corner_style_rounded">圆角（M3）</string>
-    <string name="corner_style_large">大圆角</string>
-    <string name="corner_style_squircle">方圆形</string>
-    <string name="corner_style_extra_large">超大圆角</string>
 
     <!-- Permission Manager card &amp; screen -->
     <string name="home_permission_manager_title">权限管理器</string>

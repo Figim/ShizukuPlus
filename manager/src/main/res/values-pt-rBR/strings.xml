@@ -1010,12 +1010,7 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="backup_unfreeze_success">Aplicativo descongelado</string>
 
     <!-- Corner style options -->
-    <string name="corner_style_extra_large">Extra grande</string>
-    <string name="corner_style_global">Seguir configuração global</string>
-    <string name="corner_style_large">Grande arredondado</string>
-    <string name="corner_style_rounded">Arredondado (M3)</string>
     <string name="corner_style_sharp">Pontudo / Plano</string>
-    <string name="corner_style_squircle">Squircle</string>
 
     <!-- Device Control -->
     <string name="home_device_control_title">Controle do dispositivo</string>

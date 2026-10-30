@@ -199,8 +199,8 @@ class HomeAdapter(
 
                 dispatchDiff(oldIds)
 
-                val hasVisibleCards = itemCount > 0
-                onEmptyStateChanged?.invoke(!hasVisibleCards)
+                // The status card and banners are always there; "empty" means every movable card is hidden.
+                onEmptyStateChanged?.invoke(itemCount == fixedCardCount)
 
                 isUpdating = false
             }
@@ -351,24 +351,6 @@ class HomeAdapter(
         }
 
         super.onBindViewHolder(holder, position)
-
-        // Apply per-card corner style override
-        val homeCornerStyle = ShizukuSettings.getPreferences().getString("home_card_corner_style", "global") ?: "global"
-        if (homeCornerStyle != "global") {
-            val card = holder.itemView as? com.google.android.material.card.MaterialCardView
-            if (card != null) {
-                val density = card.context.resources.displayMetrics.density
-                card.radius =
-                    when (homeCornerStyle) {
-                        "sharp" -> 0f
-                        "rounded" -> 12f * density
-                        "large" -> 24f * density
-                        "squircle" -> 28f * density
-                        "xlarge" -> 36f * density
-                        else -> card.radius
-                    }
-            }
-        }
 
         // Apply home cards outline if enabled
         val showHomeOutlines = ShizukuSettings.isShowHomeCardsOutlineEnabled()

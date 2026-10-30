@@ -283,7 +283,7 @@ class AppPickerPreference(
             if (packages.isEmpty()) {
                 context.getString(R.string.settings_shadow_binder_hidden_packages_summary)
             } else {
-                val scope = CoroutineScope(Dispatchers.Main)
+                // The preference's own scope, cancelled when it's detached.
                 scope.launch {
                     val apps = getApps(context)
                     val selectedNames =
@@ -297,7 +297,7 @@ class AppPickerPreference(
 
                     setCustomSummary(
                         if (remaining > 0) {
-                            "$displayNames +$remaining more"
+                            context.getString(R.string.app_picker_names_and_more, displayNames, remaining)
                         } else {
                             displayNames
                         },

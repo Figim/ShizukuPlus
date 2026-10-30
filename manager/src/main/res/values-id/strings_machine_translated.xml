@@ -1118,12 +1118,7 @@
     <string name="nav_back">Kembali</string>
     <string name="help_stealth_mode_title">Mode Siluman</string>
     <string name="help_stealth_mode_detail">Mencegat kueri PackageManager pada tingkat Binder dan mengembalikan "tidak terinstal" untuk paket ShizukuPlus dan Shizuku. Aplikasi yang menggunakan PM untuk mendeteksi alat root (aplikasi perbankan, pemeriksaan DRM) tidak akan menemukannya. Catatan: ini hanya menyembunyikannya dari kueri PackageManager — mode pengembang dan proses debug USB masih terlihat oleh aplikasi yang memeriksa setelan Android secara langsung.</string>
-    <string name="corner_style_global">Ikuti setelan global</string>
     <string name="corner_style_sharp">Tajam / Rata</string>
-    <string name="corner_style_rounded">Membulat (M3)</string>
-    <string name="corner_style_large">Membulat Besar</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Ekstra Besar</string>
     <string name="home_permission_manager_title">Pengelola Izin</string>
     <string name="home_permission_manager_summary">Berikan izin tingkat shell ke aplikasi apa pun tanpa root</string>
     <string name="permission_manager_search_hint">Cari aplikasi…</string>

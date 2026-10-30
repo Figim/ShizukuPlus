@@ -93,12 +93,6 @@
 -keep class af.shizuku.manager.settings.GrayableIconSwitchPreference {
     public <init>(android.content.Context, android.util.AttributeSet);
 }
--keep class af.shizuku.manager.settings.IntegerSimpleMenuPreference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep class af.shizuku.manager.settings.HomeLayoutSimulatorPreference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
 -keep class af.shizuku.manager.settings.PlusNavPreference {
     public <init>(android.content.Context, android.util.AttributeSet);
 }

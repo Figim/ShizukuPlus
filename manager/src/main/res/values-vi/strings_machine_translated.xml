@@ -1118,12 +1118,7 @@
     <string name="nav_back">Quay lại</string>
     <string name="help_stealth_mode_title">Chế độ tàng hình</string>
     <string name="help_stealth_mode_detail">Chặn các truy vấn PackageManager ở cấp độ Binder và trả về "chưa cài đặt" cho các gói ShizukuPlus và Shizuku. Các ứng dụng sử dụng PM để phát hiện công cụ root (ứng dụng ngân hàng, kiểm tra DRM) sẽ không tìm thấy chúng. Lưu ý: tính năng này chỉ ẩn chúng khỏi các truy vấn PackageManager — chế độ nhà phát triển và gỡ lỗi USB vẫn hiển thị với các ứng dụng kiểm tra trực tiếp cài đặt Android.</string>
-    <string name="corner_style_global">Theo cài đặt chung</string>
     <string name="corner_style_sharp">Sắc nét / Vuông vức</string>
-    <string name="corner_style_rounded">Bo tròn (M3)</string>
-    <string name="corner_style_large">Bo tròn lớn</string>
-    <string name="corner_style_squircle">Hình vuông bo tròn (Squircle)</string>
-    <string name="corner_style_extra_large">Cực lớn</string>
     <string name="home_permission_manager_title">Trình quản lý quyền</string>
     <string name="home_permission_manager_summary">Cấp quyền cấp shell cho bất kỳ ứng dụng nào mà không cần root</string>
     <string name="permission_manager_search_hint">Tìm kiếm ứng dụng…</string>

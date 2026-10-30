@@ -1118,12 +1118,7 @@
     <string name="nav_back">ย้อนกลับ</string>
     <string name="help_stealth_mode_title">โหมดพรางตัว</string>
     <string name="help_stealth_mode_detail">ดักจับคำขอ PackageManager ในระดับ Binder และส่งคืนสถานะ \"ไม่ได้ติดตั้ง\" สำหรับแพ็กเกจ ShizukuPlus และ Shizuku แอปที่ใช้ PM เพื่อตรวจจับเครื่องมือรูท (แอปธนาคาร, การตรวจสอบ DRM) จะหาไม่พบ หมายเหตุ: วิธีนี้จะซ่อนจากการสืบค้นของ PackageManager เท่านั้น — โหมดนักพัฒนาและการแก้ไขข้อบกพร่อง USB ยังคงมองเห็นได้โดยแอปที่ตรวจสอบการตั้งค่า Android โดยตรง</string>
-    <string name="corner_style_global">ตามการตั้งค่าส่วนกลาง</string>
     <string name="corner_style_sharp">เหลี่ยมคม / แบน</string>
-    <string name="corner_style_rounded">โค้งมน (M3)</string>
-    <string name="corner_style_large">โค้งมนขนาดใหญ่</string>
-    <string name="corner_style_squircle">สเคอร์เคิล (Squircle)</string>
-    <string name="corner_style_extra_large">โค้งมนใหญ่พิเศษ</string>
     <string name="home_permission_manager_title">ตัวจัดการสิทธิ์</string>
     <string name="home_permission_manager_summary">ให้สิทธิ์ระดับเชลล์แก่แอปใดๆ โดยไม่ต้องรูท</string>
     <string name="permission_manager_search_hint">ค้นหาแอป…</string>

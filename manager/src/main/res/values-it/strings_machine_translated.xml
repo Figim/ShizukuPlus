@@ -873,12 +873,7 @@
     <string name="nav_back">Indietro</string>
     <string name="help_stealth_mode_title">Modalità invisibile</string>
     <string name="help_stealth_mode_detail">Intercetta le query a PackageManager a livello Binder e restituisce "non installato" per i pacchetti ShizukuPlus e Shizuku. Le app che usano PM per rilevare strumenti root (app bancarie, controlli DRM) non li troveranno. Nota: li nasconde solo dalle query a PackageManager; la modalità sviluppatore e il debug USB restano visibili alle app che controllano direttamente le impostazioni di Android.</string>
-    <string name="corner_style_global">Segui impostazione globale</string>
     <string name="corner_style_sharp">Spigoloso / Piatto</string>
-    <string name="corner_style_rounded">Arrotondato (M3)</string>
-    <string name="corner_style_large">Molto arrotondato</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extra large</string>
     <string name="home_permission_manager_title">Gestione permessi</string>
     <string name="home_permission_manager_summary">Concedi permessi a livello shell a qualsiasi app senza root</string>
     <string name="permission_manager_search_hint">Cerca app…</string>

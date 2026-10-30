@@ -68,23 +68,7 @@
     </string-array>
 
    
-  <string-array name="corner_style_entries">
-        <item>@string/corner_style_global</item>
-        <item>@string/corner_style_sharp</item>
-        <item>@string/corner_style_rounded</item>
-        <item>@string/corner_style_large</item>
-        <item>@string/corner_style_squircle</item>
-        <item>@string/corner_style_extra_large</item>
-    </string-array>
 
-    <string-array name="corner_style_values" translatable="false">
-        <item>global</item>
-        <item>sharp</item>
-        <item>rounded</item>
-        <item>large</item>
-        <item>squircle</item>
-        <item>xlarge</item>
-    </string-array>
 
     <string-array name="corner_rounding_entries">
         <item>@string/corner_style_sharp</item>

@@ -1142,12 +1142,7 @@
     <string name="help_stealth_mode_title">스텔스 모드</string>
     <string name="help_stealth_mode_detail">Binder 수준에서 PackageManager 쿼리를 가로채 ShizukuPlus 및 Shizuku 패키지에 대해 "설치되지 않음"을 반환합니다. PM을 사용해 루트 도구를 감지하는 앱(뱅킹 앱, DRM 검사)은 이를 찾지 못합니다. 참고: 이는 PackageManager 쿼리에서만 숨기는 것으로, 개발자 모드와 USB 디버깅은 Android 설정을 직접 확인하는 앱에 여전히 표시됩니다.</string>
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="corner_style_global">전역 설정 따르기</string>
     <string name="corner_style_sharp">샤프 / 플랫</string>
-    <string name="corner_style_rounded">둥글게 (M3)</string>
-    <string name="corner_style_large">크게 둥글게</string>
-    <string name="corner_style_squircle">스쿼클</string>
-    <string name="corner_style_extra_large">초대형 둥글게</string>
     <!-- Feature Hub experimental category label -->
     <!-- Permission Manager card &amp; screen -->
     <string name="home_permission_manager_title">권한 관리자</string>

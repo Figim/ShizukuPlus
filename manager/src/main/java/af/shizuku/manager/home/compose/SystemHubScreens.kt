@@ -407,46 +407,6 @@ private fun StatusBadge(
     }
 }
 
-@Composable
-fun MetricCard(
-    title: String,
-    value: String,
-    iconRes: Int? = null,
-) {
-    Card(
-        shape = MaterialTheme.shapes.extraLarge,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Row(
-            modifier = Modifier.padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    value,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                )
-            }
-            if (iconRes != null) {
-                Icon(
-                    painter = painterResource(iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f),
-                )
-            }
-        }
-    }
-}
-
 private enum class ActivityLogSort(
     val labelRes: Int,
 ) {
