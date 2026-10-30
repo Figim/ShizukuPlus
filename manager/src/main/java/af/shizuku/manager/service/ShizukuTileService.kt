@@ -115,8 +115,7 @@ class ShizukuTileService : TileService() {
                     runCatching { Shell.cmd(Starter.internalCommand).exec().isSuccess }.getOrDefault(false) ||
                         runCatching {
                             val suPath = EnvironmentUtils.findSuBinary() ?: return@runCatching false
-                            val proc = ProcessBuilder(suPath, "-c", Starter.internalCommand).redirectErrorStream(true).start()
-                            proc.waitFor(15, java.util.concurrent.TimeUnit.SECONDS) && proc.exitValue() == 0
+                            EnvironmentUtils.runWithSuBinary(suPath, Starter.internalCommand)
                         }.getOrDefault(false)
                 if (rootOk) {
                     withContext(Dispatchers.Main) {

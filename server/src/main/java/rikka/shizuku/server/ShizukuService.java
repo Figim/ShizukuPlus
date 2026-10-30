@@ -872,7 +872,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public boolean checkPlusFeatureEnabled(String key) {
+        // Service.transactRemote only calls isBinderCallBlocked() when "binder_firewall" reads on.
+        // Per-app API scopes (#645) are enforced there too, so report the gate open whenever any
+        // app has a scope turned off; isBinderCallBlocked() still checks the real firewall flag
+        // before applying the general firewall rules.
+        if ("binder_firewall".equals(key) && hasPerAppScopeRules()) return true;
         return isFeatureEnabled(key);
+    }
+
+    private boolean hasPerAppScopeRules() {
+        String serialized = plusSettingsMap.get("per_app_disabled_scopes");
+        return serialized != null && !serialized.trim().isEmpty();
     }
 
     /**
@@ -3386,7 +3396,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public boolean isPlusFeatureEnabled(String key) {
         enforceCallingPermission("isPlusFeatureEnabled");
-        return checkPlusFeatureEnabled(key);
+        // The real flag, not the transact gate: per-app scopes must not make clients see the
+        // firewall as switched on.
+        return isFeatureEnabled(key);
     }
 
     private af.shizuku.server.IAIAutomationBridge aiAutomationBridge;

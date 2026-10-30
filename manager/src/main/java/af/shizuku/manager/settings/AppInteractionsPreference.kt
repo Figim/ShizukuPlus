@@ -92,9 +92,9 @@ class AppInteractionsPreference
                 LongPressOption("lp_app_info", R.string.settings_lp_app_info, R.drawable.ic_outline_info_24),
                 LongPressOption("lp_toggle_permission", R.string.settings_lp_toggle_permission, R.drawable.ic_shield_24),
                 LongPressOption("lp_hide_from_list", R.string.settings_lp_hide_from_list, R.drawable.ic_visibility_off_24, defaultVal = false),
-                LongPressOption("lp_api_scopes", R.string.settings_lp_api_scopes, R.drawable.ic_shield_24, defaultVal = true),
+                LongPressOption("lp_api_scopes", R.string.settings_lp_api_scopes, R.drawable.ic_admin_panel_settings_24, defaultVal = true),
                 LongPressOption("lp_select_multiple", R.string.settings_lp_select_multiple, R.drawable.ic_select_all_24, defaultVal = true),
-                LongPressOption("lp_freeze_app", R.string.settings_lp_freeze_app, R.drawable.ic_close_24, defaultVal = true),
+                LongPressOption("lp_freeze_app", R.string.settings_lp_freeze_app, R.drawable.ic_ac_unit_24, defaultVal = true),
                 LongPressOption("lp_freeform_resize", R.string.settings_lp_freeform_resize, R.drawable.ic_window_24, defaultVal = false),
             )
 

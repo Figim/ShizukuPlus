@@ -92,16 +92,27 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
             }
 
             // Per-package Android 12+ CompatChange override (#635)
+            var compatApplied = false
             if (rikka.shizuku.server.util.InputValidationUtils.isValidPackageName(packageName)) {
                 val action = if (enabled) "enable" else "reset"
-                ShellExecutor.execBool("am", "compat", action, "ALLOW_RESIZEABLE_ACTIVITY", packageName)
-                ShellExecutor.execBool("am", "compat", action, "FORCE_RESIZE_APP", packageName)
+                val allow = ShellExecutor.execBool("am", "compat", action, "ALLOW_RESIZEABLE_ACTIVITY", packageName)
+                val force = ShellExecutor.execBool("am", "compat", action, "FORCE_RESIZE_APP", packageName)
+                compatApplied = allow || force
+            }
+            if (compatApplied) {
+                Log.d(TAG, "Applied per-app resize compat override for $packageName: $enabled")
+                return
             }
 
-            // Fallback: write setting via ContentProvider (works on Samsung SELinux builds)
-            val value = if (enabled) "1" else "0"
-            putSetting("global", "force_resizable_activities", value)
-            Log.d(TAG, "Set force_resizable_activities setting to $value")
+            // Last resort when no per-app override works: the device-wide developer option.
+            // Only ever switch it on. Writing 0 from a per-app toggle would also turn it off for
+            // every other app, and for a user who enabled it in Developer options themselves.
+            if (enabled) {
+                putSetting("global", "force_resizable_activities", "1")
+                Log.d(TAG, "Per-app resize override unavailable; set global force_resizable_activities=1")
+            } else {
+                Log.d(TAG, "Per-app resize override unavailable; leaving global force_resizable_activities as is")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to set force resizable for $packageName", e)
         }

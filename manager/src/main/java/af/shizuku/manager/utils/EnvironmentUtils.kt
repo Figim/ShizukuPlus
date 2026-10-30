@@ -150,6 +150,52 @@ object EnvironmentUtils {
 
     private fun checkSuExists(): Boolean = findSuBinary() != null
 
+    /**
+     * Runs [command] through the `su` binary at [suPath] directly, bypassing libsu. The output is
+     * drained so a chatty starter can't fill the pipe and stall, and the wait is bounded so an
+     * unanswered root prompt can't hang the caller. Returns true only on exit code 0.
+     */
+    @JvmStatic
+    fun runWithSuBinary(
+        suPath: String,
+        command: String,
+        timeoutSeconds: Long = 15,
+    ): Boolean {
+        var proc: Process? = null
+        var finished = false
+        return try {
+            proc = ProcessBuilder(suPath, "-c", command).redirectErrorStream(true).start()
+            val p = proc
+            Thread {
+                runCatching {
+                    p.inputStream.use { input ->
+                        val buf = ByteArray(4096)
+                        while (input.read(buf) >= 0) Unit
+                    }
+                }
+            }.apply { isDaemon = true }.start()
+            // Process.waitFor(timeout) and isAlive() are API 26+; poll exitValue() instead (minSdk 24).
+            val deadline = android.os.SystemClock.uptimeMillis() + timeoutSeconds * 1000
+            var exit: Int? = null
+            while (exit == null && android.os.SystemClock.uptimeMillis() < deadline) {
+                exit =
+                    try {
+                        p.exitValue()
+                    } catch (_: IllegalThreadStateException) {
+                        Thread.sleep(100)
+                        null
+                    }
+            }
+            finished = exit != null
+            exit == 0
+        } catch (e: Exception) {
+            timber.log.Timber.w(e, "Direct su ($suPath) failed")
+            false
+        } finally {
+            if (!finished) runCatching { proc?.destroy() }
+        }
+    }
+
     @JvmStatic
     fun isSamsung(): Boolean =
         af.shizuku.common.util.EnvironmentUtils

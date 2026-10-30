@@ -120,6 +120,20 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-10-29 (late) — Claude (review of Antigravity Oct 22–29 work, CI fix, fallback hardening) [master, unpushed]
+
+- **CI was red on `87e4de84`** (build, lint, unit-tests): `R.drawable.ic_select_all_24` didn't exist. Added it, plus `ic_ac_unit_24` for Freeze (was reusing the close icon). API Scopes now uses `ic_admin_panel_settings_24` instead of the Toggle Permission shield.
+- **Per-app API scopes (#645) only enforced with Binder Firewall on.** `api/server-shared/Service.java` calls `isBinderCallBlocked()` only when `checkPlusFeatureEnabled("binder_firewall")` is true. Fixed in `ShizukuService.checkPlusFeatureEnabled`, with no submodule change: the gate reports open whenever `per_app_disabled_scopes` is non-empty. `isBinderCallBlocked` still checks the real flag before applying the general firewall rules. The AIDL `isPlusFeatureEnabled` now returns the real flag.
+- **Per-app freeform (#635) flipped a global setting.** `WindowManagerPlusImpl.forceResizable` always wrote `global force_resizable_activities` 1/0 after the `am compat` calls, so a per-app toggle changed resizing for every app. Disabling one app turned off the user's own Developer-options setting. Now: return early when a compat override applies; otherwise write `1` on enable only, never `0`.
+- **Direct-su fallback could hang** (`ShizukuReceiverStarter.rootStart`: unbounded `waitFor()`, undrained pipe; the tile drained nothing and never destroyed the process). New `EnvironmentUtils.runWithSuBinary()` drains output and polls exit with a 15 s bound. `waitFor(timeout)` and `isAlive` are API 26 and minSdk is 24, so it polls `exitValue()`.
+- **Spurious notification:** the ADB start path without WRITE_SECURE_SETTINGS showed the permission-error notification even when it had enqueued the TCP fallback. Now it shows only when nothing was enqueued.
+- Checked, OK: the keys and XML defaults of all toggles added this week match their getters, including the 8 `lp_*` keys. `dpm_freeze` syncs immediately.
+- **Not fixed, flag only:**
+  - DPM freeze stage 1 (`tryDpmSetApplicationHidden`): its reflection matches 3- or 4-parameter `setApplicationHidden`. Android 11+ AIDL has 5 (`admin, callerPackage, pkg, hidden, parent`). DPMS also requires the caller to own the admin component. From shell or root it most likely always falls through to stage 2, so the "Prefer Device Owner App Hiding" toggle probably has no effect. Needs a device check with Dhizuku or DO.
+  - `ShizukuProcessUtils.runDetached` (#531) has no callers. Its env array may replace the whole environment (no PATH for `setsid`).
+  - The `isAppScopeDisabled` shell checks are substring matches, so some false positives are possible, but only when a scope is off.
+- Verified locally: Plus and Drop-In `compile*DebugKotlin` + server compile, `scripts/dev/lint.sh` clean. No device pass: loopback ADB refused, rish hung.
+
 ### 2026-10-28 — Antigravity (Screen opening animations, Explode elimination, Activity Log fluid transitions, M3E gestures) [master]
 
 - **App-wide screen transition overhaul & legacy Explode eradication**:

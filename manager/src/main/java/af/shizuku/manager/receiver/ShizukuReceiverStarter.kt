@@ -115,8 +115,9 @@ object ShizukuReceiverStarter {
                         .getAdbTcpPort() > 0
                 ) {
                     AdbStartWorker.enqueue(context, explicit = forceStart)
+                } else {
+                    showPermissionErrorNotification(context)
                 }
-                showPermissionErrorNotification(context)
             }
         } else {
             Timber.tag(AppConstants.TAG).w("Background start not supported")
@@ -622,19 +623,15 @@ object ShizukuReceiverStarter {
                 af.shizuku.manager.utils.EnvironmentUtils
                     .findSuBinary()
             if (fallbackSu != null) {
-                try {
-                    ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-                    val proc = ProcessBuilder(fallbackSu, "-c", Starter.internalCommand).start()
-                    val code = proc.waitFor()
-                    if (code == 0) {
-                        ShizukuStateMachine.update()
-                        return
-                    }
-                    recoverFromFailedStart()
-                } catch (e: Exception) {
-                    Timber.tag(AppConstants.TAG).w(e, "Direct su fallback ($fallbackSu) failed")
-                    recoverFromFailedStart()
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+                if (af.shizuku.manager.utils.EnvironmentUtils
+                        .runWithSuBinary(fallbackSu, Starter.internalCommand)
+                ) {
+                    ShizukuStateMachine.update()
+                    return
                 }
+                Timber.tag(AppConstants.TAG).w("Direct su fallback ($fallbackSu) failed")
+                recoverFromFailedStart()
             }
             Sentry.addBreadcrumb(
                 Breadcrumb("Background Root start failed - no root").apply {
