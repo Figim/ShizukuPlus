@@ -1404,7 +1404,6 @@
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">Etibarlı Şəbəkələr</string>
-    <string name="settings_automation_trusted_networks_summary">Vergüllə ayrılmış Wi-Fi şəbəkə adları (SSID-lər). Bunlardan birinə qoşulduqda Bağlayıcı Firewall avtomatik olaraq söndürülür, qalan hər yerdə (o cümlədən mobil internetdə) isə avtomatik aktivləşdirilir. Bağlayıcı Firewall-u əl ilə idarə etmək üçün boş buraxın.</string>
     <string name="settings_automation_auto_hide_packages">Ön Plandaykən Avtomatik Gizlət</string>
     <string name="settings_automation_auto_hide_packages_summary">Yuxarıdakı Gizli Paketlər siyahısına əlavə olaraq, yalnız açıq olduqları müddətdə Kölgə Bağlayıcısının gizli siyahısına avtomatik əlavə olunan tətbiqlər. Gizli tətbiqləri əl ilə idarə etmək üçün boş buraxın.</string>
 
@@ -1702,9 +1701,7 @@
     <string name="settings_tcp_protection_open">Açıq şəbəkələr</string>
     <string name="settings_tcp_protection_trusted">Yalnız etibarlılar</string>
     <string name="settings_tcp_trusted_networks_label">Etibarlı Wi-Fi şəbəkələri</string>
-    <string name="settings_tcp_add_network">+ Şəbəkə əlavə et</string>
     <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
-    <string name="settings_tcp_add_network_dialog_title">Etibarlı şəbəkə əlavə et</string>
     <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s şəbəkəsini sil</string>
     <string name="tcp_protection_off">Söndürülüb</string>

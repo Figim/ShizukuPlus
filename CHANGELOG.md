@@ -32,6 +32,10 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Simpler Swipe actions settings** — a row from your app list swipes each way on its own, showing exactly what each swipe does. Below it, "Swipe right", "Swipe left" and "Long-press menu" are normal settings rows that open a short picker, replacing the grid of chips.
 - **Swipe settings sandbox** (Developer options) — try a version where you drag the preview row yourself and choose the action after letting go.
 
+### 📶 Trusted networks
+- **Pick trusted Wi-Fi networks instead of typing them** — Wireless ADB's network protection and the App Connection Firewall's trusted networks now open a picker with the network you're connected to and every network saved on the device, each with a switch. Typing a name is still there for networks that aren't saved. Shizuku+ reads the names itself, so no location permission is needed while it's running.
+- **"Trust <network>" shortcut** — when protection is set to "Trusted only", a chip trusts the network you're on in one tap.
+
 ### 📦 Storage
 - **Downloaded updates are deleted once installed** — each in-app update left its APK (about 16 MB) in Shizuku+'s storage for good. Old ones are now removed when the app starts; an update you downloaded but haven't installed yet is kept.
 

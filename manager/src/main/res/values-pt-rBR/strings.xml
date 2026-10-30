@@ -1258,7 +1258,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_automation_auto_hide_packages">Ocultar automaticamente quando em primeiro plano</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps adicionados automaticamente à lista oculta do Shadow Binder somente enquanto estiverem abertos, além da lista de pacotes ocultos acima. Deixe em branco para gerenciar pacotes ocultos manualmente.</string>
     <string name="settings_automation_trusted_networks">Redes confiáveis</string>
-    <string name="settings_automation_trusted_networks_summary">Nomes de rede Wi-Fi separados por vírgula (SSIDs). O Firewall Binder é desativado automaticamente ao conectar a uma delas e ativado automaticamente em outros lugares (incluindo dados móveis). Deixe em branco para controlar o Firewall Binder manualmente.</string>
 
     <!-- Settings: APK verification -->
     <string name="settings_verify_apk_local_title">Correspondência de assinatura local</string>

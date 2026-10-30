@@ -1411,7 +1411,6 @@
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">Trusted Networks</string>
-    <string name="settings_automation_trusted_networks_summary">Comma-separated Wi-Fi network names (SSIDs). Binder Firewall is disabled automatically while connected to one of these, and enabled automatically everywhere else (including mobile data). Leave empty to control Binder Firewall manually instead.</string>
     <string name="settings_automation_auto_hide_packages">Auto-Hide While Foregrounded</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps that are automatically added to Shadow Binder\'s hidden list only while they\'re open, on top of the Hidden Packages list above. Leave empty to manage hidden packages manually instead.</string>
 
@@ -1709,11 +1708,19 @@
     <string name="settings_tcp_protection_open">Open networks</string>
     <string name="settings_tcp_protection_trusted">Trusted only</string>
     <string name="settings_tcp_trusted_networks_label">Trusted Wi-Fi networks</string>
-    <string name="settings_tcp_add_network">+ Add network</string>
     <string name="settings_tcp_auto_close_untrusted">Auto-close on untrusted networks</string>
-    <string name="settings_tcp_add_network_dialog_title">Add trusted network</string>
     <string name="settings_tcp_ssid_label">Network name (SSID)</string>
     <string name="settings_tcp_remove_network">Remove %1$s</string>
+    <string name="settings_automation_trusted_networks_desc">The App Connection Firewall turns off on these Wi-Fi networks and back on everywhere else, including mobile data.</string>
+    <string name="trusted_networks_tcp_subtitle">With \"Trusted only\" protection, Wireless ADB stays reachable on these networks and is closed on others.</string>
+    <string name="trusted_networks_connected">Connected now</string>
+    <string name="trusted_networks_saved_label">Saved on this device</string>
+    <string name="trusted_networks_not_saved">Not saved on this device</string>
+    <string name="trusted_networks_needs_service">Start Shizuku+ to list the networks saved on this device.</string>
+    <string name="trusted_networks_type_name">Type a network name</string>
+    <string name="trusted_networks_add">Add</string>
+    <string name="trusted_networks_choose">Choose networks</string>
+    <string name="trusted_networks_trust_current">Trust %1$s</string>
     <string name="tcp_protection_off">Off</string>
     <string name="tcp_protection_open">Open and public Wi-Fi</string>
     <string name="tcp_protection_trusted">Trusted networks only</string>

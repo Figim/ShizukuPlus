@@ -2,13 +2,15 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.NetworkTrust
-import af.shizuku.manager.utils.TcpNetworkGuard
+import af.shizuku.manager.utils.WifiNetworks
 import af.shizuku.manager.widget.AppSwitch
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -26,7 +28,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,6 +37,8 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -41,6 +46,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,6 +55,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -191,18 +198,30 @@ class WirelessAdbPreference
             autoCloseUntrusted.value = value
         }
 
-        private fun addSsid(ssid: String) {
-            val clean = ssid.trim()
-            if (clean.isEmpty()) return
-            NetworkTrust.trustSsid(clean)
+        private fun removeSsid(ssid: String) {
+            TrustedNetworksSheet.Target.TCP.write(context, NetworkTrust.trustedSsids() - ssid)
             trustedSsids.value = NetworkTrust.trustedSsids()
-            TcpNetworkGuard.enforce(context)
         }
 
-        private fun removeSsid(ssid: String) {
-            NetworkTrust.forgetSsid(ssid)
+        private fun trustSsid(ssid: String) {
+            TrustedNetworksSheet.Target.TCP.write(context, NetworkTrust.trustedSsids() + ssid)
             trustedSsids.value = NetworkTrust.trustedSsids()
-            TcpNetworkGuard.enforce(context)
+        }
+
+        // The picker sheet writes the list; keep the chips in step with it.
+        private val trustedListener =
+            android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == NetworkTrust.KEY_TRUSTED_SSIDS) trustedSsids.value = NetworkTrust.trustedSsids()
+            }
+
+        override fun onAttached() {
+            super.onAttached()
+            ShizukuSettings.getPreferences()?.registerOnSharedPreferenceChangeListener(trustedListener)
+        }
+
+        override fun onDetached() {
+            super.onDetached()
+            ShizukuSettings.getPreferences()?.unregisterOnSharedPreferenceChangeListener(trustedListener)
         }
 
         @OptIn(ExperimentalLayoutApi::class)
@@ -392,17 +411,23 @@ class WirelessAdbPreference
         @OptIn(ExperimentalLayoutApi::class)
         @Composable
         private fun TrustedNetworks(enabled: Boolean) {
-            var showAddDialog by remember { mutableStateOf(false) }
+            val context = LocalContext.current
+            val view = LocalView.current
+            // One tap to trust the network you're on, without opening the picker.
+            val current by produceState<String?>(null) { value = WifiNetworks.current(context.applicationContext) }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().animateContentSize(),
             ) {
-                trustedSsids.value.sorted().forEach { ssid ->
+                trustedSsids.value.sortedWith(String.CASE_INSENSITIVE_ORDER).forEach { ssid ->
                     val removeLabel = stringResource(R.string.settings_tcp_remove_network, ssid)
                     InputChip(
                         selected = false,
                         enabled = enabled,
-                        onClick = { removeSsid(ssid) },
+                        onClick = {
+                            HapticUtils.toggleOff(view)
+                            removeSsid(ssid)
+                        },
                         label = { Text(ssid) },
                         trailingIcon = {
                             Icon(
@@ -413,54 +438,39 @@ class WirelessAdbPreference
                         },
                     )
                 }
-                InputChip(
-                    selected = false,
+                current?.takeIf { it !in trustedSsids.value }?.let { ssid ->
+                    SuggestionChip(
+                        enabled = enabled,
+                        onClick = {
+                            HapticUtils.toggleOn(view)
+                            trustSsid(ssid)
+                        },
+                        label = { Text(stringResource(R.string.trusted_networks_trust_current, ssid)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_wifi_24),
+                                contentDescription = null,
+                                modifier = Modifier.size(SuggestionChipDefaults.IconSize),
+                            )
+                        },
+                    )
+                }
+                AssistChip(
                     enabled = enabled,
-                    onClick = { showAddDialog = true },
-                    label = { Text(stringResource(R.string.settings_tcp_add_network)) },
-                )
-            }
-            if (showAddDialog) {
-                AddNetworkDialog(
-                    onDismiss = { showAddDialog = false },
-                    onConfirm = {
-                        addSsid(it)
-                        showAddDialog = false
+                    onClick = {
+                        val activity = context.findFragmentActivity() ?: return@AssistChip
+                        TrustedNetworksSheet.show(activity.supportFragmentManager, TrustedNetworksSheet.Target.TCP)
+                    },
+                    label = { Text(stringResource(R.string.trusted_networks_choose)) },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(AssistChipDefaults.IconSize),
+                        )
                     },
                 )
             }
-        }
-
-        @Composable
-        private fun AddNetworkDialog(
-            onDismiss: () -> Unit,
-            onConfirm: (String) -> Unit,
-        ) {
-            val context = LocalContext.current
-            // Pre-fill with the current Wi-Fi SSID when the platform exposes it (needs location).
-            var ssid by remember { mutableStateOf(NetworkTrust.currentSsid(context).orEmpty()) }
-            AlertDialog(
-                onDismissRequest = onDismiss,
-                title = { Text(stringResource(R.string.settings_tcp_add_network_dialog_title)) },
-                text = {
-                    OutlinedTextField(
-                        value = ssid,
-                        onValueChange = { ssid = it },
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.settings_tcp_ssid_label)) },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { if (ssid.isNotBlank()) onConfirm(ssid) }),
-                    )
-                },
-                confirmButton = {
-                    TextButton(enabled = ssid.isNotBlank(), onClick = { onConfirm(ssid) }) {
-                        Text(stringResource(android.R.string.ok))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) }
-                },
-            )
         }
 
         @Composable

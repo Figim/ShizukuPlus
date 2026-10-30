@@ -4,7 +4,6 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.app.SnackbarHelper
-import af.shizuku.manager.automation.AutomationService
 import af.shizuku.manager.service.AdbProxyService
 import af.shizuku.manager.service.ShizukuLiveService
 import af.shizuku.manager.service.WatchdogService
@@ -53,7 +52,6 @@ class BehaviorSettingsFragment :
         savedInstanceState: Bundle?,
         rootKey: String?,
     ) {
-        migrateAutomationTrustedNetworks()
         setPreferencesFromResource(R.xml.settings_behavior, rootKey)
         val context = requireContext()
 
@@ -213,18 +211,6 @@ class BehaviorSettingsFragment :
         }
         syncTrustedNetworksAvailability(findPreference<TwoStatePreference>("binder_firewall_enabled")?.isChecked == true)
 
-        findPreference<Preference>("automation_trusted_networks")?.setOnPreferenceChangeListener { _, _ ->
-            val ctx = context
-            if (ctx != null) {
-                if (ShizukuSettings.hasAnyAutomationRulesConfigured()) {
-                    AutomationService.startIfNeeded(ctx)
-                } else {
-                    AutomationService.stopIfRunning(ctx)
-                }
-            }
-            true
-        }
-
         syncModeVisibility()
 
         // Verified installation + Package governor (moved here from App interactions): attached
@@ -382,25 +368,6 @@ class BehaviorSettingsFragment :
                 file.writeText("{\"enabled\": $enabled}")
             }
         } catch (_: Throwable) {
-        }
-    }
-
-    private fun migrateAutomationTrustedNetworks() {
-        val prefs = preferenceManager.sharedPreferences ?: return
-        try {
-            prefs.getString(KEY_AUTOMATION_TRUSTED_NETWORKS, null)
-        } catch (_: ClassCastException) {
-            val oldSet =
-                try {
-                    @Suppress("UNCHECKED_CAST")
-                    prefs.getStringSet(KEY_AUTOMATION_TRUSTED_NETWORKS, null)
-                } catch (_: Exception) {
-                    null
-                }
-            prefs
-                .edit()
-                .putString(KEY_AUTOMATION_TRUSTED_NETWORKS, oldSet?.joinToString(",") ?: "")
-                .apply()
         }
     }
 

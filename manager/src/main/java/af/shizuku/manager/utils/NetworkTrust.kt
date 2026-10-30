@@ -44,19 +44,11 @@ object NetworkTrust {
     @JvmStatic
     fun trustedSsids(): Set<String> = ShizukuSettings.getPreferences().getStringSet(KEY_TRUSTED_SSIDS, emptySet()) ?: emptySet()
 
-    fun trustSsid(ssid: String) {
+    fun setTrustedSsids(ssids: Set<String>) {
         ShizukuSettings
             .getPreferences()
             .edit()
-            .putStringSet(KEY_TRUSTED_SSIDS, trustedSsids() + ssid)
-            .apply()
-    }
-
-    fun forgetSsid(ssid: String) {
-        ShizukuSettings
-            .getPreferences()
-            .edit()
-            .putStringSet(KEY_TRUSTED_SSIDS, trustedSsids() - ssid)
+            .putStringSet(KEY_TRUSTED_SSIDS, ssids)
             .apply()
     }
 

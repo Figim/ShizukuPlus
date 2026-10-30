@@ -941,7 +941,6 @@
     <string name="settings_shadow_binder_hidden_packages_summary">다른 앱에 숨길 패키지 이름의 쉼표로 구분된 목록입니다. OG Shizuku와 Shizuku+가 모두 설치되어 있는 경우, 충돌을 방지하기 위해 두 패키지(moe.shizuku.privileged.api, af.shizuku.manager)를 모두 추가하세요.</string>
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">신뢰할 수 있는 네트워크</string>
-    <string name="settings_automation_trusted_networks_summary">쉼표로 구분된 Wi-Fi 네트워크 이름(SSID)입니다. 이러한 네트워크 중 하나에 연결되어 있는 동안 Binder 방화벽이 자동으로 비활성화되고, 다른 모든 네트워크(모바일 데이터 포함)에서는 자동으로 활성화됩니다. 대신 수동으로 제어하려면 비워 두세요.</string>
     <string name="settings_automation_auto_hide_packages">포그라운드 시 자동 숨기기</string>
     <string name="settings_automation_auto_hide_packages_summary">열려 있는 동안에만 섀도우 Binder의 숨긴 목록에 자동으로 추가되는 앱으로, 위의 숨긴 패키지 목록에 추가로 적용됩니다. 대신 수동으로 관리하려면 비워 두세요.</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
