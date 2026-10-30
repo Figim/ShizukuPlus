@@ -71,11 +71,12 @@ object TcpNetworkGuard {
     fun enforce(context: Context) {
         val ctx = context.applicationContext
         val nm = ctx.getSystemService(NotificationManager::class.java)
-        if (!NetworkTrust.shouldBlockTcp(ctx)) {
-            nm?.cancel(NOTIFICATION_ID)
-            return
-        }
         CoroutineScope(Dispatchers.IO).launch {
+            // Off the main thread: reading the network name may go through the shell.
+            if (!NetworkTrust.shouldBlockTcp(ctx)) {
+                nm?.cancel(NOTIFICATION_ID)
+                return@launch
+            }
             val port = EnvironmentUtils.getAdbTcpPort()
             val isWirelessAdbOn =
                 try {

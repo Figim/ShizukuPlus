@@ -1721,6 +1721,7 @@
     <string name="trusted_networks_add">Add</string>
     <string name="trusted_networks_choose">Choose networks</string>
     <string name="trusted_networks_trust_current">Trust %1$s</string>
+    <string name="trusted_networks_comma">Names with a comma can\'t be used for this list</string>
     <string name="tcp_protection_off">Off</string>
     <string name="tcp_protection_open">Open and public Wi-Fi</string>
     <string name="tcp_protection_trusted">Trusted networks only</string>

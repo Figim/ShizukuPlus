@@ -1,5 +1,7 @@
 package af.shizuku.manager.settings
 
+import af.shizuku.core.ui.compose.controlContainer
+import af.shizuku.core.ui.compose.onControlContainer
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.automation.AutomationService
@@ -7,13 +9,23 @@ import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.TcpNetworkGuard
 import af.shizuku.manager.utils.WifiNetworks
+import af.shizuku.manager.widget.AppSwitch
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,23 +40,26 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -81,17 +96,22 @@ class TrustedNetworksSheet : BottomSheetDialogFragment() {
                 context: Context,
                 ssids: Set<String>,
             ) {
-                // Stored comma-separated, so a comma can't be part of a name here.
-                ShizukuSettings.setTrustedNetworks(ssids.joinToString(","))
+                ShizukuSettings.setTrustedNetworks(ssids.filter(::accepts).joinToString(","))
                 if (ShizukuSettings.hasAnyAutomationRulesConfigured()) {
                     AutomationService.startIfNeeded(context)
                 } else {
                     AutomationService.stopIfRunning(context)
                 }
             }
+
+            // Stored comma-separated, so a name containing a comma would be split in two.
+            override fun accepts(ssid: String) = ',' !in ssid
         }, ;
 
         abstract fun read(): Set<String>
+
+        /** Whether [ssid] can be stored in this list. */
+        open fun accepts(ssid: String) = true
 
         abstract fun write(
             context: Context,
@@ -129,46 +149,70 @@ class TrustedNetworksSheet : BottomSheetDialogFragment() {
     @Composable
     private fun Content(target: Target) {
         val context = LocalContext.current
-        val view = LocalView.current
-        var trusted by remember { mutableStateOf(target.read()) }
         var snapshot by remember { mutableStateOf<WifiNetworks.Snapshot?>(null) }
         LaunchedEffect(Unit) { snapshot = WifiNetworks.load(context.applicationContext) }
+        val motion = MaterialTheme.motionScheme
+        AnimatedContent(
+            targetState = snapshot,
+            transitionSpec = {
+                (fadeIn(motion.defaultEffectsSpec()) togetherWith fadeOut(motion.fastEffectsSpec()))
+                    .using(SizeTransform(clip = false))
+            },
+            contentKey = { it != null },
+            label = "trustedNetworksLoad",
+        ) { loaded ->
+            if (loaded == null) {
+                Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { LoadingIndicator() }
+            } else {
+                NetworkList(target, loaded)
+            }
+        }
+    }
 
-        fun setTrusted(
-            ssid: String,
-            on: Boolean,
-        ) {
-            if (on) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-            trusted = if (on) trusted + ssid else trusted - ssid
-            target.write(context.applicationContext, trusted)
+    @Composable
+    private fun NetworkList(
+        target: Target,
+        loaded: WifiNetworks.Snapshot,
+    ) {
+        val context = LocalContext.current
+        val view = LocalView.current
+        var trusted by remember { mutableStateOf(target.read()) }
+        // Every name shown this session stays listed, so a typed name switched off can be switched
+        // back on instead of vanishing under the finger.
+        val shown = remember { mutableStateListOf<String>().apply { addAll(trusted.sortedWith(String.CASE_INSENSITIVE_ORDER)) } }
+
+        fun save(next: Set<String>) {
+            trusted = next
+            target.write(context.applicationContext, next)
         }
 
-        val loaded = snapshot
-        if (loaded == null) {
-            Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { LoadingIndicator() }
-            return
-        }
-        Column(modifier = Modifier.padding(horizontal = 8.dp).animateContentSize()) {
+        Column(modifier = Modifier.padding(horizontal = 8.dp).animateContentSize(MaterialTheme.motionScheme.defaultSpatialSpec())) {
             loaded.current?.let { current ->
                 NetworkRow(
                     ssid = current,
+                    usable = target.accepts(current),
                     subtitle = stringResource(R.string.trusted_networks_connected),
                     highlighted = true,
                     checked = current in trusted,
-                    onCheckedChange = { setTrusted(current, it) },
+                    onCheckedChange = { on ->
+                        if (on) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
+                        save(if (on) trusted + current else trusted - current)
+                    },
                 )
             }
-            // Saved networks first, then names added by hand that aren't saved here, so every
-            // trusted name can be switched off again.
-            val others = (loaded.saved + trusted.sortedWith(String.CASE_INSENSITIVE_ORDER)).distinct() - setOfNotNull(loaded.current)
+            val others = (loaded.saved + shown).distinct() - setOfNotNull(loaded.current)
             if (others.isNotEmpty()) SheetSectionLabel(stringResource(R.string.trusted_networks_saved_label))
             others.forEach { ssid ->
                 NetworkRow(
                     ssid = ssid,
+                    usable = target.accepts(ssid),
                     subtitle = if (ssid in loaded.saved) null else stringResource(R.string.trusted_networks_not_saved),
                     highlighted = false,
                     checked = ssid in trusted,
-                    onCheckedChange = { setTrusted(ssid, it) },
+                    onCheckedChange = { on ->
+                        if (on) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
+                        save(if (on) trusted + ssid else trusted - ssid)
+                    },
                 )
             }
             if (!loaded.viaShell) {
@@ -180,9 +224,9 @@ class TrustedNetworksSheet : BottomSheetDialogFragment() {
                 )
             }
             AddByName(onAdd = { name ->
-                HapticUtils.segmentTick(view)
-                trusted = trusted + name
-                target.write(context.applicationContext, trusted)
+                HapticUtils.success(view)
+                if (name !in shown) shown.add(name)
+                save(trusted + name)
             })
         }
     }
@@ -190,6 +234,7 @@ class TrustedNetworksSheet : BottomSheetDialogFragment() {
     @Composable
     private fun NetworkRow(
         ssid: String,
+        usable: Boolean,
         subtitle: String?,
         highlighted: Boolean,
         checked: Boolean,
@@ -201,18 +246,20 @@ class TrustedNetworksSheet : BottomSheetDialogFragment() {
             iconContainer = if (highlighted) colors.primaryContainer else colors.secondaryContainer,
             iconTint = if (highlighted) colors.onPrimaryContainer else colors.onSecondaryContainer,
             title = ssid,
-            subtitle = subtitle,
-            modifier = Modifier.toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange),
+            subtitle = if (usable) subtitle else stringResource(R.string.trusted_networks_comma),
+            modifier = Modifier.toggleable(value = checked, enabled = usable, role = Role.Switch, onValueChange = onCheckedChange),
         ) {
-            Switch(checked = checked, onCheckedChange = null)
+            AppSwitch(checked = checked, onCheckedChange = null, enabled = usable)
         }
     }
 
     @Composable
     private fun AddByName(onAdd: (String) -> Unit) {
         val colors = MaterialTheme.colorScheme
+        val view = LocalView.current
         var open by remember { mutableStateOf(false) }
         var name by remember { mutableStateOf("") }
+        // Stored comma-separated for the firewall list, so commas can't be part of a name.
         val clean = name.trim().replace(",", "")
         val submit = {
             if (clean.isNotEmpty()) {
@@ -221,15 +268,31 @@ class TrustedNetworksSheet : BottomSheetDialogFragment() {
                 open = false
             }
         }
+        val chevronTurn by animateFloatAsState(if (open) 180f else 0f, MaterialTheme.motionScheme.fastSpatialSpec(), label = "chevron")
         SheetRow(
             iconRes = R.drawable.ic_edit_24,
-            iconContainer = colors.surfaceContainerHighest,
-            iconTint = colors.onSurfaceVariant,
+            iconContainer = colors.controlContainer,
+            iconTint = colors.onControlContainer,
             title = stringResource(R.string.trusted_networks_type_name),
             subtitle = null,
-            modifier = Modifier.toggleable(value = open, role = Role.Button) { open = it },
-        ) {}
-        AnimatedVisibility(visible = open) {
+            modifier =
+                Modifier.clickable(role = Role.Button) {
+                    HapticUtils.tap(view)
+                    open = !open
+                },
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_outline_expand_more_24),
+                contentDescription = null,
+                tint = colors.onSurfaceVariant,
+                modifier = Modifier.rotate(chevronTurn),
+            )
+        }
+        AnimatedVisibility(
+            visible = open,
+            enter = expandVertically(MaterialTheme.motionScheme.defaultSpatialSpec()) + fadeIn(MaterialTheme.motionScheme.defaultEffectsSpec()),
+            exit = shrinkVertically(MaterialTheme.motionScheme.fastSpatialSpec()) + fadeOut(MaterialTheme.motionScheme.fastEffectsSpec()),
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,

@@ -1,5 +1,7 @@
 package af.shizuku.manager.management
 
+import af.shizuku.core.ui.compose.controlContainer
+import af.shizuku.core.ui.compose.onControlContainer
 import af.shizuku.manager.R
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
@@ -28,7 +30,8 @@ object SwipeActionStyle {
                 SECONDARY -> cs.secondaryContainer
                 TERTIARY -> cs.tertiaryContainer
                 ERROR -> cs.errorContainer
-                NEUTRAL -> cs.surfaceVariant
+                // surfaceVariant is (nearly) black on AMOLED themes, like the sheet behind it.
+                NEUTRAL -> cs.controlContainer
             }
 
         fun onContainer(cs: ColorScheme): Color =
@@ -37,7 +40,7 @@ object SwipeActionStyle {
                 SECONDARY -> cs.onSecondaryContainer
                 TERTIARY -> cs.onTertiaryContainer
                 ERROR -> cs.onErrorContainer
-                NEUTRAL -> cs.onSurfaceVariant
+                NEUTRAL -> cs.onControlContainer
             }
     }
 

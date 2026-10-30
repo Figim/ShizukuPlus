@@ -5,13 +5,11 @@ import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeShizukuCompanionBinding
 import af.shizuku.manager.migration.MigrationHelper
 import af.shizuku.manager.utils.IconStyleHelper
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.StockShizukuCompat
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -83,21 +81,7 @@ class ShizukuCompanionViewHolder(
     private val originalIcon = binding.icon.drawable
 
     init {
-        containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener {
-            HomeEditMode.enter()
-            true
-        }
-        containerBinding.dragHandle.apply {
-            setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@ShizukuCompanionViewHolder)
-                false
-            }
-            setOnLongClickListener {
-                HomeEditMode.enter()
-                true
-            }
-        }
+        HomeEditMode.bindCardGestures(containerBinding, this)
 
         binding.button1.setOnClickListener { v ->
             af.shizuku.manager.utils.HapticUtils

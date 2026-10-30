@@ -37,6 +37,11 @@ object WifiNetworks {
             NetworkTrust.currentSsid(context) ?: if (shellAvailable()) shell("cmd wifi status")?.let(::parseStatus) else null
         }
 
+    /** [current]'s shell route for callers already on a background thread. */
+    @androidx.annotation.WorkerThread
+    fun currentViaShellBlocking(): String? =
+        if (shellAvailable()) kotlinx.coroutines.runBlocking { shell("cmd wifi status")?.let(::parseStatus) } else null
+
     private fun shellAvailable() = runCatching { Shizuku.pingBinder() }.getOrDefault(false)
 
     /** `Wifi is connected to "Home"` (older builds print `SSID: "Home", BSSID: …` instead). */
@@ -72,17 +77,22 @@ object WifiNetworks {
             .sortedWith(String.CASE_INSENSITIVE_ORDER)
             .toList()
 
-    private suspend fun shell(command: String): String? =
-        runCatching {
-            @Suppress("DEPRECATION")
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
+    private suspend fun shell(command: String): String? {
+        @Suppress("DEPRECATION")
+        val process =
+            runCatching { Shizuku.newProcess(arrayOf("sh", "-c", command), null, null) }
+                .onFailure { Timber.w(it, "WifiNetworks: %s failed to start", command) }
+                .getOrNull() ?: return null
+        return try {
             coroutineScope {
-                val output = async { process.inputStream.bufferedReader().use { it.readText() } }
-                // A timeout alone can't unblock the read; destroying the process closes the pipe.
-                withTimeoutOrNull(SHELL_TIMEOUT_MS) { output.await() }.also { if (it == null) process.destroy() }
+                val output = async { runCatching { process.inputStream.bufferedReader().use { it.readText() } }.getOrNull() }
+                withTimeoutOrNull(SHELL_TIMEOUT_MS) { output.await() }
             }
-        }.onFailure { Timber.w(it, "WifiNetworks: %s failed", command) }
-            .getOrNull()
+        } finally {
+            // Also unblocks the read when we time out or the caller is cancelled.
+            process.destroy()
+        }
+    }
 
     private const val SHELL_TIMEOUT_MS = 5_000L
 }

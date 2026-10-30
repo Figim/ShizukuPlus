@@ -687,15 +687,15 @@ open class HomeActivity :
                                 HomeEditMode.applyOverlayDirect(child)
                             }
                         }
-                        viewHolder?.itemView?.let { HapticUtils.gestureStart(it) }
+                        viewHolder?.itemView?.let { HapticUtils.dragStart(it) }
                         if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
                             viewHolder?.itemView?.let { card ->
                                 morphCardRadius(card, lifted = true)
                                 // A small lift: at 1.06 the held card covered its neighbours' gaps.
                                 card.springTo(SpringAnimation.SCALE_X, 1.03f, MaterialR.attr.motionSpringFastSpatial)
                                 card.springTo(SpringAnimation.SCALE_Y, 1.03f, MaterialR.attr.motionSpringFastSpatial)
-                                card.springTo(SpringAnimation.ALPHA, 0.96f, MaterialR.attr.motionSpringFastEffects)
-                                card.springTo(SpringAnimation.TRANSLATION_Z, 24f, MaterialR.attr.motionSpringFastEffects)
+                                // Lifted with elevation, not transparency, so neighbours don't show through.
+                                card.springTo(SpringAnimation.TRANSLATION_Z, 8f * resources.displayMetrics.density, MaterialR.attr.motionSpringFastEffects)
                             }
                         }
                     } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {

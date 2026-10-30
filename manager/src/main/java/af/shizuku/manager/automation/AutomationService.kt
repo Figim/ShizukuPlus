@@ -2,6 +2,7 @@ package af.shizuku.manager.automation
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.NetworkTrust
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -239,7 +240,7 @@ class AutomationService : Service() {
                     }
                 } else {
                     null
-                }
+                } ?: if (isWifi) NetworkTrust.resolveSsid(applicationContext) else null
 
             AutomationEngine.dispatchEvent(NetworkEvent(isWifi, ssid), applicationContext)
         } catch (e: Exception) {

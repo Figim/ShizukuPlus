@@ -4,6 +4,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.management.SwipeActionStyle
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.widget.AppSwitch
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -82,8 +82,9 @@ class SwipeActionPickerSheet : BottomSheetDialogFragment() {
             val widthPx = constraints.maxWidth.toFloat()
             val sign = if (isRight) 1f else -1f
             val shown = selected.value
+            val dx = if (shown == SwipeActionStyle.NONE) 0f else sign * widthPx * 0.5f
             SwipeDemoRow(
-                dx = if (shown == SwipeActionStyle.NONE) 0f else sign * widthPx * 0.5f,
+                dx = { dx },
                 widthPx = widthPx,
                 right = if (isRight) shown else SwipeActionStyle.NONE,
                 left = if (isRight) SwipeActionStyle.NONE else shown,
@@ -98,6 +99,7 @@ class SwipeActionPickerSheet : BottomSheetDialogFragment() {
                     iconTint = spec.role.onContainer(MaterialTheme.colorScheme),
                     title = stringResource(spec.labelRes),
                     subtitle = stringResource(spec.descriptionRes),
+                    selected = isSelected,
                     modifier =
                         Modifier.selectable(selected = isSelected, role = Role.RadioButton) {
                             if (!isSelected) {
@@ -147,7 +149,7 @@ class SwipeActionPickerSheet : BottomSheetDialogFragment() {
                             prefs?.edit()?.putBoolean(item.key, checked)?.apply()
                         },
                 ) {
-                    Switch(checked = on, onCheckedChange = null)
+                    AppSwitch(checked = on, onCheckedChange = null)
                 }
             }
         }

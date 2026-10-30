@@ -37,6 +37,7 @@ class UpdateManager(
 ) {
     companion object {
         private const val TAG = "UpdateManager"
+        private const val PARTIAL_DOWNLOAD_GRACE_MS = 60 * 60 * 1000L
         private const val NOTIFICATION_CHANNEL_ID = "update_channel"
         private const val NOTIFICATION_ID = 1001
         private const val DOWNLOAD_ID_PREF = "update_download_id"
@@ -757,31 +758,43 @@ class UpdateManager(
      * installed build (already installed or older), or unreadable. A newer update that was
      * downloaded but not yet installed is kept. Call off the main thread.
      */
+
+    /**
+     * Deletes downloaded update APKs that are no longer needed: ones at or below the installed
+     * version, and unreadable ones once they're old enough not to be a download in progress. A
+     * newer one is kept, since an install notification may still point at it.
+     */
     fun cleanup() {
         try {
             val installed =
                 androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(
                     context.packageManager.getPackageInfo(context.packageName, 0),
                 )
-            val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-            downloadsDir?.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
-                val archive = context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)
-                val version =
-                    archive?.let {
-                        androidx.core.content.pm.PackageInfoCompat
-                            .getLongVersionCode(it)
+            val dirs = listOfNotNull(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), File(context.cacheDir, "updates"))
+            for (dir in dirs) {
+                dir.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
+                    if (isStaleUpdate(file, installed)) {
+                        file.delete()
+                        Timber.tag(TAG).d("Cleaned up old APK: ${file.name}")
                     }
-                if (version == null || version <= installed) {
-                    file.delete()
-                    Timber.tag(TAG).d("Cleaned up old APK: ${file.name}")
                 }
-            }
-            val updatesCache = File(context.cacheDir, "updates")
-            updatesCache.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
-                file.delete()
             }
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Error cleaning up")
         }
+    }
+
+    private fun isStaleUpdate(
+        file: File,
+        installed: Long,
+    ): Boolean {
+        val version =
+            context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)?.let {
+                androidx.core.content.pm.PackageInfoCompat
+                    .getLongVersionCode(it)
+            }
+        if (version != null) return version <= installed
+        // Unreadable: a partial download is still being written, so only remove old ones.
+        return System.currentTimeMillis() - file.lastModified() > PARTIAL_DOWNLOAD_GRACE_MS
     }
 }

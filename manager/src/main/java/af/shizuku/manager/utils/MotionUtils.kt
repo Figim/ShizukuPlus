@@ -101,18 +101,24 @@ object MotionUtils {
         running.animation.animateToFinalPosition(target)
     }
 
-    /** Stops a spring started by [springTo] on [property] without running its end action. */
+    @Suppress("UNCHECKED_CAST")
+    private fun View.springs(): HashMap<FloatPropertyCompat<View>, RunningSpring>? =
+        getTag(R.id.tag_motion_springs) as? HashMap<FloatPropertyCompat<View>, RunningSpring>
 
     /** True while any [springTo] spring is still moving this view. */
-    fun View.isSpringing(): Boolean {
-        @Suppress("UNCHECKED_CAST")
-        val springs = getTag(R.id.tag_motion_springs) as? HashMap<FloatPropertyCompat<View>, RunningSpring> ?: return false
-        return springs.values.any { it.animation.isRunning }
+    fun View.isSpringing(): Boolean = springs()?.values?.any { it.animation.isRunning } == true
+
+    /** Stops a spring started by [springTo] on [property] without running its end action. */
+    fun View.cancelSpring(property: FloatPropertyCompat<View>) {
+        springs()?.get(property)?.let {
+            it.endAction = null
+            it.animation.cancel()
+        }
     }
 
-    fun View.cancelSpring(property: FloatPropertyCompat<View>) {
-        @Suppress("UNCHECKED_CAST")
-        (getTag(R.id.tag_motion_springs) as? HashMap<FloatPropertyCompat<View>, RunningSpring>)?.get(property)?.let {
+    /** Stops every [springTo] spring on this view, e.g. before a recycled view is reused. */
+    fun View.cancelAllSprings() {
+        springs()?.values?.forEach {
             it.endAction = null
             it.animation.cancel()
         }

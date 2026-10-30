@@ -75,6 +75,18 @@ object NetworkTrust {
         return fromManager
     }
 
+    /**
+     * The current SSID through location access, or, off the main thread, through the shell when
+     * that access is missing. Networks picked from the device's list must match here too, and
+     * nothing asks for location, so without the shell route "Trusted only" never trusted anything.
+     */
+    @JvmStatic
+    fun resolveSsid(context: Context): String? {
+        currentSsid(context)?.let { return it }
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) return null
+        return WifiNetworks.currentViaShellBlocking()
+    }
+
     @JvmStatic
     fun assess(context: Context): Assessment {
         val caps = activeCapabilities(context) ?: return Assessment(Verdict.TRUSTED, null, null)
@@ -84,7 +96,7 @@ object NetworkTrust {
         if (!onLan) return Assessment(Verdict.TRUSTED, null, null)
 
         val info = wifiInfo(context)
-        val ssid = currentSsid(context)
+        val ssid = resolveSsid(context)
         val protectionMode = mode()
         if (ssid != null && ssid in trustedSsids()) return Assessment(Verdict.TRUSTED, null, ssid)
 

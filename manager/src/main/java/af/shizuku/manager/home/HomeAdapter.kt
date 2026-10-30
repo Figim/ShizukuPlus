@@ -7,6 +7,7 @@ import af.shizuku.manager.management.AppsViewModel
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.MotionUtils.cancelAllSprings
 import af.shizuku.manager.utils.MotionUtils.isSpringing
 import android.os.Build
 import androidx.core.view.isVisible
@@ -434,7 +435,8 @@ class HomeAdapter(
                         .scaledAnimationDuration(380),
                 )?.setStartDelay(
                     af.shizuku.manager.ShizukuSettings
-                        .scaledAnimationDuration(position * 45L),
+                        // Capped: a card first shown by scrolling shouldn't wait for every one above it.
+                        .scaledAnimationDuration(minOf(position, 5) * 45L),
                 )?.setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
                 ?.start()
         } else {
@@ -448,6 +450,7 @@ class HomeAdapter(
     override fun onViewRecycled(holder: BaseViewHolder<*>) {
         super.onViewRecycled(holder)
         holder.itemView.animate().cancel()
+        holder.itemView.cancelAllSprings()
         holder.itemView.scaleX = 1f
         holder.itemView.scaleY = 1f
         holder.itemView.translationZ = 0f

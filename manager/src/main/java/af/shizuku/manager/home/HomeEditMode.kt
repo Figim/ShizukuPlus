@@ -2,6 +2,7 @@ package af.shizuku.manager.home
 
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.MotionUtils.cancelSpring
 import af.shizuku.manager.utils.MotionUtils.springTo
 import android.content.res.ColorStateList
@@ -54,6 +55,35 @@ object HomeEditMode {
 
     /** Moves the card hosting the given view by [delta] positions (-1 up, +1 down); false if not possible. */
     var moveCardCallback: ((android.view.View, Int) -> Boolean)? = null
+
+    /**
+     * The gestures every draggable Home card shares: hold the card or its handle to edit the
+     * layout, press the handle to drag, springy touch feedback. The system long-press haptic is
+     * off on both, since the drag that follows plays its own and they buzzed twice together.
+     */
+    fun bindCardGestures(
+        container: HomeItemContainerBinding,
+        holder: RecyclerView.ViewHolder,
+    ) {
+        val enterEditMode =
+            android.view.View.OnLongClickListener {
+                enter()
+                true
+            }
+        container.root.apply {
+            applySpringTouch()
+            isHapticFeedbackEnabled = false
+            setOnLongClickListener(enterEditMode)
+        }
+        container.dragHandle.apply {
+            isHapticFeedbackEnabled = false
+            setOnLongClickListener(enterEditMode)
+            setOnTouchListener { _, event ->
+                if (event.action == android.view.MotionEvent.ACTION_DOWN) startDragCallback?.invoke(holder)
+                false
+            }
+        }
+    }
 
     @JvmOverloads
     fun enter(force: Boolean = false) {

@@ -25,7 +25,9 @@ object HapticUtils {
     ) {
         if (!ShizukuSettings.isHapticFeedbackEnabled()) return
         try {
-            view.performHapticFeedback(constant)
+            // The app's own setting above decides; views that turn off the system's automatic
+            // haptics (Home cards, so a long-press doesn't buzz twice) still get these.
+            view.performHapticFeedback(constant, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING)
         } catch (_: SecurityException) {
             // Swallow - see comment above.
         }
@@ -86,8 +88,8 @@ object HapticUtils {
      * Feedback for toggling a switch or feature ON
      */
     fun toggleOn(view: View) {
-        if (Build.VERSION.SDK_INT >= 34) {
-            safeHaptic(view, 21) // HapticFeedbackConstants.TOGGLE_ON
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            safeHaptic(view, HapticFeedbackConstants.TOGGLE_ON)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             safeHaptic(view, HapticFeedbackConstants.CONFIRM)
         } else {
@@ -99,8 +101,8 @@ object HapticUtils {
      * Feedback for toggling a switch or feature OFF
      */
     fun toggleOff(view: View) {
-        if (Build.VERSION.SDK_INT >= 34) {
-            safeHaptic(view, 22) // HapticFeedbackConstants.TOGGLE_OFF
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            safeHaptic(view, HapticFeedbackConstants.TOGGLE_OFF)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             safeHaptic(view, HapticFeedbackConstants.CLOCK_TICK)
         } else {
@@ -112,8 +114,8 @@ object HapticUtils {
      * Subtle tactile tick for sliding segmented filters, chips, or detents
      */
     fun segmentTick(view: View) {
-        if (Build.VERSION.SDK_INT >= 34) {
-            safeHaptic(view, 26) // HapticFeedbackConstants.SEGMENT_TICK
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            safeHaptic(view, HapticFeedbackConstants.SEGMENT_TICK)
         } else {
             tick(view)
         }
@@ -123,10 +125,29 @@ object HapticUtils {
      * Feedback for reaching a threshold during a gesture
      */
     fun gestureThreshold(view: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // The constant is API 34; on 33 it was an unknown id and played nothing.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             safeHaptic(view, HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE)
         } else {
             tick(view)
+        }
+    }
+
+    /** Feedback for backing out past a threshold during a gesture (the undo of [gestureThreshold]). */
+    fun gestureThresholdRelease(view: View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            safeHaptic(view, HapticFeedbackConstants.GESTURE_THRESHOLD_DEACTIVATE)
+        } else {
+            tick(view)
+        }
+    }
+
+    /** Feedback for picking an item up to drag it. */
+    fun dragStart(view: View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            safeHaptic(view, HapticFeedbackConstants.DRAG_START)
+        } else {
+            gestureStart(view)
         }
     }
 

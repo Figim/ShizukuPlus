@@ -9,11 +9,9 @@ import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.IconStyleHelper
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import android.content.Intent
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -70,26 +68,12 @@ class StartAdbViewHolder(
     }
 
     init {
-        containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener {
-            HomeEditMode.enter()
-            true
-        }
+        HomeEditMode.bindCardGestures(containerBinding, this)
         binding.button1.setOnClickListener { v: View ->
             HapticUtils.tap(v)
             showViewCommandDialog(v.context)
         }
         binding.text1.movementMethod = LinkMovementMethod.getInstance()
-        containerBinding.dragHandle.apply {
-            setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartAdbViewHolder)
-                false
-            }
-            setOnLongClickListener {
-                HomeEditMode.enter()
-                true
-            }
-        }
     }
 
     private val originalIcon = binding.icon.drawable
