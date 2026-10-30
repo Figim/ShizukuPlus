@@ -25,6 +25,81 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
     // pkg → list of saved original APK paths (base first, then splits)
     private val sessions = ConcurrentHashMap<String, List<String>>()
 
+    // Packages inside prepareTempDebug(): their originals are on disk but not yet in [sessions].
+    private val preparing: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
+    // Held for a whole sweep and while marking a package as preparing, so a sweep that already
+    // listed TMP_DIR can't delete an original that prepareTempDebug() is writing.
+    private val sweepLock = Any()
+
+    init {
+        // Sessions live only in memory, so a server restart used to strand the saved originals in
+        // TMP_DIR: restoreOriginal() then refused (no session) and nothing ever deleted them.
+        // Sweep originals whose app is no longer the debug-patched build; keep the rest so
+        // sessionPaths() can pick the session back up.
+        Thread({ runCatching { sweepStaleTempFiles() } }, "ApkPatcherSweep").start()
+    }
+
+    /** True when [packageName] is installed and currently debuggable (i.e. still temp-debug patched). */
+    private fun isPatchedInstall(packageName: String): Boolean =
+        try {
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, 0)
+            ai != null && (ai.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        } catch (e: Exception) {
+            // Unknown: treat as patched so the originals are never deleted on a guess.
+            true
+        }
+
+    /**
+     * True only when [packageName] is installed and is not the debug build, i.e. the original is
+     * back. A missing package keeps its originals: a failed patch install leaves the app
+     * uninstalled, and the saved copy is then the only way to reinstall it.
+     */
+    private fun isRestoredInstall(packageName: String): Boolean =
+        try {
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, 0)
+            ai != null && (ai.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) == 0
+        } catch (e: Exception) {
+            false
+        }
+
+    private fun savedOriginals(packageName: String): List<String> =
+        File(TMP_DIR)
+            .listFiles()
+            ?.filter { it.name.startsWith("${packageName}_orig_") }
+            // base first, then splits, matching what prepareTempDebug records
+            ?.sortedBy { if (it.name.endsWith("_orig_base.apk")) 0 else 1 }
+            ?.map { it.absolutePath }
+            .orEmpty()
+
+    /**
+     * The saved originals for an active session. After a server restart the in-memory map is
+     * empty, so recover the session from TMP_DIR when the app is still the patched build.
+     */
+    private fun sessionPaths(packageName: String): List<String>? {
+        sessions[packageName]?.let { return it }
+        val saved = savedOriginals(packageName)
+        if (saved.isEmpty() || !isPatchedInstall(packageName)) return null
+        sessions[packageName] = saved
+        return saved
+    }
+
+    private fun sweepStaleTempFiles() = synchronized(sweepLock) {
+        val tracked = sessions.values.flatten().toSet()
+        File(TMP_DIR).listFiles()?.forEach { f ->
+            if (f.absolutePath in tracked) return@forEach
+            if (preparing.any { f.name.startsWith("${it}_") }) return@forEach
+            when {
+                // A leftover patched copy is never needed again.
+                f.name.contains("_dbg_") -> f.delete()
+                f.name.contains("_orig_") -> {
+                    val pkg = f.name.substringBefore("_orig_")
+                    if (isRestoredInstall(pkg)) f.delete()
+                }
+            }
+        }
+    }
+
     private fun pipe(vararg args: String): ParcelFileDescriptor? = try {
         val (readSide, writeSide) = ParcelFileDescriptor.createPipe()
         Thread {
@@ -322,8 +397,16 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
     override fun prepareTempDebug(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
-        if (sessions.containsKey(packageName)) return true
+        if (sessionPaths(packageName) != null) return true
+        if (!synchronized(sweepLock) { preparing.add(packageName) }) return false
+        try {
+            return prepareTempDebugLocked(packageName)
+        } finally {
+            preparing.remove(packageName)
+        }
+    }
 
+    private fun prepareTempDebugLocked(packageName: String): Boolean {
         val apkPaths = findAllApks(packageName)
         if (apkPaths.isEmpty()) return false
 
@@ -391,20 +474,21 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
     override fun streamDataDir(packageName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
         if (!InputValidationUtils.isValidPackageName(packageName)) return null
-        if (!sessions.containsKey(packageName)) return null
+        if (sessionPaths(packageName) == null) return null
         return pipe("run-as", packageName, "tar", "-czf", "-", "-C", "/data/data/$packageName", ".")
     }
 
     override fun restoreDataDir(packageName: String?, tarStream: ParcelFileDescriptor?): Boolean {
         if (packageName.isNullOrBlank() || tarStream == null) return false
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
-        if (!sessions.containsKey(packageName)) return false
+        if (sessionPaths(packageName) == null) return false
         return pipeFrom(tarStream, "run-as", packageName, "tar", "-xzf", "-", "-C", "/data/data/$packageName")
     }
 
     override fun restoreOriginal(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
-        val origPaths = sessions[packageName] ?: return false
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        val origPaths = sessionPaths(packageName) ?: return false
 
         val ok = uninstallKeepData(packageName) &&
                  installViaSession(origPaths)
@@ -417,10 +501,9 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
     override fun streamOriginalApk(packageName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
         // Stream the base APK (prefer explicit base.apk, fall back to first)
-        val origPath = sessions[packageName]
-            ?.firstOrNull { it.endsWith("_orig_base.apk") }
-            ?: sessions[packageName]?.firstOrNull()
-            ?: return null
+        if (!InputValidationUtils.isValidPackageName(packageName)) return null
+        val saved = sessionPaths(packageName) ?: return null
+        val origPath = saved.firstOrNull { it.endsWith("_orig_base.apk") } ?: saved.firstOrNull() ?: return null
         // Primary: open file directly via ParcelFileDescriptor — no exec, no cat
         return try {
             ParcelFileDescriptor.open(File(origPath), ParcelFileDescriptor.MODE_READ_ONLY)
@@ -432,20 +515,16 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     override fun isTempDebugging(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
-        return sessions.containsKey(packageName)
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        return sessionPaths(packageName) != null
     }
 
     override fun cleanupAllTempDebug() {
         for (pkg in sessions.keys.toList()) {
             restoreOriginal(pkg)
         }
-        // Remove any orphaned temp files from a previous server crash
-        val tracked = sessions.values.flatten().toSet()
-        File(TMP_DIR).listFiles()?.forEach { f ->
-            if ((f.name.contains("_orig_") || f.name.contains("_dbg_")) &&
-                !tracked.contains(f.absolutePath)) {
-                f.delete()
-            }
-        }
+        // Orphans from a previous server run. An original whose app is still patched is the only
+        // way back to the signed build, so it is kept (sessionPaths() can still restore it).
+        sweepStaleTempFiles()
     }
 }
