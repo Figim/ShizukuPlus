@@ -50,9 +50,6 @@
         <item>twotone</item>
     </string-array>
 
-    <string name="icon_style_filled">Dolu</string>
-    <string name="icon_style_outlined">Konturlu</string>
-    <string name="icon_style_twotone">İkirəngli</string>
     <string name="home_edit_mode_banner">Əsas ekran düzənini fərdiləşdirmək üçün kartları basıb saxlayın və sürükləyin</string>
 
     <string name="settings_icon_color_mode">İki Rəngli İkon Rəngləri</string>
@@ -210,7 +207,7 @@
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinin yeganə yoludur.</string>
     <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizminin zədələnməsi ola bilər.</string>
-    <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
+    <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandıra bilmədi</string>
     <string name="adb_pair_required">Zəhmət olmasa, əvvəlcə cütləşmə addımını tamamlayın.</string>
     <string name="enable">Aktivləşdir</string>
     <string name="development_settings">Tərtibatçı seçimləri</string>
@@ -368,13 +365,6 @@
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
     <string name="onboarding_setup_root_desc">Cihazınız root-ludur. Shizuku-nu root giriş ilə başladın.</string>
     <string name="onboarding_setup_adb_desc">İstənilən cihaz. Başlamaq üçün kompüterdən bir ADB əmri icra edin.</string>
-    <string name="onboarding_m3e_title">İfadəli Görünüş &amp; Hissiyyat</string>
-    <string name="onboarding_m3e_desc">Adaptiv ikon üslubları, AMOLED+ kontrastı və axıcı hərəkətlərlə təcrübənizi fərdiləşdirin.</string>
-    <string name="onboarding_icon_style_title">İkon Üslubu</string>
-    <string name="onboarding_amoled_title">AMOLED+ Xalis Qara</string>
-    <string name="onboarding_amoled_desc">Tünd rejimdə təmiz qara arxa fonlar</string>
-    <string name="onboarding_animations_title">İfadəli Animasiyalar</string>
-    <string name="onboarding_animations_desc">Axıcı yay fizikası və toxunma hərəkəti</string>
     <string name="onboarding_layout_nav_title">Əsas ekran &amp; Naviqasiya</string>
     <string name="onboarding_layout_nav_desc">Gündəlik iş sahənizi uyğunlaşdırın. Əsas ekranda kartların sırasını dəyişmək üçün sürükləyin və ya üzən kapsul naviqasiya panelindən istifadə edin.</string>
     <string name="onboarding_floating_nav_title">Üzən Naviqasiya Paneli</string>
@@ -1315,7 +1305,7 @@
     <string name="update_checking">Yeniləmələr yoxlanılır…</string>
     <string name="ok">Oldu</string>
     <string name="no_file_picker">Bu cihazda heç bir fayl seçici tətbiqi tapılmadı</string>
-    <string name="shell_export_success">Fayllar uğurla ixrac edildi</string>
+    <string name="shell_export_success">Fayllər uğurla ixrac edildi</string>
     <string name="shell_export_failed">İxrac uğursuz oldu — heç bir fayl yazıla bilmədi</string>
     <string name="shell_export_partial">%2$d fayldan %1$d-i ixrac edildi (bəziləri uğursuz oldu)</string>
 
@@ -1677,7 +1667,7 @@
 
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">Gizli Rejim</string>
-    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
+    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, obyektiv olaraq onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="corner_style_global">Qlobal parametri izlə</string>
@@ -1777,7 +1767,7 @@
     <string name="activity_log_group_by_app">Tətbiqə görə qruplaşdır</string>
     <string name="activity_log_group_by_type">Növə görə qruplaşdır</string>
     <string name="activity_log_group_none">Qruplaşdırma yoxdur</string>
-    <string name="activity_log_search_hint">Jurnallarda axtar…</string>
+    <string name="activity_log_search_hint">jurnallarda axtar…</string>
     <string name="activity_log_export">Jurnalları ixrac et</string>
     <string name="activity_log_export_copied">%d jurnal mübadilə buferinə kopyalandı</string>
     <string name="activity_log_date_today">Bu gün</string>
