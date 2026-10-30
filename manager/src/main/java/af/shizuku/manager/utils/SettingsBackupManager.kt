@@ -123,6 +123,46 @@ object SettingsBackupManager {
     var heldBack: Map<String, Any> = emptyMap()
         private set
 
+    /**
+     * Makes restored settings take effect now, without restarting the app. Most settings are read
+     * when a screen opens; these are applied by code that normally runs only when the user changes
+     * them in Settings, so a plain import left them on the old value until a restart.
+     */
+    fun applyRestoredLive(context: Context) {
+        val app = context.applicationContext
+        val prefs = ShizukuSettings.getPreferences() ?: return
+        runCatching {
+            androidx.appcompat.app.AppCompatDelegate
+                .setDefaultNightMode(ShizukuSettings.getNightMode())
+        }
+        runCatching {
+            val tag = ShizukuSettings.getRawLanguageTag()
+            val locales =
+                if (tag.isNullOrEmpty() || tag == "SYSTEM") {
+                    androidx.core.os.LocaleListCompat
+                        .getEmptyLocaleList()
+                } else {
+                    androidx.core.os.LocaleListCompat
+                        .forLanguageTags(tag)
+                }
+            androidx.appcompat.app.AppCompatDelegate
+                .setApplicationLocales(locales)
+        }
+        runCatching {
+            if (prefs.contains(ShizukuSettings.Keys.KEY_START_ON_BOOT)) {
+                ShizukuSettings.setStartOnBoot(app, prefs.getBoolean(ShizukuSettings.Keys.KEY_START_ON_BOOT, true))
+            }
+        }
+        runCatching { AppAliasManager.applyAlias(app, ShizukuSettings.getAppIconAlias()) }
+        runCatching {
+            if (ShizukuSettings.getWatchdog()) {
+                af.shizuku.manager.service.WatchdogService
+                    .start(app)
+            }
+        }
+        ShizukuSettings.syncAllPlusFeaturesToServer()
+    }
+
     /** Applies (after the user confirmed) the privileged values the last import held back. */
     fun applyHeldBack() {
         val pending = heldBack

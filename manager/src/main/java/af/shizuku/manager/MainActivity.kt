@@ -6,7 +6,6 @@ import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.sentry.Breadcrumb
@@ -32,7 +31,7 @@ class MainActivity : HomeActivity() {
             }
 
             // Auto-restore settings if a force-update or migration backup exists before checking onboarding
-            checkAndRestoreBackupSynchronous()
+            markRestoreCheckedForExistingInstall()
 
             Timber.d("Checking onboarding status")
             Sentry.addBreadcrumb(Breadcrumb("Checking onboarding status"))
@@ -82,11 +81,15 @@ class MainActivity : HomeActivity() {
         }
     }
 
-    private fun checkAndRestoreBackupSynchronous() {
-        if (af.shizuku.manager.update.UpdateInstaller
-                .restorePendingBackup(this@MainActivity)
+    // Restoring a backup is the user's choice, made on the onboarding welcome page. An install
+    // past onboarding already has its own settings: mark it so its reinstall copy is kept current.
+    private fun markRestoreCheckedForExistingInstall() {
+        if (ShizukuSettings.isOnboardingSeen() &&
+            !af.shizuku.manager.utils.SettingsBackupManager
+                .isRestoreChecked()
         ) {
-            Toast.makeText(this@MainActivity, R.string.migration_success_message, Toast.LENGTH_LONG).show()
+            af.shizuku.manager.utils.SettingsBackupManager
+                .markRestoreChecked()
         }
     }
 

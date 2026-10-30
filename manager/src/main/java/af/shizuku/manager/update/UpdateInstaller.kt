@@ -87,59 +87,17 @@ object UpdateInstaller {
     }
 
     /**
-     * The backup to restore automatically after a force update, or null: a trusted copy that is
-     * recent (the force-update script restores within seconds) and not restored before.
+     * Whether a restore from [file] may apply privileged settings as stored: only a force-update
+     * handoff written minutes ago by this app. The reinstall copy can be written by any app
+     * authorized for Shizuku (shell), and public copies by any app, so those ask first.
      */
-    fun getBackupFile(context: Context): File? {
-        val now = System.currentTimeMillis()
-        val handoff =
-            handoffBackupCandidates(context).firstOrNull {
-                it.usable() && now - it.lastModified() in 0L..AUTO_RESTORE_MAX_AGE_MS && !wasRestored(context, it)
-            }
-        if (handoff != null) return handoff
-        // The reinstall copy only on an install that hasn't checked yet (fresh install or data
-        // cleared); afterwards it is this install's own, continuously updated snapshot.
-        val reinstall = reinstallBackupFile(context)
-        if (!SettingsBackupManager.isRestoreChecked() && reinstall.usable() && !wasRestored(context, reinstall)) {
-            return reinstall
-        }
-        return null
-    }
-
-    /**
-     * Restores a pending trusted backup (see [getBackupFile]) and marks this install as checked.
-     * Returns true only if settings actually changed, so callers show "restored" only then.
-     */
-    fun restorePendingBackup(context: Context): Boolean {
-        try {
-            val file = getBackupFile(context) ?: return false
-            val json = file.readText()
-            if (SettingsBackupManager.matchesCurrent(context, json)) {
-                consumeBackup(context, file)
-                return false
-            }
-            // Any app authorized for Shizuku can write /data/local/tmp as shell, so the reinstall
-            // copy is restored with privileged settings held back (they ask). Only the
-            // force-update handoff, written seconds earlier by this app, applies them as stored.
-            val trusted = file != reinstallBackupFile(context)
-            if (!SettingsBackupManager.importAndCommit(context, json, trustPrivileged = trusted)) return false
-            consumeBackup(context, file)
-            Timber.tag(TAG).i("Restored settings from %s", file.absolutePath)
-            return true
-        } catch (e: Exception) {
-            Timber.tag(TAG).w(e, "Settings restore failed")
-            return false
-        } finally {
-            SettingsBackupManager.markRestoreChecked()
-        }
-    }
-
     fun isTrustedBackupLocation(
         context: Context,
         file: File,
     ): Boolean {
         val path = runCatching { file.canonicalPath }.getOrDefault(file.absolutePath)
-        return trustedBackupCandidates(context).any { runCatching { it.canonicalPath }.getOrDefault(it.absolutePath) == path }
+        val isHandoff = handoffBackupCandidates(context).any { runCatching { it.canonicalPath }.getOrDefault(it.absolutePath) == path }
+        return isHandoff && System.currentTimeMillis() - file.lastModified() in 0L..AUTO_RESTORE_MAX_AGE_MS
     }
 
     /**

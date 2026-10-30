@@ -126,8 +126,7 @@ class OnboardingActivity : AppActivity() {
                     contentResolver.openInputStream(uri)?.use { stream ->
                         val json = stream.bufferedReader().use { it.readText() }
                         if (SettingsBackupManager.importAndCommit(this, json, trustPrivileged = false)) {
-                            Toast.makeText(this, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
-                            completeOnboarding()
+                            onBackupRestored(null)
                         } else {
                             Toast.makeText(this, getString(R.string.restore_failed_generic, "Invalid backup format"), Toast.LENGTH_SHORT).show()
                         }
@@ -167,11 +166,6 @@ class OnboardingActivity : AppActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (UpdateInstaller.restorePendingBackup(this)) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
-        }
 
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
@@ -372,7 +366,44 @@ class OnboardingActivity : AppActivity() {
         }, 400)
     }
 
+    /**
+     * The user chose to restore: apply everything now (theme, language, boot start, icon, Plus
+     * features), ask about privileged settings the backup would switch on, then go home. No
+     * restart needed.
+     */
+    private fun onBackupRestored(file: File?) {
+        if (file != null) UpdateInstaller.consumeBackup(this, file)
+        SettingsBackupManager.markRestoreChecked()
+        SettingsBackupManager.applyRestoredLive(this)
+        Toast.makeText(this, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
+        val held = SettingsBackupManager.heldBack
+        if (held.isEmpty()) {
+            completeOnboarding()
+            return
+        }
+        val names =
+            held.keys.joinToString("\n") { key ->
+                "\u2022 " + (SettingsBackupManager.PRIVILEGED_KEYS[key]?.let { getString(it) } ?: key)
+            }
+        com.google.android.material.dialog
+            .MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.restore_privileged_title)
+            .setMessage(getString(R.string.restore_privileged_message, names))
+            .setNegativeButton(R.string.restore_privileged_keep_off) { _, _ ->
+                SettingsBackupManager.discardHeldBack()
+                completeOnboarding()
+            }.setPositiveButton(R.string.restore_privileged_turn_on) { _, _ ->
+                SettingsBackupManager.applyHeldBack()
+                SettingsBackupManager.applyRestoredLive(this)
+                completeOnboarding()
+            }.setCancelable(false)
+            .show()
+    }
+
     private fun completeOnboarding() {
+        // Restoring was offered on the welcome page; from here on this install's own settings
+        // are what the reinstall copy keeps.
+        SettingsBackupManager.markRestoreChecked()
         ShizukuSettings.setOnboardingSeen()
         ShizukuSettings.setOnboardingV2Seen()
         if (isTaskRoot || !isNewFeaturesOnly) {
@@ -445,9 +476,7 @@ class OnboardingActivity : AppActivity() {
                         // its privileged settings back so they ask, as for a picked file.
                         val trusted = UpdateInstaller.isTrustedBackupLocation(this@OnboardingActivity, foundBackup)
                         if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = trusted)) {
-                            UpdateInstaller.consumeBackup(this@OnboardingActivity, foundBackup)
-                            Toast.makeText(this@OnboardingActivity, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
-                            completeOnboarding()
+                            onBackupRestored(foundBackup)
                         } else {
                             Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, "Invalid backup format"), Toast.LENGTH_SHORT).show()
                         }
