@@ -17,7 +17,8 @@ import androidx.graphics.shapes.toPath
 
 /**
  * M3 Expressive shape set for icon containers, built on androidx.graphics.shapes so any two shapes
- * can be morphed into each other. All polygons are normalized to the unit square.
+ * can be morphed into each other. All polygons are fitted to the unit square around their own
+ * center (see [centeredInUnitSquare]).
  */
 object ExpressiveShapes {
     const val OFF = "off"
@@ -27,7 +28,22 @@ object ExpressiveShapes {
 
     private val cache = HashMap<String, RoundedPolygon>()
 
-    val circle: RoundedPolygon by lazy { RoundedPolygon.circle(numVertices = 12).normalized() }
+    val circle: RoundedPolygon by lazy { RoundedPolygon.circle(numVertices = 12).centeredInUnitSquare() }
+
+    /**
+     * Fit into (0,0)-(1,1) with the polygon's own center at (0.5, 0.5). normalized() centers the
+     * bounding box instead, which for odd-pointed shapes (9-scallop cookie, 5-point star) isn't
+     * symmetric around the center, so the shape sat off-center behind a centered icon.
+     */
+    private fun RoundedPolygon.centeredInUnitSquare(): RoundedPolygon {
+        val b = calculateBounds(approximate = false)
+        val cx = centerX
+        val cy = centerY
+        // Twice the largest center-to-edge distance: the center stays put and the curve fits.
+        val size = 2f * maxOf(cx - b[0], b[2] - cx, cy - b[1], b[3] - cy)
+        if (size <= 0f) return normalized()
+        return transformed { x, y -> androidx.graphics.shapes.TransformResult((x - cx) / size + 0.5f, (y - cy) / size + 0.5f) }
+    }
 
     fun polygon(key: String): RoundedPolygon =
         cache.getOrPut(key) {
@@ -41,7 +57,7 @@ object ExpressiveShapes {
                 "star" -> RoundedPolygon.star(5, innerRadius = 0.52f, rounding = CornerRounding(0.18f, smoothing = 0.2f))
                 "burst" -> RoundedPolygon.star(12, innerRadius = 0.84f, rounding = CornerRounding(0.12f, smoothing = 0.2f))
                 else -> RoundedPolygon.circle(numVertices = 12)
-            }.normalized()
+            }.centeredInUnitSquare()
         }
 
     /** Path for [key] (or circle -> key at [progress]) scaled into [width] x [height]. */
