@@ -623,15 +623,27 @@ object ShizukuReceiverStarter {
                 af.shizuku.manager.utils.EnvironmentUtils
                     .findSuBinary()
             if (fallbackSu != null) {
+                // Receivers call start() on the main thread and the direct su run can take up to
+                // 15 s (root prompt); keep it off the main thread, past the broadcast ANR limit.
                 ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-                if (af.shizuku.manager.utils.EnvironmentUtils
-                        .runWithSuBinary(fallbackSu, Starter.internalCommand)
-                ) {
-                    ShizukuStateMachine.update()
-                    return
+                scope.launch(Dispatchers.IO) {
+                    if (af.shizuku.manager.utils.EnvironmentUtils
+                            .runWithSuBinary(fallbackSu, Starter.internalCommand)
+                    ) {
+                        ShizukuStateMachine.update()
+                        return@launch
+                    }
+                    Timber.tag(AppConstants.TAG).w("Direct su fallback ($fallbackSu) failed")
+                    recoverFromFailedStart()
+                    Sentry.addBreadcrumb(
+                        Breadcrumb("Background Root start failed - direct su failed").apply {
+                            category = "shizuku.starter"
+                            level = io.sentry.SentryLevel.WARNING
+                        },
+                    )
+                    tryFallbackToAdbFromRoot(context, forceStart)
                 }
-                Timber.tag(AppConstants.TAG).w("Direct su fallback ($fallbackSu) failed")
-                recoverFromFailedStart()
+                return
             }
             Sentry.addBreadcrumb(
                 Breadcrumb("Background Root start failed - no root").apply {

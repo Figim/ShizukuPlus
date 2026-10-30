@@ -1923,8 +1923,8 @@
     <string name="plus_benefits_badge_hint">Benefits from: %1$s (off) →</string>
     <string name="lp_action_enable_freeform">Allow free-form / resizing</string>
     <string name="lp_action_disable_freeform">Disable forced free-form / resizing</string>
-    <string name="toast_freeform_enabled">Free-form resizing enabled for %1$s</string>
-    <string name="toast_freeform_disabled">Free-form resizing reset for %1$s</string>
+    <string name="toast_freeform_enabled">Free-form resizing enabled for %1$s. It applies the next time the app opens.</string>
+    <string name="toast_freeform_disabled">Free-form resizing reset for %1$s. It applies the next time the app opens.</string>
     <string name="settings_adaptive_recommendations_title">Adaptive recommendations</string>
     <string name="settings_adaptive_recommendations_summary">Show contextual setup and stability recommendations when relevant</string>
     <string name="settings_adb_loopback_probe_title">Automatic loopback port probing</string>

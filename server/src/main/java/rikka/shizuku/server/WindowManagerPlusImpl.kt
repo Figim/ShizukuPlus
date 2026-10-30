@@ -95,8 +95,11 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
             var compatApplied = false
             if (rikka.shizuku.server.util.InputValidationUtils.isValidPackageName(packageName)) {
                 val action = if (enabled) "enable" else "reset"
-                val allow = ShellExecutor.execBool("am", "compat", action, "ALLOW_RESIZEABLE_ACTIVITY", packageName)
-                val force = ShellExecutor.execBool("am", "compat", action, "FORCE_RESIZE_APP", packageName)
+                // --no-kill: am compat force-stops the app by default, and the manager replays
+                // this for every saved package on each Plus settings sync. The override persists
+                // and applies on the app's next launch.
+                val allow = ShellExecutor.execBool("am", "compat", action, "--no-kill", "ALLOW_RESIZEABLE_ACTIVITY", packageName)
+                val force = ShellExecutor.execBool("am", "compat", action, "--no-kill", "FORCE_RESIZE_APP", packageName)
                 compatApplied = allow || force
             }
             if (compatApplied) {
