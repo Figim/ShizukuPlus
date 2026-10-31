@@ -45,6 +45,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -181,8 +182,11 @@ internal fun SwipeDemoRow(
         }
     val appLabel = remember(context) { context.applicationInfo.loadLabel(context.packageManager).toString() }
     val threshold = SwipeActionStyle.THRESHOLD * widthPx
-    val toRight by remember { derivedStateOf { dx() >= 0f } }
-    val past by remember(threshold) { derivedStateOf { threshold > 0f && abs(dx()) >= threshold } }
+    // The latest lambda: a caller may pass a new one holding a fixed value (the picker sheet),
+    // which the remembered derived states would otherwise never see.
+    val currentDx by rememberUpdatedState(dx)
+    val toRight by remember { derivedStateOf { currentDx() >= 0f } }
+    val past by remember(threshold) { derivedStateOf { threshold > 0f && abs(currentDx()) >= threshold } }
     // Pops on a spring as the swipe crosses the line, as the list's badge does.
     val pop by animateFloatAsState(if (past) BADGE_POP else 1f, MaterialTheme.motionScheme.fastSpatialSpec(), label = "badgePop")
 

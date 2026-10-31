@@ -84,8 +84,22 @@ object NetworkTrust {
     fun resolveSsid(context: Context): String? {
         currentSsid(context)?.let { return it }
         if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) return null
-        return WifiNetworks.currentViaShellBlocking()
+        // Capability callbacks fire on every signal change; ask the shell once per network.
+        val cm = context.getSystemService(ConnectivityManager::class.java) ?: return null
+        val handle = cm.activeNetwork?.networkHandle ?: return null
+        val now = android.os.SystemClock.elapsedRealtime()
+        shellSsidCache?.let { (cachedHandle, ssid, at) ->
+            if (cachedHandle == handle && (ssid != null || now - at < SHELL_MISS_RETRY_MS)) return ssid
+        }
+        return WifiNetworks.currentViaShellBlocking().also { shellSsidCache = Triple(handle, it, now) }
     }
+
+    /** Network handle, its SSID from the shell (null when it couldn't be read), and when. */
+    @Volatile
+    private var shellSsidCache: Triple<Long, String?, Long>? = null
+
+    // A failed read (e.g. the service wasn't up yet) is retried after this long.
+    private const val SHELL_MISS_RETRY_MS = 30_000L
 
     @JvmStatic
     fun assess(context: Context): Assessment {

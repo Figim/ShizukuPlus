@@ -186,21 +186,21 @@ class HomeAdapter(
                 }
 
                 val oldIds = LongArray(itemCount) { getItemId(it) }
-                val fixedCardCount =
-                    rebuildItems(
-                        status,
-                        grantedCount,
-                        isEditMode,
-                        companionInstalled,
-                        compatHubInstalled,
-                        isOriginalShizukuRunning,
-                        hidden,
-                    )
+                rebuildItems(
+                    status,
+                    grantedCount,
+                    isEditMode,
+                    companionInstalled,
+                    compatHubInstalled,
+                    isOriginalShizukuRunning,
+                    hidden,
+                )
 
                 dispatchDiff(oldIds)
 
-                // The status card and banners are always there; "empty" means every movable card is hidden.
-                onEmptyStateChanged?.invoke(itemCount == fixedCardCount)
+                // The empty state replaces the whole list, status card included, so it only shows
+                // when there's truly nothing to show.
+                onEmptyStateChanged?.invoke(itemCount == 0)
 
                 isUpdating = false
             }

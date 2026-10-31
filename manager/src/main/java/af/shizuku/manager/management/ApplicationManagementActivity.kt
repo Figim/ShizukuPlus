@@ -595,6 +595,9 @@ open class ApplicationManagementActivity :
             swipeBadgeSpring ?: androidx.dynamicanimation.animation
                 .SpringAnimation(swipeBadgePop)
                 .setSpring(androidx.dynamicanimation.animation.SpringForce())
+                // A plain value defaults to a one-pixel threshold, which would end a 1.0..1.15
+                // pop before it shows.
+                .setMinimumVisibleChange(androidx.dynamicanimation.animation.DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE)
                 .addUpdateListener { _, _, _ -> rv.invalidate() }
                 .also { swipeBadgeSpring = it }
         val force =

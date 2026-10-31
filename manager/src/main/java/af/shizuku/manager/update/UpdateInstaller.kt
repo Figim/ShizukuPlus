@@ -137,8 +137,8 @@ object UpdateInstaller {
             Timber.tag(TAG).w("No root or Shizuku available for force update.")
             return false
         }
-        if (!isNewerThanInstalled(context, apkFile)) {
-            Timber.tag(TAG).w("Force update refused: the APK isn't newer than the installed version")
+        if (!isNotOlderThanInstalled(context, apkFile)) {
+            Timber.tag(TAG).w("Force update refused: the APK is older than the installed version")
             return false
         }
 
@@ -175,7 +175,8 @@ object UpdateInstaller {
 
     private const val TMP = "/data/local/tmp"
 
-    private fun isNewerThanInstalled(
+    /** Same version is allowed: switching between differently signed builds of one release. */
+    private fun isNotOlderThanInstalled(
         context: Context,
         apk: File,
     ): Boolean {
@@ -184,7 +185,7 @@ object UpdateInstaller {
         if (candidate.packageName != context.packageName) return false
         val installed = pm.getPackageInfo(context.packageName, 0)
         return androidx.core.content.pm.PackageInfoCompat
-            .getLongVersionCode(candidate) >
+            .getLongVersionCode(candidate) >=
             androidx.core.content.pm.PackageInfoCompat
                 .getLongVersionCode(installed)
     }

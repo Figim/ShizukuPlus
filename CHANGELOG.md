@@ -30,15 +30,13 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **A failed permission change says so** — granting or revoking an app's access while Shizuku+ runs with limited ADB rights showed success and quietly snapped back. You now get the "ADB is limited" explanation and an error vibration.
 - **Haptics are consistent** — a long-press on a Home card vibrates once instead of twice, a completed swipe in the app list vibrates once and only confirms "Toggle permission" after it worked, and swipe thresholds vibrate on Android 13 too.
 - **Swipe feedback in the app list springs** — the action badge pops on a spring when the swipe will trigger, the label matches the Swipe actions preview, and drawing the swipe no longer reloads colors and icons every frame.
-- **Trusted networks work without location access** — Wireless ADB protection and the firewall automation now recognize the connected network even when Shizuku+ doesn't have location permission.
+- **Trusted networks work without location access** — while Shizuku+ is running, Wireless ADB protection and the firewall automation recognize the connected network even without location permission.
 - **Update downloads**: cancelling a download no longer stops every later download until the app restarts, and an update you downloaded but haven't installed isn't deleted when the app starts.
 - **Safer "switch to this build" install** — it refuses an older APK, tries an in-place install before uninstalling, puts the previous version back if the new one won't install, keeps scanner API keys out of the temporary settings file, and the root path works again.
 - **Fewer background shells** — the reinstall backup is saved once changes settle instead of after every single change, and Plus feature changes always reach the service with the new value.
 - **Settings search shows Developer options once they're unlocked** (it waited for an unrelated switch), and the About screen's "last checked" date no longer shows the wrong day.
-- **Home shows the "all cards hidden" message again** when every card is hidden.
 - **Diagnostics fixes do what they say** — "Device hardening" applies it, and "No hidden apps" opens the hidden-apps list.
 - **App Backup's "restore original" never deletes the only copy** — if restoring fails, the saved original is kept so it can be tried again, and an app left uninstalled by an interrupted restore can still be brought back.
-- **Accessibility color picks work** — reading a pixel from a screenshot always failed, and each screenshot leaked memory.
 - **No freezes when enabling the pairing helper** — turning on the accessibility service automatically no longer runs shell commands on the main thread, and the "Fix conflict" button for the stock Shizuku server checks for root in the background and tells you what happened.
 
 ### 👆 Swipe actions settings

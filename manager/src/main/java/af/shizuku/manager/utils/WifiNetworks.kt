@@ -83,14 +83,16 @@ object WifiNetworks {
             runCatching { Shizuku.newProcess(arrayOf("sh", "-c", command), null, null) }
                 .onFailure { Timber.w(it, "WifiNetworks: %s failed to start", command) }
                 .getOrNull() ?: return null
-        return try {
-            coroutineScope {
-                val output = async { runCatching { process.inputStream.bufferedReader().use { it.readText() } }.getOrNull() }
+        return coroutineScope {
+            // On IO so the timeout can fire even when the caller is runBlocking on its own thread.
+            val output = async(Dispatchers.IO) { runCatching { process.inputStream.bufferedReader().use { it.readText() } }.getOrNull() }
+            try {
                 withTimeoutOrNull(SHELL_TIMEOUT_MS) { output.await() }
+            } finally {
+                // Inside the scope: destroying the process closes the pipe, which ends the read
+                // the scope would otherwise wait on after a timeout or cancellation.
+                process.destroy()
             }
-        } finally {
-            // Also unblocks the read when we time out or the caller is cancelled.
-            process.destroy()
         }
     }
 
