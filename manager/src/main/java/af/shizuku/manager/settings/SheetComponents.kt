@@ -95,13 +95,3 @@ internal fun SheetRow(
         trailing()
     }
 }
-
-/** The FragmentActivity a preference's context wraps, to show a sheet from a row tap. */
-internal fun android.content.Context.findFragmentActivity(): androidx.fragment.app.FragmentActivity? {
-    var c: android.content.Context? = this
-    while (c is android.content.ContextWrapper) {
-        if (c is androidx.fragment.app.FragmentActivity) return c
-        c = c.baseContext
-    }
-    return null
-}

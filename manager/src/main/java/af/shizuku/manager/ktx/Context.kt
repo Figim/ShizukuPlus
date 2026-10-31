@@ -3,6 +3,7 @@ package af.shizuku.manager.ktx
 import af.shizuku.manager.ShizukuApplication
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.util.Pair
 import android.util.TypedValue
@@ -68,3 +69,13 @@ val Context.application: ShizukuApplication
     get() {
         return applicationContext as ShizukuApplication
     }
+
+/** The activity of type [T] behind this context; view and preference contexts are often wrappers. */
+inline fun <reified T : Activity> Context.findActivity(): T? {
+    var c: Context? = this
+    while (c is ContextWrapper) {
+        if (c is T) return c
+        c = c.baseContext
+    }
+    return null
+}

@@ -2,6 +2,7 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ktx.findActivity
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.WifiNetworks
@@ -458,7 +459,7 @@ class WirelessAdbPreference
                 AssistChip(
                     enabled = enabled,
                     onClick = {
-                        val activity = context.findFragmentActivity() ?: return@AssistChip
+                        val activity = context.findActivity<androidx.fragment.app.FragmentActivity>() ?: return@AssistChip
                         TrustedNetworksSheet.show(activity.supportFragmentManager, TrustedNetworksSheet.Target.TCP)
                     },
                     label = { Text(stringResource(R.string.trusted_networks_choose)) },

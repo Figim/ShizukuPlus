@@ -2,6 +2,7 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ktx.findActivity
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.AttributeSet
@@ -49,7 +50,7 @@ class TrustedNetworksRowPreference
         }
 
         override fun onClick() {
-            val activity = context.findFragmentActivity() ?: return
+            val activity = context.findActivity<androidx.fragment.app.FragmentActivity>() ?: return
             TrustedNetworksSheet.show(activity.supportFragmentManager, TrustedNetworksSheet.Target.AUTOMATION)
         }
     }

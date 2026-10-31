@@ -2,6 +2,7 @@ package af.shizuku.manager.home
 
 import af.shizuku.manager.R
 import af.shizuku.manager.adb.AdbPairingAccessibilityService
+import af.shizuku.manager.ktx.findActivity
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsPage
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
@@ -15,19 +16,29 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
 import android.text.style.TypefaceSpan
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+/**
+ * Gets the pairing accessibility service turned on: automatically when the app can (run off the
+ * main thread, it goes through the shell), otherwise by walking the user to the setting.
+ */
 fun Context.showAccessibilityDialog() {
     if (isAccessibilityEnabled()) {
         showNavigateDialog()
         return
     }
-
-    if (tryEnableAccessibilityAutomatically()) {
-        showNavigateDialog()
-        return
+    val scope = findActivity<androidx.activity.ComponentActivity>()?.lifecycleScope ?: return showManualAccessibilitySetup()
+    scope.launch {
+        val enabled = withContext(Dispatchers.IO) { tryEnableAccessibilityAutomatically() }
+        if (enabled) showNavigateDialog() else showManualAccessibilitySetup()
     }
+}
 
+private fun Context.showManualAccessibilitySetup() {
     val installer = packageManager.getInstallerPackageName(packageName)
     val isInstalledByPlayOrAdb = (installer == "com.android.vending") || (installer == null)
     val isRestricted = !isInstalledByPlayOrAdb && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
