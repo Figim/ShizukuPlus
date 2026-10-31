@@ -86,7 +86,8 @@ object IconStyleHelper {
         style: Style = current(),
         colorMode: ColorMode = currentColorMode(),
         seedKey: String? = null,
-        insetDp: Int = 4,
+        // 24dp icon in a 40dp container, the M3 list leading-icon size (matches the morph shapes).
+        insetDp: Int = 8,
     ): Drawable {
         val mutable = original.mutate()
         return when (style) {
@@ -96,8 +97,12 @@ object IconStyleHelper {
                 val (bgColor, fgColor) = twoToneColors(context, colorMode, seedKey)
                 val bg = pillBackground(context, bgColor)
                 val fg = tinted(mutable, fgColor)
-                val padding = (insetDp * context.resources.displayMetrics.density).toInt()
-                LayerDrawable(arrayOf(bg, InsetDrawable(fg, padding)))
+                val density = context.resources.displayMetrics.density
+                if (bg is MorphShapeDrawable) {
+                    morphLayers(bg, fg, insetDp, density)
+                } else {
+                    LayerDrawable(arrayOf(bg, InsetDrawable(fg, (insetDp * density).toInt())))
+                }
             }
         }
     }
@@ -105,6 +110,34 @@ object IconStyleHelper {
     // The 12dp CardIcon/CardIcon.Droplet style used, so a plain Standard/Outlined vector still
     // renders at its native ~24dp size centered in the 48dp Home card icon slot.
     private const val CARD_ICON_PADDING_DP = 12
+
+    // Settings rows: the M3 list leading-icon container, same as the other shapes (see stylize's
+    // insetDp). Home cards keep their 48dp slot.
+    private const val MORPH_CONTAINER_DP = 40
+    private const val ICON_DP = 24
+
+    /**
+     * A fixed-size shape container with the icon centered on it and sized for that shape (see
+     * [ExpressiveShapes.iconFraction]), so every shape holds its icon the same way. Insetting a
+     * fixed 24dp icon instead let it spill over the dips of flower and star shapes.
+     */
+    private fun morphLayers(
+        bg: MorphShapeDrawable,
+        fg: Drawable,
+        insetDp: Int,
+        density: Float,
+    ): Drawable {
+        val containerDp = if (insetDp >= CARD_ICON_PADDING_DP) ICON_DP + 2 * CARD_ICON_PADDING_DP else MORPH_CONTAINER_DP
+        val iconDp = containerDp * ExpressiveShapes.iconFraction(bg.shapeKey, max = ICON_DP.toFloat() / containerDp)
+        val container = (containerDp * density).toInt()
+        val icon = (iconDp * density).toInt()
+        return LayerDrawable(arrayOf(bg, fg)).apply {
+            setLayerSize(0, container, container)
+            setLayerGravity(0, android.view.Gravity.CENTER)
+            setLayerSize(1, icon, icon)
+            setLayerGravity(1, android.view.Gravity.CENTER)
+        }
+    }
 
     /**
      * Applies the current icon style/color-mode/shape to a Home-screen card's 48dp icon slot.
@@ -341,9 +374,17 @@ object IconStyleHelper {
         tintColor: Int,
     ) {
         val context = imageView.context
-        imageView.background = pillBackground(context, pillColor)
+        val pill = pillBackground(context, pillColor)
+        imageView.background = pill
         imageView.imageTintList = ColorStateList.valueOf(tintColor)
-        val padding = (CARD_ICON_PADDING_DP * context.resources.displayMetrics.density).toInt()
+        val slotDp = ICON_DP + 2 * CARD_ICON_PADDING_DP
+        val iconDp =
+            if (pill is MorphShapeDrawable) {
+                slotDp * ExpressiveShapes.iconFraction(pill.shapeKey, max = ICON_DP.toFloat() / slotDp)
+            } else {
+                ICON_DP.toFloat()
+            }
+        val padding = ((slotDp - iconDp) / 2 * context.resources.displayMetrics.density).toInt()
         imageView.setPadding(padding, padding, padding, padding)
     }
 

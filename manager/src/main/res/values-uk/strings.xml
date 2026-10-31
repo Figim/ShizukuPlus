@@ -368,7 +368,6 @@
     <string name="diagnostics_warning_automation_stopped">Правила автоматизації мережі налаштовано, але служба зупинена — Binder Firewall не буде перемикатися автоматично. Натисніть для перезапуску.</string>
     <string name="diagnostics_automation_start_failed">Не вдалося запустити службу автоматизації</string>
     <string name="diagnostics_battery_settings_open_failed">Не вдалося відкрити налаштування батареї</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Перейдіть до Центр функцій → Безпека та доступ → Shadow Binder для вибору додатків</string>
     <string name="diagnostics_device_owner_setup_title">Налаштувати Власника пристрою</string>
     <string name="diagnostics_device_owner_setup_message">Режим Dhizuku вимагає, щоб цей додаток був Власником пристрою.\n\nВиконайте цю команду з ПК (має бути увімкнено налагодження USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Копіювати команду</string>
@@ -1094,7 +1093,6 @@
     <string name="empty_state_title_service_starting">Запускається…</string>
     <string name="empty_state_description_service_starting">Очікування завершення запуску Shizuku+. Зазвичай це триває недовго.</string>
     <string name="settings_automation_trusted_networks">Довірені мережі</string>
-    <string name="settings_automation_trusted_networks_summary">Назви мереж Wi-Fi (SSID) через кому. Фаєрвол Binder автоматично вимикається під час підключення до однієї з них і автоматично вмикається всюди інде (зокрема на мобільних даних). Залиште порожнім, щоб керувати Фаєрволом Binder вручну.</string>
     <string name="settings_automation_auto_hide_packages">Автоприховування на передньому плані</string>
     <string name="settings_automation_auto_hide_packages_summary">Додатки, які автоматично додаються до прихованого списку Тіньового Binder лише поки вони відкриті, на додаток до списку прихованих пакетів вище. Залиште порожнім, щоб керувати прихованими пакетами вручну.</string>
     <string name="su_path_preset_default">За замовчуванням (Автовизначення)</string>
@@ -1139,12 +1137,7 @@
     <string name="backup_restored_restart_now">Перезапустити</string>
 
     <!-- Corner style options -->
-    <string name="corner_style_extra_large">Дуже великий</string>
-    <string name="corner_style_global">Слідувати глобальному налаштуванню</string>
-    <string name="corner_style_large">Великий заокруглений</string>
-    <string name="corner_style_rounded">Заокруглений (M3)</string>
     <string name="corner_style_sharp">Гострий / Плаский</string>
-    <string name="corner_style_squircle">Сквіркль</string>
 
     <!-- Device Control -->
     <string name="home_device_control_title">Керування пристроєм</string>

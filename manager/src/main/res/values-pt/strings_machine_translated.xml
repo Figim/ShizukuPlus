@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Existem regras de automatização de rede configuradas, mas o serviço está parado — o Binder Firewall não alternará automaticamente. Toque para reiniciar.</string>
     <string name="diagnostics_automation_start_failed">Não foi possível iniciar o serviço de automatização</string>
     <string name="diagnostics_battery_settings_open_failed">Não foi possível abrir as definições da bateria</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Aceda a Feature Hub → Segurança &amp; Acesso → Shadow Binder para selecionar aplicações</string>
     <string name="diagnostics_device_owner_setup_title">Configurar Proprietário do dispositivo</string>
     <string name="diagnostics_device_owner_setup_message">O Modo Dhizuku requer que esta aplicação seja o Proprietário do dispositivo.\n\nExecute este comando a partir do seu PC (a depuração USB tem de estar ativada):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copiar comando</string>
@@ -695,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">Pacotes ocultos</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Lista de nomes de pacotes separados por vírgulas a ocultar de outras aplicações. Se tiver o Shizuku original e o Shizuku+ instalados, adicione ambos (moe.shizuku.privileged.api, af.shizuku.manager) para evitar conflitos.</string>
     <string name="settings_automation_trusted_networks">Redes de confiança</string>
-    <string name="settings_automation_trusted_networks_summary">Nomes de redes Wi-Fi (SSID) separados por vírgulas. A Firewall Binder é desativada automaticamente enquanto estiver ligado a uma destas e ativada automaticamente em todos os outros locais (incluindo dados móveis). Deixe vazio para controlar a Firewall Binder manualmente.</string>
     <string name="settings_automation_auto_hide_packages">Ocultar automaticamente em primeiro plano</string>
     <string name="settings_automation_auto_hide_packages_summary">Aplicações que são adicionadas automaticamente à lista de ocultos do Shadow Binder apenas enquanto estão abertas, além da lista de Pacotes ocultos acima. Deixe vazio para gerir os pacotes ocultos manualmente.</string>
     <string name="settings_companion_mode">Mostrar cartão companheiro</string>
@@ -874,12 +872,7 @@
     <string name="nav_back">Voltar</string>
     <string name="help_stealth_mode_title">Modo furtivo</string>
     <string name="help_stealth_mode_detail">Interceta as consultas ao PackageManager ao nível do Binder e devolve "não instalado" para os pacotes ShizukuPlus e Shizuku. As aplicações que usam o PM para detetar ferramentas de root (aplicações bancárias, verificações DRM) não os encontrarão. Nota: isto apenas os oculta das consultas ao PackageManager — o modo de programador e a depuração USB continuam visíveis para aplicações que verificam diretamente as definições do Android.</string>
-    <string name="corner_style_global">Seguir definição global</string>
     <string name="corner_style_sharp">Angular / plano</string>
-    <string name="corner_style_rounded">Arredondado (M3)</string>
-    <string name="corner_style_large">Muito arredondado</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extragrande</string>
     <string name="home_permission_manager_title">Gestor de permissões</string>
     <string name="home_permission_manager_summary">Conceda permissões ao nível da shell a qualquer aplicação sem root</string>
     <string name="permission_manager_search_hint">Pesquisar aplicações…</string>
@@ -1154,9 +1147,7 @@
     <string name="settings_tcp_protection_open">Redes abertas</string>
     <string name="settings_tcp_protection_trusted">Apenas fidedignas</string>
     <string name="settings_tcp_trusted_networks_label">Redes Wi-Fi fidedignas</string>
-    <string name="settings_tcp_add_network">+ Adicionar rede</string>
     <string name="settings_tcp_auto_close_untrusted">Fechar automaticamente em redes não fidedignas</string>
-    <string name="settings_tcp_add_network_dialog_title">Adicionar rede fidedigna</string>
     <string name="settings_tcp_ssid_label">Nome da rede (SSID)</string>
     <string name="settings_tcp_remove_network">Remover %1$s</string>
     <string name="tcp_protection_off">Desativada</string>

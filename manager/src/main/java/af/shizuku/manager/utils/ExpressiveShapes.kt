@@ -8,18 +8,21 @@ import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialShapes
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
-import androidx.graphics.shapes.circle
+import androidx.graphics.shapes.TransformResult
 import androidx.graphics.shapes.star
 import androidx.graphics.shapes.toPath
 
 /**
  * M3 Expressive shape set for icon containers, built on androidx.graphics.shapes so any two shapes
- * can be morphed into each other. All polygons are fitted to the unit square around their own
- * center (see [centeredInUnitSquare]).
+ * can be morphed into each other. Uses Material's own [MaterialShapes] where one exists, and fits
+ * every shape so its area centroid sits at the middle of the square, where the icon is drawn.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 object ExpressiveShapes {
     const val OFF = "off"
 
@@ -28,35 +31,99 @@ object ExpressiveShapes {
 
     private val cache = HashMap<String, RoundedPolygon>()
 
-    val circle: RoundedPolygon by lazy { RoundedPolygon.circle(numVertices = 12).centeredInUnitSquare() }
+    // Building a Morph matches up the two outlines, too slow to redo on every animation frame.
+    private val morphs = HashMap<String, Morph>()
+
+    val circle: RoundedPolygon by lazy { MaterialShapes.Circle.centeredInUnitSquare() }
 
     /**
-     * Fit into (0,0)-(1,1) with the polygon's own center at (0.5, 0.5). normalized() centers the
-     * bounding box instead, which for odd-pointed shapes (9-scallop cookie, 5-point star) isn't
-     * symmetric around the center, so the shape sat off-center behind a centered icon.
+     * Area centroid of the outline: where the eye puts the middle of the shape. The polygon's own
+     * center is the average of its corners and the bounding box ignores where the area actually
+     * is, so on lopsided shapes either one left the icon visibly off-center.
      */
+    internal fun RoundedPolygon.areaCentroid(): Pair<Float, Float> {
+        var area = 0.0
+        var cx = 0.0
+        var cy = 0.0
+        var px = cubics.first().anchor0X.toDouble()
+        var py = cubics.first().anchor0Y.toDouble()
+        for (c in cubics) {
+            for (i in 1..CENTROID_STEPS) {
+                val t = i.toDouble() / CENTROID_STEPS
+                val u = 1 - t
+                val x = u * u * u * c.anchor0X + 3 * u * u * t * c.control0X + 3 * u * t * t * c.control1X + t * t * t * c.anchor1X
+                val y = u * u * u * c.anchor0Y + 3 * u * u * t * c.control0Y + 3 * u * t * t * c.control1Y + t * t * t * c.anchor1Y
+                val cross = px * y - x * py
+                area += cross
+                cx += (px + x) * cross
+                cy += (py + y) * cross
+                px = x
+                py = y
+            }
+        }
+        if (kotlin.math.abs(area) < 1e-9) return centerX to centerY
+        return (cx / (3 * area)).toFloat() to (cy / (3 * area)).toFloat()
+    }
+
+    /** Fit into (0,0)-(1,1) with the area centroid at (0.5, 0.5), where the icon is drawn. */
     private fun RoundedPolygon.centeredInUnitSquare(): RoundedPolygon {
         val b = calculateBounds(approximate = false)
-        val cx = centerX
-        val cy = centerY
+        val (cx, cy) = areaCentroid()
         // Twice the largest center-to-edge distance: the center stays put and the curve fits.
         val size = 2f * maxOf(cx - b[0], b[2] - cx, cy - b[1], b[3] - cy)
         if (size <= 0f) return normalized()
-        return transformed { x, y -> androidx.graphics.shapes.TransformResult((x - cx) / size + 0.5f, (y - cy) / size + 0.5f) }
+        return transformed { x, y -> TransformResult((x - cx) / size + 0.5f, (y - cy) / size + 0.5f) }
+    }
+
+    private const val CENTROID_STEPS = 16
+
+    private val iconFractions = HashMap<String, Float>()
+
+    /**
+     * How much of the container's width the icon should take for [key]. Shapes that dip in toward
+     * the middle (flower, star) get a smaller icon so it stays inside the shape; full shapes get
+     * up to [max]. Scales with the inradius, the closest the outline comes to the center.
+     */
+    fun iconFraction(
+        key: String,
+        max: Float,
+    ): Float {
+        val inradius =
+            iconFractions.getOrPut(key) {
+                var m = 0.5f
+                for (c in polygon(key).cubics) {
+                    for (i in 0..CENTROID_STEPS) {
+                        val t = i.toFloat() / CENTROID_STEPS
+                        val u = 1 - t
+                        val x = u * u * u * c.anchor0X + 3 * u * u * t * c.control0X + 3 * u * t * t * c.control1X + t * t * t * c.anchor1X
+                        val y = u * u * u * c.anchor0Y + 3 * u * u * t * c.control0Y + 3 * u * t * t * c.control1Y + t * t * t * c.anchor1Y
+                        m = minOf(m, kotlin.math.hypot(x - 0.5f, y - 0.5f))
+                    }
+                }
+                m
+            }
+        // Glyphs leave their corners empty, so the icon box may reach a little past the inradius.
+        return (inradius * 1.3f).coerceIn(0.42f, max)
     }
 
     fun polygon(key: String): RoundedPolygon =
         cache.getOrPut(key) {
             when (key) {
-                // 9-scallop "cookie" from the M3E shape set.
-                "cookie" -> RoundedPolygon.star(9, innerRadius = 0.82f, rounding = CornerRounding(0.3f, smoothing = 0.5f))
-                "clover" -> RoundedPolygon.star(4, innerRadius = 0.45f, rounding = CornerRounding(0.42f, smoothing = 0.3f))
-                "sunny" -> RoundedPolygon.star(8, innerRadius = 0.86f, rounding = CornerRounding(0.12f))
-                "gem" -> RoundedPolygon(6, rounding = CornerRounding(0.3f, smoothing = 0.6f))
-                "flower" -> RoundedPolygon.star(6, innerRadius = 0.62f, rounding = CornerRounding(0.36f, smoothing = 0.4f))
-                "star" -> RoundedPolygon.star(5, innerRadius = 0.52f, rounding = CornerRounding(0.18f, smoothing = 0.2f))
-                "burst" -> RoundedPolygon.star(12, innerRadius = 0.84f, rounding = CornerRounding(0.12f, smoothing = 0.2f))
-                else -> RoundedPolygon.circle(numVertices = 12)
+                "cookie" -> MaterialShapes.Cookie9Sided
+                "clover" -> MaterialShapes.Clover4Leaf
+                "sunny" -> MaterialShapes.Sunny
+                "gem" -> MaterialShapes.Gem
+                "flower" -> MaterialShapes.Flower
+                // Burst's sharp spikes left most of an icon outside the shape; SoftBurst is the
+                // rounded variant made for holding content.
+                "burst" -> MaterialShapes.SoftBurst
+                // No Material star: rotated so a point faces up, which keeps it symmetric left to
+                // right (star() starts its first point facing right, which pushed it off-center).
+                "star" ->
+                    RoundedPolygon
+                        .star(5, innerRadius = 0.52f, rounding = CornerRounding(0.18f, smoothing = 0.2f))
+                        .transformed { x, y -> TransformResult(y, -x) }
+                else -> MaterialShapes.Circle
             }.centeredInUnitSquare()
         }
 
@@ -70,7 +137,11 @@ object ExpressiveShapes {
     ): Path {
         into.rewind()
         val target = polygon(key)
-        if (progress >= 1f) target.toPath(into) else Morph(circle, target).toPath(progress, into)
+        if (progress >= 1f) {
+            target.toPath(into)
+        } else {
+            morphs.getOrPut(key) { Morph(circle, target) }.toPath(progress, into)
+        }
         into.transform(Matrix().apply { setScale(width, height) })
         return into
     }

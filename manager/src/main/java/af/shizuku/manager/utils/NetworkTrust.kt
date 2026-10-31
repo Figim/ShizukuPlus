@@ -44,19 +44,11 @@ object NetworkTrust {
     @JvmStatic
     fun trustedSsids(): Set<String> = ShizukuSettings.getPreferences().getStringSet(KEY_TRUSTED_SSIDS, emptySet()) ?: emptySet()
 
-    fun trustSsid(ssid: String) {
+    fun setTrustedSsids(ssids: Set<String>) {
         ShizukuSettings
             .getPreferences()
             .edit()
-            .putStringSet(KEY_TRUSTED_SSIDS, trustedSsids() + ssid)
-            .apply()
-    }
-
-    fun forgetSsid(ssid: String) {
-        ShizukuSettings
-            .getPreferences()
-            .edit()
-            .putStringSet(KEY_TRUSTED_SSIDS, trustedSsids() - ssid)
+            .putStringSet(KEY_TRUSTED_SSIDS, ssids)
             .apply()
     }
 
@@ -83,6 +75,32 @@ object NetworkTrust {
         return fromManager
     }
 
+    /**
+     * The current SSID through location access, or, off the main thread, through the shell when
+     * that access is missing. Networks picked from the device's list must match here too, and
+     * nothing asks for location, so without the shell route "Trusted only" never trusted anything.
+     */
+    @JvmStatic
+    fun resolveSsid(context: Context): String? {
+        currentSsid(context)?.let { return it }
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) return null
+        // Capability callbacks fire on every signal change; ask the shell once per network.
+        val cm = context.getSystemService(ConnectivityManager::class.java) ?: return null
+        val handle = cm.activeNetwork?.networkHandle ?: return null
+        val now = android.os.SystemClock.elapsedRealtime()
+        shellSsidCache?.let { (cachedHandle, ssid, at) ->
+            if (cachedHandle == handle && (ssid != null || now - at < SHELL_MISS_RETRY_MS)) return ssid
+        }
+        return WifiNetworks.currentViaShellBlocking().also { shellSsidCache = Triple(handle, it, now) }
+    }
+
+    /** Network handle, its SSID from the shell (null when it couldn't be read), and when. */
+    @Volatile
+    private var shellSsidCache: Triple<Long, String?, Long>? = null
+
+    // A failed read (e.g. the service wasn't up yet) is retried after this long.
+    private const val SHELL_MISS_RETRY_MS = 30_000L
+
     @JvmStatic
     fun assess(context: Context): Assessment {
         val caps = activeCapabilities(context) ?: return Assessment(Verdict.TRUSTED, null, null)
@@ -92,7 +110,7 @@ object NetworkTrust {
         if (!onLan) return Assessment(Verdict.TRUSTED, null, null)
 
         val info = wifiInfo(context)
-        val ssid = currentSsid(context)
+        val ssid = resolveSsid(context)
         val protectionMode = mode()
         if (ssid != null && ssid in trustedSsids()) return Assessment(Verdict.TRUSTED, null, ssid)
 

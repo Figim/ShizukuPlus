@@ -380,8 +380,6 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 }.show()
             true // Intercept click to show presets dialog first
         }
-
-        applyModeConstraints()
     }
 
     override fun onResume() {
@@ -390,54 +388,15 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     }
 
     /**
-     * Show/hide and enable/disable preferences based on the current connection mode (#433).
-     *
-     * ADB mode (uid 2000): root-only categories (SU Bridge, rootless bridges, mocking/simulation,
-     *   bootloader integration) are grayed out -- they require a root shell to function.
-     *   The ADB connection category gets an explanatory summary.
-     *
-     * Root mode: ADB connection tools (adb_proxy, on_device_adb_tcp, force_start_wadb) are hidden
-     *   since they are meaningless when Shizuku is started by a root process directly.
-     *
-     * When the server is not running (uid == -1) no restrictions are applied so users can still
-     * browse and configure settings before starting Shizuku.
+     * In ADB mode (uid 2000) the bootloader integration needs an unlocked bootloader, so it's
+     * greyed out on a locked one. Every other category works in any mode. The uid is a binder
+     * call, so it's read off the main thread.
      */
     private fun applyModeConstraints() {
-        val uid =
-            try {
-                Shizuku.getUid()
-            } catch (_: Exception) {
-                -1
-            }
-
-        val isRootMode =
-            EnvironmentUtils.isRooted() ||
-                ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
-
-        when {
-            uid == 2000 -> {
-                // Running in ADB/shell mode -- enable rootless bridges, SU bridge (rish emulation),
-                // and mocking/simulation features so ADB users gain full access.
-                val bridgeCategories =
-                    listOf(
-                        "category_su_bridge",
-                        "category_root_modules",
-                        "category_ghost_bridge",
-                    )
-                for (key in bridgeCategories) {
-                    findPreference<PreferenceGroup>(key)?.apply {
-                        isEnabled = true
-                    }
-                }
-                findPreference<PreferenceGroup>("category_unlocked_bootloader")?.apply {
-                    isEnabled = isBootloaderUnlocked()
-                }
-            }
-            isRootMode && uid != -1 -> {
-                // Running in root mode
-            }
-            else -> {
-                // Server not running
+        viewLifecycleOwnerLiveData.value?.lifecycleScope?.launch {
+            val adbMode = withContext(Dispatchers.IO) { runCatching { Shizuku.getUid() }.getOrDefault(-1) == 2000 }
+            if (adbMode) {
+                findPreference<PreferenceGroup>("category_unlocked_bootloader")?.isEnabled = isBootloaderUnlocked()
             }
         }
     }

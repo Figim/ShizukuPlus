@@ -218,7 +218,6 @@
     <string name="changelog_summary_new_releases">%d نئے ریلیزز</string>
     <string name="changelog_summary_up_to_date">آپ تازہ ترین ورژن پر ہیں</string>
     <string name="settings_automation_trusted_networks">قابل اعتماد نیٹ ورکس</string>
-    <string name="settings_automation_trusted_networks_summary">کاما سے الگ کیے گئے Wi-Fi نیٹ ورک نام (SSIDs)۔ ان میں سے کسی سے جڑے ہونے پر Binder Firewall خودکار طور پر بند رہتا ہے، اور باقی ہر جگہ (موبائل ڈیٹا سمیت) خودکار طور پر فعال رہتا ہے۔ Binder Firewall کو دستی طور پر کنٹرول کرنے کے لیے خالی چھوڑ دیں۔</string>
     <string name="settings_automation_auto_hide_packages">سامنے ہونے پر خودکار چھپائیں</string>
     <string name="settings_automation_auto_hide_packages_summary">وہ ایپس جو اوپر دی گئی چھپے ہوئے پیکیجز کی فہرست کے علاوہ صرف کھلے ہونے کے دوران Shadow Binder کی چھپی فہرست میں خودکار طور پر شامل ہوتی ہیں۔ چھپے ہوئے پیکیجز دستی طور پر منظم کرنے کے لیے خالی چھوڑ دیں۔</string>
     <string name="su_path_preset_default">ڈیفالٹ (خودکار شناخت)</string>
@@ -291,12 +290,7 @@
     <string name="nav_back">واپس</string>
     <string name="help_stealth_mode_title">اسٹیلتھ موڈ</string>
     <string name="help_stealth_mode_detail">Binder کی سطح پر PackageManager کوئریز کو روکتا ہے اور ShizukuPlus اور Shizuku پیکیجز کے لیے "انسٹال نہیں" لوٹاتا ہے۔ جو ایپس root ٹولز کی شناخت کے لیے PM استعمال کرتی ہیں (بینکنگ ایپس، DRM چیکس) وہ انہیں نہیں ڈھونڈ سکیں گی۔ نوٹ: یہ انہیں صرف PackageManager کوئریز سے چھپاتا ہے — ڈیولپر موڈ اور USB ڈیبگنگ ان ایپس کو اب بھی نظر آتے ہیں جو Android سیٹنگز براہ راست چیک کرتی ہیں۔</string>
-    <string name="corner_style_global">گلوبل سیٹنگ کی پیروی کریں</string>
     <string name="corner_style_sharp">تیز / سیدھے</string>
-    <string name="corner_style_rounded">گول (M3)</string>
-    <string name="corner_style_large">بڑے گول</string>
-    <string name="corner_style_squircle">اسکوئرکل</string>
-    <string name="corner_style_extra_large">بہت بڑے</string>
     <string name="home_permission_manager_title">پرمیشن مینیجر</string>
     <string name="home_permission_manager_summary">بغیر root کسی بھی ایپ کو شیل سطح کی اجازتیں دیں</string>
     <string name="permission_manager_search_hint">ایپس تلاش کریں…</string>
@@ -593,9 +587,7 @@
     <string name="settings_tcp_protection_open">کھلے نیٹ ورکس</string>
     <string name="settings_tcp_protection_trusted">صرف قابل اعتماد</string>
     <string name="settings_tcp_trusted_networks_label">قابل اعتماد Wi-Fi نیٹ ورکس</string>
-    <string name="settings_tcp_add_network">+ نیٹ ورک شامل کریں</string>
     <string name="settings_tcp_auto_close_untrusted">غیر معتبر نیٹ ورکس پر خودکار بند کریں</string>
-    <string name="settings_tcp_add_network_dialog_title">قابل اعتماد نیٹ ورک شامل کریں</string>
     <string name="settings_tcp_ssid_label">نیٹ ورک کا نام (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s کو ہٹائیں</string>
     <string name="tcp_protection_off">بند</string>

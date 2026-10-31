@@ -431,7 +431,6 @@
     <string name="diagnostics_warning_automation_stopped">已配置网络自动化规则，但服务已停止 — Binder 防火墙不会自动切换。点按重启。</string>
     <string name="diagnostics_automation_start_failed">无法启动自动化服务</string>
     <string name="diagnostics_battery_settings_open_failed">无法打开电池设置</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">前往功能中心 → 安全与访问 → 影子 Binder 以选择应用</string>
     <string name="diagnostics_device_owner_setup_title">设置设备所有者</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku 模式需要此应用成为设备所有者。\n\n请在电脑上运行以下命令（需已开启 USB 调试）：\n\n%1$s</string>
     <string name="diagnostics_copy_command">复制命令</string>
@@ -1012,7 +1011,6 @@
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">受信任网络</string>
-    <string name="settings_automation_trusted_networks_summary">以英文逗号分隔的 Wi-Fi 网络名称（SSID）。连接到其中之一时会自动关闭 Binder 防火墙，在其他所有网络（包括移动数据）上则自动开启。留空则改为手动控制 Binder 防火墙。</string>
     <string name="settings_automation_auto_hide_packages">前台运行时自动隐藏</string>
     <string name="settings_automation_auto_hide_packages_summary">这些应用仅在打开时会被自动加入影子 Binder 的隐藏列表（在上方「隐藏的软件包」之外）。留空则改为手动管理隐藏的软件包。</string>
 
@@ -1241,12 +1239,7 @@
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">隐身模式</string>
     <string name="help_stealth_mode_detail">在 Binder 层拦截 PackageManager 查询，对 ShizukuPlus 与 Shizuku 包返回「未安装」。使用 PM 检测 root 工具的应用（银行类应用、DRM 检查）将无法找到它们。注意：这只会让它们在 PackageManager 查询中不可见——直接读取 Android 设置的应用仍能发现开发者模式与 USB 调试。</string>
-    <string name="corner_style_global">跟随全局设置</string>
     <string name="corner_style_sharp">直角 / 扁平</string>
-    <string name="corner_style_rounded">圆角（M3）</string>
-    <string name="corner_style_large">大圆角</string>
-    <string name="corner_style_squircle">方圆形</string>
-    <string name="corner_style_extra_large">超大圆角</string>
 
     <!-- Permission Manager card &amp; screen -->
     <string name="home_permission_manager_title">权限管理器</string>
@@ -1473,9 +1466,7 @@
     <string name="settings_tcp_protection_open">开放网络</string>
     <string name="settings_tcp_protection_trusted">仅受信任</string>
     <string name="settings_tcp_trusted_networks_label">受信任的 Wi-Fi 网络</string>
-    <string name="settings_tcp_add_network">+ 添加网络</string>
     <string name="settings_tcp_auto_close_untrusted">在不受信任网络上自动关闭</string>
-    <string name="settings_tcp_add_network_dialog_title">添加受信任网络</string>
     <string name="settings_tcp_ssid_label">网络名称（SSID）</string>
     <string name="settings_tcp_remove_network">移除 %1$s</string>
     <string name="settings_legacy_rish_keepalive">旧版 rish 兼容</string>

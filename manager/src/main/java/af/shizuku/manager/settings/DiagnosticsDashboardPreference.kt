@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 class DiagnosticsDashboardPreference
     @JvmOverloads
@@ -188,27 +189,12 @@ class DiagnosticsDashboardPreference
                             }
                         }
                         "shadow_binder_no_apps" -> {
-                            val activity = context as? androidx.fragment.app.FragmentActivity
-                            val frag =
-                                activity
-                                    ?.supportFragmentManager
-                                    ?.findFragmentById(R.id.fragment_container)
-                            val opened =
-                                if (frag is androidx.preference.PreferenceFragmentCompat) {
-                                    frag.findPreference<Preference>("shadow_binder_hidden_packages")?.let {
-                                        frag.onPreferenceTreeClick(it)
-                                    } == true
-                                } else {
-                                    false
-                                }
-                            if (!opened) {
-                                Toast
-                                    .makeText(
-                                        context,
-                                        R.string.diagnostics_shadow_binder_navigate_hint,
-                                        Toast.LENGTH_LONG,
-                                    ).show()
-                            }
+                            // The app list lives on the Root integration screen; open it there.
+                            context.startActivity(
+                                Intent(context, SettingsActivity::class.java)
+                                    .putExtra("highlight_key", "shadow_binder_hidden_packages")
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            )
                         }
                         "dhizuku_not_owner" -> {
                             // applicationId differs from namespace (af.shizuku.manager), so the full class name
@@ -256,9 +242,16 @@ class DiagnosticsDashboardPreference
                             notifyChanged()
                         }
                         "device_hardening_disabled" -> {
+                            // Same as turning it on in Behavior: the setting alone doesn't harden anything.
                             ShizukuSettings.setDeviceHardeningEnabled(true)
-                            Toast.makeText(context, R.string.device_hardening_applied, Toast.LENGTH_SHORT).show()
                             notifyChanged()
+                            val appContext = context.applicationContext
+                            kotlinx.coroutines.MainScope().launch {
+                                val applied =
+                                    af.shizuku.manager.utils.DeviceOptimizer
+                                        .applyFixes(appContext)
+                                if (applied) Toast.makeText(appContext, R.string.device_hardening_applied, Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }

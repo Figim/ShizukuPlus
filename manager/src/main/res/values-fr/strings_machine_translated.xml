@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Des règles d\'automatisation réseau sont configurées, mais le service est arrêté : le pare-feu Binder ne basculera pas automatiquement. Appuyez pour redémarrer.</string>
     <string name="diagnostics_automation_start_failed">Impossible de démarrer le service d\'automatisation</string>
     <string name="diagnostics_battery_settings_open_failed">Impossible d\'ouvrir les paramètres de la batterie</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Allez dans Feature Hub → Sécurité &amp; accès → Shadow Binder pour sélectionner des applications</string>
     <string name="diagnostics_device_owner_setup_title">Configurer le propriétaire de l\'appareil</string>
     <string name="diagnostics_device_owner_setup_message">Le mode Dhizuku nécessite que cette application soit le propriétaire de l\'appareil.\n\nExécutez cette commande depuis votre PC (le débogage USB doit être activé) :\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copier la commande</string>
@@ -694,7 +693,6 @@
     <string name="settings_shadow_binder_hidden_packages">Paquets masqués</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Liste de noms de paquets, séparés par des virgules, à masquer aux autres applications. Si Shizuku d\'origine et Shizuku+ sont tous deux installés, ajoutez les deux (moe.shizuku.privileged.api, af.shizuku.manager) pour éviter les conflits.</string>
     <string name="settings_automation_trusted_networks">Réseaux de confiance</string>
-    <string name="settings_automation_trusted_networks_summary">Noms de réseaux Wi-Fi (SSID) séparés par des virgules. Le pare-feu Binder est désactivé automatiquement tant que vous êtes connecté à l\'un d\'eux, et activé automatiquement partout ailleurs (y compris en données mobiles). Laissez vide pour contrôler le pare-feu Binder manuellement.</string>
     <string name="settings_automation_auto_hide_packages">Masquage automatique au premier plan</string>
     <string name="settings_automation_auto_hide_packages_summary">Applications automatiquement ajoutées à la liste masquée de Shadow Binder uniquement tant qu\'elles sont ouvertes, en plus de la liste des paquets masqués ci-dessus. Laissez vide pour gérer les paquets masqués manuellement.</string>
     <string name="settings_companion_mode">Afficher la carte compagnon</string>
@@ -873,12 +871,7 @@
     <string name="nav_back">Retour</string>
     <string name="help_stealth_mode_title">Mode furtif</string>
     <string name="help_stealth_mode_detail">Intercepte les requêtes PackageManager au niveau de Binder et renvoie « non installé » pour les paquets ShizukuPlus et Shizuku. Les applications qui utilisent PM pour détecter les outils root (applications bancaires, contrôles DRM) ne les trouveront pas. Remarque : cela ne les masque que des requêtes PackageManager ; le mode développeur et le débogage USB restent visibles pour les applications qui consultent directement les paramètres Android.</string>
-    <string name="corner_style_global">Suivre le réglage global</string>
     <string name="corner_style_sharp">Anguleux / plats</string>
-    <string name="corner_style_rounded">Arrondis (M3)</string>
-    <string name="corner_style_large">Grands arrondis</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Très grands</string>
     <string name="home_permission_manager_title">Gestionnaire d\'autorisations</string>
     <string name="home_permission_manager_summary">Accorder des autorisations de niveau shell à n\'importe quelle application sans root</string>
     <string name="permission_manager_search_hint">Rechercher des applications…</string>
@@ -1158,9 +1151,7 @@
     <string name="settings_tcp_protection_open">Réseaux ouverts</string>
     <string name="settings_tcp_protection_trusted">Approuvé uniquement</string>
     <string name="settings_tcp_trusted_networks_label">Réseaux Wi-Fi approuvés</string>
-    <string name="settings_tcp_add_network">+ Ajouter un réseau</string>
     <string name="settings_tcp_auto_close_untrusted">Fermeture automatique sur réseaux non approuvés</string>
-    <string name="settings_tcp_add_network_dialog_title">Ajouter un réseau approuvé</string>
     <string name="settings_tcp_ssid_label">Nom du réseau (SSID)</string>
     <string name="tcp_protection_off">Désactivé</string>
     <string name="tcp_protection_open">Wi-Fi ouvert et public</string>

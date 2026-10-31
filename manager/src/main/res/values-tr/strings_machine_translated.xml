@@ -240,7 +240,6 @@
     <string name="diagnostics_warning_automation_stopped">Ağ otomasyonu kuralları yapılandırıldı ancak hizmet durdurulmuş. Binder Güvenlik Duvarı otomatik olarak açılıp kapanmaz. Yeniden başlatmak için dokunun.</string>
     <string name="diagnostics_automation_start_failed">Otomasyon hizmeti başlatılamadı</string>
     <string name="diagnostics_battery_settings_open_failed">Pil ayarları açılamadı</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Uygulamaları seçmek için Özellik Merkezi → Güvenlik &amp; Erişim → Shadow Binder yolunu izleyin</string>
     <string name="diagnostics_device_owner_setup_title">Cihaz Sahibini Ayarla</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Modu, bu uygulamanın Cihaz Sahibi olmasını gerektirir.\n\nBu komutu bilgisayarınızdan çalıştırın (USB hata ayıklama etkin olmalıdır):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Komutu Kopyala</string>
@@ -692,7 +691,6 @@
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketler</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Diğer uygulamalardan gizlenecek paket adlarının virgülle ayrılmış listesi. Hem orijinal Shizuku hem de Shizuku+ yüklüyse çakışmaları önlemek için ikisini de ekleyin (moe.shizuku.privileged.api, af.shizuku.manager).</string>
     <string name="settings_automation_trusted_networks">Güvenilir Ağlar</string>
-    <string name="settings_automation_trusted_networks_summary">Virgülle ayrılmış Wi-Fi ağ adları (SSID). Bunlardan birine bağlıyken Binder Güvenlik Duvarı otomatik olarak devre dışı bırakılır, başka her yerde (mobil veri dahil) otomatik olarak etkinleştirilir. Binder Güvenlik Duvarı\'nı elle denetlemek için boş bırakın.</string>
     <string name="settings_automation_auto_hide_packages">Ön Plandayken Otomatik Gizle</string>
     <string name="settings_automation_auto_hide_packages_summary">Yukarıdaki Gizli Paketler listesine ek olarak, yalnızca açık oldukları sürece Shadow Binder\'ın gizli listesine otomatik eklenen uygulamalar. Gizli paketleri elle yönetmek için boş bırakın.</string>
     <string name="settings_companion_mode">Yardımcı Kartı Göster</string>
@@ -871,12 +869,7 @@
     <string name="nav_back">Geri</string>
     <string name="help_stealth_mode_title">Gizli Mod</string>
     <string name="help_stealth_mode_detail">PackageManager sorgularını Binder düzeyinde yakalar ve ShizukuPlus ile Shizuku paketleri için "yüklü değil" döndürür. Root araçlarını algılamak için PM kullanan uygulamalar (bankacılık uygulamaları, DRM denetimleri) bunları bulamaz. Not: bu yalnızca PackageManager sorgularından gizler; geliştirici modu ve USB hata ayıklama, Android ayarlarını doğrudan denetleyen uygulamalar tarafından hâlâ görülebilir.</string>
-    <string name="corner_style_global">Genel ayarı izle</string>
     <string name="corner_style_sharp">Keskin / Düz</string>
-    <string name="corner_style_rounded">Yuvarlak (M3)</string>
-    <string name="corner_style_large">Büyük Yuvarlak</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Çok Büyük</string>
     <string name="home_permission_manager_title">İzin Yöneticisi</string>
     <string name="home_permission_manager_summary">Herhangi bir uygulamaya root olmadan kabuk düzeyinde izinler verin</string>
     <string name="permission_manager_search_hint">Uygulama ara…</string>
@@ -1154,9 +1147,7 @@
     <string name="settings_tcp_protection_open">Açık ağlar</string>
     <string name="settings_tcp_protection_trusted">Yalnızca güvenilenler</string>
     <string name="settings_tcp_trusted_networks_label">Güvenilen Wi-Fi ağları</string>
-    <string name="settings_tcp_add_network">+ Ağ ekle</string>
     <string name="settings_tcp_auto_close_untrusted">Güvenilmeyen ağlarda otomatik kapat</string>
-    <string name="settings_tcp_add_network_dialog_title">Güvenilen ağ ekle</string>
     <string name="settings_tcp_ssid_label">Ağ adı (SSID)</string>
     <string name="settings_tcp_remove_network">Kaldır: %1$s</string>
     <string name="tcp_protection_off">Kapalı</string>

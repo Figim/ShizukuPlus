@@ -119,7 +119,7 @@ object SettingsSearchEngine {
         val items = indexedItems ?: return emptyList()
         if (query.isBlank()) return emptyList()
         val q = query.trim().lowercase()
-        val devUnlocked = ShizukuSettings.isVectorEnabled()
+        val devUnlocked = ShizukuSettings.isDevOptionsUnlocked()
         val appIdentityOn = ShizukuSettings.isExperimentalAppIdentityEnabled()
 
         return items.filter { item ->

@@ -15,7 +15,6 @@ import af.shizuku.manager.starter.StarterActivity
 import af.shizuku.manager.utils.CustomTabsHelper
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.IconStyleHelper
-import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.Context
@@ -25,7 +24,6 @@ import android.os.Build
 import android.provider.Settings
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -111,11 +109,7 @@ class StartWirelessAdbViewHolder(
     private val originalIcon = binding.icon.drawable
 
     init {
-        containerBinding.root.applySpringTouch()
-        containerBinding.root.setOnLongClickListener {
-            HomeEditMode.enter()
-            true
-        }
+        HomeEditMode.bindCardGestures(containerBinding, this)
         binding.button1.setOnClickListener { _: View ->
             if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
                 Toast.makeText(context, context.getString(R.string.toast_shizuku_already_starting), Toast.LENGTH_SHORT).show()
@@ -198,17 +192,6 @@ class StartWirelessAdbViewHolder(
                     // Only a stale cached TLS port — open dialog so mDNS can rediscover the current port.
                     AdbDialogFragment.forUserGesture().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 }
-            }
-        }
-
-        containerBinding.dragHandle.apply {
-            setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartWirelessAdbViewHolder)
-                false
-            }
-            setOnLongClickListener {
-                HomeEditMode.enter()
-                true
             }
         }
 

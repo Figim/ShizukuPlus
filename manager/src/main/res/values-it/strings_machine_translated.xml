@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Le regole di automazione di rete sono configurate ma il servizio è arrestato: Binder Firewall non si attiverà automaticamente. Tocca per riavviare.</string>
     <string name="diagnostics_automation_start_failed">Impossibile avviare il servizio di automazione</string>
     <string name="diagnostics_battery_settings_open_failed">Impossibile aprire le impostazioni della batteria</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Vai a Feature Hub → Sicurezza &amp; Accesso → Shadow Binder per selezionare le app</string>
     <string name="diagnostics_device_owner_setup_title">Configura Device Owner</string>
     <string name="diagnostics_device_owner_setup_message">La modalità Dhizuku richiede che questa app sia il Device Owner.\n\nEsegui questo comando dal PC (il debug USB deve essere abilitato):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copia comando</string>
@@ -695,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">Pacchetti nascosti</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Elenco di nomi di pacchetto separati da virgola da nascondere alle altre app. Se hai installato sia Shizuku originale che Shizuku+, aggiungi entrambi (moe.shizuku.privileged.api, af.shizuku.manager) per evitare conflitti.</string>
     <string name="settings_automation_trusted_networks">Reti attendibili</string>
-    <string name="settings_automation_trusted_networks_summary">Nomi di reti Wi-Fi (SSID) separati da virgola. Il Firewall Binder viene disattivato automaticamente quando sei connesso a una di queste reti e attivato automaticamente ovunque altrove (compresi i dati mobili). Lascia vuoto per controllare il Firewall Binder manualmente.</string>
     <string name="settings_automation_auto_hide_packages">Nascondi automaticamente in primo piano</string>
     <string name="settings_automation_auto_hide_packages_summary">App che vengono aggiunte automaticamente all\'elenco nascosto di Shadow Binder solo mentre sono aperte, oltre all\'elenco Pacchetti nascosti qui sopra. Lascia vuoto per gestire i pacchetti nascosti manualmente.</string>
     <string name="settings_companion_mode">Mostra scheda Companion</string>
@@ -874,12 +872,7 @@
     <string name="nav_back">Indietro</string>
     <string name="help_stealth_mode_title">Modalità invisibile</string>
     <string name="help_stealth_mode_detail">Intercetta le query a PackageManager a livello Binder e restituisce "non installato" per i pacchetti ShizukuPlus e Shizuku. Le app che usano PM per rilevare strumenti root (app bancarie, controlli DRM) non li troveranno. Nota: li nasconde solo dalle query a PackageManager; la modalità sviluppatore e il debug USB restano visibili alle app che controllano direttamente le impostazioni di Android.</string>
-    <string name="corner_style_global">Segui impostazione globale</string>
     <string name="corner_style_sharp">Spigoloso / Piatto</string>
-    <string name="corner_style_rounded">Arrotondato (M3)</string>
-    <string name="corner_style_large">Molto arrotondato</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extra large</string>
     <string name="home_permission_manager_title">Gestione permessi</string>
     <string name="home_permission_manager_summary">Concedi permessi a livello shell a qualsiasi app senza root</string>
     <string name="permission_manager_search_hint">Cerca app…</string>
@@ -1206,9 +1199,7 @@
     <string name="settings_tcp_protection_open">Reti aperte</string>
     <string name="settings_tcp_protection_trusted">Solo attendibili</string>
     <string name="settings_tcp_trusted_networks_label">Reti Wi-Fi attendibili</string>
-    <string name="settings_tcp_add_network">+ Aggiungi rete</string>
     <string name="settings_tcp_auto_close_untrusted">Chiudi automaticamente su reti non attendibili</string>
-    <string name="settings_tcp_add_network_dialog_title">Aggiungi rete attendibile</string>
     <string name="settings_tcp_ssid_label">Nome rete (SSID)</string>
     <string name="settings_tcp_remove_network">Rimuovi %1$s</string>
     <string name="tcp_protection_off">Disattivato</string>

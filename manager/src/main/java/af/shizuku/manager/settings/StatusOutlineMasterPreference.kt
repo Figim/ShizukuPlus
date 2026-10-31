@@ -3,9 +3,9 @@ package af.shizuku.manager.settings
 import af.shizuku.core.ui.AppActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ktx.findActivity
 import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.compose.animation.AnimatedVisibility
@@ -119,7 +119,7 @@ class StatusOutlineMasterPreference
                             ?.edit()
                             ?.putBoolean("show_status_card_outline", newOn)
                             ?.apply()
-                        context.findAppActivity()?.let { act ->
+                        context.findActivity<AppActivity>()?.let { act ->
                             (act as? SettingsActivity)?.onThemeChanged()
                         }
                     },
@@ -130,7 +130,7 @@ class StatusOutlineMasterPreference
                             ?.edit()
                             ?.putString("status_card_outline_style", newStyle)
                             ?.apply()
-                        context.findAppActivity()?.let { act ->
+                        context.findActivity<AppActivity>()?.let { act ->
                             (act as? SettingsActivity)?.onThemeChanged()
                         }
                     },
@@ -138,15 +138,6 @@ class StatusOutlineMasterPreference
             }
         }
     }
-
-private fun Context.findAppActivity(): AppActivity? {
-    var ctx: Context? = this
-    while (ctx is ContextWrapper) {
-        if (ctx is AppActivity) return ctx
-        ctx = ctx.baseContext
-    }
-    return null
-}
 
 @Composable
 private fun StatusOutlineContent(

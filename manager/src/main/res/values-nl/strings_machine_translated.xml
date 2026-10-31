@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Netwerkautomatiseringsregels zijn geconfigureerd maar de service is gestopt — Binder Firewall schakelt niet automatisch. Tik om te herstarten.</string>
     <string name="diagnostics_automation_start_failed">Kon de automatiseringsservice niet starten</string>
     <string name="diagnostics_battery_settings_open_failed">Kon de batterij-instellingen niet openen</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Ga naar Feature Hub → Beveiliging &amp; toegang → Shadow Binder om apps te selecteren</string>
     <string name="diagnostics_device_owner_setup_title">Device Owner instellen</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku-modus vereist dat deze app de Device Owner is.\n\nVoer deze opdracht uit vanaf je pc (USB-foutopsporing moet zijn ingeschakeld):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Opdracht kopiëren</string>
@@ -929,7 +928,6 @@
     <string name="settings_shadow_binder_hidden_packages">Verborgen pakketten</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Kommagescheiden lijst van pakketnamen om voor andere apps te verbergen. Als je zowel originele Shizuku als Shizuku+ hebt geïnstalleerd, voeg dan beide toe (moe.shizuku.privileged.api, af.shizuku.manager) om conflicten te voorkomen.</string>
     <string name="settings_automation_trusted_networks">Vertrouwde netwerken</string>
-    <string name="settings_automation_trusted_networks_summary">Kommagescheiden Wi-Fi-netwerknamen (SSID\'s). Binder Firewall is automatisch uitgeschakeld terwijl verbonden met een van deze, en overal elders automatisch ingeschakeld (inclusief mobiele data). Laat leeg om Binder Firewall handmatig te beheren.</string>
     <string name="settings_automation_auto_hide_packages">Automatisch verbergen op voorgrond</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps die automatisch worden toegevoegd aan de verborgen lijst van Shadow Binder zolang ze geopend zijn, bovenop de bovenstaande lijst van verborgen pakketten. Laat leeg om verborgen pakketten handmatig te beheren.</string>
     <string name="settings_companion_mode">Companion-kaart weergeven</string>
@@ -1119,12 +1117,7 @@
     <string name="nav_back">Terug</string>
     <string name="help_stealth_mode_title">Onzichtbare modus</string>
     <string name="help_stealth_mode_detail">Onderschept PackageManager-query\'s op het Binder-niveau en retourneert \"niet geïnstalleerd\" voor ShizukuPlus- en Shizuku-pakketten. Apps die PM gebruiken om root-tools te detecteren (bank-apps, DRM-controles) zullen ze niet vinden. Opmerking: dit verbergt ze alleen voor PackageManager-query\'s — ontwikkelaarsmodus en USB-foutopsporing blijven zichtbaar voor apps die Android-instellingen rechtstreeks controleren.</string>
-    <string name="corner_style_global">Algemene instelling volgen</string>
     <string name="corner_style_sharp">Scherp / Vlak</string>
-    <string name="corner_style_rounded">Afgerond (M3)</string>
-    <string name="corner_style_large">Groot afgerond</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extra groot</string>
     <string name="home_permission_manager_title">Machtigingenbeheer</string>
     <string name="home_permission_manager_summary">Shell-machtigingen toekennen aan elke app zonder root</string>
     <string name="permission_manager_search_hint">Apps zoeken…</string>
@@ -1153,9 +1146,7 @@
     <string name="settings_tcp_protection_open">Open netwerken</string>
     <string name="settings_tcp_protection_trusted">Alleen vertrouwd</string>
     <string name="settings_tcp_trusted_networks_label">Vertrouwde Wi-Fi-netwerken</string>
-    <string name="settings_tcp_add_network">+ Netwerk toevoegen</string>
     <string name="settings_tcp_auto_close_untrusted">Automatisch sluiten op niet-vertrouwde netwerken</string>
-    <string name="settings_tcp_add_network_dialog_title">Vertrouwd netwerk toevoegen</string>
     <string name="settings_tcp_ssid_label">Netwerknaam (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s verwijderen</string>
     <string name="tcp_protection_off">Uit</string>

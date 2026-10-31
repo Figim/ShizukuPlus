@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">تم إعداد قواعد أتمتة الشبكة لكن الخدمة متوقفة — لن يتبدل Binder Firewall تلقائيًا. اضغط لإعادة التشغيل.</string>
     <string name="diagnostics_automation_start_failed">تعذر بدء خدمة الأتمتة</string>
     <string name="diagnostics_battery_settings_open_failed">تعذر فتح إعدادات البطارية</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">انتقل إلى Feature Hub ← الأمان والوصول ← Shadow Binder لتحديد التطبيقات</string>
     <string name="diagnostics_device_owner_setup_title">إعداد مالك الجهاز</string>
     <string name="diagnostics_device_owner_setup_message">يتطلب وضع Dhizuku أن يكون هذا التطبيق مالك الجهاز.\n\nشغّل هذا الأمر من الكمبيوتر (يجب تفعيل تصحيح USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">نسخ الأمر</string>
@@ -695,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">الحزم المخفية</string>
     <string name="settings_shadow_binder_hidden_packages_summary">قائمة مفصولة بفواصل لأسماء الحزم المراد إخفاؤها عن التطبيقات الأخرى. إذا كان Shizuku الأصلي وShizuku+ مثبّتين معًا، أضف كليهما (moe.shizuku.privileged.api وaf.shizuku.manager) لمنع التعارض.</string>
     <string name="settings_automation_trusted_networks">الشبكات الموثوقة</string>
-    <string name="settings_automation_trusted_networks_summary">أسماء شبكات Wi-Fi (SSID) مفصولة بفواصل. يُعطَّل جدار حماية Binder تلقائيًا أثناء الاتصال بإحداها، ويُفعَّل تلقائيًا في كل مكان آخر (بما في ذلك بيانات الجوال). اتركها فارغة للتحكم بجدار حماية Binder يدويًا.</string>
     <string name="settings_automation_auto_hide_packages">إخفاء تلقائي أثناء العمل في المقدمة</string>
     <string name="settings_automation_auto_hide_packages_summary">التطبيقات التي تُضاف تلقائيًا إلى قائمة الإخفاء في Shadow Binder فقط أثناء فتحها، إضافة إلى قائمة الحزم المخفية أعلاه. اتركها فارغة لإدارة الحزم المخفية يدويًا.</string>
     <string name="settings_companion_mode">إظهار بطاقة المرافق</string>
@@ -874,12 +872,7 @@
     <string name="nav_back">رجوع</string>
     <string name="help_stealth_mode_title">وضع التخفي</string>
     <string name="help_stealth_mode_detail">يعترض استعلامات PackageManager على مستوى Binder ويُرجع «غير مثبّت» لحزم ShizukuPlus وShizuku. التطبيقات التي تستخدم PM لاكتشاف أدوات root (تطبيقات البنوك وفحوص DRM) لن تجدهما. ملاحظة: هذا يخفيهما عن استعلامات PackageManager فقط — يظل وضع المطور وتصحيح USB مرئيين للتطبيقات التي تفحص إعدادات Android مباشرة.</string>
-    <string name="corner_style_global">اتباع الإعداد العام</string>
     <string name="corner_style_sharp">حاد / مسطح</string>
-    <string name="corner_style_rounded">مستدير (M3)</string>
-    <string name="corner_style_large">مستدير كبير</string>
-    <string name="corner_style_squircle">شبه دائري</string>
-    <string name="corner_style_extra_large">كبير جدًا</string>
     <string name="home_permission_manager_title">مدير الأذونات</string>
     <string name="home_permission_manager_summary">منح أذونات مستوى الصدفة لأي تطبيق دون root</string>
     <string name="permission_manager_search_hint">البحث في التطبيقات…</string>
@@ -1154,9 +1147,7 @@
     <string name="settings_tcp_protection_open">الشبكات المفتوحة</string>
     <string name="settings_tcp_protection_trusted">الموثوقة فقط</string>
     <string name="settings_tcp_trusted_networks_label">شبكات Wi-Fi الموثوقة</string>
-    <string name="settings_tcp_add_network">+ إضافة شبكة</string>
     <string name="settings_tcp_auto_close_untrusted">الإغلاق التلقائي على الشبكات غير الموثوقة</string>
-    <string name="settings_tcp_add_network_dialog_title">إضافة شبكة موثوقة</string>
     <string name="settings_tcp_ssid_label">اسم الشبكة (SSID)</string>
     <string name="settings_tcp_remove_network">إزالة %1$s</string>
     <string name="tcp_protection_off">إيقاف</string>

@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Đã cấu hình quy tắc tự động hóa mạng nhưng dịch vụ đã dừng — Binder Firewall sẽ không tự động bật/tắt. Nhấn để khởi động lại.</string>
     <string name="diagnostics_automation_start_failed">Không thể khởi động dịch vụ tự động hóa</string>
     <string name="diagnostics_battery_settings_open_failed">Không thể mở cài đặt pin</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Vào Feature Hub → Bảo mật &amp; Truy cập → Shadow Binder để chọn ứng dụng</string>
     <string name="diagnostics_device_owner_setup_title">Thiết lập Chủ sở hữu thiết bị</string>
     <string name="diagnostics_device_owner_setup_message">Chế độ Dhizuku yêu cầu ứng dụng này là Chủ sở hữu thiết bị.\n\nHãy chạy lệnh này từ máy tính (phải bật gỡ lỗi USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Sao chép lệnh</string>
@@ -929,7 +928,6 @@
     <string name="settings_shadow_binder_hidden_packages">Gói ứng dụng bị ẩn</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Danh sách tên gói cách nhau bằng dấu phẩy cần ẩn khỏi các ứng dụng khác. Nếu bạn cài đặt cả Shizuku gốc và Shizuku+, hãy thêm cả hai (moe.shizuku.privileged.api, af.shizuku.manager) để tránh xung đột.</string>
     <string name="settings_automation_trusted_networks">Mạng đáng tin cậy</string>
-    <string name="settings_automation_trusted_networks_summary">Tên mạng Wi-Fi (SSID) cách nhau bằng dấu phẩy. Tường lửa Binder sẽ tự động tắt khi kết nối với một trong các mạng này và tự động bật ở mọi nơi khác (bao gồm cả dữ liệu di động). Để trống để kiểm soát Tường lửa Binder theo cách thủ công.</string>
     <string name="settings_automation_auto_hide_packages">Tự động ẩn khi mở ứng dụng</string>
     <string name="settings_automation_auto_hide_packages_summary">Các ứng dụng được tự động thêm vào danh sách ẩn của Shadow Binder chỉ khi chúng đang mở, bên cạnh danh sách Gói ẩn ở trên. Để trống để quản lý các gói ẩn theo cách thủ công.</string>
     <string name="settings_companion_mode">Hiển thị thẻ đồng hành</string>
@@ -1119,12 +1117,7 @@
     <string name="nav_back">Quay lại</string>
     <string name="help_stealth_mode_title">Chế độ tàng hình</string>
     <string name="help_stealth_mode_detail">Chặn các truy vấn PackageManager ở cấp độ Binder và trả về "chưa cài đặt" cho các gói ShizukuPlus và Shizuku. Các ứng dụng sử dụng PM để phát hiện công cụ root (ứng dụng ngân hàng, kiểm tra DRM) sẽ không tìm thấy chúng. Lưu ý: tính năng này chỉ ẩn chúng khỏi các truy vấn PackageManager — chế độ nhà phát triển và gỡ lỗi USB vẫn hiển thị với các ứng dụng kiểm tra trực tiếp cài đặt Android.</string>
-    <string name="corner_style_global">Theo cài đặt chung</string>
     <string name="corner_style_sharp">Sắc nét / Vuông vức</string>
-    <string name="corner_style_rounded">Bo tròn (M3)</string>
-    <string name="corner_style_large">Bo tròn lớn</string>
-    <string name="corner_style_squircle">Hình vuông bo tròn (Squircle)</string>
-    <string name="corner_style_extra_large">Cực lớn</string>
     <string name="home_permission_manager_title">Trình quản lý quyền</string>
     <string name="home_permission_manager_summary">Cấp quyền cấp shell cho bất kỳ ứng dụng nào mà không cần root</string>
     <string name="permission_manager_search_hint">Tìm kiếm ứng dụng…</string>
@@ -1153,9 +1146,7 @@
     <string name="settings_tcp_protection_open">Mạng mở</string>
     <string name="settings_tcp_protection_trusted">Chỉ mạng đáng tin cậy</string>
     <string name="settings_tcp_trusted_networks_label">Mạng Wi-Fi đáng tin cậy</string>
-    <string name="settings_tcp_add_network">+ Thêm mạng</string>
     <string name="settings_tcp_auto_close_untrusted">Tự động đóng trên các mạng không đáng tin cậy</string>
-    <string name="settings_tcp_add_network_dialog_title">Thêm mạng đáng tin cậy</string>
     <string name="settings_tcp_ssid_label">Tên mạng (SSID)</string>
     <string name="settings_tcp_remove_network">Xóa %1$s</string>
     <string name="tcp_protection_off">Tắt</string>

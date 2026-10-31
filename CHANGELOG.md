@@ -21,14 +21,31 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Safer settings backup** — the copy that survives a reinstall is no longer kept in public Downloads, where any app could read or replace it. Scanner API keys and the hidden-apps list aren't stored in it.
 - **AMOLED dark styles are true black on the Home screen**, and turning a setting on no longer puts a black block behind its row.
 - **Icon style changes apply right away** — switching to Two-tone (or any style) no longer showed the previous style until the next change.
-- **Expressive icon shapes are centered** behind their icons (cookie and star were off-center).
+- **Expressive icon shapes are centered** behind their icons (cookie and star were off-center). The shapes now come from Material's own Expressive set, each icon is sized to stay inside its shape (flower and star dip in further, so their icons are a little smaller), and settings icons use the same 40dp container whichever shape you pick.
+- **Smoother card rearranging on Home** — cards no longer jump over each other when a tall card passes a short one, the held card no longer covers its neighbours, the dropped card settles without a jump, and cards that appear or move afterwards slide into place instead of popping. On wide screens with several columns, cards can also be dragged sideways.
+- **No more backup file in Downloads on every launch** ([#651](https://github.com/thejaustin/ShizukuPlus/issues/651)) — copies that older versions left in Downloads and in Shizuku+'s own Download folder are removed once.
 - **Settings toggles update their own row** and keep the tap ripple when switched on or off.
 - **App Backup's temp-debug mode survives a service restart** — if the Shizuku service restarted while an app was in temp-debug mode, "restore original" stopped working and the saved copy of the app stayed on the device. The session is now picked back up, and leftover copies of apps that were already restored are cleaned up.
 - **Fewer background errors on Samsung devices with Secure Folder** when checking frozen apps or listing apps for backup.
+- **A failed permission change says so** — granting or revoking an app's access while Shizuku+ runs with limited ADB rights showed success and quietly snapped back. You now get the "ADB is limited" explanation and an error vibration.
+- **Haptics are consistent** — a long-press on a Home card vibrates once instead of twice, a completed swipe in the app list vibrates once and only confirms "Toggle permission" after it worked, and swipe thresholds vibrate on Android 13 too.
+- **Swipe feedback in the app list springs** — the action badge pops on a spring when the swipe will trigger, the label matches the Swipe actions preview, and drawing the swipe no longer reloads colors and icons every frame.
+- **Trusted networks work without location access** — while Shizuku+ is running, Wireless ADB protection and the firewall automation recognize the connected network even without location permission.
+- **Update downloads**: cancelling a download no longer stops every later download until the app restarts, and an update you downloaded but haven't installed isn't deleted when the app starts.
+- **Safer "switch to this build" install** — it refuses an older APK, tries an in-place install before uninstalling, puts the previous version back if the new one won't install, keeps scanner API keys out of the temporary settings file, and the root path works again.
+- **Fewer background shells** — the reinstall backup is saved once changes settle instead of after every single change, and Plus feature changes always reach the service with the new value.
+- **Settings search shows Developer options once they're unlocked** (it waited for an unrelated switch), and the About screen's "last checked" date no longer shows the wrong day.
+- **Diagnostics fixes do what they say** — "Device hardening" applies it, and "No hidden apps" opens the hidden-apps list.
+- **App Backup's "restore original" never deletes the only copy** — if restoring fails, the saved original is kept so it can be tried again, and an app left uninstalled by an interrupted restore can still be brought back.
+- **No freezes when enabling the pairing helper** — turning on the accessibility service automatically no longer runs shell commands on the main thread, and the "Fix conflict" button for the stock Shizuku server checks for root in the background and tells you what happened.
 
 ### 👆 Swipe actions settings
 - **Simpler Swipe actions settings** — a row from your app list swipes each way on its own, showing exactly what each swipe does. Below it, "Swipe right", "Swipe left" and "Long-press menu" are normal settings rows that open a short picker, replacing the grid of chips.
 - **Swipe settings sandbox** (Developer options) — try a version where you drag the preview row yourself and choose the action after letting go.
+
+### 📶 Trusted networks
+- **Pick trusted Wi-Fi networks instead of typing them** — Wireless ADB's network protection and the App Connection Firewall's trusted networks now open a picker with the network you're connected to and every network saved on the device, each with a switch. Typing a name is still there for networks that aren't saved. Shizuku+ reads the names itself, so no location permission is needed while it's running.
+- **"Trust <network>" shortcut** — when protection is set to "Trusted only", a chip trusts the network you're on in one tap.
 
 ### 📦 Storage
 - **Downloaded updates are deleted once installed** — each in-app update left its APK (about 16 MB) in Shizuku+'s storage for good. Old ones are now removed when the app starts; an update you downloaded but haven't installed yet is kept.

@@ -2,9 +2,9 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ktx.findActivity
 import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.SharedPreferences
 import android.util.AttributeSet
 import androidx.compose.animation.AnimatedVisibility
@@ -121,7 +121,7 @@ class MotionControlsPreference
                             ?.edit()
                             ?.putBoolean("expressive_animations", newOn)
                             ?.apply()
-                        context.findSettingsActivity()?.onThemeChanged()
+                        context.findActivity<SettingsActivity>()?.onThemeChanged()
                     },
                     onIntensityChanged = { newInt ->
                         intensity.floatValue = newInt.toFloat()
@@ -130,21 +130,12 @@ class MotionControlsPreference
                             ?.edit()
                             ?.putString("animation_intensity", newInt.toString())
                             ?.apply()
-                        context.findSettingsActivity()?.onThemeChanged()
+                        context.findActivity<SettingsActivity>()?.onThemeChanged()
                     },
                 )
             }
         }
     }
-
-private fun Context.findSettingsActivity(): SettingsActivity? {
-    var ctx: Context? = this
-    while (ctx is ContextWrapper) {
-        if (ctx is SettingsActivity) return ctx
-        ctx = ctx.baseContext
-    }
-    return null
-}
 
 @Composable
 private fun MotionCardContent(

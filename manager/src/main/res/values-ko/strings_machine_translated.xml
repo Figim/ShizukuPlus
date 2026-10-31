@@ -316,9 +316,7 @@
     <string name="settings_tcp_protection_open">개방형 네트워크</string>
     <string name="settings_tcp_protection_trusted">신뢰할 수 있는 네트워크만</string>
     <string name="settings_tcp_trusted_networks_label">신뢰할 수 있는 Wi-Fi 네트워크</string>
-    <string name="settings_tcp_add_network">+ 네트워크 추가</string>
     <string name="settings_tcp_auto_close_untrusted">신뢰할 수 없는 네트워크에서 자동 닫기</string>
-    <string name="settings_tcp_add_network_dialog_title">신뢰할 수 있는 네트워크 추가</string>
     <string name="settings_tcp_ssid_label">네트워크 이름 (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s 제거</string>
     <string name="tcp_protection_off">꺼짐</string>

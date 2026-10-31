@@ -127,12 +127,10 @@
             android:defaultValue="false"
             app:badgeType="plus" />
 
-        <EditTextPreference
+        <af.shizuku.manager.settings.TrustedNetworksRowPreference
             android:key="automation_trusted_networks"
             android:title="@string/settings_automation_trusted_networks"
-            android:summary="@string/settings_automation_trusted_networks_summary"
-            android:icon="@drawable/ic_lan_24"
-            app:useSimpleSummaryProvider="true" />
+            android:icon="@drawable/ic_wifi_24" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="network_governor_plus_enabled"

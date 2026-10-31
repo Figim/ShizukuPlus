@@ -2,12 +2,11 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.ktx.findActivity
 import af.shizuku.manager.management.SwipeActionStyle
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.SharedPreferences
 import android.util.AttributeSet
-import androidx.fragment.app.FragmentActivity
 import androidx.preference.Preference
 
 /**
@@ -70,16 +69,7 @@ class SwipeActionRowPreference
         }
 
         override fun onClick() {
-            val activity = findActivity(context) ?: return
+            val activity = context.findActivity<androidx.fragment.app.FragmentActivity>() ?: return
             SwipeActionPickerSheet.show(activity.supportFragmentManager, mode)
-        }
-
-        private fun findActivity(ctx: Context): FragmentActivity? {
-            var c: Context? = ctx
-            while (c is ContextWrapper) {
-                if (c is FragmentActivity) return c
-                c = c.baseContext
-            }
-            return null
         }
     }

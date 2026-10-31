@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Aturan otomatisasi jaringan telah dikonfigurasi tetapi layanan berhenti — Binder Firewall tidak akan beralih otomatis. Ketuk untuk memulai ulang.</string>
     <string name="diagnostics_automation_start_failed">Tidak dapat memulai layanan otomatisasi</string>
     <string name="diagnostics_battery_settings_open_failed">Tidak dapat membuka pengaturan baterai</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Buka Feature Hub → Keamanan &amp; Akses → Shadow Binder untuk memilih aplikasi</string>
     <string name="diagnostics_device_owner_setup_title">Siapkan Device Owner</string>
     <string name="diagnostics_device_owner_setup_message">Mode Dhizuku mengharuskan aplikasi ini menjadi Device Owner.\n\nJalankan perintah ini dari PC Anda (debugging USB harus diaktifkan):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Salin Perintah</string>
@@ -695,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">Paket Tersembunyi</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Daftar nama paket yang dipisahkan koma untuk disembunyikan dari aplikasi lain. Jika Anda memasang OG Shizuku dan Shizuku+, tambahkan keduanya (moe.shizuku.privileged.api, af.shizuku.manager) untuk mencegah konflik.</string>
     <string name="settings_automation_trusted_networks">Jaringan Tepercaya</string>
-    <string name="settings_automation_trusted_networks_summary">Nama jaringan Wi-Fi (SSID) yang dipisahkan koma. Binder Firewall dinonaktifkan otomatis saat terhubung ke salah satunya, dan diaktifkan otomatis di tempat lain (termasuk data seluler). Biarkan kosong untuk mengontrol Binder Firewall secara manual.</string>
     <string name="settings_automation_auto_hide_packages">Sembunyikan Otomatis Saat di Latar Depan</string>
     <string name="settings_automation_auto_hide_packages_summary">Aplikasi yang otomatis ditambahkan ke daftar tersembunyi Shadow Binder hanya saat sedang dibuka, selain daftar Paket Tersembunyi di atas. Biarkan kosong untuk mengelola paket tersembunyi secara manual.</string>
     <string name="settings_companion_mode">Tampilkan Kartu Pendamping</string>
@@ -1119,12 +1117,7 @@
     <string name="nav_back">Kembali</string>
     <string name="help_stealth_mode_title">Mode Siluman</string>
     <string name="help_stealth_mode_detail">Mencegat kueri PackageManager pada tingkat Binder dan mengembalikan "tidak terinstal" untuk paket ShizukuPlus dan Shizuku. Aplikasi yang menggunakan PM untuk mendeteksi alat root (aplikasi perbankan, pemeriksaan DRM) tidak akan menemukannya. Catatan: ini hanya menyembunyikannya dari kueri PackageManager — mode pengembang dan proses debug USB masih terlihat oleh aplikasi yang memeriksa setelan Android secara langsung.</string>
-    <string name="corner_style_global">Ikuti setelan global</string>
     <string name="corner_style_sharp">Tajam / Rata</string>
-    <string name="corner_style_rounded">Membulat (M3)</string>
-    <string name="corner_style_large">Membulat Besar</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Ekstra Besar</string>
     <string name="home_permission_manager_title">Pengelola Izin</string>
     <string name="home_permission_manager_summary">Berikan izin tingkat shell ke aplikasi apa pun tanpa root</string>
     <string name="permission_manager_search_hint">Cari aplikasi…</string>
@@ -1153,9 +1146,7 @@
     <string name="settings_tcp_protection_open">Jaringan terbuka</string>
     <string name="settings_tcp_protection_trusted">Hanya tepercaya</string>
     <string name="settings_tcp_trusted_networks_label">Jaringan Wi-Fi tepercaya</string>
-    <string name="settings_tcp_add_network">+ Tambah jaringan</string>
     <string name="settings_tcp_auto_close_untrusted">Tutup otomatis di jaringan tidak tepercaya</string>
-    <string name="settings_tcp_add_network_dialog_title">Tambah jaringan tepercaya</string>
     <string name="settings_tcp_ssid_label">Nama jaringan (SSID)</string>
     <string name="settings_tcp_remove_network">Hapus %1$s</string>
     <string name="tcp_protection_off">Mati</string>

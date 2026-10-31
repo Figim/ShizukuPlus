@@ -110,6 +110,11 @@ class ServerStatusViewHolder(
             )
         }
 
+        // The long-press and tooltip only belong to the "not running" chip; clear them first so
+        // they don't stick around once the service is back.
+        diagnosticsChip.setOnLongClickListener(null)
+        diagnosticsChip.isLongClickable = false
+        ViewCompat.setTooltipText(diagnosticsChip, null)
         if (ok) {
             diagnosticsChip.visibility = View.VISIBLE
             diagnosticsChip.text = context.getString(R.string.settings_diagnostics_category)

@@ -621,7 +621,6 @@
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
     <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladıla bilmədi</string>
     <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Tətbiqləri seçmək üçün Xüsusiyyət Mərkəzi → Təhlükəsizlik və Giriş → Kölgə Bağlayıcısı bölməsinə keçin</string>
     <string name="diagnostics_device_owner_setup_title">Cihaz Sahibini Quraşdır</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Rejimi bu tətbiqin Cihaz Sahibi olmasını tələb edir.\n\nBu əmri PC-nizdən işə salın (USB sazlama aktiv olmalıdır):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Əmri Kopyala</string>
@@ -1412,7 +1411,6 @@
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">Etibarlı Şəbəkələr</string>
-    <string name="settings_automation_trusted_networks_summary">Vergüllə ayrılmış Wi-Fi şəbəkə adları (SSID-lər). Bunlardan birinə qoşulduqda Bağlayıcı Firewall avtomatik olaraq söndürülür, qalan hər yerdə (o cümlədən mobil internetdə) isə avtomatik aktivləşdirilir. Bağlayıcı Firewall-u əl ilə idarə etmək üçün boş buraxın.</string>
     <string name="settings_automation_auto_hide_packages">Ön Plandaykən Avtomatik Gizlət</string>
     <string name="settings_automation_auto_hide_packages_summary">Yuxarıdakı Gizli Paketlər siyahısına əlavə olaraq, yalnız açıq olduqları müddətdə Kölgə Bağlayıcısının gizli siyahısına avtomatik əlavə olunan tətbiqlər. Gizli tətbiqləri əl ilə idarə etmək üçün boş buraxın.</string>
 
@@ -1670,12 +1668,7 @@
     <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, obyektiv olaraq onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="corner_style_global">Qlobal parametri izlə</string>
     <string name="corner_style_sharp">İti / Düz</string>
-    <string name="corner_style_rounded">Dairəvi (M3)</string>
-    <string name="corner_style_large">Böyük Dairəvi</string>
-    <string name="corner_style_squircle">Dairəvi</string>
-    <string name="corner_style_extra_large">Çox Böyük</string>
 
     <!-- Feature Hub experimental category label -->
 
@@ -1710,9 +1703,7 @@
     <string name="settings_tcp_protection_open">Açıq şəbəkələr</string>
     <string name="settings_tcp_protection_trusted">Yalnız etibarlılar</string>
     <string name="settings_tcp_trusted_networks_label">Etibarlı Wi-Fi şəbəkələri</string>
-    <string name="settings_tcp_add_network">+ Şəbəkə əlavə et</string>
     <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
-    <string name="settings_tcp_add_network_dialog_title">Etibarlı şəbəkə əlavə et</string>
     <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s şəbəkəsini sil</string>
     <string name="tcp_protection_off">Söndürülüb</string>

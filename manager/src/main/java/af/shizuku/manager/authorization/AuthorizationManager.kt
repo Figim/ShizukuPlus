@@ -123,6 +123,7 @@ object AuthorizationManager {
         }
     }
 
+    /** @throws SecurityException when the service isn't allowed to change it (limited ADB). */
     fun grant(
         packageName: String,
         uid: Int,
@@ -133,11 +134,16 @@ object AuthorizationManager {
             } else {
                 Shizuku.updateFlagsForUid(uid, MASK_PERMISSION, FLAG_ALLOWED)
             }
-        } catch (_: Throwable) {
-            // Ignore error from incompatible server
+        } catch (e: SecurityException) {
+            // The caller tells the user (e.g. the "ADB is limited" dialog); swallowing it here
+            // made a failed change look like it worked.
+            throw e
+        } catch (t: Throwable) {
+            timber.log.Timber.w(t, "%s failed for %s (incompatible server?)", "grant", packageName)
         }
     }
 
+    /** @throws SecurityException when the service isn't allowed to change it (limited ADB). */
     fun revoke(
         packageName: String,
         uid: Int,
@@ -148,8 +154,12 @@ object AuthorizationManager {
             } else {
                 Shizuku.updateFlagsForUid(uid, MASK_PERMISSION, 0)
             }
-        } catch (_: Throwable) {
-            // Ignore error from incompatible server
+        } catch (e: SecurityException) {
+            // The caller tells the user (e.g. the "ADB is limited" dialog); swallowing it here
+            // made a failed change look like it worked.
+            throw e
+        } catch (t: Throwable) {
+            timber.log.Timber.w(t, "%s failed for %s (incompatible server?)", "revoke", packageName)
         }
     }
 }

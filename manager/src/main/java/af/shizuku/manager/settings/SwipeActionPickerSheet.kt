@@ -4,44 +4,31 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.management.SwipeActionStyle
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.widget.AppSwitch
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -95,8 +82,9 @@ class SwipeActionPickerSheet : BottomSheetDialogFragment() {
             val widthPx = constraints.maxWidth.toFloat()
             val sign = if (isRight) 1f else -1f
             val shown = selected.value
+            val dx = if (shown == SwipeActionStyle.NONE) 0f else sign * widthPx * 0.5f
             SwipeDemoRow(
-                dx = if (shown == SwipeActionStyle.NONE) 0f else sign * widthPx * 0.5f,
+                dx = { dx },
                 widthPx = widthPx,
                 right = if (isRight) shown else SwipeActionStyle.NONE,
                 left = if (isRight) SwipeActionStyle.NONE else shown,
@@ -111,6 +99,7 @@ class SwipeActionPickerSheet : BottomSheetDialogFragment() {
                     iconTint = spec.role.onContainer(MaterialTheme.colorScheme),
                     title = stringResource(spec.labelRes),
                     subtitle = stringResource(spec.descriptionRes),
+                    selected = isSelected,
                     modifier =
                         Modifier.selectable(selected = isSelected, role = Role.RadioButton) {
                             if (!isSelected) {
@@ -160,58 +149,9 @@ class SwipeActionPickerSheet : BottomSheetDialogFragment() {
                             prefs?.edit()?.putBoolean(item.key, checked)?.apply()
                         },
                 ) {
-                    Switch(checked = on, onCheckedChange = null)
+                    AppSwitch(checked = on, onCheckedChange = null)
                 }
             }
-        }
-    }
-
-    @Composable
-    private fun SheetHeader(
-        title: String,
-        subtitle: String,
-    ) {
-        Column(modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 12.dp)) {
-            Text(title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
-            Spacer(Modifier.size(4.dp))
-            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-
-    @Composable
-    private fun SheetRow(
-        iconRes: Int,
-        iconContainer: androidx.compose.ui.graphics.Color,
-        iconTint: androidx.compose.ui.graphics.Color,
-        title: String,
-        subtitle: String?,
-        modifier: Modifier,
-        trailing: @Composable () -> Unit,
-    ) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.large)
-                    .then(modifier)
-                    .heightIn(min = 64.dp)
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Box(
-                modifier = Modifier.size(40.dp).clip(CircleShape).background(iconContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(painterResource(iconRes), contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-                if (subtitle != null) {
-                    Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-            trailing()
         }
     }
 

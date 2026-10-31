@@ -123,14 +123,6 @@ object DeviceOptimizer {
         }
     }
 
-    /** Exempts this app from battery optimization without the system prompt. True when it took effect. */
-    suspend fun whitelistSelf(context: Context): Boolean =
-        withContext(Dispatchers.IO) {
-            if (!hasPrivilegedShell()) return@withContext false
-            runCommand("dumpsys deviceidle whitelist +${context.packageName}")
-            SettingsHelper.isIgnoringBatteryOptimizations(context)
-        }
-
     /** Grants this app a runtime permission without the system prompt. True when it is now granted. */
     suspend fun grantSelf(
         context: Context,

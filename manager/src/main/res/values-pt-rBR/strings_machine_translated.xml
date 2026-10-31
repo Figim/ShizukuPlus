@@ -316,9 +316,7 @@
     <string name="settings_tcp_protection_open">Redes abertas</string>
     <string name="settings_tcp_protection_trusted">Apenas confiáveis</string>
     <string name="settings_tcp_trusted_networks_label">Redes Wi-Fi confiáveis</string>
-    <string name="settings_tcp_add_network">+ Adicionar rede</string>
     <string name="settings_tcp_auto_close_untrusted">Fechar automaticamente em redes não confiáveis</string>
-    <string name="settings_tcp_add_network_dialog_title">Adicionar rede confiável</string>
     <string name="settings_tcp_ssid_label">Nome da rede (SSID)</string>
     <string name="settings_tcp_remove_network">Remover %1$s</string>
     <string name="tcp_protection_off">Desligado</string>

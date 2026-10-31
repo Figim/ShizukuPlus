@@ -7,6 +7,8 @@ import af.shizuku.manager.management.AppsViewModel
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.MotionUtils.cancelAllSprings
+import af.shizuku.manager.utils.MotionUtils.isSpringing
 import android.os.Build
 import androidx.core.view.isVisible
 import com.airbnb.mvrx.withState
@@ -183,25 +185,54 @@ class HomeAdapter(
                     return@withContext
                 }
 
-                val fixedCardCount =
-                    rebuildItems(
-                        status,
-                        grantedCount,
-                        isEditMode,
-                        companionInstalled,
-                        compatHubInstalled,
-                        isOriginalShizukuRunning,
-                        hidden,
-                    )
+                val oldIds = LongArray(itemCount) { getItemId(it) }
+                rebuildItems(
+                    status,
+                    grantedCount,
+                    isEditMode,
+                    companionInstalled,
+                    compatHubInstalled,
+                    isOriginalShizukuRunning,
+                    hidden,
+                )
 
-                notifyDataSetChanged()
+                dispatchDiff(oldIds)
 
-                val hasVisibleCards = itemCount > 0
-                onEmptyStateChanged?.invoke(!hasVisibleCards)
+                // The empty state replaces the whole list, status card included, so it only shows
+                // when there's truly nothing to show.
+                onEmptyStateChanged?.invoke(itemCount == 0)
 
                 isUpdating = false
             }
         }
+    }
+
+    /**
+     * Notifies the change from [oldIds] to the rebuilt list as moves/inserts/removes instead of
+     * notifyDataSetChanged(), which snapped every card into place (most visibly right after a
+     * drag, while the dropped card was still settling). Every remaining card is still rebound.
+     */
+    private fun dispatchDiff(oldIds: LongArray) {
+        val newIds = LongArray(itemCount) { getItemId(it) }
+        androidx.recyclerview.widget.DiffUtil
+            .calculateDiff(
+                object : androidx.recyclerview.widget.DiffUtil.Callback() {
+                    override fun getOldListSize() = oldIds.size
+
+                    override fun getNewListSize() = newIds.size
+
+                    override fun areItemsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int,
+                    ) = oldIds[oldItemPosition] == newIds[newItemPosition]
+
+                    // Card contents come from live state, not the list, so always rebind.
+                    override fun areContentsTheSame(
+                        oldItemPosition: Int,
+                        newItemPosition: Int,
+                    ) = false
+                },
+            ).dispatchUpdatesTo(this)
     }
 
     /**
@@ -321,24 +352,6 @@ class HomeAdapter(
 
         super.onBindViewHolder(holder, position)
 
-        // Apply per-card corner style override
-        val homeCornerStyle = ShizukuSettings.getPreferences().getString("home_card_corner_style", "global") ?: "global"
-        if (homeCornerStyle != "global") {
-            val card = holder.itemView as? com.google.android.material.card.MaterialCardView
-            if (card != null) {
-                val density = card.context.resources.displayMetrics.density
-                card.radius =
-                    when (homeCornerStyle) {
-                        "sharp" -> 0f
-                        "rounded" -> 12f * density
-                        "large" -> 24f * density
-                        "squircle" -> 28f * density
-                        "xlarge" -> 36f * density
-                        else -> card.radius
-                    }
-            }
-        }
-
         // Apply home cards outline if enabled
         val showHomeOutlines = ShizukuSettings.isShowHomeCardsOutlineEnabled()
         val card = holder.itemView as? com.google.android.material.card.MaterialCardView
@@ -365,8 +378,9 @@ class HomeAdapter(
         // M3E entrance animation — only on first appearance per card id, not every recycle.
         if (!animatedIds.add(id)) {
             // During drag, RecyclerView owns translationX/Y for the move animation; resetting them
-            // here would kill the in-flight slide and make displaced cards snap/vanish.
-            if (!isDragging) {
+            // here would kill the in-flight slide and make displaced cards snap/vanish. A card
+            // still settling after a drop is mid-spring: resetting it made it jump for a frame.
+            if (!isDragging && !holder.itemView.isSpringing()) {
                 holder.itemView.alpha = 1f
                 holder.itemView.translationY = 0f
                 holder.itemView.scaleX = 1f
@@ -403,7 +417,8 @@ class HomeAdapter(
                         .scaledAnimationDuration(380),
                 )?.setStartDelay(
                     af.shizuku.manager.ShizukuSettings
-                        .scaledAnimationDuration(position * 45L),
+                        // Capped: a card first shown by scrolling shouldn't wait for every one above it.
+                        .scaledAnimationDuration(minOf(position, 5) * 45L),
                 )?.setInterpolator(af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE)
                 ?.start()
         } else {
@@ -417,6 +432,7 @@ class HomeAdapter(
     override fun onViewRecycled(holder: BaseViewHolder<*>) {
         super.onViewRecycled(holder)
         holder.itemView.animate().cancel()
+        holder.itemView.cancelAllSprings()
         holder.itemView.scaleX = 1f
         holder.itemView.scaleY = 1f
         holder.itemView.translationZ = 0f

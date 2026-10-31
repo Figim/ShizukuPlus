@@ -4,6 +4,8 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.update.UpdateInstaller
 import android.content.Context
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import timber.log.Timber
 
@@ -51,6 +53,7 @@ object SettingsBackupManager {
             // Which force-update backups were already restored on this install
             af.shizuku.manager.update.UpdateInstaller.KEY_RESTORED_BACKUP_FINGERPRINT,
             KEY_RESTORE_CHECKED,
+            KEY_LEGACY_COPIES_REMOVED,
             // Device-specific storage URI (path on destination device will differ)
             ShizukuSettings.Keys.KEY_EXPORT_DIR_URI,
             // Peer settings sync metadata (local timestamps and import state)
@@ -219,6 +222,9 @@ object SettingsBackupManager {
     /** Set once this install has checked for a backup to restore; excluded from backups. */
     const val KEY_RESTORE_CHECKED = "backup_restore_checked"
 
+    /** Set once the backup copies older builds left in Downloads have been removed. */
+    private const val KEY_LEGACY_COPIES_REMOVED = "legacy_backup_copies_removed"
+
     @Volatile
     private var lastReinstallCopyHash = 0
 
@@ -260,14 +266,43 @@ object SettingsBackupManager {
      * Nothing is written until this install has checked for a backup to restore: on a fresh
      * install the startup save would otherwise replace the surviving copy with defaults first.
      */
+
+    private val backupRequests =
+        kotlinx.coroutines.flow.MutableSharedFlow<Context>(
+            extraBufferCapacity = 1,
+            onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST,
+        )
+
+    @OptIn(kotlinx.coroutines.FlowPreview::class)
+    private val backupWriter by lazy {
+        kotlinx.coroutines
+            .CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.IO)
+            .launch { backupRequests.debounce(BACKUP_DEBOUNCE_MS).collect { saveAutoBackup(it) } }
+    }
+
+    /**
+     * Saves the reinstall copy once things settle. Every settings change and every screen
+     * leaving asks for one; writing each time started a privileged shell per change, and
+     * overlapping writes raced on the same temp file.
+     */
+    fun requestAutoBackup(context: Context) {
+        backupWriter
+        backupRequests.tryEmit(context.applicationContext)
+    }
+
+    private const val BACKUP_DEBOUNCE_MS = 2_000L
+
+    /** [json] without the settings that must not sit in a file other apps can read. */
+    fun withoutSecrets(json: String): String = JSONObject(json).apply { REINSTALL_COPY_SECRET_KEYS.forEach { remove(it) } }.toString(2)
+
     fun saveAutoBackup(context: Context) {
         try {
             if (!isRestoreChecked()) return
             val json = export(context)
             if (json.isBlank() || json == "{}" || json.length < 20) return
             if (!runCatching { rikka.shizuku.Shizuku.pingBinder() }.getOrDefault(false)) return
-            val sanitized =
-                JSONObject(json).apply { REINSTALL_COPY_SECRET_KEYS.forEach { remove(it) } }.toString(2)
+            removeLegacyCopies(context)
+            val sanitized = withoutSecrets(json)
             val hash = sanitized.hashCode()
             if (hash == lastReinstallCopyHash) return
             val dir = UpdateInstaller.REINSTALL_BACKUP_DIR
@@ -278,6 +313,31 @@ object SettingsBackupManager {
             if (process.waitFor() == 0) lastReinstallCopyHash = hash
         } catch (e: Exception) {
             Timber.w(e, "Failed to persist auto backup")
+        }
+    }
+
+    /**
+     * Older builds wrote a copy to public Downloads (and this app's own Download folder) on every
+     * launch (#651). The reinstall copy replaced them, so remove the leftovers once, as shell, which
+     * can delete them whichever install created them. Only after the restore check, so a copy the
+     * user still wanted to restore from has been offered first.
+     */
+    private fun removeLegacyCopies(context: Context) {
+        val prefs = ShizukuSettings.getPreferences() ?: return
+        if (prefs.getBoolean(KEY_LEGACY_COPIES_REMOVED, false)) return
+        val files =
+            UpdateInstaller.publicBackupCandidates().map { it.absolutePath }.distinct() +
+                listOfNotNull(
+                    context
+                        .getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS)
+                        ?.let { java.io.File(it, UpdateInstaller.AUTO_BACKUP_FILENAME).absolutePath },
+                )
+        // One attempt: retrying a failing rm would start a shell on every activity stop.
+        prefs.edit().putBoolean(KEY_LEGACY_COPIES_REMOVED, true).apply()
+        runCatching {
+            rikka.shizuku.Shizuku
+                .newProcess(arrayOf("rm", "-f") + files, null, null)
+                .waitFor()
         }
     }
 

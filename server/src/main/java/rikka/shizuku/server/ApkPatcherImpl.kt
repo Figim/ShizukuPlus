@@ -40,16 +40,6 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         Thread({ runCatching { sweepStaleTempFiles() } }, "ApkPatcherSweep").start()
     }
 
-    /** True when [packageName] is installed and currently debuggable (i.e. still temp-debug patched). */
-    private fun isPatchedInstall(packageName: String): Boolean =
-        try {
-            val ai = Android17Compat.getApplicationInfo(packageName, 0L, 0)
-            ai != null && (ai.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        } catch (e: Exception) {
-            // Unknown: treat as patched so the originals are never deleted on a guess.
-            true
-        }
-
     /**
      * True only when [packageName] is installed and is not the debug build, i.e. the original is
      * back. A missing package keeps its originals: a failed patch install leaves the app
@@ -74,12 +64,14 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     /**
      * The saved originals for an active session. After a server restart the in-memory map is
-     * empty, so recover the session from TMP_DIR when the app is still the patched build.
+     * empty, so recover the session from TMP_DIR unless the original build is already back:
+     * that covers an app still on the patched build, and one left uninstalled by a restart
+     * between uninstalling and installing the patched copy.
      */
     private fun sessionPaths(packageName: String): List<String>? {
         sessions[packageName]?.let { return it }
         val saved = savedOriginals(packageName)
-        if (saved.isEmpty() || !isPatchedInstall(packageName)) return null
+        if (saved.isEmpty() || isRestoredInstall(packageName)) return null
         sessions[packageName] = saved
         return saved
     }
@@ -490,11 +482,13 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
         val origPaths = sessionPaths(packageName) ?: return false
 
-        val ok = uninstallKeepData(packageName) &&
-                 installViaSession(origPaths)
-
-        sessions.remove(packageName)
-        origPaths.forEach { File(it).delete() }
+        val installed = runCatching { Android17Compat.getApplicationInfo(packageName, 0L, 0) != null }.getOrDefault(true)
+        val ok = (!installed || uninstallKeepData(packageName)) && installViaSession(origPaths)
+        // Keep the originals when it didn't work: they may be the only copy of the app left.
+        if (ok) {
+            sessions.remove(packageName)
+            origPaths.forEach { File(it).delete() }
+        }
         return ok
     }
 
@@ -520,7 +514,12 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
     }
 
     override fun cleanupAllTempDebug() {
-        for (pkg in sessions.keys.toList()) {
+        // Sessions from a previous server run only exist as files, so collect those too.
+        val fromDisk =
+            File(TMP_DIR).listFiles()?.mapNotNull { f ->
+                f.name.substringBefore("_orig_", "").takeIf { it.isNotEmpty() }
+            }.orEmpty()
+        for (pkg in (sessions.keys + fromDisk).toSet()) {
             restoreOriginal(pkg)
         }
         // Orphans from a previous server run. An original whose app is still patched is the only

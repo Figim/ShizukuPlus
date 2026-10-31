@@ -54,6 +54,13 @@ import timber.log.Timber
 class ShizukuApplication :
     Application(),
     Configuration.Provider {
+    /** Background work tied to the process. A failure is logged instead of crashing the app. */
+    private val appScope =
+        CoroutineScope(
+            SupervisorJob() + Dispatchers.IO +
+                kotlinx.coroutines.CoroutineExceptionHandler { _, t -> Timber.e(t, "Background task failed") },
+        )
+
     // SharedPreferences only holds change listeners weakly - keep strong references here or they
     // get garbage collected and silently stop firing.
     private var peerSyncPrefsListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
@@ -152,12 +159,7 @@ class ShizukuApplication :
                 options.isAttachScreenshot = false
                 options.isAttachViewHierarchy = false
 
-                // Selective exception: still capture a screenshot for the specific class of
-                // bug where one is actually worth the quota cost (UI-rendering/theme crashes,
-                // e.g. the black-screen recreate() bug) - gated by an allowlist so it only
-                // fires for those, not every event. See SelectiveScreenshotEventProcessor.
-                // Screenshots are never attached: they can show anything on screen. (The selective
-                // screenshot processor is no longer registered.)
+                // Screenshots are never attached: they can show anything on screen.
 
                 // Breadcrumbs are bundled into the event itself (not separately billed), so
                 // keep them for context. isEnableUserInteractionTracing and
@@ -526,7 +528,7 @@ class ShizukuApplication :
         // Keep the manager process alive while the server runs so that broadcast is always
         // answered quickly, even when an OEM freezer would otherwise freeze this process.
         // See docs/MT_COMPAT.md.
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        appScope.launch {
             ShizukuStateMachine
                 .asFlow()
                 .distinctUntilChanged()
@@ -567,10 +569,8 @@ class ShizukuApplication :
                 override fun onActivityPaused(activity: Activity) = Unit
 
                 override fun onActivityStopped(activity: Activity) {
-                    CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                        af.shizuku.manager.utils.SettingsBackupManager
-                            .saveAutoBackup(this@ShizukuApplication)
-                    }
+                    af.shizuku.manager.utils.SettingsBackupManager
+                        .requestAutoBackup(this@ShizukuApplication)
                 }
 
                 override fun onActivitySaveInstanceState(
@@ -588,19 +588,7 @@ class ShizukuApplication :
         af.shizuku.manager.plugin.PlusFeatureRegistry
             .register(af.shizuku.manager.scripting.ScriptingFeatureModule)
 
-        // Run auto-run snippets each time the Shizuku service transitions to RUNNING with a live binder.
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            ShizukuStateMachine
-                .asFlow()
-                .distinctUntilChanged()
-                .filter { it == ShizukuStateMachine.State.RUNNING }
-                .collect {
-                    if (runCatching { Shizuku.pingBinder() }.getOrDefault(false)) {
-                        af.shizuku.manager.database.ScriptSnippetManager
-                            .runAutoRunSnippets("service start")
-                    }
-                }
-        }
+        // Auto-run snippets start from ShizukuStateMachine's RUNNING transition, which knows the trigger.
 
         // Redeploy the SU bridge dex whenever the server comes up, not just on app self-update
         // (#423 fix, `9dba4bd3`, only covered ACTION_MY_PACKAGE_REPLACED). If the server wasn't
@@ -611,7 +599,7 @@ class ShizukuApplication :
         // Sync the SU bridge when the server starts. If enabled, ensure the latest bridge is deployed.
         // If disabled, ensure any stale /data/local/tmp/su binaries are cleaned up to prevent Google Wallet
         // and Play Integrity security failures.
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        appScope.launch {
             ShizukuStateMachine
                 .asFlow()
                 .distinctUntilChanged()
@@ -689,9 +677,8 @@ class ShizukuApplication :
         // foreground-app poll for two rules that, at the time, were non-functional placeholders
         // that could never match real data. Registering rules is cheap and always safe; actually
         // starting the service (and its notification/polling) is gated on real configuration so a
-        // user who never touches either list sees nothing - see ShizukuPlusSettingsFragment's
-        // change listeners for where the service gets started/stopped dynamically as the user
-        // edits those lists after this initial launch-time check.
+        // user who never touches either list sees nothing. Editing the lists later starts or stops
+        // it (TrustedNetworksSheet, the auto-hide picker).
         af.shizuku.manager.automation
             .registerDefaultRules()
         if (ShizukuSettings.isAnyAutomationConfigured()) {
@@ -828,11 +815,6 @@ class ShizukuApplication :
             ShizukuSettings.setLastSeenVersion(currentCode)
         }
 
-        // Track the foreground Activity so a crash captured on a background thread can still
-        // find "what was on screen" for SelectiveScreenshotEventProcessor.
-        af.shizuku.manager.utils.ForegroundActivityTracker
-            .register(this)
-
         // 2. Initialize Sentry FIRST to catch all crashes including early startup failures
         initializeSentryEarly()
 
@@ -918,16 +900,14 @@ class ShizukuApplication :
                     ) {
                         af.shizuku.manager.settings.SettingsShareManager
                             .markSettingsModified()
-                        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                            af.shizuku.manager.utils.SettingsBackupManager
-                                .saveAutoBackup(this@ShizukuApplication)
-                        }
+                        af.shizuku.manager.utils.SettingsBackupManager
+                            .requestAutoBackup(this@ShizukuApplication)
                         if (af.shizuku.manager.settings.SettingsShareManager
                                 .isAutoSyncEnabled() &&
                             af.shizuku.manager.settings.SettingsShareManager
                                 .isPeerInstalled(this)
                         ) {
-                            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                            appScope.launch {
                                 af.shizuku.manager.settings.SettingsShareManager
                                     .exportToPeer(this@ShizukuApplication)
                             }
@@ -936,7 +916,7 @@ class ShizukuApplication :
                 }.also { prefs.registerOnSharedPreferenceChangeListener(it) }
 
         // On startup: check for initial import or auto-sync and persist current settings backup
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        appScope.launch {
             try {
                 // Past onboarding this install has its own settings: keep its reinstall copy
                 // current even if no screen is opened, and once remove the copies older builds

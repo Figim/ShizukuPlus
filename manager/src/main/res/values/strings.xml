@@ -620,7 +620,6 @@
     <string name="diagnostics_warning_automation_stopped">Network automation rules configured but the service is stopped — Binder Firewall won\'t auto-toggle. Tap to restart.</string>
     <string name="diagnostics_automation_start_failed">Could not start automation service</string>
     <string name="diagnostics_battery_settings_open_failed">Could not open battery settings</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Go to Feature Hub → Security &amp; Access → Shadow Binder to select apps</string>
     <string name="diagnostics_device_owner_setup_title">Set Up Device Owner</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Mode requires this app to be the Device Owner.\n\nRun this command from your PC (USB debugging must be enabled):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copy Command</string>
@@ -913,6 +912,7 @@
     <string name="stock_shizuku_conflict_dialog_title">Incompatible Server Running</string>
     <string name="stock_shizuku_conflict_dialog_message">The original Shizuku server is currently running in the background. Because of Android security constraints, Shizuku+ cannot communicate with or kill the original server.\n\nPlease completely restart your device to kill the original server, then start Shizuku+ using ADB or Root.</string>
     <string name="stock_shizuku_restarting_via_root">Restarting via Root…</string>
+    <string name="stock_shizuku_restarting">Restarting…</string>
     <string name="backup_plain_exported">Plain backup exported. Keep this file private — it is not encrypted.</string>
     <string name="backup_exported_success">Backup exported successfully</string>
     <string name="backup_restored_success">Backup restored successfully</string>
@@ -1141,10 +1141,6 @@
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Custom Accent Color</string>
-
-    <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
-
-    <!-- Backup error messages (ShizukuPlusSettingsFragment.kt) -->
 
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">Startup &amp; recovery</string>
@@ -1411,7 +1407,6 @@
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">Trusted Networks</string>
-    <string name="settings_automation_trusted_networks_summary">Comma-separated Wi-Fi network names (SSIDs). Binder Firewall is disabled automatically while connected to one of these, and enabled automatically everywhere else (including mobile data). Leave empty to control Binder Firewall manually instead.</string>
     <string name="settings_automation_auto_hide_packages">Auto-Hide While Foregrounded</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps that are automatically added to Shadow Binder\'s hidden list only while they\'re open, on top of the Hidden Packages list above. Leave empty to manage hidden packages manually instead.</string>
 
@@ -1669,12 +1664,7 @@
     <string name="help_stealth_mode_detail">Intercepts PackageManager queries at the Binder level and returns "not installed" for ShizukuPlus and Shizuku packages. Apps that use PM to detect root tools (banking apps, DRM checks) will not find them. Note: this only hides them from PackageManager queries — developer mode and USB debugging are still visible to apps that check Android settings directly.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
-    <string name="corner_style_global">Follow global setting</string>
     <string name="corner_style_sharp">Sharp / Flat</string>
-    <string name="corner_style_rounded">Rounded (M3)</string>
-    <string name="corner_style_large">Large Rounded</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extra Large</string>
 
     <!-- Feature Hub experimental category label -->
 
@@ -1709,11 +1699,22 @@
     <string name="settings_tcp_protection_open">Open networks</string>
     <string name="settings_tcp_protection_trusted">Trusted only</string>
     <string name="settings_tcp_trusted_networks_label">Trusted Wi-Fi networks</string>
-    <string name="settings_tcp_add_network">+ Add network</string>
     <string name="settings_tcp_auto_close_untrusted">Auto-close on untrusted networks</string>
-    <string name="settings_tcp_add_network_dialog_title">Add trusted network</string>
     <string name="settings_tcp_ssid_label">Network name (SSID)</string>
     <string name="settings_tcp_remove_network">Remove %1$s</string>
+    <string name="settings_automation_trusted_networks_desc">The App Connection Firewall turns off on these Wi-Fi networks and back on everywhere else, including mobile data.</string>
+    <string name="trusted_networks_tcp_subtitle">With \"Trusted only\" protection, Wireless ADB stays reachable on these networks and is closed on others.</string>
+    <string name="trusted_networks_connected">Connected now</string>
+    <string name="trusted_networks_saved_label">Saved on this device</string>
+    <string name="trusted_networks_not_saved">Not saved on this device</string>
+    <string name="trusted_networks_needs_service">Start Shizuku+ to list the networks saved on this device.</string>
+    <string name="trusted_networks_type_name">Type a network name</string>
+    <string name="trusted_networks_add">Add</string>
+    <string name="trusted_networks_choose">Choose networks</string>
+    <string name="trusted_networks_trust_current">Trust %1$s</string>
+    <string name="update_migrate_failed">Couldn\'t switch to this build automatically. Uninstall Shizuku+ and install it manually.</string>
+    <string name="app_picker_names_and_more">%1$s +%2$d more</string>
+    <string name="trusted_networks_comma">Names with a comma can\'t be used for this list</string>
     <string name="tcp_protection_off">Off</string>
     <string name="tcp_protection_open">Open and public Wi-Fi</string>
     <string name="tcp_protection_trusted">Trusted networks only</string>

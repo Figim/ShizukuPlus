@@ -318,19 +318,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        listOf(
-            "activity_manager_plus_enabled",
-            "status_bar_governor_plus_enabled",
-            "shell_interceptor_enabled",
-            "avf_manager_enabled",
-            "storage_proxy_enabled",
-        ).forEach { key ->
-            findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { _, _ ->
-                ShizukuSettings.syncAllPlusFeaturesToServer()
-                true
-            }
-        }
-
         // Backup & Restore
         val backupSettingsPref = findPreference<Preference>("backup_settings")
         backupSettingsPref?.setOnPreferenceClickListener {
@@ -396,7 +383,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                                             Toast
                                                 .makeText(
                                                     ctx,
-                                                    getString(R.string.settings_sync_peer_import_success, peerLabel),
+                                                    ctx.getString(R.string.settings_sync_peer_import_success, peerLabel),
                                                     Toast.LENGTH_SHORT,
                                                 ).show()
                                             onRestoreSuccess()
@@ -404,7 +391,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                                             Toast
                                                 .makeText(
                                                     ctx,
-                                                    getString(R.string.settings_sync_peer_failed, peerLabel),
+                                                    ctx.getString(R.string.settings_sync_peer_failed, peerLabel),
                                                     Toast.LENGTH_LONG,
                                                 ).show()
                                         }
@@ -417,9 +404,9 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                                             .makeText(
                                                 ctx,
                                                 if (success) {
-                                                    getString(R.string.settings_sync_peer_export_success, peerLabel)
+                                                    ctx.getString(R.string.settings_sync_peer_export_success, peerLabel)
                                                 } else {
-                                                    getString(R.string.settings_sync_peer_failed, peerLabel)
+                                                    ctx.getString(R.string.settings_sync_peer_failed, peerLabel)
                                                 },
                                                 Toast.LENGTH_SHORT,
                                             ).show()

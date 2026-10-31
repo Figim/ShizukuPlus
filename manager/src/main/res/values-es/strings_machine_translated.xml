@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Hay reglas de automatización de red configuradas pero el servicio está detenido: el cortafuegos de Binder no se activará automáticamente. Toca para reiniciarlo.</string>
     <string name="diagnostics_automation_start_failed">No se pudo iniciar el servicio de automatización</string>
     <string name="diagnostics_battery_settings_open_failed">No se pudieron abrir los ajustes de batería</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Ve a Centro de funciones → Seguridad y acceso → Shadow Binder para seleccionar aplicaciones</string>
     <string name="diagnostics_device_owner_setup_title">Configurar propietario del dispositivo</string>
     <string name="diagnostics_device_owner_setup_message">El modo Dhizuku requiere que esta aplicación sea el propietario del dispositivo.\n\nEjecuta este comando desde tu PC (la depuración USB debe estar activada):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copiar comando</string>
@@ -695,7 +694,6 @@
     <string name="settings_shadow_binder_hidden_packages">Paquetes ocultos</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Lista de nombres de paquete separados por comas que se ocultarán de otras apps. Si tienes instalados tanto Shizuku original como Shizuku+, añade ambos (moe.shizuku.privileged.api, af.shizuku.manager) para evitar conflictos.</string>
     <string name="settings_automation_trusted_networks">Redes de confianza</string>
-    <string name="settings_automation_trusted_networks_summary">Nombres de redes Wi-Fi (SSID) separados por comas. Binder Firewall se desactiva automáticamente mientras estés conectado a una de ellas y se activa automáticamente en cualquier otro lugar (incluidos los datos móviles). Déjalo vacío para controlar Binder Firewall manualmente.</string>
     <string name="settings_automation_auto_hide_packages">Ocultar automáticamente en primer plano</string>
     <string name="settings_automation_auto_hide_packages_summary">Apps que se añaden automáticamente a la lista de ocultos de Shadow Binder solo mientras están abiertas, además de la lista de paquetes ocultos de arriba. Déjalo vacío para gestionar los paquetes ocultos manualmente.</string>
     <string name="settings_companion_mode">Mostrar tarjeta complementaria</string>
@@ -874,12 +872,7 @@
     <string name="nav_back">Atrás</string>
     <string name="help_stealth_mode_title">Modo sigiloso</string>
     <string name="help_stealth_mode_detail">Intercepta las consultas de PackageManager a nivel de Binder y devuelve "no instalado" para los paquetes de ShizukuPlus y Shizuku. Las apps que usan PM para detectar herramientas de root (apps bancarias, comprobaciones DRM) no los encontrarán. Nota: esto solo los oculta de las consultas de PackageManager; el modo desarrollador y la depuración USB siguen siendo visibles para las apps que comprueban directamente los ajustes de Android.</string>
-    <string name="corner_style_global">Seguir el ajuste global</string>
     <string name="corner_style_sharp">Rectas / planas</string>
-    <string name="corner_style_rounded">Redondeadas (M3)</string>
-    <string name="corner_style_large">Muy redondeadas</string>
-    <string name="corner_style_squircle">Squircle</string>
-    <string name="corner_style_extra_large">Extragrandes</string>
     <string name="home_permission_manager_title">Gestor de permisos</string>
     <string name="home_permission_manager_summary">Concede permisos a nivel de shell a cualquier app sin root</string>
     <string name="permission_manager_search_hint">Buscar apps…</string>
@@ -1160,9 +1153,7 @@
     <string name="settings_tcp_protection_open">Redes abiertas</string>
     <string name="settings_tcp_protection_trusted">Solo redes confiables</string>
     <string name="settings_tcp_trusted_networks_label">Redes Wi-Fi confiables</string>
-    <string name="settings_tcp_add_network">+ Añadir red</string>
     <string name="settings_tcp_auto_close_untrusted">Cerrar automáticamente en redes no confiables</string>
-    <string name="settings_tcp_add_network_dialog_title">Añadir red confiable</string>
     <string name="settings_tcp_ssid_label">Nombre de red (SSID)</string>
     <string name="settings_tcp_remove_network">Eliminar %1$s</string>
     <string name="tcp_protection_off">Desactivado</string>

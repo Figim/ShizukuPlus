@@ -225,26 +225,19 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>("update_app_database")?.let { updateDatabaseSummary(it) }
         val pref = findPreference<Preference>(KEY_CHECK_FOR_UPDATE) ?: return
         val lastCheck = ShizukuSettings.getLastUpdateCheckTime()
+        // Local time: formatting it as UTC and parsing it back could land on the wrong day.
+        val date =
+            java.text.DateFormat
+                .getDateInstance(java.text.DateFormat.MEDIUM)
+                .format(java.util.Date(lastCheck))
         val status =
             when {
                 ShizukuSettings.wasLastUpdateCheckFailed() && lastCheck > 0 -> {
-                    val date =
-                        UpdateChecker.formatPublishedDate(
-                            java.text
-                                .SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                                .format(java.util.Date(lastCheck)),
-                        )
                     "$date · ${getString(R.string.update_last_check_failed)}"
                 }
                 ShizukuSettings.wasLastUpdateCheckFailed() ->
                     getString(R.string.update_last_check_failed)
                 lastCheck > 0 -> {
-                    val date =
-                        UpdateChecker.formatPublishedDate(
-                            java.text
-                                .SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                                .format(java.util.Date(lastCheck)),
-                        )
                     "${getString(R.string.settings_last_check_title)}: $date"
                 }
                 else ->

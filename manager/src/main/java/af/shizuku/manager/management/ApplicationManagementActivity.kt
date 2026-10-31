@@ -542,24 +542,70 @@ open class ApplicationManagementActivity :
 
     private val swipePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val swipeBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    // labelLarge (14sp, medium), the same label the Swipe actions preview draws.
     private val swipeTextPaint =
         TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         }
     private val swipeRect = RectF()
     private val swipeBadgeRect = RectF()
 
-    private data class SwipeActionConfig(
-        val bgAttr: Int,
-        val onAttr: Int,
-        val iconRes: Int,
-        val labelRes: Int,
+    /** Colors, tinted icon and label for one swipe action, resolved once instead of every frame. */
+    private class SwipeVisual(
+        val bgColor: Int,
+        val onColor: Int,
+        val icon: android.graphics.drawable.Drawable?,
+        val label: String,
     )
 
-    private fun getSwipeActionConfig(action: String): SwipeActionConfig =
-        SwipeActionStyle.of(action).let {
-            SwipeActionConfig(it.role.containerAttr, it.role.onContainerAttr, it.iconRes, it.labelRes)
+    private val swipeVisuals = HashMap<String, SwipeVisual>()
+
+    private fun swipeVisual(
+        v: View,
+        action: String,
+    ): SwipeVisual =
+        swipeVisuals.getOrPut(action) {
+            val spec = SwipeActionStyle.of(action)
+            val onColor = MaterialColors.getColor(v, spec.role.onContainerAttr)
+            SwipeVisual(
+                bgColor = MaterialColors.getColor(v, spec.role.containerAttr),
+                onColor = onColor,
+                icon = AppCompatResources.getDrawable(this, spec.iconRes)?.mutate()?.apply { setTint(onColor) },
+                label = getString(spec.labelRes),
+            )
         }
+
+    // Springs the badge up when the swipe passes the threshold and back down when it doesn't.
+    private val swipeBadgePop = androidx.dynamicanimation.animation.FloatValueHolder(1f)
+    private var swipeBadgeSpring: androidx.dynamicanimation.animation.SpringAnimation? = null
+
+    private fun springSwipeBadge(
+        rv: RecyclerView,
+        target: Float,
+    ) {
+        val scale = ShizukuSettings.getAnimationDurationScale()
+        if (scale <= 0f) {
+            swipeBadgeSpring?.cancel()
+            swipeBadgePop.value = target
+            rv.invalidate()
+            return
+        }
+        val anim =
+            swipeBadgeSpring ?: androidx.dynamicanimation.animation
+                .SpringAnimation(swipeBadgePop)
+                .setSpring(androidx.dynamicanimation.animation.SpringForce())
+                // A plain value defaults to a one-pixel threshold, which would end a 1.0..1.15
+                // pop before it shows.
+                .setMinimumVisibleChange(androidx.dynamicanimation.animation.DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE)
+                .addUpdateListener { _, _, _ -> rv.invalidate() }
+                .also { swipeBadgeSpring = it }
+        val force =
+            af.shizuku.manager.utils.MotionUtils
+                .spring(this, com.google.android.material.R.attr.motionSpringFastSpatial)
+        anim.spring.setStiffness(force.stiffness / (scale * scale)).setDampingRatio(force.dampingRatio)
+        anim.animateToFinalPosition(target)
+    }
 
     private fun setupSwipe(rv: RecyclerView) {
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
@@ -600,7 +646,7 @@ open class ApplicationManagementActivity :
                     direction: Int,
                 ) {
                     thresholdActivated = false
-                    HapticUtils.gestureEnd(vh.itemView)
+                    // No drop haptic here: the action itself confirms (or rejects) the swipe.
                     val pos = vh.adapterPosition
                     val items = adapter.getItems<Any>()
                     val item = items.getOrNull(pos) as? PackageInfo
@@ -631,12 +677,15 @@ open class ApplicationManagementActivity :
                             if (pastThreshold && !thresholdActivated) {
                                 thresholdActivated = true
                                 HapticUtils.gestureThreshold(v)
+                                springSwipeBadge(rv, BADGE_POP)
                             } else if (!pastThreshold && thresholdActivated) {
                                 thresholdActivated = false
-                                HapticUtils.tick(v)
+                                HapticUtils.gestureThresholdRelease(v)
+                                springSwipeBadge(rv, 1f)
                             }
-                        } else {
+                        } else if (thresholdActivated) {
                             thresholdActivated = false
+                            springSwipeBadge(rv, 1f)
                         }
 
                         drawSwipeBackground(c, v, dX, action, pastThreshold)
@@ -666,10 +715,11 @@ open class ApplicationManagementActivity :
         val appLabel = item.applicationInfo?.loadLabel(packageManager)?.toString() ?: item.packageName
         ActivityLogManager.log(appLabel, item.packageName, "Swipe: $action")
 
-        if (action == "none") {
-            HapticUtils.error(itemView)
-        } else {
-            HapticUtils.success(itemView)
+        // Toggling permission confirms once the change has actually gone through.
+        when (action) {
+            "none" -> HapticUtils.error(itemView)
+            "toggle_permission" -> Unit
+            else -> HapticUtils.success(itemView)
         }
 
         when (action) {
@@ -705,6 +755,7 @@ open class ApplicationManagementActivity :
                             AuthorizationManager.grant(item.packageName, uid)
                         }
                         withContext(Dispatchers.Main) {
+                            HapticUtils.success(itemView)
                             val items = adapter.getItems<Any>()
                             val pos =
                                 items.indexOfFirst {
@@ -715,6 +766,7 @@ open class ApplicationManagementActivity :
                         }
                     } catch (_: SecurityException) {
                         withContext(Dispatchers.Main) {
+                            HapticUtils.error(itemView)
                             Toast
                                 .makeText(
                                     this@ApplicationManagementActivity,
@@ -739,10 +791,9 @@ open class ApplicationManagementActivity :
         val absDx = kotlin.math.abs(dX)
         if (absDx < 4f) return
 
-        val config = getSwipeActionConfig(action)
-
-        val bgColor = MaterialColors.getColor(v, config.bgAttr)
-        val onColor = MaterialColors.getColor(v, config.onAttr)
+        val visual = swipeVisual(v, action)
+        val bgColor = visual.bgColor
+        val onColor = visual.onColor
         val density = resources.displayMetrics.density
         val threshold = SwipeActionStyle.THRESHOLD * v.width
         val progress = (absDx / threshold).coerceIn(0f, 1f)
@@ -757,19 +808,18 @@ open class ApplicationManagementActivity :
         }
         c.drawRoundRect(swipeRect, cornerRadius, cornerRadius, swipePaint)
 
-        // Dynamic badge size with spring pop when threshold reached
-        val scale = if (isPastThreshold) 1.15f else (0.75f + 0.25f * progress)
+        // Grows with the drag, then pops on a spring once the swipe will trigger.
+        val scale = (0.75f + 0.25f * progress) * swipeBadgePop.value
         val badgeSize = 44f * density * scale
         val iconSize = 24f * density * scale
         val centerY = v.top + v.height / 2f
         val margin = 20f * density
 
-        val icon = AppCompatResources.getDrawable(this, config.iconRes)?.mutate()
-        icon?.setTint(onColor)
+        val icon = visual.icon
         icon?.alpha = (255 * (0.35f + 0.65f * progress)).toInt()
 
-        val label = getString(config.labelRes)
-        swipeTextPaint.textSize = 13f * density * resources.configuration.fontScale
+        val label = visual.label
+        swipeTextPaint.textSize = android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, 14f, resources.displayMetrics)
         val textBaseline = centerY - (swipeTextPaint.descent() + swipeTextPaint.ascent()) / 2f
 
         if (dX > 0) {
@@ -858,13 +908,13 @@ open class ApplicationManagementActivity :
         (rootView as ViewGroup).addView(hint)
 
         // Bind dynamic swipe actions based on current configuration
-        val rightConfig = getSwipeActionConfig(swipeRightAction)
-        val leftConfig = getSwipeActionConfig(swipeLeftAction)
+        val rightConfig = SwipeActionStyle.of(swipeRightAction)
+        val leftConfig = SwipeActionStyle.of(swipeLeftAction)
 
-        val rightBgColor = MaterialColors.getColor(hint, rightConfig.bgAttr)
-        val rightOnColor = MaterialColors.getColor(hint, rightConfig.onAttr)
-        val leftBgColor = MaterialColors.getColor(hint, leftConfig.bgAttr)
-        val leftOnColor = MaterialColors.getColor(hint, leftConfig.onAttr)
+        val rightBgColor = MaterialColors.getColor(hint, rightConfig.role.containerAttr)
+        val rightOnColor = MaterialColors.getColor(hint, rightConfig.role.onContainerAttr)
+        val leftBgColor = MaterialColors.getColor(hint, leftConfig.role.containerAttr)
+        val leftOnColor = MaterialColors.getColor(hint, leftConfig.role.onContainerAttr)
 
         hintBinding.hintTextRight.text = getString(rightConfig.labelRes)
         hintBinding.hintIconRight.setImageResource(rightConfig.iconRes)
@@ -1056,3 +1106,6 @@ class AppListItemDecoration(
     // Mirror the card's right edge (16dp from child.right).
     override fun getDividerEndInset(view: View): Float = 16f * density
 }
+
+/** How far the swipe badge grows once the swipe will trigger. */
+private const val BADGE_POP = 1.15f

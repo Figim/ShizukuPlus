@@ -46,8 +46,6 @@ object DeactivationAdvisor {
             .count { now - it < WINDOW_MS }
     }
 
-    fun hasFrequentDeactivations(): Boolean = getRecentDropCount() >= 1
-
     data class Tip(
         val id: String,
         val title: String,

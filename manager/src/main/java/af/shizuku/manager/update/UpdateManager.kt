@@ -37,6 +37,7 @@ class UpdateManager(
 ) {
     companion object {
         private const val TAG = "UpdateManager"
+        private const val PARTIAL_DOWNLOAD_GRACE_MS = 60 * 60 * 1000L
         private const val NOTIFICATION_CHANNEL_ID = "update_channel"
         private const val NOTIFICATION_ID = 1001
         private const val DOWNLOAD_ID_PREF = "update_download_id"
@@ -105,6 +106,7 @@ class UpdateManager(
     private val scope = CoroutineScope(Dispatchers.Main + job)
     private var downloadId: Long = -1
     private var monitorJob: Job? = null
+    private var downloadJob: Job? = null
     private var isManualDownload = false
 
     // URL of the current download, so a damaged DownloadManager result can be fetched again
@@ -138,52 +140,54 @@ class UpdateManager(
         retriedDirect = false
         createNotificationChannel()
 
-        scope.launch(Dispatchers.IO) {
-            // Plain ASCII name: '+' and other reserved characters in a file:// destination are
-            // decoded inconsistently by DownloadProvider and FileProvider.
-            val fileName = "ShizukuPlus-v${versionName.replace(Regex("[^A-Za-z0-9._-]"), "_")}.apk"
-            val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: context.cacheDir, fileName)
+        downloadJob?.cancel()
+        downloadJob =
+            scope.launch(Dispatchers.IO) {
+                // Plain ASCII name: '+' and other reserved characters in a file:// destination are
+                // decoded inconsistently by DownloadProvider and FileProvider.
+                val fileName = "ShizukuPlus-v${versionName.replace(Regex("[^A-Za-z0-9._-]"), "_")}.apk"
+                val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: context.cacheDir, fileName)
 
-            if (file.exists()) {
-                file.delete()
+                if (file.exists()) {
+                    file.delete()
+                }
+                cleanup()
+
+                _state.value = UpdateState.Downloading(0, 0, 0, versionName)
+
+                if (downloadManager == null) {
+                    downloadDirectly(downloadUrl, file, versionName)
+                    return@launch
+                }
+
+                val request =
+                    DownloadManager
+                        .Request(Uri.parse(downloadUrl))
+                        .setTitle(context.getString(R.string.update_downloading_title))
+                        .setDescription(context.getString(R.string.update_downloading_description, versionName))
+                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
+                        .setDestinationUri(Uri.fromFile(file))
+                        .setAllowedOverMetered(true)
+                        .setAllowedOverRoaming(true)
+                        .setMimeType("application/vnd.android.package-archive")
+
+                request.addRequestHeader("User-Agent", "Shizuku+/$versionName")
+
+                try {
+                    downloadId = downloadManager.enqueue(request)
+                    context
+                        .getSharedPreferences("update_prefs", Context.MODE_PRIVATE)
+                        .edit()
+                        .putLong(DOWNLOAD_ID_PREF, downloadId)
+                        .apply()
+
+                    Timber.tag(TAG).d("Download started via DownloadManager: $downloadUrl, ID: $downloadId")
+                    monitorDownload(downloadId, file, versionName)
+                } catch (e: Exception) {
+                    Timber.tag(TAG).w(e, "DownloadManager failed to enqueue; falling back to direct HTTP stream")
+                    downloadDirectly(downloadUrl, file, versionName)
+                }
             }
-            cleanup()
-
-            _state.value = UpdateState.Downloading(0, 0, 0, versionName)
-
-            if (downloadManager == null) {
-                downloadDirectly(downloadUrl, file, versionName)
-                return@launch
-            }
-
-            val request =
-                DownloadManager
-                    .Request(Uri.parse(downloadUrl))
-                    .setTitle(context.getString(R.string.update_downloading_title))
-                    .setDescription(context.getString(R.string.update_downloading_description, versionName))
-                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
-                    .setDestinationUri(Uri.fromFile(file))
-                    .setAllowedOverMetered(true)
-                    .setAllowedOverRoaming(true)
-                    .setMimeType("application/vnd.android.package-archive")
-
-            request.addRequestHeader("User-Agent", "Shizuku+/$versionName")
-
-            try {
-                downloadId = downloadManager.enqueue(request)
-                context
-                    .getSharedPreferences("update_prefs", Context.MODE_PRIVATE)
-                    .edit()
-                    .putLong(DOWNLOAD_ID_PREF, downloadId)
-                    .apply()
-
-                Timber.tag(TAG).d("Download started via DownloadManager: $downloadUrl, ID: $downloadId")
-                monitorDownload(downloadId, file, versionName)
-            } catch (e: Exception) {
-                Timber.tag(TAG).w(e, "DownloadManager failed to enqueue; falling back to direct HTTP stream")
-                downloadDirectly(downloadUrl, file, versionName)
-            }
-        }
     }
 
     /**
@@ -509,11 +513,6 @@ class UpdateManager(
         }
 
     /**
-     * Backward-compatible boolean helper.
-     */
-    suspend fun installApk(file: File): Boolean = performSmartInstall(file) is InstallResult.Success
-
-    /**
      * Launches the system PackageInstaller using an internal cacheDir FileProvider URI
      * that system_server and com.google.android.packageinstaller can safely access without FUSE denials.
      */
@@ -747,15 +746,24 @@ class UpdateManager(
             true
         }
 
+    /**
+     * Stops the current download. Only that work is cancelled: this manager is shared, and
+     * cancelling its scope's root job made every later download silently do nothing.
+     */
     fun cancel() {
         monitorJob?.cancel()
-        job.cancel()
+        downloadJob?.cancel()
+        if (downloadId != -1L) {
+            runCatching { downloadManager?.remove(downloadId) }
+            downloadId = -1
+        }
     }
 
     /**
-     * Deletes downloaded update APKs that are no longer needed: anything not newer than the
-     * installed build (already installed or older), or unreadable. A newer update that was
-     * downloaded but not yet installed is kept. Call off the main thread.
+     * Deletes downloaded update APKs that are no longer needed: ones at or below the installed
+     * version, and unreadable ones once they're old enough not to be a download in progress. A
+     * newer one is kept, since an install notification may still point at it. Call off the main
+     * thread.
      */
     fun cleanup() {
         try {
@@ -763,25 +771,31 @@ class UpdateManager(
                 androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(
                     context.packageManager.getPackageInfo(context.packageName, 0),
                 )
-            val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-            downloadsDir?.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
-                val archive = context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)
-                val version =
-                    archive?.let {
-                        androidx.core.content.pm.PackageInfoCompat
-                            .getLongVersionCode(it)
+            val dirs = listOfNotNull(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), File(context.cacheDir, "updates"))
+            for (dir in dirs) {
+                dir.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
+                    if (isStaleUpdate(file, installed)) {
+                        file.delete()
+                        Timber.tag(TAG).d("Cleaned up old APK: ${file.name}")
                     }
-                if (version == null || version <= installed) {
-                    file.delete()
-                    Timber.tag(TAG).d("Cleaned up old APK: ${file.name}")
                 }
-            }
-            val updatesCache = File(context.cacheDir, "updates")
-            updatesCache.listFiles { file -> file.name.endsWith(".apk") }?.forEach { file ->
-                file.delete()
             }
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Error cleaning up")
         }
+    }
+
+    private fun isStaleUpdate(
+        file: File,
+        installed: Long,
+    ): Boolean {
+        val version =
+            context.packageManager.getPackageArchiveInfo(file.absolutePath, 0)?.let {
+                androidx.core.content.pm.PackageInfoCompat
+                    .getLongVersionCode(it)
+            }
+        if (version != null) return version <= installed
+        // Unreadable: a partial download is still being written, so only remove old ones.
+        return System.currentTimeMillis() - file.lastModified() > PARTIAL_DOWNLOAD_GRACE_MS
     }
 }

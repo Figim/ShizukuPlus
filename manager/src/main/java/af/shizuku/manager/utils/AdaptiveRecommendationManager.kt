@@ -20,9 +20,7 @@ object AdaptiveRecommendationManager {
     const val KEY_DISMISSED_RECOMMENDATIONS = "dismissed_adaptive_recommendations"
 
     const val ID_TCP_MODE = "tcp_mode"
-    const val ID_FORCE_START_WADB = "force_start_wadb"
     const val ID_STABILITY_TIPS = "stability_tips"
-    const val ID_WATCHDOG_KEEPALIVE = "watchdog_keepalive"
     const val ID_TCP_NETWORK_GUARD = "tcp_network_guard"
 
     // In-memory session guard so we don't prompt the same recommendation twice in one process session

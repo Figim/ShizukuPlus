@@ -156,7 +156,7 @@ object UpdateDialogHelper {
                     val success = UpdateInstaller.forceUpdateWithShizuku(activity, file)
                     if (!success) {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(activity, "Auto-migration failed; please reinstall manually.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity, R.string.update_migrate_failed, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
