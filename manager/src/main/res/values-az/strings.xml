@@ -617,7 +617,7 @@
     <string name="diagnostics_dismiss">Rədd et</string>
     <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Rejimi aktivdir, lakin Cihaz Sahibinin komponenti aktiv deyil. Həll etmək üçün toxunun.</string>
     <string name="diagnostics_warning_shadow_binder_no_apps">Kölgə Bağlayıcısı aktivdir, lakin gizlədiləcək heç bir tətbiq seçilməyib. Seçmək üçün toxunun.</string>
-    <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırılacağı ehtimalı var. İstisna etmək üçün toxunun.</string>
+    <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırıla bilər. İstisna etmək üçün toxunun.</string>
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
     <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladıla bilmədi</string>
     <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
@@ -670,7 +670,7 @@
     <string name="settings_root_magisk_mocking_summary">Root-u aşkar edən tətbiqləri aldatmaq üçün Magisk binar fayllarını, xüsusiyyətlərini və daxili qovluqlarını saxtalaşdırır.</string>
     <string name="settings_root_auto_grant">Avtomatik Təsdiq Körpüsü</string>
     <string name="settings_crash_reporting_title">Qəza hesabatlarını göndər</string>
-    <string name="settings_crash_reporting_summary">When Shizuku+ crashes, send the error, device model, Android version and recent app log lines (with IP addresses and network names removed) to the developer. No screenshots, no personal data.</string>
+    <string name="settings_crash_reporting_summary">Shizuku+ qəzaya uğradıqda xətanı, cihaz modelini, Android versiyasını və son tətbiq jurnalı sətirlərini (IP ünvanları və şəbəkə adları silinmiş şəkildə) tərtibatçıya göndərin. Heç bir ekran şəkli və ya şəxsi məlumat göndərilmir.</string>
     <string name="crash_reporting_prompt_title">Qəzaları düzəltməyə kömək edək?</string>
     <string name="crash_reporting_prompt_message">Shizuku+ qəzaya uğradıqda xətanı, cihaz modelinizi, Android versiyanızı və tətbiqin son jurnal sətirlərini tərtibatçıya göndərə bilər. IP ünvanları və şəbəkə adları silinir və siz razılaşana qədər heç nə göndərilmir. Bunu istənilən vaxt Qabaqcıl və diaqnostika bölməsindən dəyişə bilərsiniz.</string>
     <string name="crash_reporting_prompt_yes">Hesabatları göndər</string>
@@ -867,7 +867,6 @@
     <string name="doctor_wallet_risk_busybox">Təhlükəsizlik Riski (BusyBox Saxtalaşdırması aktivdir)</string>
     <string name="doctor_wallet_risk_spoof">Attestasiya Riski (Cihazın Saxtalaşdırılması aktivdir)</string>
     <string name="doctor_tip_wallet_integrity">Google Wallet və Bank Tətbiqləri: Aşkar edilmiş root artefaktları və ya aktiv Magisk/BusyBox saxtalaşdırması \"Cihaz təhlükəsizlik standartlarına cavab vermir\" xətalarına səbəb olur. su binar fayllarını təmizləmək və uyğunluğu bərpa etmək üçün bir toxunuşla düzəlişi işlədin.</string>
-
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
@@ -1419,7 +1418,7 @@
 
     <!-- Companion Mode -->
     <string name="settings_companion_mode">Köməkçi Kartını Göstər</string>
-    <string name="settings_companion_mode_summary">Orijinal Shizuku-nu tez açmaq üçün kart gösterin. Qeyd: eyni vaxtda yalnız bir Shizuku xidməti işləyə bilər, onlar arasında keçid etmək üçün bundan istifadə edin.</string>
+    <string name="settings_companion_mode_summary">Orijinal Shizuku-nu tez açmaq üçün kart göstərin. Qeyd: eyni vaxtda yalnız bir Shizuku xidməti işləyə bilər, onlar arasında keçid etmək üçün bundan istifadə edin.</string>
     <string name="settings_companion_fallback">Qəza Ehtiyat Nüsxəsi</string>
     <string name="settings_companion_fallback_summary">Ardıcıl 3 qəzadan sonra qəza bildirişində orijinal Shizuku-nu açmaq seçimi göstərin</string>
     <string name="home_companion_title">Orijinal Shizuku</string>
@@ -1882,7 +1881,7 @@
     <string name="app_management_context_select_multiple">Çoxlu tətbiq seçin</string>
     <string name="app_management_selected_count">%1$d seçildi</string>
     <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
-    <string name="api_scopes_dialog_note">Əmrlər tətbiq tərəfindən başladıldıqda, sh -c vasitəsilə daxil olmaqla yoxlanılır. Tətbiqin artıq açıq olan shell pəncərəsinə daxil edilmiş əmrləri yoxlamaq mümkün dəyil; onları da bloklamaq üçün Shell funksiyasını söndürün.</string>
+    <string name="api_scopes_dialog_note">Əmrlər tətbiq tərəfindən başladıldıqda, sh -c vasitəsilə daxil olmaqla yoxlanılır. Tətbiqin artıq açıq olan shell pəncərəsinə daxil edilmiş əmrləri yoxlamaq mümkün deyil; onları da bloklamaq üçün Shell funksiyasını söndürün.</string>
     <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
     <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
     <string name="api_scope_package_manager">Paket İdarəedicisi (quraşdır, sil, dayandır)</string>
