@@ -1142,10 +1142,6 @@
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Xüsusi Vurğu Rəngi</string>
 
-    <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
-
-    <!-- Backup error messages (ShizukuPlusSettingsFragment.kt) -->
-
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">Başlanğıc və Bərpa</string>
     <string name="settings_advanced_category_diagnostics">Diaqnostika</string>
