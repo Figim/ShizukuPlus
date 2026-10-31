@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Aturan otomatisasi jaringan telah dikonfigurasi tetapi layanan berhenti — Binder Firewall tidak akan beralih otomatis. Ketuk untuk memulai ulang.</string>
     <string name="diagnostics_automation_start_failed">Tidak dapat memulai layanan otomatisasi</string>
     <string name="diagnostics_battery_settings_open_failed">Tidak dapat membuka pengaturan baterai</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Buka Feature Hub → Keamanan &amp; Akses → Shadow Binder untuk memilih aplikasi</string>
     <string name="diagnostics_device_owner_setup_title">Siapkan Device Owner</string>
     <string name="diagnostics_device_owner_setup_message">Mode Dhizuku mengharuskan aplikasi ini menjadi Device Owner.\n\nJalankan perintah ini dari PC Anda (debugging USB harus diaktifkan):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Salin Perintah</string>

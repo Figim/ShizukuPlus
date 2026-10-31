@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">ネットワーク自動化ルールが設定されていますが、サービスが停止しています。Binderファイアウォールは自動で切り替わりません。タップして再起動してください。</string>
     <string name="diagnostics_automation_start_failed">自動化サービスを開始できませんでした</string>
     <string name="diagnostics_battery_settings_open_failed">バッテリー設定を開けませんでした</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">機能ハブ → セキュリティとアクセス → Shadow Binder でアプリを選択してください</string>
     <string name="diagnostics_device_owner_setup_title">デバイス所有者を設定</string>
     <string name="diagnostics_device_owner_setup_message">Dhizukuモードには、このアプリがデバイス所有者である必要があります。\n\nPCから次のコマンドを実行してください (USBデバッグを有効にしておく必要があります):\n\n%1$s</string>
     <string name="diagnostics_copy_command">コマンドをコピー</string>

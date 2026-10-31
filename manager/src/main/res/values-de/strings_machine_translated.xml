@@ -237,7 +237,6 @@
     <string name="diagnostics_warning_automation_stopped">Netzwerk-Automatisierungsregeln sind konfiguriert, aber der Dienst ist angehalten — die Binder-Firewall schaltet sich nicht automatisch um. Zum Neustarten tippen.</string>
     <string name="diagnostics_automation_start_failed">Automatisierungsdienst konnte nicht gestartet werden</string>
     <string name="diagnostics_battery_settings_open_failed">Akkueinstellungen konnten nicht geöffnet werden</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Gehe zu Feature Hub → Sicherheit &amp; Zugriff → Shadow Binder, um Apps auszuwählen</string>
     <string name="diagnostics_device_owner_setup_title">Geräteeigentümer einrichten</string>
     <string name="diagnostics_device_owner_setup_message">Der Dhizuku-Modus erfordert, dass diese App der Geräteeigentümer ist.\n\nFühre diesen Befehl auf deinem PC aus (USB-Debugging muss aktiviert sein):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Befehl kopieren</string>

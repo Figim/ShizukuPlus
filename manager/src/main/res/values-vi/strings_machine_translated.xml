@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Đã cấu hình quy tắc tự động hóa mạng nhưng dịch vụ đã dừng — Binder Firewall sẽ không tự động bật/tắt. Nhấn để khởi động lại.</string>
     <string name="diagnostics_automation_start_failed">Không thể khởi động dịch vụ tự động hóa</string>
     <string name="diagnostics_battery_settings_open_failed">Không thể mở cài đặt pin</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Vào Feature Hub → Bảo mật &amp; Truy cập → Shadow Binder để chọn ứng dụng</string>
     <string name="diagnostics_device_owner_setup_title">Thiết lập Chủ sở hữu thiết bị</string>
     <string name="diagnostics_device_owner_setup_message">Chế độ Dhizuku yêu cầu ứng dụng này là Chủ sở hữu thiết bị.\n\nHãy chạy lệnh này từ máy tính (phải bật gỡ lỗi USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Sao chép lệnh</string>

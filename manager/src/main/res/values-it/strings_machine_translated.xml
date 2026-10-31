@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Le regole di automazione di rete sono configurate ma il servizio è arrestato: Binder Firewall non si attiverà automaticamente. Tocca per riavviare.</string>
     <string name="diagnostics_automation_start_failed">Impossibile avviare il servizio di automazione</string>
     <string name="diagnostics_battery_settings_open_failed">Impossibile aprire le impostazioni della batteria</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Vai a Feature Hub → Sicurezza &amp; Accesso → Shadow Binder per selezionare le app</string>
     <string name="diagnostics_device_owner_setup_title">Configura Device Owner</string>
     <string name="diagnostics_device_owner_setup_message">La modalità Dhizuku richiede che questa app sia il Device Owner.\n\nEsegui questo comando dal PC (il debug USB deve essere abilitato):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copia comando</string>

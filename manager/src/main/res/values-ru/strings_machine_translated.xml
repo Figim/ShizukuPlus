@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Правила сетевой автоматизации настроены, но служба остановлена — Binder Firewall не будет переключаться автоматически. Нажмите, чтобы перезапустить.</string>
     <string name="diagnostics_automation_start_failed">Не удалось запустить службу автоматизации</string>
     <string name="diagnostics_battery_settings_open_failed">Не удалось открыть настройки батареи</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Перейдите в Feature Hub → Безопасность и доступ → Shadow Binder, чтобы выбрать приложения</string>
     <string name="diagnostics_device_owner_setup_title">Настройка владельца устройства</string>
     <string name="diagnostics_device_owner_setup_message">Для режима Dhizuku это приложение должно быть владельцем устройства.\n\nВыполните эту команду на ПК (должна быть включена отладка по USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Копировать команду</string>

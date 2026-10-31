@@ -350,7 +350,6 @@
     <string name="diagnostics_warning_automation_stopped">Network automation rules ترتیب دیے گئے ہیں لیکن service بند ہے — Binder Firewall خودکار طور پر ٹوگل نہیں ہوگا۔ دوبارہ شروع کرنے کے لیے ٹیپ کریں۔</string>
     <string name="diagnostics_automation_start_failed">Automation service شروع نہیں ہو سکی</string>
     <string name="diagnostics_battery_settings_open_failed">Battery ترتیبات نہیں کھل سکیں</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Feature Hub → Security &amp; Access → Shadow Binder پر جائیں اور ایپس منتخب کریں</string>
     <string name="diagnostics_device_owner_setup_title">Device Owner سیٹ اپ کریں</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Mode کے لیے اس app کا Device Owner ہونا ضروری ہے۔\n\nاپنے PC سے یہ کمانڈ چلائیں (USB debugging فعال ہونا ضروری ہے):\n\n%1$s</string>
     <string name="diagnostics_copy_command">کمانڈ کاپی کریں</string>

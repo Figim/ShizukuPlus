@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Hay reglas de automatización de red configuradas pero el servicio está detenido: el cortafuegos de Binder no se activará automáticamente. Toca para reiniciarlo.</string>
     <string name="diagnostics_automation_start_failed">No se pudo iniciar el servicio de automatización</string>
     <string name="diagnostics_battery_settings_open_failed">No se pudieron abrir los ajustes de batería</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Ve a Centro de funciones → Seguridad y acceso → Shadow Binder para seleccionar aplicaciones</string>
     <string name="diagnostics_device_owner_setup_title">Configurar propietario del dispositivo</string>
     <string name="diagnostics_device_owner_setup_message">El modo Dhizuku requiere que esta aplicación sea el propietario del dispositivo.\n\nEjecuta este comando desde tu PC (la depuración USB debe estar activada):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copiar comando</string>

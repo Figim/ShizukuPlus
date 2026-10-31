@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Netwerkautomatiseringsregels zijn geconfigureerd maar de service is gestopt — Binder Firewall schakelt niet automatisch. Tik om te herstarten.</string>
     <string name="diagnostics_automation_start_failed">Kon de automatiseringsservice niet starten</string>
     <string name="diagnostics_battery_settings_open_failed">Kon de batterij-instellingen niet openen</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Ga naar Feature Hub → Beveiliging &amp; toegang → Shadow Binder om apps te selecteren</string>
     <string name="diagnostics_device_owner_setup_title">Device Owner instellen</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku-modus vereist dat deze app de Device Owner is.\n\nVoer deze opdracht uit vanaf je pc (USB-foutopsporing moet zijn ingeschakeld):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Opdracht kopiëren</string>

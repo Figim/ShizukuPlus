@@ -240,7 +240,6 @@
     <string name="diagnostics_warning_automation_stopped">Ağ otomasyonu kuralları yapılandırıldı ancak hizmet durdurulmuş. Binder Güvenlik Duvarı otomatik olarak açılıp kapanmaz. Yeniden başlatmak için dokunun.</string>
     <string name="diagnostics_automation_start_failed">Otomasyon hizmeti başlatılamadı</string>
     <string name="diagnostics_battery_settings_open_failed">Pil ayarları açılamadı</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Uygulamaları seçmek için Özellik Merkezi → Güvenlik &amp; Erişim → Shadow Binder yolunu izleyin</string>
     <string name="diagnostics_device_owner_setup_title">Cihaz Sahibini Ayarla</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Modu, bu uygulamanın Cihaz Sahibi olmasını gerektirir.\n\nBu komutu bilgisayarınızdan çalıştırın (USB hata ayıklama etkin olmalıdır):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Komutu Kopyala</string>

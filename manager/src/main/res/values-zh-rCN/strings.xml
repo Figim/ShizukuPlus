@@ -431,7 +431,6 @@
     <string name="diagnostics_warning_automation_stopped">已配置网络自动化规则，但服务已停止 — Binder 防火墙不会自动切换。点按重启。</string>
     <string name="diagnostics_automation_start_failed">无法启动自动化服务</string>
     <string name="diagnostics_battery_settings_open_failed">无法打开电池设置</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">前往功能中心 → 安全与访问 → 影子 Binder 以选择应用</string>
     <string name="diagnostics_device_owner_setup_title">设置设备所有者</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku 模式需要此应用成为设备所有者。\n\n请在电脑上运行以下命令（需已开启 USB 调试）：\n\n%1$s</string>
     <string name="diagnostics_copy_command">复制命令</string>

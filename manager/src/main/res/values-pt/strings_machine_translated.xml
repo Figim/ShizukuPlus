@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Existem regras de automatização de rede configuradas, mas o serviço está parado — o Binder Firewall não alternará automaticamente. Toque para reiniciar.</string>
     <string name="diagnostics_automation_start_failed">Não foi possível iniciar o serviço de automatização</string>
     <string name="diagnostics_battery_settings_open_failed">Não foi possível abrir as definições da bateria</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Aceda a Feature Hub → Segurança &amp; Acesso → Shadow Binder para selecionar aplicações</string>
     <string name="diagnostics_device_owner_setup_title">Configurar Proprietário do dispositivo</string>
     <string name="diagnostics_device_owner_setup_message">O Modo Dhizuku requer que esta aplicação seja o Proprietário do dispositivo.\n\nExecute este comando a partir do seu PC (a depuração USB tem de estar ativada):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copiar comando</string>

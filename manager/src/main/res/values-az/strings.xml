@@ -614,7 +614,6 @@
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
     <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladıla bilmədi</string>
     <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Tətbiqləri seçmək üçün Xüsusiyyət Mərkəzi → Təhlükəsizlik və Giriş → Kölgə Bağlayıcısı bölməsinə keçin</string>
     <string name="diagnostics_device_owner_setup_title">Cihaz Sahibini Quraşdır</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku Rejimi bu tətbiqin Cihaz Sahibi olmasını tələb edir.\n\nBu əmri PC-nizdən işə salın (USB sazlama aktiv olmalıdır):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Əmri Kopyala</string>

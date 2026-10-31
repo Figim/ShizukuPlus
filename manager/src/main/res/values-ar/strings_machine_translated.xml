@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">تم إعداد قواعد أتمتة الشبكة لكن الخدمة متوقفة — لن يتبدل Binder Firewall تلقائيًا. اضغط لإعادة التشغيل.</string>
     <string name="diagnostics_automation_start_failed">تعذر بدء خدمة الأتمتة</string>
     <string name="diagnostics_battery_settings_open_failed">تعذر فتح إعدادات البطارية</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">انتقل إلى Feature Hub ← الأمان والوصول ← Shadow Binder لتحديد التطبيقات</string>
     <string name="diagnostics_device_owner_setup_title">إعداد مالك الجهاز</string>
     <string name="diagnostics_device_owner_setup_message">يتطلب وضع Dhizuku أن يكون هذا التطبيق مالك الجهاز.\n\nشغّل هذا الأمر من الكمبيوتر (يجب تفعيل تصحيح USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">نسخ الأمر</string>

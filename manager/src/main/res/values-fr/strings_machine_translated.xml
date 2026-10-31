@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Des règles d\'automatisation réseau sont configurées, mais le service est arrêté : le pare-feu Binder ne basculera pas automatiquement. Appuyez pour redémarrer.</string>
     <string name="diagnostics_automation_start_failed">Impossible de démarrer le service d\'automatisation</string>
     <string name="diagnostics_battery_settings_open_failed">Impossible d\'ouvrir les paramètres de la batterie</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Allez dans Feature Hub → Sécurité &amp; accès → Shadow Binder pour sélectionner des applications</string>
     <string name="diagnostics_device_owner_setup_title">Configurer le propriétaire de l\'appareil</string>
     <string name="diagnostics_device_owner_setup_message">Le mode Dhizuku nécessite que cette application soit le propriétaire de l\'appareil.\n\nExécutez cette commande depuis votre PC (le débogage USB doit être activé) :\n\n%1$s</string>
     <string name="diagnostics_copy_command">Copier la commande</string>

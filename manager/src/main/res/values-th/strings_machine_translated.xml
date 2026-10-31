@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">ตั้งค่ากฎระบบอัตโนมัติเครือข่ายแล้วแต่บริการหยุดทำงาน — Binder Firewall จะไม่สลับอัตโนมัติ แตะเพื่อรีสตาร์ท</string>
     <string name="diagnostics_automation_start_failed">ไม่สามารถเริ่มบริการระบบอัตโนมัติ</string>
     <string name="diagnostics_battery_settings_open_failed">ไม่สามารถเปิดการตั้งค่าแบตเตอรี่</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">ไปที่ Feature Hub → ความปลอดภัยและการเข้าถึง → Shadow Binder เพื่อเลือกแอป</string>
     <string name="diagnostics_device_owner_setup_title">ตั้งค่าเจ้าของอุปกรณ์</string>
     <string name="diagnostics_device_owner_setup_message">โหมด Dhizuku ต้องให้แอปนี้เป็นเจ้าของอุปกรณ์\n\nรันคำสั่งนี้จากพีซีของคุณ (ต้องเปิดการแก้ไขข้อบกพร่องผ่าน USB):\n\n%1$s</string>
     <string name="diagnostics_copy_command">คัดลอกคำสั่ง</string>

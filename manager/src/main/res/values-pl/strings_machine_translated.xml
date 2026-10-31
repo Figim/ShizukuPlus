@@ -243,7 +243,6 @@
     <string name="diagnostics_warning_automation_stopped">Skonfigurowano reguły automatyzacji sieci, ale usługa jest zatrzymana — Binder Firewall nie będzie się automatycznie przełączać. Stuknij, aby uruchomić ponownie.</string>
     <string name="diagnostics_automation_start_failed">Nie udało się uruchomić usługi automatyzacji</string>
     <string name="diagnostics_battery_settings_open_failed">Nie udało się otworzyć ustawień baterii</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">Przejdź do Feature Hub → Bezpieczeństwo i dostęp → Shadow Binder, aby wybrać aplikacje</string>
     <string name="diagnostics_device_owner_setup_title">Konfiguracja właściciela urządzenia</string>
     <string name="diagnostics_device_owner_setup_message">Tryb Dhizuku wymaga, aby ta aplikacja była właścicielem urządzenia.\n\nUruchom to polecenie na komputerze (debugowanie USB musi być włączone):\n\n%1$s</string>
     <string name="diagnostics_copy_command">Kopiuj polecenie</string>

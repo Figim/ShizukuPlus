@@ -241,7 +241,6 @@
     <string name="diagnostics_warning_automation_stopped">已設定網路自動化規則，但服務已停止——Binder 防火牆不會自動切換。點按以重新啟動。</string>
     <string name="diagnostics_automation_start_failed">無法啟動自動化服務</string>
     <string name="diagnostics_battery_settings_open_failed">無法開啟電池設定</string>
-    <string name="diagnostics_shadow_binder_navigate_hint">前往功能中心 → 安全性與存取 → Shadow Binder 以選取應用程式</string>
     <string name="diagnostics_device_owner_setup_title">設定裝置擁有者</string>
     <string name="diagnostics_device_owner_setup_message">Dhizuku 模式需要此應用程式成為裝置擁有者。\n\n請從電腦執行以下指令（必須已啟用 USB 偵錯）：\n\n%1$s</string>
     <string name="diagnostics_copy_command">複製指令</string>
