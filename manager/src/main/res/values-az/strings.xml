@@ -617,7 +617,7 @@
     <string name="diagnostics_dismiss">Rədd et</string>
     <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Rejimi aktivdir, lakin Cihaz Sahibinin komponenti aktiv deyil. Həll etmək üçün toxunun.</string>
     <string name="diagnostics_warning_shadow_binder_no_apps">Kölgə Bağlayıcısı aktivdir, lakin gizlədiləcək heç bir tətbiq seçilməyib. Seçmək üçün toxunun.</string>
-    <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırıla bilər. İstisna etmək üçün toxunun.</string>
+    <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırılacağı ehtimalı var. İstisna etmək üçün toxunun.</string>
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
     <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladıla bilmədi</string>
     <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
@@ -670,7 +670,7 @@
     <string name="settings_root_magisk_mocking_summary">Root-u aşkar edən tətbiqləri aldatmaq üçün Magisk binar fayllarını, xüsusiyyətlərini və daxili qovluqlarını saxtalaşdırır.</string>
     <string name="settings_root_auto_grant">Avtomatik Təsdiq Körpüsü</string>
     <string name="settings_crash_reporting_title">Qəza hesabatlarını göndər</string>
-    <string name="settings_crash_reporting_summary">Shizuku+ qəzaya uğradıqda xətanı, cihaz modelini, Android versiyasını və son tətbiq jurnalı sətirlərini (IP ünvanları və şəbəkə adları silinmiş şəkildə) tərtibatçıya göndərin. Heç bir ekran şəkli və ya şəxsi məlumat göndərilmir.</string>
+    <string name="settings_crash_reporting_summary">When Shizuku+ crashes, send the error, device model, Android version and recent app log lines (with IP addresses and network names removed) to the developer. No screenshots, no personal data.</string>
     <string name="crash_reporting_prompt_title">Qəzaları düzəltməyə kömək edək?</string>
     <string name="crash_reporting_prompt_message">Shizuku+ qəzaya uğradıqda xətanı, cihaz modelinizi, Android versiyanızı və tətbiqin son jurnal sətirlərini tərtibatçıya göndərə bilər. IP ünvanları və şəbəkə adları silinir və siz razılaşana qədər heç nə göndərilmir. Bunu istənilən vaxt Qabaqcıl və diaqnostika bölməsindən dəyişə bilərsiniz.</string>
     <string name="crash_reporting_prompt_yes">Hesabatları göndər</string>
@@ -867,6 +867,7 @@
     <string name="doctor_wallet_risk_busybox">Təhlükəsizlik Riski (BusyBox Saxtalaşdırması aktivdir)</string>
     <string name="doctor_wallet_risk_spoof">Attestasiya Riski (Cihazın Saxtalaşdırılması aktivdir)</string>
     <string name="doctor_tip_wallet_integrity">Google Wallet və Bank Tətbiqləri: Aşkar edilmiş root artefaktları və ya aktiv Magisk/BusyBox saxtalaşdırması \"Cihaz təhlükəsizlik standartlarına cavab vermir\" xətalarına səbəb olur. su binar fayllarını təmizləmək və uyğunluğu bərpa etmək üçün bir toxunuşla düzəlişi işlədin.</string>
+
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
@@ -913,6 +914,7 @@
     <string name="stock_shizuku_conflict_dialog_title">Uyğunsuz Server İşləyir</string>
     <string name="stock_shizuku_conflict_dialog_message">Orijinal Shizuku serveri hazırda fonda işləyir. Android təhlükəsizlik məhdudiyyətlərinə görə, Shizuku+ orijinal serverlə əlaqə qura bilməz və ya onu dayandıra bilməz.\n\nZəhmət olmasa, orijinal serveri dayandırmaq üçün cihazınızı tamamilə yenidən başladın, sonra ADB və ya Root istifadə edərək Shizuku+-ı başladın.</string>
     <string name="stock_shizuku_restarting_via_root">Root vasitəsilə yenidən başladılır…</string>
+    <string name="stock_shizuku_restarting">Yenidən başladılır…</string>
     <string name="backup_plain_exported">Adi ehtiyat nüsxə ixrac edildi. Bu faylı məxfi saxlayın — o, şifrələnməyib.</string>
     <string name="backup_exported_success">Ehtiyat nüsxə uğurla ixrac edildi</string>
     <string name="backup_restored_success">Ehtiyat nüsxə uğurla bərpa edildi</string>
@@ -1417,7 +1419,7 @@
 
     <!-- Companion Mode -->
     <string name="settings_companion_mode">Köməkçi Kartını Göstər</string>
-    <string name="settings_companion_mode_summary">Orijinal Shizuku-nu tez açmaq üçün kart göstərin. Qeyd: eyni vaxtda yalnız bir Shizuku xidməti işləyə bilər, onlar arasında keçid etmək üçün bundan istifadə edin.</string>
+    <string name="settings_companion_mode_summary">Orijinal Shizuku-nu tez açmaq üçün kart gösterin. Qeyd: eyni vaxtda yalnız bir Shizuku xidməti işləyə bilər, onlar arasında keçid etmək üçün bundan istifadə edin.</string>
     <string name="settings_companion_fallback">Qəza Ehtiyat Nüsxəsi</string>
     <string name="settings_companion_fallback_summary">Ardıcıl 3 qəzadan sonra qəza bildirişində orijinal Shizuku-nu açmaq seçimi göstərin</string>
     <string name="home_companion_title">Orijinal Shizuku</string>
@@ -1702,6 +1704,19 @@
     <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
     <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s şəbəkəsini sil</string>
+    <string name="settings_automation_trusted_networks_desc">Tətbiq Bağlantı Firewall-u bu Wi-Fi şəbəkələrində sönür və mobil internet də daxil olmaqla başqa hər yerdə yenidən yanır.</string>
+    <string name="trusted_networks_tcp_subtitle">\"Yalnız etibarlı\" mühafizə ilə Simsiz ADB bu şəbəkələrdə əlçatan qalır və digərlərində bağlanır.</string>
+    <string name="trusted_networks_connected">İndi qoşulub</string>
+    <string name="trusted_networks_saved_label">Bu cihazda saxlanılıb</string>
+    <string name="trusted_networks_not_saved">Bu cihazda saxlanılmayıb</string>
+    <string name="trusted_networks_needs_service">Bu cihazda saxlanılan şəbəkələri sadalamaq üçün Shizuku+-ı başladın.</string>
+    <string name="trusted_networks_type_name">Şəbəkə adını daxil edin</string>
+    <string name="trusted_networks_add">Əlavə et</string>
+    <string name="trusted_networks_choose">Şəbəkələri seçin</string>
+    <string name="trusted_networks_trust_current">%1$s şəbəkəsinə etibar et</string>
+    <string name="update_migrate_failed">Bu qurğuya avtomatik keçmək mümkün olmadı. Shizuku+-ı silin və əl ilə quraşdırın.</string>
+    <string name="app_picker_names_and_more">%1$s + daha %2$d</string>
+    <string name="trusted_networks_comma">Vergül olan adlar bu siyahı üçün istifadə edilə bilməz</string>
     <string name="tcp_protection_off">Söndürülüb</string>
     <string name="tcp_protection_open">Açıq və ictimai Wi-Fi</string>
     <string name="tcp_protection_trusted">Yalnız etibarlı şəbəkələr</string>
@@ -1709,8 +1724,8 @@
     <string name="nav_home">Əsas ekran</string>
     <string name="nav_apps">Tətbiqlər</string>
     <string name="nav_hub">Mərkəz</string>
-    <string name="settings_category_active_count">%1$s / %2$s aktiv</string>
-    <string name="settings_category_active_single">%1$s aktiv</string>
+    <string name="settings_category_active_count">%1$d / %2$d aktiv</string>
+    <string name="settings_category_active_single">%1$d aktiv</string>
     <string name="system_hub_title">Sistem Mərkəzi</string>
     <string name="system_hub_tab_metrics">Göstəricilər</string>
     <string name="server_memory_used_of">%2$s-dən %1$s</string>
@@ -1867,7 +1882,7 @@
     <string name="app_management_context_select_multiple">Çoxlu tətbiq seçin</string>
     <string name="app_management_selected_count">%1$d seçildi</string>
     <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
-    <string name="api_scopes_dialog_note">Əmrlər tətbiq tərəfindən başladıldıqda, sh -c vasitəsilə daxil olmaqla yoxlanılır. Tətbiqin artıq açıq olan shell pəncərəsinə daxil edilmiş əmrləri yoxlamaq mümkün deyil; onları da bloklamaq üçün Shell funksiyasını söndürün.</string>
+    <string name="api_scopes_dialog_note">Əmrlər tətbiq tərəfindən başladıldıqda, sh -c vasitəsilə daxil olmaqla yoxlanılır. Tətbiqin artıq açıq olan shell pəncərəsinə daxil edilmiş əmrləri yoxlamaq mümkün dəyil; onları da bloklamaq üçün Shell funksiyasını söndürün.</string>
     <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
     <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
     <string name="api_scope_package_manager">Paket İdarəedicisi (quraşdır, sil, dayandır)</string>
